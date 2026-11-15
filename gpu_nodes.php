@@ -63,12 +63,13 @@ function gpu_nodes_refuse(): void {
 /**
  * The GPU record and its node or nodes, when the user may act on them.
  */
-function gpu_nodes_gpu(\Somethingwithproof\Gpu\NodeAccess $access, int $id): \Somethingwithproof\Gpu\GpuRecord {
+function gpu_nodes_gpu(\Somethingwithproof\Gpu\NodeAccess $access, int $id, bool $move = true): \Somethingwithproof\Gpu\GpuRecord {
 	$record = gpu_gpus()->find($id);
 	$nodes  = array();
 
 	if ($record !== null) {
-		foreach (array($record->nodeId, $record->pendingNodeId) as $node_id) {
+		// A move needs both nodes; anything else only the GPU's own node.
+		foreach ($move ? array($record->nodeId, $record->pendingNodeId) : array($record->nodeId) as $node_id) {
 			$node = $node_id > 0 ? gpu_nodes()->find($node_id) : null;
 
 			if ($node !== null) {
@@ -77,7 +78,7 @@ function gpu_nodes_gpu(\Somethingwithproof\Gpu\NodeAccess $access, int $id): \So
 		}
 	}
 
-	if ($record === null || !$access->canManageGpu($record, $nodes)) {
+	if ($record === null || !($move ? $access->canManageGpu($record, $nodes) : $access->canManage($nodes[$record->nodeId] ?? null))) {
 		gpu_nodes_refuse();
 	}
 
@@ -160,7 +161,9 @@ switch ($gpu_action) {
 	case 'confirm_move':
 		$gpu_record = gpu_nodes_gpu($gpu_access, (int) get_filter_request_var('id'));
 
-		if ($gpu_gpus->confirmMove($gpu_record->id)) {
+		// Applied only as authorized: if a collection changed the pending
+		// node since it was read, nothing moves.
+		if ($gpu_gpus->confirmMove($gpu_record->id, $gpu_record->nodeId, $gpu_record->pendingNodeId)) {
 			// Both nodes' data query listings changed.
 			$gpu_reindex->request($gpu_record->nodeId, 'GPU moved away', $gpu_clock->now());
 			$gpu_reindex->request($gpu_record->pendingNodeId, 'GPU moved here', $gpu_clock->now());
@@ -173,17 +176,17 @@ switch ($gpu_action) {
 	case 'reject_move':
 		$gpu_record = gpu_nodes_gpu($gpu_access, (int) get_filter_request_var('id'));
 
-		if ($gpu_gpus->rejectMove($gpu_record->id)) {
+		if ($gpu_gpus->rejectMove($gpu_record->id, $gpu_record->nodeId, $gpu_record->pendingNodeId)) {
 			raise_message('gpu_move', __('The GPU stays with its recorded node.', 'gpu'), MESSAGE_LEVEL_INFO);
 		}
 
 		header('Location: gpu_nodes.php');
 		exit;
 	case 'retire':
-		$gpu_record = gpu_nodes_gpu($gpu_access, (int) get_filter_request_var('id'));
+		$gpu_record = gpu_nodes_gpu($gpu_access, (int) get_filter_request_var('id'), false);
 		$gpu_user   = isset($_SESSION[SESS_USER_ID]) ? (int) $_SESSION[SESS_USER_ID] : 0;
 
-		if ($gpu_gpus->retire($gpu_record->id, $gpu_user, $gpu_clock->now())) {
+		if ($gpu_gpus->retire($gpu_record->id, $gpu_record->nodeId, $gpu_user, $gpu_clock->now())) {
 			$gpu_reindex->request($gpu_record->nodeId, 'GPU retired', $gpu_clock->now());
 
 			raise_message('gpu_retire', __('The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept.', 'gpu'), MESSAGE_LEVEL_INFO);

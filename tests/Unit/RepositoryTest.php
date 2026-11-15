@@ -128,14 +128,17 @@ it('reads stored records back, skipping rows of a vendor this code does not know
 it('confirms or rejects only a pending move, and reports whether one changed', function () {
 	$gpus = new GpuRepository(false);
 
-	expect($gpus->confirmMove(5))->toBeTrue()
+	expect($gpus->confirmMove(5, 1, 2))->toBeTrue()
 		->and($GLOBALS['__gpu_db_exec'][0]['sql'])->toContain('SET node_id = pending_node_id')
-		->and($GLOBALS['__gpu_db_exec'][0]['sql'])->toContain('AND pending_node_id > 0');
+		->and($GLOBALS['__gpu_db_exec'][0]['sql'])->toContain('AND node_id = ? AND pending_node_id = ? AND pending_node_id > 0')
+		// Only the move that was authorized: from node 1 to node 2.
+		->and($GLOBALS['__gpu_db_exec'][0]['params'])->toBe([5, 1, 2]);
 
 	$GLOBALS['__gpu_affected_rows'] = 0;
 
-	expect($gpus->confirmMove(5))->toBeFalse()
-		->and($gpus->rejectMove(5))->toBeFalse();
+	expect($gpus->confirmMove(5, 1, 2))->toBeFalse()
+		->and($gpus->rejectMove(5, 1, 2))->toBeFalse()
+		->and($GLOBALS['__gpu_db_exec'][2]['params'])->toBe([5, 1, 2]);
 });
 
 it('deletes a node only in the statement that checks it owns no GPU', function () {

@@ -160,11 +160,11 @@ switch ($action) {
 		$b = null;
 
 		foreach ($gpus->pendingMoves() as $record) {
-			$b = $record->id;
+			$b = $record;
 		}
 
-		$confirmed      = $b !== null && $gpus->confirmMove($b);
-		$confirmedTwice = $b !== null && $gpus->confirmMove($b);
+		$confirmed      = $b !== null && $gpus->confirmMove($b->id, $b->nodeId, $b->pendingNodeId);
+		$confirmedTwice = $b !== null && $gpus->confirmMove($b->id, $b->nodeId, $b->pendingNodeId);
 
 		// A second record for a stored UUID must fail at the unique key.
 		$copy      = $snapshot(array(array($uuid('a1'), 3, '00000000:AF:00.0')));
