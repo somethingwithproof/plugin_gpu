@@ -244,6 +244,11 @@ jobs:
         { openssl rand -hex 16; openssl rand -hex 16; } > "$RUNNER_TEMP/snmp-secrets"
         php tests/bin/snmpd-conf.php "$RUNNER_TEMP/snmp-secrets" udp:127.0.0.1:1161 > "$RUNNER_TEMP/snmpd.conf"
         sudo /usr/sbin/snmpd -Lf "$RUNNER_TEMP/snmpd.log" -C -c "$RUNNER_TEMP/snmpd.conf" -p "$RUNNER_TEMP/snmpd.pid"
+        sleep 1
+        if ! sudo kill -0 "$(sudo cat "$RUNNER_TEMP/snmpd.pid")"; then
+          sudo cat "$RUNNER_TEMP/snmpd.log" || true
+          exit 1
+        fi
 
     # The test provokes collection failures, which the plugin logs as
     # warnings. Its log is checked here for anything else, and the main log
@@ -265,6 +270,12 @@ jobs:
         cat log/e2e.log
         if grep -E "FATAL:|ERROR:|WARNING:" log/e2e.log | grep -v "GPU WARNING: Node [0-9]*: collection failed"; then
           rc=1
+        fi
+        if [ "$rc" -ne 0 ]; then
+          echo "== snmpd log"
+          sudo cat "$RUNNER_TEMP/snmpd.log" || true
+          echo "== AppArmor messages"
+          sudo dmesg | grep -i apparmor || true
         fi
         exit "$rc"
 

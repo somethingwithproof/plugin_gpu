@@ -154,15 +154,17 @@ function e2e_key(int $n): string {
  * @return array<string, mixed>
  */
 function e2e_state(int $host): array {
+	global $e2e_node_id;
+
 	$query = gpu_provisioner()->dataQueryId();
 
 	return array(
-		'collection' => db_fetch_row('SELECT * FROM plugin_gpu_collection LIMIT 1'),
-		'presence'   => array_column(db_fetch_assoc('SELECT uuid, presence FROM plugin_gpu_gpu ORDER BY uuid'), 'presence', 'uuid'),
+		'collection' => db_fetch_row_prepared('SELECT * FROM plugin_gpu_collection WHERE node_id = ?', array($e2e_node_id)),
+		'presence'   => array_column(db_fetch_assoc_prepared('SELECT uuid, presence FROM plugin_gpu_gpu WHERE node_id = ? ORDER BY uuid', array($e2e_node_id)), 'presence', 'uuid'),
 		'cached'     => array_column(db_fetch_assoc_prepared('SELECT DISTINCT snmp_index FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ? ORDER BY snmp_index', array($host, $query)), 'snmp_index'),
 		'graphs'     => (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM graph_local WHERE host_id = ? AND snmp_query_id = ?', array($host, $query)),
 		'sources'    => array_column(db_fetch_assoc_prepared('SELECT id, snmp_index FROM data_local WHERE host_id = ? AND snmp_query_id = ? ORDER BY id', array($host, $query)), 'id', 'snmp_index'),
-		'reindex'    => db_fetch_row('SELECT * FROM plugin_gpu_reindex LIMIT 1'),
+		'reindex'    => db_fetch_row_prepared('SELECT * FROM plugin_gpu_reindex WHERE node_id = ?', array($e2e_node_id)),
 	);
 }
 
@@ -219,11 +221,36 @@ $e2e_host = (int) api_device_save(0, $e2e_template, 'gpu-node-e2e', $e2e_agent[0
 
 e2e_check($e2e_host > 0, 'the node device was created through api_device_save()');
 
+// Earlier CI steps leave nodes on unreachable test devices; only this
+// test's node is collected, so the statistics below are its own.
+db_execute("UPDATE plugin_gpu_node SET admin_state = 'disabled'");
+
 $e2e_node_id = gpu_nodes()->save(0, $e2e_host, \Somethingwithproof\Gpu\AdminState::Enabled);
 $e2e_node    = gpu_nodes()->find($e2e_node_id);
 
 e2e_check($e2e_node !== null && gpu_provisioner()->attach($e2e_node), 'the GPU data query was attached with reindex method None');
 e2e_check((int) db_fetch_cell_prepared('SELECT reindex_method FROM host_snmp_query WHERE host_id = ? AND snmp_query_id = ?', array($e2e_host, gpu_provisioner()->dataQueryId())) === 0, 'the attachment keeps reindex method None');
+
+// Wait, within a bound, until the agent answers over SNMPv3 with the
+// device's own settings, so a slow agent start is not read as a failure.
+$e2e_device = $e2e_node !== null ? gpu_nodes()->device($e2e_node) : null;
+$e2e_ready  = false;
+
+for ($i = 0; $i < 30 && $e2e_device !== null && !$e2e_ready; $i++) {
+	$e2e_uptime = (string) cacti_snmp_get($e2e_device->hostname, '', '.1.3.6.1.2.1.1.3.0', 3, $e2e_device->snmpUsername, $e2e_device->snmpPassword, $e2e_device->snmpAuthProtocol, $e2e_device->snmpPrivPassphrase, $e2e_device->snmpPrivProtocol, '', $e2e_device->snmpPort, 1000, 0, 'GPU', '');
+	$e2e_ready  = $e2e_uptime !== '' && $e2e_uptime !== 'U';
+
+	if (!$e2e_ready) {
+		sleep(1);
+	}
+}
+
+e2e_check($e2e_ready, 'the agent answers over SNMPv3');
+
+if (!$e2e_ready) {
+	print "e2e: the agent never answered; see snmpd's log\n";
+	exit(1);
+}
 
 /* Boot: eight GPUs. */
 
