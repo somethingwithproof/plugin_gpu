@@ -169,16 +169,16 @@ Evidence for decision #7 is collected in [research/collection-path.md](research/
 
 ## Collection paths
 
-Vendor tools run on the GPU node. The Cacti poller that reads the data is a process on the main server or on a remote collector. The decision about how the data gets from one to the other is open (#7) because each path moves the trust boundary:
+Vendor tools run on the GPU node. The Cacti poller that reads the data is a process on the main server or on a remote collector. Each path moves the trust boundary. The decision (#7) is option B, SNMP `extend`, recorded in [ADR 0008](decisions/0008-collect-through-snmp-extend.md); A and C stay possible later backends:
 
 | Path | How it works | Strengths | Costs |
 |---|---|---|---|
 | A. Cacti poller on the node | The plugin runs the vendor tool on a host that is a Cacti main server or remote data collector. | No network credential; no new protocol. | Every GPU node needs a full Cacti collector. |
 | B. SNMP `extend` | `snmpd` on the node runs a fixed command; Cacti reads the output tables. | Nothing to install beyond `snmpd` configuration; Cacti already polls SNMP. | Output tables are indexed by line, so the UUID must be in the output; run-as user and timing unverified (#22). `snmpd` becomes a command runner. |
 | C. Scrape `dcgm-exporter` | Plugin makes an HTTP request to an operator-configured URL. | Reuses an NVIDIA-supported exporter. | NVIDIA only; needs DCGM; outbound request boundary; freshness bounded by the exporter's interval. |
-| D. SSH from the poller | The poller logs in and runs the tool. | Works anywhere SSH works. | A credential store and a remote command path. Not proposed. |
+| D. SSH from the poller | The poller logs in and runs the tool. | Works anywhere SSH works. | A credential store and a remote command path. Rejected (ADR 0008). |
 
-Whatever the decision, the same rules apply: no operator input reaches a command line, the plugin never uses elevated privilege, and the script server input reads only the plugin's cache (ADR 0007). The collector sits behind an interface so the nvidia-smi, DCGM, and amd-smi backends and the transports are independent choices. The architecture below draws the interface and not a chosen path.
+Whatever the decision, the same rules apply: no operator input reaches a command line, the plugin never uses elevated privilege, and the script server input reads only the plugin's cache (ADR 0007). The collector sits behind an interface so the nvidia-smi, DCGM, and amd-smi backends and the transports are independent choices. The architecture below draws the interface; the first backend reads SNMP `extend` output.
 
 ## Architecture
 
@@ -227,7 +227,7 @@ Cacti keeps history by data query index. An index that changes meaning attaches 
 
 Rules, tested by fixtures (REQ-ID-001 to 006):
 
-- A new UUID at a known node, index, and bus ID creates a new GPU record flagged as a possible replacement. It never inherits history. As built in M2, the flag is raised when the bus ID of an unreported record at the same node matches, whatever the index, because the index can change at any boot; this flags every case the rule names and some it does not.
+- A new UUID at a known node, index, and bus ID creates a new GPU record flagged as a possible replacement. It never inherits history. As built in M2, the flag is raised when the bus ID of an unreported record at the same node matches, whatever the index, because the index can change at any boot; this flags every case the rule names and some it does not. The owner accepted the broader rule on 2026-11-15: a flag only asks the operator to confirm, while a missed replacement would attach history to the wrong card.
 - A UUID seen at a different node is recorded as moved only when an operator confirms.
 - A GPU missing from collection is marked absent after N consecutive successful collections, never deleted automatically, and keeps its index, data sources, and RRD files.
 - A failed collection, a tool error, or an empty result never marks GPUs absent.
@@ -359,7 +359,7 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. Cacti
 
 Plugin tables hold node mappings, GPU records, the observation cache, and health. They are created and upgraded with Cacti's tracked plugin table API, and the stored plugin version changes only after a migration succeeds. The collector runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent.
 
-Disabling the plugin stops jobs and leaves devices, graphs, and RRD files untouched. Uninstalling offers an export, then asks separately whether to drop plugin tables and whether to remove plugin-created Cacti objects. Cacti 1.2 gives a plugin no prompt during uninstall, so as built in M2 the questions are settings answered before uninstalling: *Keep Plugin Tables on Uninstall* (default on), with the export on the GPU Nodes page. M2 creates no Cacti objects, so the second question arrives with the milestone that creates them. The plugin never changes anything on a GPU node. Backup documentation covers the Cacti database and the RRD directory. A restore must not attach an RRD file to a different UUID, which is a release test.
+Disabling the plugin stops jobs and leaves devices, graphs, and RRD files untouched. Uninstalling offers an export, then asks separately whether to drop plugin tables and whether to remove plugin-created Cacti objects. Cacti 1.2 gives a plugin no prompt during uninstall, so as built in M2 the questions are settings answered before uninstalling: *Keep Plugin Tables on Uninstall* (default on), with the export on the GPU Nodes page. If the tables are to be kept but cannot be untracked from Cacti's plugin table list, the uninstall stops with an error and the plugin stays installed, because Cacti ignores the uninstall function's return value and would otherwise drop them (accepted by the owner on 2026-11-15). M2 creates no Cacti objects, so the second question arrives with the milestone that creates them. The plugin never changes anything on a GPU node. Backup documentation covers the Cacti database and the RRD directory. A restore must not attach an RRD file to a different UUID, which is a release test.
 
 ## Performance
 
@@ -427,7 +427,7 @@ Milestone size estimates (ranges from measured reference plugins, no durations) 
 
 | Decision | Options | Needed before | Decided by |
 |---|---|---|---|
-| Collection path (#7) | Poller on node, SNMP extend, dcgm-exporter scrape | Milestone 2 | M1 measurements |
+| Collection path (#7) | Decided 2026-11-15: SNMP extend ([ADR 0008](decisions/0008-collect-through-snmp-extend.md)) | Milestone 3 | Owner |
 | XID source (#8) | DCGM field, kernel log, none in phase 1 | Milestone 3 | #16 |
 | Common metric model (#9) | Common core plus vendor extensions (proposed); vendor-specific templates | Milestone 3 | Cacti maintainers |
 | Attach to existing devices (#10) | Existing device (proposed); plugin-owned devices | Milestone 3 | Cacti maintainers |
