@@ -85,11 +85,27 @@ msgid "The GPU Node device template is not installed."
 msgstr ""
 
 #: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr ""
+
+#: gpu_nodes.php
 msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
 msgstr ""
 
 #: gpu_nodes.php
 msgid "The device could not be created; see the Cacti log."
+msgstr ""
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr ""
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr ""
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
 msgstr ""
 
 #: lib/ExecutionState.php
