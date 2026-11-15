@@ -20,6 +20,10 @@
 // The version INFO declares, which Cacti records as the installed version.
 define('GPU_VERSION', (string) (parse_ini_file(dirname(__DIR__, 2) . '/INFO', true)['info']['version'] ?? ''));
 
+// The schema version the code migrates to (Schema::VERSION); nothing from
+// the plugin is loaded in this process.
+define('GPU_SCHEMA', preg_match('/const VERSION\s*=\s*(\d+);/', (string) file_get_contents(dirname(__DIR__, 2) . '/lib/Schema.php'), $gpu_schema) === 1 ? $gpu_schema[1] : '');
+
 const GPU_TABLES = ['plugin_gpu_collection', 'plugin_gpu_gpu', 'plugin_gpu_node', 'plugin_gpu_observation', 'plugin_gpu_reindex', 'plugin_gpu_retired'];
 
 // Row counts after the seed action: one node and one GPU record.
@@ -40,12 +44,12 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual(GPU_VERSION)
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tracked'])->toBe(GPU_TABLES)
 		->and(array_keys($state['hooks']))->toBe(GPU_HOOKS)
 		->and($state['realms'])->toEqual([
-			'gpu_inventory.php' => 'GPU View',
+			'gpu_inventory.php,gpu_health.php' => 'GPU View',
 			'gpu_nodes.php'     => 'GPU Admin',
 		])
 		->and($state['admin'])->toBe(2);
@@ -137,7 +141,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tables']['plugin_gpu_node'])->toBe(1)
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
 		->and($state['plugin']['version'])->toEqual(GPU_VERSION);
 });
 
@@ -150,7 +154,7 @@ it('does not advance past a migration that did not run', function () {
 		->and($stopped['schema'])->toEqual('0');
 
 	$finished = lifecycle('upgrade');
-	expect($finished['schema'])->toEqual('2');
+	expect($finished['schema'])->toEqual(GPU_SCHEMA);
 });
 
 it('upgrades a version 1 schema by adding the collection tables and keeping the records', function () {
@@ -166,10 +170,28 @@ it('upgrades a version 1 schema by adding the collection tables and keeping the 
 	$state = lifecycle('upgrade');
 
 	expect($state['result'])->toBeTrue()
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tracked'])->toBe(GPU_TABLES)
 		->and($state['tables']['plugin_gpu_node'])->toBe(1);
+});
+
+it('upgrades a version 2 schema by adding the ECC columns and keeping the stored sample', function () {
+	lifecycle('install');
+	lifecycle('seed');
+	lifecycle('drop_columns');
+	lifecycle('set_schema', '2');
+
+	$state = lifecycle('upgrade');
+
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
+		->and($state['observation_columns'])->toContain('ecc_corr_new')
+		->and($state['observation_columns'])->toContain('ecc_uncorr_new')
+		->and($state['observation_columns'])->toContain('retired_sbe')
+		->and($state['observation_columns'])->toContain('retired_dbe')
+		->and($state['observation_columns'])->toContain('ecc_mode')
+		->and($state['tables']['plugin_gpu_observation'])->toBe(1);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {

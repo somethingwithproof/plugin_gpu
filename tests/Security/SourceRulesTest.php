@@ -312,3 +312,35 @@ it('names no state-changing vendor command anywhere', function () {
 		->and(preg_match($mutating, "'nvidia-smi drain -p 0000:01:00.0 -m 1'"))->toBe(1)
 		->and(preg_match($mutating, "'nvidia-smi --query-gpu=uuid,index --format=csv'"))->toBe(0);
 });
+
+it('renders the health and inventory pages from stored records, never from a node', function () {
+	// REQ-HEALTH-003 and REQ-PERF-002: no page reads the agent, runs the
+	// collector, or waits. The page classes and entry files name no SNMP
+	// function, reader, collector, or sleep.
+	$banned = '/\b(snmp\w*|cacti_snmp\w*|SnmpExtendReader|ExtendReader|Collector|Poller|gpu_poller|sleep|usleep|fsockopen|stream_socket_client|curl_\w+)\b/i';
+
+	foreach (['lib/HealthPage.php', 'lib/InventoryPage.php', 'gpu_health.php', 'gpu_inventory.php'] as $file) {
+		foreach (PhpToken::tokenize((string) file_get_contents(gpu_root() . '/' . $file)) as $token) {
+			if ($token->is([T_STRING, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED])) {
+				expect($token->text)->not->toMatch($banned, "$file:{$token->line}");
+			}
+		}
+	}
+});
+
+it('sends no notification of its own: no mail, webhook, or outbound request', function () {
+	// REQ-ALERT-005: Thold and Maint own alerting (ADR 0002).
+	$banned = ['mail', 'mb_send_mail', 'send_mail', 'mailer', 'curl_init', 'curl_exec', 'fsockopen', 'stream_socket_client', 'file_get_contents_url', 'thold_mail', 'syslog', 'openlog'];
+
+	foreach (gpu_sources() as $file) {
+		$tokens = array_values(array_filter(PhpToken::tokenize((string) file_get_contents(gpu_root() . '/' . $file)), fn ($t) => !$t->is([T_WHITESPACE, T_COMMENT, T_DOC_COMMENT])));
+
+		foreach ($tokens as $i => $token) {
+			if ($token->is(T_STRING) && in_array(strtolower($token->text), $banned, true) && ($tokens[$i + 1]->text ?? '') === '(') {
+				expect(false)->toBeTrue("$file:{$token->line} calls " . $token->text . '()');
+			}
+		}
+
+		expect((string) file_get_contents(gpu_root() . '/' . $file))->not->toMatch('#[\'"]https?://#i', "$file names a URL");
+	}
+});

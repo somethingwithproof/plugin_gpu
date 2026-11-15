@@ -351,6 +351,23 @@ function gpu_remove_device(int $id): void {
 }
 
 /**
+ * Whether Maint holds a device in maintenance, or null when Maint is not
+ * enabled. It asks Maint's own check, guarded, because core has no caller
+ * of the is_device_in_maintenance hook (PLAN, Measurement state).
+ */
+function gpu_in_maintenance(int $host_id): ?bool {
+	global $config;
+
+	if (!api_plugin_is_enabled('maint') || !is_file($config['base_path'] . '/plugins/maint/functions.php')) {
+		return null;
+	}
+
+	include_once($config['base_path'] . '/plugins/maint/functions.php');
+
+	return function_exists('plugin_maint_check_cacti_host') ? (bool) plugin_maint_check_cacti_host($host_id) : null;
+}
+
+/**
  * poller_bottom hook: start the collector in the background once the
  * poller cycle has finished. The collector reads the GPU nodes; the poller
  * itself and the script server input never do (REQ-SS-001).

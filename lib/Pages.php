@@ -28,7 +28,7 @@ namespace Somethingwithproof\Gpu;
  * Admin pages; GPU View pages only read.
  */
 final class Pages {
-	public const VIEW  = ['gpu_inventory.php'];
+	public const VIEW  = ['gpu_inventory.php', 'gpu_health.php'];
 	public const ADMIN = ['gpu_nodes.php'];
 
 	/**
@@ -57,6 +57,7 @@ final class Pages {
 		return [
 			'gpu_nodes.php'     => __('GPU Nodes', 'gpu'),
 			'gpu_inventory.php' => __('GPU Inventory', 'gpu'),
+			'gpu_health.php'    => __('GPU Health', 'gpu'),
 		];
 	}
 

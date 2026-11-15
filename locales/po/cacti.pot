@@ -109,6 +109,26 @@ msgid "ECC mode not reported"
 msgstr ""
 
 #: lib/ExecutionState.php
+msgid "Completed"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr ""
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr ""
+
+#: lib/ExecutionState.php
 msgid "Collected"
 msgstr ""
 
@@ -125,23 +145,11 @@ msgid "Extend entry missing"
 msgstr ""
 
 #: lib/ExecutionState.php
-msgid "Timed out"
-msgstr ""
-
-#: lib/ExecutionState.php
-msgid "Permission denied"
-msgstr ""
-
-#: lib/ExecutionState.php
 msgid "Driver not loaded"
 msgstr ""
 
 #: lib/ExecutionState.php
 msgid "Tool not found"
-msgstr ""
-
-#: lib/ExecutionState.php
-msgid "Tool error"
 msgstr ""
 
 #: lib/ExecutionState.php
@@ -160,24 +168,185 @@ msgstr ""
 msgid "Result not stored"
 msgstr ""
 
-#: lib/InventoryPage.php
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr ""
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr ""
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr ""
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr ""
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
 msgid "Driver"
 msgstr ""
 
-#: lib/InventoryPage.php
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr ""
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
 msgid "Index"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "State"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr ""
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr ""
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr ""
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr ""
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr ""
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr ""
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr ""
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr ""
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr ""
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
 msgstr ""
 
 #: lib/InventoryPage.php lib/NodesPage.php
 msgid "Last Seen"
-msgstr ""
-
-#: lib/InventoryPage.php lib/NodesPage.php
-msgid "Name"
-msgstr ""
-
-#: lib/InventoryPage.php
-msgid "Node"
 msgstr ""
 
 #: lib/InventoryPage.php
@@ -188,33 +357,8 @@ msgstr ""
 msgid "Reported By"
 msgstr ""
 
-#: lib/InventoryPage.php lib/NodesPage.php
-msgid "State"
-msgstr ""
-
-#: lib/InventoryPage.php lib/NodesPage.php
-msgid "UUID"
-msgstr ""
-
 #: lib/InventoryPage.php lib/Pages.php
 msgid "GPU Inventory"
-msgstr ""
-
-#: lib/InventoryPage.php
-msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
-msgstr ""
-
-#: lib/InventoryPage.php
-msgid "Absent"
-msgstr ""
-
-#: lib/InventoryPage.php
-msgid "Present"
-msgstr ""
-
-#: lib/InventoryPage.php
-#, php-format
-msgid "possible replacement of GPU record %d"
 msgstr ""
 
 #: lib/InventoryPage.php
@@ -228,26 +372,6 @@ msgstr ""
 
 #: lib/InventoryPage.php
 msgid "Never"
-msgstr ""
-
-#: lib/InventoryPage.php
-#, php-format
-msgid "%d seconds ago"
-msgstr ""
-
-#: lib/InventoryPage.php
-#, php-format
-msgid "%d minutes ago"
-msgstr ""
-
-#: lib/InventoryPage.php
-#, php-format
-msgid "%d hours ago"
-msgstr ""
-
-#: lib/InventoryPage.php
-#, php-format
-msgid "%d days ago"
 msgstr ""
 
 #: lib/NodesPage.php lib/Pages.php
@@ -271,24 +395,12 @@ msgid "GPUs Present"
 msgstr ""
 
 #: lib/NodesPage.php
-msgid "Last Collection"
-msgstr ""
-
-#: lib/NodesPage.php
 msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
 msgstr ""
 
 #: lib/NodesPage.php
 #, php-format
 msgid "Deleted device %d"
-msgstr ""
-
-#: lib/NodesPage.php
-msgid "Disabled"
-msgstr ""
-
-#: lib/NodesPage.php
-msgid "Enabled"
 msgstr ""
 
 #: lib/NodesPage.php
@@ -451,6 +563,11 @@ msgstr ""
 
 #: lib/Settings.php
 msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr ""
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
 msgstr ""
 
 #: setup.php

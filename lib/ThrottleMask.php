@@ -57,4 +57,20 @@ final class ThrottleMask {
 
 		return $out;
 	}
+
+	/**
+	 * The raw mask as the health page shows it: 16 hexadecimal digits, and
+	 * the bits that have no indicator, so a reason the decoder does not know
+	 * stays visible (REQ-THR-005).
+	 */
+	public static function describe(?int $mask): string {
+		if ($mask === null) {
+			return __('Unknown', 'gpu');
+		}
+
+		$text  = sprintf('0x%016X', $mask);
+		$other = $mask & ~array_sum(MetricModel::BITS);
+
+		return $other === 0 ? $text : $text . '; ' . __('bits without an indicator: %s', sprintf('0x%X', $other), 'gpu');
+	}
 }

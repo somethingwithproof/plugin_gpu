@@ -27,6 +27,24 @@ final class ObservationRepository {
 	}
 
 	/**
+	 * What the health page shows of each GPU's latest sample, by GPU record
+	 * id: when it was taken, by which backend and tool version, the raw
+	 * clock event mask, and the ECC mode. One query for every GPU.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function summaries(): array {
+		$rows = db_fetch_assoc_prepared('SELECT gpu_id, observed_at, backend, tool_version, thr_mask, ecc_mode FROM plugin_gpu_observation', [], true, $this->connection);
+		$out  = [];
+
+		foreach (is_array($rows) ? Row::rows($rows) : [] as $row) {
+			$out[Row::int($row, 'gpu_id')] = $row;
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Store one GPU's reading. The values replace the stored ones only when
 	 * the tool took this sample later than the stored one, so snmpd handing
 	 * back a cached sample, or a slow run finishing after a faster one, never

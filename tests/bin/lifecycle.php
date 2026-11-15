@@ -112,6 +112,18 @@ switch ($action) {
 		db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = 'gpu' AND `table` = ?", array($argument));
 
 		break;
+	case 'drop_columns':
+		// As a version 2 schema had it: the observation table without the
+		// columns migration 3 adds, and one stored sample.
+		gpu_boot();
+
+		foreach (\Somethingwithproof\Gpu\Schema::OBSERVATION_METRICS_3 + array(99 => 'ecc_mode') as $column) {
+			db_execute('ALTER TABLE plugin_gpu_observation DROP COLUMN `' . $column . '`');
+		}
+
+		db_execute_prepared("INSERT INTO plugin_gpu_observation (gpu_id, node_id, observed_at, ingested_at, reported_at, backend, tool_version, temp_gpu) SELECT id, node_id, 1, 1, 1, 'nvidia-smi', '580.95.05', 40 FROM plugin_gpu_gpu LIMIT 1");
+
+		break;
 	case 'seed':
 		// A node and a GPU record, so table drops and keeps are visible.
 		db_execute("INSERT INTO plugin_gpu_node (host_id, admin_state) VALUES (9001, 'enabled')");
@@ -249,6 +261,7 @@ print json_encode(array(
 	'admin'   => (int) db_fetch_cell("SELECT COUNT(*) FROM user_auth_realm AS uar INNER JOIN plugin_realms AS pr ON pr.id + 100 = uar.realm_id WHERE pr.plugin = 'gpu' AND uar.user_id = 1"),
 	'tracked' => array_column(db_fetch_assoc("SELECT `table` FROM plugin_db_changes WHERE plugin = 'gpu' AND method = 'create' ORDER BY `table`"), 'table'),
 	'tables'  => $tables,
+	'observation_columns' => array_column(db_fetch_assoc("SELECT COLUMN_NAME AS c FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plugin_gpu_observation' ORDER BY ORDINAL_POSITION"), 'c'),
 	// The shipped Cacti objects, by kind, so a test sees duplicates.
 	'objects' => array(
 		'data_query'      => (int) db_fetch_cell("SELECT COUNT(*) FROM snmp_query WHERE name = 'GPU - Devices'"),
