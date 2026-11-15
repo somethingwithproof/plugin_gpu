@@ -150,6 +150,27 @@ function gpu_gpus(): \Somethingwithproof\Gpu\GpuRepository {
 	return new \Somethingwithproof\Gpu\GpuRepository(false);
 }
 
+function gpu_poller(): \Somethingwithproof\Gpu\Poller {
+	$clock       = new \Somethingwithproof\Gpu\SystemClock();
+	$gpus        = gpu_gpus();
+	$collections = new \Somethingwithproof\Gpu\CollectionRepository(false);
+	$retries     = (int) read_config_option('snmp_retries');
+
+	$collector = new \Somethingwithproof\Gpu\Collector(
+		new \Somethingwithproof\Gpu\SnmpExtendReader(max(0, $retries)),
+		new \Somethingwithproof\Gpu\NvidiaSmiParser(),
+		new \Somethingwithproof\Gpu\Inventory($gpus, new \Somethingwithproof\Gpu\IdentityReconciler(), $clock),
+		$gpus,
+		new \Somethingwithproof\Gpu\ObservationRepository(false),
+		$collections,
+		new \Somethingwithproof\Gpu\ReindexRepository(false),
+		new \Somethingwithproof\Gpu\LockRepository(false),
+		$clock,
+	);
+
+	return new \Somethingwithproof\Gpu\Poller(gpu_nodes(), $collections, $collector, $clock);
+}
+
 /**
  * Bring the schema, hooks, and realms up to the code's version.
  *
@@ -254,6 +275,43 @@ function plugin_gpu_uninstall(): void {
 	} else {
 		$schema->forgetVersion();
 	}
+}
+
+/**
+ * poller_bottom hook: start the collector in the background once the
+ * poller cycle has finished. The collector reads the GPU nodes; the poller
+ * itself and the script server input never do (REQ-SS-001).
+ */
+function gpu_poller_bottom(): void {
+	global $config;
+
+	if (!gpu_boot()) {
+		return;
+	}
+
+	// Remote data collectors are phase 3; only the main poller collects.
+	if ((int) $config['poller_id'] !== \Somethingwithproof\Gpu\Poller::MAIN_POLLER) {
+		return;
+	}
+
+	if (!function_exists('exec_background')) {
+		include_once($config['library_path'] . '/poller.php');
+	}
+
+	// exec_background() silently does nothing for a binary that does not
+	// exist, so a bare 'php' fallback would never start the collector.
+	$php = trim((string) read_config_option('path_php_binary'));
+
+	if ($php === '' || !is_file($php) || !is_executable($php)) {
+		cacti_log('ERROR: The GPU collector was not started because the PHP binary path setting is empty or not an executable file', false, 'GPU');
+
+		return;
+	}
+
+	// The one argument is escaped, so no part of it is parsed by a shell.
+	$args = '-q ' . cacti_escapeshellarg(__DIR__ . '/poller_gpu.php');
+
+	exec_background($php, $args);
 }
 
 function gpu_config_arrays(): void {

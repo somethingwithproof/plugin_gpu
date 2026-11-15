@@ -129,6 +129,24 @@ final class GpuRepository {
 	}
 
 	/**
+	 * Return GPUs an operator removed from the data query to it, because a
+	 * collection reported them again (REQ-INDEX-005).
+	 *
+	 * @param list<int> $ids
+	 *
+	 * @return int how many were retired
+	 */
+	public function unretire(array $ids): int {
+		if ($ids === []) {
+			return 0;
+		}
+
+		$ok = db_execute_prepared('DELETE FROM plugin_gpu_retired WHERE gpu_id IN (' . implode(', ', array_fill(0, count($ids), '?')) . ')', $ids, true, $this->connection);
+
+		return $ok ? max(0, (int) db_affected_rows($this->connection)) : 0;
+	}
+
+	/**
 	 * @return list<GpuRecord>
 	 */
 	private function records(mixed $rows): array {

@@ -76,10 +76,12 @@ if (!function_exists('read_config_option')) {
 $GLOBALS['__gpu_db_exec'] = [];
 $GLOBALS['__gpu_db_rows'] = [];
 
-function gpu_test_rows(string $sql): mixed {
+function gpu_test_rows(string $sql, array $params = []): mixed {
 	foreach ($GLOBALS['__gpu_db_rows'] as $needle => $rows) {
 		if (str_contains($sql, $needle)) {
-			return $rows;
+			// A closure answers each query in turn, for a test that needs a
+			// table to change between two reads.
+			return $rows instanceof Closure ? $rows($sql, $params) : $rows;
 		}
 	}
 
@@ -96,13 +98,13 @@ if (!function_exists('db_execute_prepared')) {
 
 if (!function_exists('db_fetch_assoc_prepared')) {
 	function db_fetch_assoc_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
-		return gpu_test_rows($sql);
+		return gpu_test_rows($sql, $params);
 	}
 }
 
 if (!function_exists('db_fetch_row_prepared')) {
 	function db_fetch_row_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
-		$rows = gpu_test_rows($sql);
+		$rows = gpu_test_rows($sql, $params);
 
 		return is_array($rows) && isset($rows[0]) ? $rows[0] : [];
 	}
@@ -139,7 +141,7 @@ if (!function_exists('db_fetch_cell_prepared')) {
 			return $GLOBALS['__gpu_in_tx'] === [] ? 1 : array_shift($GLOBALS['__gpu_in_tx']);
 		}
 
-		$rows = gpu_test_rows($sql);
+		$rows = gpu_test_rows($sql, $params);
 
 		return is_array($rows) && isset($rows[0]) ? reset($rows[0]) : 0;
 	}

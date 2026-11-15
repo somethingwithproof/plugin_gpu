@@ -107,7 +107,9 @@ switch ($action) {
 
 		break;
 	case 'drop_table':
+		// As if the table had never been created: no table, no tracking row.
 		db_execute('DROP TABLE IF EXISTS `' . preg_replace('/[^a-z_]/', '', $argument) . '`');
+		db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = 'gpu' AND `table` = ?", array($argument));
 
 		break;
 	case 'seed':

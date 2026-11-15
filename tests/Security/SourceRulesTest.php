@@ -263,10 +263,12 @@ it('reads request variables only through Cacti\'s accessors', function () {
 	}
 });
 
-it('starts no process: milestone 2 runs no command on any host', function () {
-	// REQ-LIFE-005 and ADR 0007. The command runner arrives with collection
-	// in milestone 3; until then nothing may run a program at all.
-	$banned = ['exec', 'shell_exec', 'system', 'passthru', 'proc_open', 'popen', 'pcntl_exec', 'exec_background'];
+it('runs no command on a GPU node, and starts one process: the collector', function () {
+	// REQ-LIFE-005 and ADR 0008. The plugin reads GPU nodes over SNMP only;
+	// the one program it starts is its own collector, from poller_bottom,
+	// with an escaped argument.
+	$banned  = ['exec', 'shell_exec', 'system', 'passthru', 'proc_open', 'popen', 'pcntl_exec', 'exec_background', 'exec_into_array', 'proc_nice'];
+	$allowed = [];
 
 	foreach (gpu_sources() as $file) {
 		$tokens = array_values(array_filter(PhpToken::tokenize((string) file_get_contents(gpu_root() . '/' . $file)), fn ($t) => !$t->is([T_WHITESPACE, T_COMMENT, T_DOC_COMMENT])));
@@ -275,10 +277,16 @@ it('starts no process: milestone 2 runs no command on any host', function () {
 			expect($token->text)->not->toBe('`', "$file:{$token->line} uses a backtick command");
 
 			if ($token->is(T_STRING) && in_array(strtolower($token->text), $banned, true) && ($tokens[$i + 1]->text ?? '') === '(' && !($tokens[$i - 1]->is([T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_FUNCTION]))) {
-				expect(false)->toBeTrue("$file:{$token->line} calls {$token->text}()");
+				$allowed[] = "$file:" . $token->text . '(' . ($tokens[$i + 2]->text ?? '') . ', ' . ($tokens[$i + 4]->text ?? '') . ')';
 			}
 		}
 	}
+
+	expect($allowed)->toBe(['setup.php:exec_background($php, $args)']);
+
+	$setup = (string) file_get_contents(gpu_root() . '/setup.php');
+
+	expect($setup)->toContain("\$args = '-q ' . cacti_escapeshellarg(__DIR__ . '/poller_gpu.php');");
 });
 
 it('names no state-changing vendor command anywhere', function () {

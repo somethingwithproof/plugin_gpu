@@ -59,6 +59,15 @@ final class NodeRepository {
 		return $devices;
 	}
 
+	/**
+	 * The node's Cacti device with its SNMP settings, for the collector.
+	 */
+	public function device(Node $node): ?NodeDevice {
+		$row = db_fetch_row_prepared('SELECT id, description, hostname, poller_id, status, disabled, snmp_version, snmp_community, snmp_username, snmp_password, snmp_auth_protocol, snmp_priv_passphrase, snmp_priv_protocol, snmp_context, snmp_engine_id, snmp_port, snmp_timeout, max_oids FROM host WHERE id = ?', [$node->hostId], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? NodeDevice::fromRow($row) : null;
+	}
+
 	public function deviceExists(int $hostId): bool {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM host WHERE id = ?', [$hostId], '', true, $this->connection) === 1;
 	}

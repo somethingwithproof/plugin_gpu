@@ -41,6 +41,8 @@ enum ExecutionState: string {
 	case InvalidOutput    = 'invalid_output';
 	// Another collection held the node (REQ-EXEC-005).
 	case Skipped          = 'skipped';
+	// The tool output was good but the plugin could not store the result.
+	case NotStored        = 'not_stored';
 
 	public function succeeded(): bool {
 		return $this === self::Ok || $this === self::Empty;
@@ -77,6 +79,7 @@ enum ExecutionState: string {
 			self::Truncated        => __('Output truncated', 'gpu'),
 			self::InvalidOutput    => __('Output rejected', 'gpu'),
 			self::Skipped          => __('Skipped: already running', 'gpu'),
+			self::NotStored        => __('Result not stored', 'gpu'),
 		};
 	}
 }
