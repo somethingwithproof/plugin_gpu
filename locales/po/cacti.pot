@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Thomas Vincent
+# This file is distributed under the same license as the gpu package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0-dev\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr ""
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr ""
+
+#: lib/Pages.php
+msgid "GPU Nodes"
+msgstr ""
+
+#: lib/Pages.php
+msgid "GPU Inventory"
+msgstr ""
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr ""
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr ""
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr ""
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr ""
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr ""
+
+#: setup.php
+msgid "GPU"
+msgstr ""
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr ""
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr ""
+
+#: setup.php
+msgid "Management"
+msgstr ""
