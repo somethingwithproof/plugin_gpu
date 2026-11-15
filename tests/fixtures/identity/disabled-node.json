@@ -1,0 +1,28 @@
+{
+  "description": "A node the operator has disabled gets no records.",
+  "source": "synthetic: hand-written identity sequences, not captured tool output; every UUID uses the reserved all-zero prefix",
+  "nodes": {
+    "1": "enabled",
+    "2": "enabled",
+    "3": "disabled"
+  },
+  "absent_after": 2,
+  "steps": [
+    {
+      "at": 1000,
+      "node": 3,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+          "index": 0,
+          "bus": "00000000:3B:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    }
+  ],
+  "expect": []
+}
