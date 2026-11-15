@@ -66,7 +66,7 @@ final class InventoryPage {
 		}
 
 		if ($shown === 0) {
-			print '<tr><td colspan="' . count($headers) . '"><em>' . html_escape(__('No GPUs recorded yet. GPUs appear here once collection, which arrives in a later release, reports them.', 'gpu')) . '</em></td></tr>';
+			print '<tr><td colspan="' . count($headers) . '"><em>' . html_escape(__('No GPUs recorded yet. GPUs appear here once a node\'s collection reports them.', 'gpu')) . '</em></td></tr>';
 		}
 
 		html_end_box();

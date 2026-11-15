@@ -26,7 +26,9 @@ use Somethingwithproof\Gpu\GpuSnapshot;
 use Somethingwithproof\Gpu\IdentityReconciler;
 use Somethingwithproof\Gpu\Inventory;
 use Somethingwithproof\Gpu\InventoryExport;
+use Somethingwithproof\Gpu\LockRepository;
 use Somethingwithproof\Gpu\Node;
+use Somethingwithproof\Gpu\NodeDevice;
 use Somethingwithproof\Gpu\NodeRepository;
 use Somethingwithproof\Gpu\Presence;
 use Somethingwithproof\Gpu\Vendor;
@@ -128,14 +130,17 @@ it('reads stored records back, skipping rows of a vendor this code does not know
 it('confirms or rejects only a pending move, and reports whether one changed', function () {
 	$gpus = new GpuRepository(false);
 
-	expect($gpus->confirmMove(5))->toBeTrue()
+	expect($gpus->confirmMove(5, 1, 2))->toBeTrue()
 		->and($GLOBALS['__gpu_db_exec'][0]['sql'])->toContain('SET node_id = pending_node_id')
-		->and($GLOBALS['__gpu_db_exec'][0]['sql'])->toContain('AND pending_node_id > 0');
+		->and($GLOBALS['__gpu_db_exec'][0]['sql'])->toContain('AND node_id = ? AND pending_node_id = ? AND pending_node_id > 0')
+		// Only the move that was authorized: from node 1 to node 2.
+		->and($GLOBALS['__gpu_db_exec'][0]['params'])->toBe([5, 1, 2]);
 
 	$GLOBALS['__gpu_affected_rows'] = 0;
 
-	expect($gpus->confirmMove(5))->toBeFalse()
-		->and($gpus->rejectMove(5))->toBeFalse();
+	expect($gpus->confirmMove(5, 1, 2))->toBeFalse()
+		->and($gpus->rejectMove(5, 1, 2))->toBeFalse()
+		->and($GLOBALS['__gpu_db_exec'][2]['params'])->toBe([5, 1, 2]);
 });
 
 it('deletes a node only in the statement that checks it owns no GPU', function () {
@@ -187,4 +192,31 @@ it('keeps HTML delimiters out of the export, which csrf-magic would otherwise re
 
 	expect(stripos($json, '<html'))->toBeFalse()
 		->and($document['nodes'][0]['description'])->toBe('<html> rack 4');
+});
+
+it('hashes lock names to fit the server\'s 64-character limit, the same way for take and release', function () {
+	$seen = [];
+	$GLOBALS['__gpu_db_rows']['_LOCK('] = function ($sql) use (&$seen) {
+		$seen[] = $sql;
+
+		return [['l' => 1]];
+	};
+
+	$locks = new LockRepository(false);
+
+	expect($locks->acquire('node_1'))->toBeTrue();
+	$locks->release('node_1');
+
+	unset($GLOBALS['__gpu_db_rows']['_LOCK(']);
+
+	expect($seen[0])->toBe("SELECT GET_LOCK(SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256), 0)")
+		->and($seen[1])->toBe("SELECT RELEASE_LOCK(SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256))");
+});
+
+it('keeps SNMPv3 passphrases exactly as Cacti stored them', function () {
+	$device = NodeDevice::fromRow(['id' => 4, 'hostname' => ' node ', 'snmp_password' => ' auth pass ', 'snmp_priv_passphrase' => 'priv ']);
+
+	expect($device->snmpPassword)->toBe(' auth pass ')
+		->and($device->snmpPrivPassphrase)->toBe('priv ')
+		->and($device->hostname)->toBe('node');
 });

@@ -1,0 +1,44 @@
+<?php
+/*
+ * SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * This file is part of plugin_gpu, a plugin for Cacti.
+ * https://github.com/somethingwithproof/plugin_gpu
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ */
+
+namespace Somethingwithproof\Gpu;
+
+/**
+ * A successful collection at one node: the identity snapshot and the values,
+ * taken from the same tool output (REQ-INV-001).
+ */
+final readonly class Collection {
+	/**
+	 * @param list<Reading> $readings one per report, in the same order
+	 */
+	public function __construct(
+		public GpuSnapshot $snapshot,
+		public array $readings,
+		public string $backend,
+	) {
+	}
+
+	public function state(): ExecutionState {
+		return $this->readings === [] ? ExecutionState::Empty : ExecutionState::Ok;
+	}
+
+	public function newestSample(): int {
+		return $this->readings === [] ? 0 : max(array_map(static fn (Reading $reading): int => $reading->observedAt, $this->readings));
+	}
+}

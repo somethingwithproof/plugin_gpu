@@ -150,8 +150,58 @@ function gpu_gpus(): \Somethingwithproof\Gpu\GpuRepository {
 	return new \Somethingwithproof\Gpu\GpuRepository(false);
 }
 
+function gpu_poller(): \Somethingwithproof\Gpu\Poller {
+	$clock       = new \Somethingwithproof\Gpu\SystemClock();
+	$gpus        = gpu_gpus();
+	$collections = new \Somethingwithproof\Gpu\CollectionRepository(false);
+	$retries     = (int) read_config_option('snmp_retries');
+
+	$collector = new \Somethingwithproof\Gpu\Collector(
+		new \Somethingwithproof\Gpu\SnmpExtendReader(max(0, $retries)),
+		new \Somethingwithproof\Gpu\NvidiaSmiParser(),
+		new \Somethingwithproof\Gpu\Inventory($gpus, new \Somethingwithproof\Gpu\IdentityReconciler(), $clock),
+		$gpus,
+		new \Somethingwithproof\Gpu\ObservationRepository(false),
+		$collections,
+		new \Somethingwithproof\Gpu\ReindexRepository(false),
+		new \Somethingwithproof\Gpu\LockRepository(false),
+		$clock,
+	);
+
+	return new \Somethingwithproof\Gpu\Poller(gpu_nodes(), $collections, $collector, gpu_provisioner(), new \Somethingwithproof\Gpu\ReindexRepository(false), $clock);
+}
+
 /**
- * Bring the schema, hooks, and realms up to the code's version.
+ * The provisioner, with the core libraries its API calls need loaded.
+ */
+function gpu_provisioner(): \Somethingwithproof\Gpu\Provisioner {
+	global $config;
+
+	foreach (array('api_device', 'data_query', 'template', 'api_graph', 'api_data_source', 'utility', 'poller', 'variables', 'functions') as $library) {
+		include_once($config['library_path'] . '/' . $library . '.php');
+	}
+
+	return new \Somethingwithproof\Gpu\Provisioner(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\CacheRepository(false), new \Somethingwithproof\Gpu\ReindexRepository(false), new \Somethingwithproof\Gpu\SystemClock());
+}
+
+function gpu_templates(): \Somethingwithproof\Gpu\TemplateInstaller {
+	global $config;
+
+	// What core's cli/import_template.php loads for an import: the import
+	// itself replicates and repairs through poller.php and utility.php.
+	include_once($config['library_path'] . '/import.php');
+	include_once($config['library_path'] . '/poller.php');
+	include_once($config['library_path'] . '/utility.php');
+
+	return new \Somethingwithproof\Gpu\TemplateInstaller(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\LockRepository(false), __DIR__, rtrim((string) $config['base_path'], '/'));
+}
+
+function gpu_script_server(): \Somethingwithproof\Gpu\ScriptServer {
+	return new \Somethingwithproof\Gpu\ScriptServer(new \Somethingwithproof\Gpu\CacheRepository(false), new \Somethingwithproof\Gpu\SystemClock(), gpu_settings()->staleAfter);
+}
+
+/**
+ * Bring the schema, hooks, realms, and shipped templates up to the code's version.
  *
  * Cacti 1.2.31 never calls this itself; check_config and the config_arrays
  * hook do. Fresh installs take the same path as upgrades. The version stored
@@ -171,7 +221,7 @@ function plugin_gpu_upgrade(bool $grant = false): bool {
 	$info   = plugin_gpu_version();
 	$schema = new \Somethingwithproof\Gpu\Schema(false);
 
-	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered()) {
+	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered() && gpu_templates()->installed()) {
 		return true;
 	}
 
@@ -182,6 +232,12 @@ function plugin_gpu_upgrade(bool $grant = false): bool {
 	$schema->trackTables();
 
 	gpu_setup_hooks($grant);
+
+	// The version is recorded only once the templates are in place, so a
+	// failed import is retried by the next repair.
+	if (!gpu_templates()->install()) {
+		return false;
+	}
 
 	$schema->recordPluginVersion($info['version'], $info['author'], $info['homepage']);
 
@@ -254,6 +310,120 @@ function plugin_gpu_uninstall(): void {
 	} else {
 		$schema->forgetVersion();
 	}
+}
+
+/**
+ * Create a Cacti device for a node that has none, through Cacti's own
+ * api_device_save() with the site's device defaults (ADR 0010). Returns the
+ * new device id, or 0.
+ */
+function gpu_create_device(string $description, string $hostname, int $template): int {
+	global $config;
+
+	include_once($config['library_path'] . '/api_device.php');
+
+	$availability = (int) read_config_option('availability_method');
+	$max_oids     = (int) read_config_option('max_get_size');
+	$threads      = (int) read_config_option('device_threads');
+
+	$id = api_device_save(0, $template, $description, $hostname,
+		read_config_option('snmp_community'), read_config_option('snmp_version'),
+		read_config_option('snmp_username'), read_config_option('snmp_password'),
+		read_config_option('snmp_port'), read_config_option('snmp_timeout'), '',
+		$availability > 0 ? $availability : 1, read_config_option('ping_method'), read_config_option('ping_port'),
+		read_config_option('ping_timeout'), read_config_option('ping_retries'), '',
+		read_config_option('snmp_auth_protocol'), read_config_option('snmp_priv_passphrase'), read_config_option('snmp_priv_protocol'), '', '',
+		$max_oids > 0 ? $max_oids : 10, $threads > 0 ? $threads : 1, 1, max(0, (int) read_config_option('default_site')));
+
+	return is_numeric($id) ? (int) $id : 0;
+}
+
+/**
+ * poller_bottom hook: start the collector in the background once the
+ * poller cycle has finished. The collector reads the GPU nodes; the poller
+ * itself and the script server input never do (REQ-SS-001).
+ */
+function gpu_poller_bottom(): void {
+	global $config;
+
+	if (!gpu_boot()) {
+		return;
+	}
+
+	// Remote data collectors are phase 3; only the main poller collects.
+	if ((int) $config['poller_id'] !== \Somethingwithproof\Gpu\Poller::MAIN_POLLER) {
+		return;
+	}
+
+	if (!function_exists('exec_background')) {
+		include_once($config['library_path'] . '/poller.php');
+	}
+
+	// exec_background() silently does nothing for a binary that does not
+	// exist, so a bare 'php' fallback would never start the collector.
+	$php = trim((string) read_config_option('path_php_binary'));
+
+	if ($php === '' || !is_file($php) || !is_executable($php)) {
+		cacti_log('ERROR: The GPU collector was not started because the PHP binary path setting is empty or not an executable file', false, 'GPU');
+
+		return;
+	}
+
+	// The one argument is escaped, so no part of it is parsed by a shell.
+	$args = '-q ' . cacti_escapeshellarg(__DIR__ . '/poller_gpu.php');
+
+	exec_background($php, $args);
+}
+
+/**
+ * device_remove hook: Cacti is deleting these devices. Their nodes are
+ * disabled and keep their GPU records (ADR 0010).
+ *
+ * @param mixed $device_ids
+ * @return mixed
+ */
+function gpu_device_remove($device_ids) {
+	if (!gpu_boot() || !is_array($device_ids)) {
+		return $device_ids;
+	}
+
+	$ids = array();
+
+	foreach ($device_ids as $id) {
+		if (is_numeric($id) && (int) $id > 0) {
+			$ids[] = (int) $id;
+		}
+	}
+
+	$disabled = gpu_nodes()->disableForHosts($ids);
+
+	if ($disabled > 0) {
+		\Somethingwithproof\Gpu\Log::info(sprintf('%d GPU nodes disabled because their Cacti devices were deleted', $disabled));
+	}
+
+	return $device_ids;
+}
+
+/**
+ * api_device_new hook: a device was saved. If it is a GPU node, make sure
+ * a device template change did not detach the GPU data query or change its
+ * reindex method (ADR 0010).
+ *
+ * @param mixed $save
+ * @return mixed
+ */
+function gpu_api_device_new($save) {
+	if (!gpu_boot() || !is_array($save) || !isset($save['id']) || !is_numeric($save['id'])) {
+		return $save;
+	}
+
+	$node = gpu_nodes()->findByHost((int) $save['id']);
+
+	if ($node !== null) {
+		gpu_provisioner()->attach($node);
+	}
+
+	return $save;
 }
 
 function gpu_config_arrays(): void {

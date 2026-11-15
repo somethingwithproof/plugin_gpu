@@ -108,8 +108,8 @@ if (!$supported && ($preexisting['status'] == 1 || $preexisting['hooks'] > 0)) {
 
 	if ($supported) {
 		guard_expect($state['status'] == 1, 'install and enable succeed (status ' . $state['status'] . ')');
-		guard_expect($state['tables'] === 2, 'both plugin tables exist (' . $state['tables'] . ')');
-		guard_expect($state['hooks'] === 3 && $state['realms'] === 2, 'hooks and realms are registered');
+		guard_expect($state['tables'] === 6, 'every plugin table exists (' . $state['tables'] . ')');
+		guard_expect($state['hooks'] === 6 && $state['realms'] === 2, 'hooks and realms are registered');
 	} else {
 		guard_expect($state['status'] == 2, 'plugin is left as needing configuration, not enabled (status ' . $state['status'] . ')');
 		guard_expect($state['tables'] === 0 && $state['hooks'] === 0 && $state['realms'] === 0, 'no tables, hooks, or realms were created');

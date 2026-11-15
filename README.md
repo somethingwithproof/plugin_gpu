@@ -2,7 +2,7 @@
 
 A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and throttling reasons from NVIDIA and AMD tools into Cacti. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
 
-> **Status: in development, no release yet.** Milestone 2 (foundation) is merged on `main`: the plugin installs, registers GPU nodes, and keeps GPU identity records, but it collects nothing. No vendor tool is run and no graph is created until milestone 3, which is not on `main`. Milestone 1 research is written up from documentation and source; checks that need GPU hardware are still open. Do not run the plugin in production. Everything below the milestone 2 section describes the plan, not shipped behavior.
+> **Status: in development, no release yet.** Milestones 2 (foundation) and 3 (NVIDIA collection and Cacti objects) are merged on `main`. The plugin reads `nvidia-smi` on each GPU node through the node's SNMP agent, keeps GPU identity records, and creates one data query index, one data source, and eight graphs per GPU. It has been run only against a real `snmpd` with a fake `nvidia-smi` printing synthetic output, never on GPU hardware. Alerting, the health page, and the phase 1 release are milestone 4. Milestone 1 research is written up from documentation and source; checks that need GPU hardware are still open. Do not run it in production.
 
 ## Why
 
@@ -21,6 +21,18 @@ The plugin closes that gap by turning vendor tool output into Cacti data sources
 
 Out of scope: any command that changes a GPU or node (clocks, power limits, resets, MIG layout), a plugin-owned alerting engine, a custom daemon or network protocol, and scheduler or job accounting. See the plan for the research backlog.
 
+## What milestone 3 adds
+
+- **Collection through SNMP extend** ([ADR 0008](docs/decisions/0008-collect-through-snmp-extend.md)). The node's administrator adds two fixed `extend` lines to `snmpd.conf` ([docs/node-setup.md](docs/node-setup.md)); the plugin reads NET-SNMP-EXTEND-MIB through Cacti's SNMP functions with the device's own credentials, SNMPv3 recommended. It runs nothing on the Cacti server or the node.
+- **Strict parsing.** Fields are read by position, each line names its GPU by UUID, and a nonzero exit status, a timeout, truncated output, a line with the wrong field count, or merged error text fails the whole collection: values become `U`, no GPU is marked absent, and GPU Nodes shows why.
+- **A collector after each poller cycle.** It reads each enabled node's agent, updates the identity records, and caches the latest sample. The script server input reads only that cache, so a Cacti poll never waits on a GPU node.
+- **Cacti objects** ([ADR 0010](docs/decisions/0010-attach-to-existing-node-devices.md)). The templates and the *GPU - Devices* data query ship as XML and are imported on install and upgrade. Saving a node attaches the data query to its existing device with reindex method None; GPU Nodes can create a device only when the node has none. Each GPU is an index keyed by vendor and UUID, with one data source shared by its Utilization, Memory, Temperature, Power, Clocks, Throttle, ECC Errors, and Sample Age graphs. Every model field is drawn by some graph, because Cacti stores only the fields a graph uses. The plugin reindexes after every GPU change, keeps a reindex Cacti skipped while the device was Down or disabled and runs it once the device is Up, and creates graphs for new GPUs.
+- **History stays with the card.** An absent GPU stays an index, so its graphs show a gap and resume in the same RRD file when it returns. A replacement card in the same slot gets its own data source. **Remove from Data Query** on the node's page takes an absent GPU out of the listing; its RRD files and graphs are kept until you delete them.
+- **Device permissions on GPU Nodes.** A GPU Admin sees, changes, exports, and moves only nodes and GPUs on devices they may see in Cacti; a GPU move needs both nodes. A node whose device was deleted can only be disabled.
+- **The common metric model** ([ADR 0009](docs/decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](docs/metrics.md)). Memory is in bytes, the clock event mask is decoded into `thr_*` indicators, and `age` is the age of the GPU's own sample time, or `U` when unknown.
+
+The installing (web server) user must be able to write `<cacti>/resource/script_server/`, where the plugin places its data query XML; install and upgrade stop with a message otherwise and retry on the next attempt. Uninstall does not yet remove the templates or the XML (#30). Nodes on remote data collectors are not collected until phase 3.
+
 ## What milestone 2 ships
 
 - **A guarded install.** On PHP below 8.2, install and enable are refused with a message naming the required version, and the rest of Cacti keeps working. `setup.php` and the page scripts parse on PHP 8.0.
@@ -31,16 +43,17 @@ Out of scope: any command that changes a GPU or node (clocks, power limits, rese
 
 ### Install for evaluation
 
-These steps install the milestone 2 code to try it. They require Cacti 1.2.31 or later on PHP 8.2 or later.
+These steps install the milestone 3 code to try it. They require Cacti 1.2.31 or later on PHP 8.2 or later.
 
 1. Copy the repository to `plugins/gpu` under your Cacti directory. The directory must be named `gpu`.
 2. In Cacti, open **Configuration > Plugins**, then install and enable **GPU**.
 3. Give users the *GPU View* or *GPU Admin* realm under **Configuration > Users**. The installing user gets both.
-4. Optionally adjust **Configuration > Settings > GPU**: *Mark Absent After* (default 3 successful collections, from 1 to 100) and *Keep Plugin Tables on Uninstall* (default on).
+4. Set up each GPU node's SNMP agent as described in [docs/node-setup.md](docs/node-setup.md), then add the node under **Management > GPU Nodes**.
+5. Optionally adjust **Configuration > Settings > GPU**: *Mark Absent After* (default 3 successful collections, from 1 to 100), *Stale After* (how old a sample may be before its values print `U`), and *Keep Plugin Tables on Uninstall* (default on).
 
-## Collection path
+## How metrics reach Cacti
 
-Decision [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) chose SNMP `extend` on the GPU node: the node's administrator configures `snmpd` to run the vendor tool with a fixed argument list, and the plugin reads the output through Cacti's SNMP polling of that device. The reasons and rejected alternatives are in [ADR 0008](docs/decisions/0008-collect-through-snmp-extend.md). The collector is not implemented yet. A poller on the node and a `dcgm-exporter` scrape remain possible later backends; see [Collection paths](docs/PLAN.md#collection-paths).
+Decision [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) chose SNMP `extend` ([ADR 0008](docs/decisions/0008-collect-through-snmp-extend.md)): the node's own agent runs a fixed `nvidia-smi` command and the plugin only reads the result. The plan compares the options under [Collection paths](docs/PLAN.md#collection-paths).
 
 ## Compatibility targets
 
@@ -60,7 +73,7 @@ Decision [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) chose S
 
 ```mermaid
 flowchart LR
-    NODE[GPU node: nvidia-smi, DCGM, amd-smi] -->|SNMP extend| C[Collector]
+    NODE[GPU node: snmpd extend running nvidia-smi] -->|SNMP reads, v3 recommended| C[Collector]
     C --> CACHE[(Plugin cache keyed by GPU UUID)]
     CACHE --> SS[Script server data query input]
     SS --> RRD[(Cacti RRD files, one data source per GPU)]

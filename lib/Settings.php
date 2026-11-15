@@ -21,20 +21,29 @@ namespace Somethingwithproof\Gpu;
 
 /**
  * Plugin settings, read once per request from Cacti's settings table
- * (REQ-UI-003). Collection settings arrive with the collector.
+ * (REQ-UI-003).
  */
 final readonly class Settings {
 	public const NAMES = [
 		'gpu_absent_after',
+		'gpu_stale_after',
 		'gpu_uninstall_keep_tables',
 	];
 
 	public const DEFAULT_ABSENT_AFTER = 3;
 	public const MAX_ABSENT_AFTER     = 100;
 
+	// Seconds after which a stored sample is too old to graph (REQ-SS-004).
+	// Twice the default poller interval, so one late collection leaves no
+	// gap, while a stopped collector shows as gaps within ten minutes.
+	public const DEFAULT_STALE_AFTER = 600;
+	public const MIN_STALE_AFTER     = 60;
+	public const MAX_STALE_AFTER     = 86400;
+
 	public function __construct(
 		public int $absentAfter,
 		public bool $keepTablesOnUninstall,
+		public int $staleAfter = self::DEFAULT_STALE_AFTER,
 	) {
 	}
 
@@ -49,6 +58,7 @@ final readonly class Settings {
 		return new self(
 			absentAfter: min(Row::int($row, 'gpu_absent_after', self::DEFAULT_ABSENT_AFTER, 1), self::MAX_ABSENT_AFTER),
 			keepTablesOnUninstall: array_key_exists('gpu_uninstall_keep_tables', $row) ? Row::bool($row, 'gpu_uninstall_keep_tables') : true,
+			staleAfter: max(self::MIN_STALE_AFTER, min(Row::int($row, 'gpu_stale_after', self::DEFAULT_STALE_AFTER, 1), self::MAX_STALE_AFTER)),
 		);
 	}
 
@@ -72,6 +82,20 @@ final readonly class Settings {
 				'options'       => ['options' => ['min_range' => 1, 'max_range' => self::MAX_ABSENT_AFTER]],
 				'max_length'    => '3',
 				'size'          => '3',
+			],
+			'gpu_header_collection' => [
+				'friendly_name' => __('GPU Collection', 'gpu'),
+				'method'        => 'spacer',
+			],
+			'gpu_stale_after' => [
+				'friendly_name' => __('Stale After', 'gpu'),
+				'description'   => __('Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on.', 'gpu'),
+				'method'        => 'textbox',
+				'default'       => (string) self::DEFAULT_STALE_AFTER,
+				'filter'        => FILTER_VALIDATE_INT,
+				'options'       => ['options' => ['min_range' => self::MIN_STALE_AFTER, 'max_range' => self::MAX_STALE_AFTER]],
+				'max_length'    => '5',
+				'size'          => '5',
 			],
 			'gpu_header_uninstall' => [
 				'friendly_name' => __('Uninstall', 'gpu'),

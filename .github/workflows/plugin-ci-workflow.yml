@@ -228,6 +228,57 @@ jobs:
           exit 1
         fi
 
+    # End to end: a real net-snmp agent runs the extend lines from
+    # docs/node-setup.md against a fake nvidia-smi, the plugin reads it over
+    # SNMPv3, and Cacti's poller writes and graphs the RRD files.
+    - name: Start snmpd with the documented extend lines
+      working-directory: cacti/plugins/gpu
+      run: |
+        set -euo pipefail
+        sudo apt-get install -y snmpd
+        sudo systemctl stop snmpd || true
+        sudo install -m 755 tests/bin/fake-nvidia-smi /usr/bin/nvidia-smi
+        sudo install -d -o "$USER" -m 755 /var/lib/gpu-e2e
+        umask 077
+        # Random SNMPv3 passphrases, kept in a file.
+        { openssl rand -hex 16; openssl rand -hex 16; } > "$RUNNER_TEMP/snmp-secrets"
+        php tests/bin/snmpd-conf.php "$RUNNER_TEMP/snmp-secrets" udp:127.0.0.1:1161 > "$RUNNER_TEMP/snmpd.conf"
+        sudo /usr/sbin/snmpd -Lf "$RUNNER_TEMP/snmpd.log" -C -c "$RUNNER_TEMP/snmpd.conf" -p "$RUNNER_TEMP/snmpd.pid"
+        sleep 1
+        if ! sudo kill -0 "$(sudo cat "$RUNNER_TEMP/snmpd.pid")"; then
+          sudo cat "$RUNNER_TEMP/snmpd.log" || true
+          exit 1
+        fi
+
+    # The test provokes collection failures, which the plugin logs as
+    # warnings. Its log is checked here for anything else, and the main log
+    # is put back for the check below.
+    - name: Run the end-to-end collection test
+      working-directory: cacti
+      env:
+        GPU_TEST_DATABASE: disposable
+        GPU_E2E_AGENT: 127.0.0.1:1161
+        GPU_E2E_FIXTURES: /var/lib/gpu-e2e
+      run: |
+        set -uo pipefail
+        mv log/cacti.log log/main.log
+        rc=0
+        GPU_E2E_SECRETS="$RUNNER_TEMP/snmp-secrets" php plugins/gpu/tests/bin/e2e.php || rc=$?
+        mv log/cacti.log log/e2e.log
+        mv log/main.log log/cacti.log
+        echo "== end-to-end log"
+        cat log/e2e.log
+        if grep -E "FATAL:|ERROR:|WARNING:" log/e2e.log | grep -v "GPU WARNING: Node [0-9]*: collection failed"; then
+          rc=1
+        fi
+        if [ "$rc" -ne 0 ]; then
+          echo "== snmpd log"
+          sudo cat "$RUNNER_TEMP/snmpd.log" || true
+          echo "== AppArmor messages"
+          sudo dmesg | grep -i apparmor || true
+        fi
+        exit "$rc"
+
     - name: Check Cacti log for errors
       if: always()
       run: |

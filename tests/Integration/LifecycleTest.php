@@ -20,9 +20,12 @@
 // The version INFO declares, which Cacti records as the installed version.
 define('GPU_VERSION', (string) (parse_ini_file(dirname(__DIR__, 2) . '/INFO', true)['info']['version'] ?? ''));
 
-const GPU_TABLES = ['plugin_gpu_gpu', 'plugin_gpu_node'];
+const GPU_TABLES = ['plugin_gpu_collection', 'plugin_gpu_gpu', 'plugin_gpu_node', 'plugin_gpu_observation', 'plugin_gpu_reindex', 'plugin_gpu_retired'];
 
-const GPU_HOOKS = ['config_arrays', 'config_settings', 'draw_navigation_text'];
+// Row counts after the seed action: one node and one GPU record.
+const GPU_SEEDED = ['plugin_gpu_collection' => 0, 'plugin_gpu_gpu' => 1, 'plugin_gpu_node' => 1, 'plugin_gpu_observation' => 0, 'plugin_gpu_reindex' => 0, 'plugin_gpu_retired' => 0];
+
+const GPU_HOOKS = ['api_device_new', 'config_arrays', 'config_settings', 'device_remove', 'draw_navigation_text', 'poller_bottom'];
 
 beforeEach(function () {
 	lifecycle('reset');
@@ -37,7 +40,7 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual(GPU_VERSION)
-		->and($state['schema'])->toEqual('1')
+		->and($state['schema'])->toEqual('2')
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tracked'])->toBe(GPU_TABLES)
 		->and(array_keys($state['hooks']))->toBe(GPU_HOOKS)
@@ -58,7 +61,7 @@ it('enables and disables through core, keeping records on disable', function () 
 
 	$disabled = lifecycle('disable');
 	expect($disabled['plugin']['status'])->toEqual('4')
-		->and($disabled['tables'])->toBe(['plugin_gpu_gpu' => 1, 'plugin_gpu_node' => 1]);
+		->and($disabled['tables'])->toBe(GPU_SEEDED);
 });
 
 it('upgrades from an older recorded version and is idempotent on repeated runs', function () {
@@ -79,7 +82,19 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 			->and($run['plugin'])->toBe($first['plugin']);
 	}
 
-	expect($first['tables'])->toBe(['plugin_gpu_gpu' => 1, 'plugin_gpu_node' => 1]);
+	expect($first['tables'])->toBe(GPU_SEEDED);
+});
+
+it('imports the shipped templates once, and a forced re-import updates them in place', function () {
+	$objects = ['data_query' => 1, 'data_template' => 1, 'graph_templates' => 8, 'graph_items' => 72, 'device_template' => 1, 'dq_graphs' => 8, 'dq_file' => true];
+
+	expect(lifecycle('install')['objects'])->toBe($objects);
+
+	lifecycle('set_setting', 'gpu_templates_sha256=');
+	lifecycle('set_version', '0.0');
+
+	expect(lifecycle('upgrade')['objects'])->toBe($objects)
+		->and(lifecycle('upgrade')['objects'])->toBe($objects);
 });
 
 it('re-registers hooks and realms that went missing', function () {
@@ -122,7 +137,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tables']['plugin_gpu_node'])->toBe(1)
-		->and($state['schema'])->toEqual('1')
+		->and($state['schema'])->toEqual('2')
 		->and($state['plugin']['version'])->toEqual(GPU_VERSION);
 });
 
@@ -135,7 +150,26 @@ it('does not advance past a migration that did not run', function () {
 		->and($stopped['schema'])->toEqual('0');
 
 	$finished = lifecycle('upgrade');
-	expect($finished['schema'])->toEqual('1');
+	expect($finished['schema'])->toEqual('2');
+});
+
+it('upgrades a version 1 schema by adding the collection tables and keeping the records', function () {
+	lifecycle('install');
+	lifecycle('seed');
+
+	foreach (['plugin_gpu_observation', 'plugin_gpu_collection', 'plugin_gpu_reindex', 'plugin_gpu_retired'] as $table) {
+		lifecycle('drop_table', $table);
+	}
+
+	lifecycle('set_schema', '1');
+
+	$state = lifecycle('upgrade');
+
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual('2')
+		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
+		->and($state['tracked'])->toBe(GPU_TABLES)
+		->and($state['tables']['plugin_gpu_node'])->toBe(1);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {

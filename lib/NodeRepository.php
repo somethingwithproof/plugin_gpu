@@ -59,6 +59,38 @@ final class NodeRepository {
 		return $devices;
 	}
 
+	/**
+	 * The node's Cacti device with its SNMP settings, for the collector.
+	 */
+	public function device(Node $node): ?NodeDevice {
+		$row = db_fetch_row_prepared('SELECT id, description, hostname, poller_id, status, disabled, snmp_version, snmp_community, snmp_username, snmp_password, snmp_auth_protocol, snmp_priv_passphrase, snmp_priv_protocol, snmp_context, snmp_engine_id, snmp_port, snmp_timeout, max_oids FROM host WHERE id = ?', [$node->hostId], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? NodeDevice::fromRow($row) : null;
+	}
+
+	public function findByHost(int $hostId): ?Node {
+		$row = db_fetch_row_prepared(self::SELECT . ' WHERE n.host_id = ?', [$hostId], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? Node::fromRow($row) : null;
+	}
+
+	/**
+	 * Disable the nodes of Cacti devices being deleted (ADR 0010). The nodes
+	 * and their GPU records stay; Cacti's own deletion decides what happens
+	 * to the device's graphs and data sources.
+	 *
+	 * @param list<int> $hostIds
+	 */
+	public function disableForHosts(array $hostIds): int {
+		if ($hostIds === []) {
+			return 0;
+		}
+
+		$ok = db_execute_prepared("UPDATE plugin_gpu_node SET admin_state = 'disabled', updated_at = ? WHERE admin_state != 'disabled' AND host_id IN (" . implode(', ', array_fill(0, count($hostIds), '?')) . ')', array_merge([$this->clock->now()], $hostIds), true, $this->connection);
+
+		return $ok ? max(0, (int) db_affected_rows($this->connection)) : 0;
+	}
+
 	public function deviceExists(int $hostId): bool {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM host WHERE id = ?', [$hostId], '', true, $this->connection) === 1;
 	}

@@ -35,12 +35,24 @@ namespace Somethingwithproof\Gpu;
  * RRD file, or contacts a GPU node (REQ-LIFE-003, REQ-LIFE-005).
  */
 final class Schema {
-	public const VERSION = 1;
+	public const VERSION = 2;
 
 	public const HOOKS = [
 		'config_arrays'        => 'gpu_config_arrays',
 		'config_settings'      => 'gpu_config_settings',
 		'draw_navigation_text' => 'gpu_draw_navigation_text',
+		'poller_bottom'        => 'gpu_poller_bottom',
+		'device_remove'        => 'gpu_device_remove',
+		'api_device_new'       => 'gpu_api_device_new',
+	];
+
+	// The metric columns of plugin_gpu_observation, as migration 2 created
+	// them. A later model change adds a migration; it never edits this list.
+	// age is computed when it is read, so it has no column.
+	public const OBSERVATION_METRICS = [
+		'util_gpu', 'util_mem', 'mem_used', 'mem_total', 'temp_gpu', 'power', 'power_limit',
+		'clock_sm', 'clock_mem', 'ecc_corr', 'ecc_uncorr', 'retired_pending',
+		'thr_sw_power_cap', 'thr_hw_slowdown', 'thr_sw_thermal', 'thr_hw_thermal', 'thr_hw_power_brake',
 	];
 
 	private const PLUGIN  = 'gpu';
@@ -108,7 +120,7 @@ final class Schema {
 		return (int) db_fetch_cell_prepared('SELECT status FROM plugin_config WHERE directory = ?', [self::PLUGIN], '', true, $this->connection) === 1;
 	}
 
-		public function hooksRegistered(): bool {
+	public function hooksRegistered(): bool {
 		$placeholders = implode(', ', array_fill(0, count(self::HOOKS), '?'));
 
 		$hooks  = (int) db_fetch_cell_prepared("SELECT COUNT(DISTINCT hook) FROM plugin_hooks WHERE name = ? AND hook IN ($placeholders)", array_merge([self::PLUGIN], array_keys(self::HOOKS)), '', true, $this->connection);
@@ -137,7 +149,8 @@ final class Schema {
 	 */
 	private function migrations(): array {
 		return [
-			1 => fn (): bool => $this->createTables(self::tables()),
+			1 => fn (): bool => $this->createTables(array_intersect_key(self::tables(), array_flip(['plugin_gpu_node', 'plugin_gpu_gpu']))),
+			2 => fn (): bool => $this->createTables(array_intersect_key(self::tables(), array_flip(['plugin_gpu_observation', 'plugin_gpu_collection', 'plugin_gpu_reindex', 'plugin_gpu_retired']))),
 		];
 	}
 
@@ -191,12 +204,14 @@ final class Schema {
 		$id       = static fn (string $name): array => ['name' => $name, 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false];
 		$time     = static fn (string $name): array => ['name' => $name, 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'];
 		$text     = static fn (string $name, int $length, string $default = ''): array => ['name' => $name, 'type' => "varchar($length)", 'NULL' => false, 'default' => $default];
+		$count    = static fn (string $name): array => ['name' => $name, 'type' => 'int(10)', 'unsigned' => true, 'NULL' => false, 'default' => '0'];
+		$metric   = static fn (string $name): array => ['name' => $name, 'type' => 'double', 'NULL' => true];
 
 		return [
 			// GPU nodes: Cacti devices an operator has registered for GPU
-			// monitoring. How a node is reached is decided by #7 and added
-			// by the collector's migration; nothing here is a command, path,
-			// or URL.
+			// monitoring. A node is read through its device's SNMP settings
+			// (ADR 0008), so nothing here is a command, path, credential, or
+			// URL.
 			'plugin_gpu_node' => $innodb + [
 				'comment' => 'Cacti devices registered as GPU nodes',
 				'columns' => [
@@ -240,6 +255,88 @@ final class Schema {
 				'primary'     => 'id',
 				'unique_keys' => [['name' => 'vendor_uuid', 'columns' => ['vendor', 'uuid']]],
 				'keys'        => [['name' => 'node_id', 'columns' => ['node_id']]],
+			],
+			// The latest sample of each GPU, in model units (ADR 0009); NULL
+			// is unknown. The script server input reads only this table and
+			// the records above (REQ-SS-001). A sample replaces the stored
+			// one only when the tool took it later, so a delayed or repeated
+			// read never moves a value back in time.
+			'plugin_gpu_observation' => $innodb + [
+				'comment' => 'Latest GPU samples',
+				'columns' => array_merge(
+					[
+						$id('gpu_id'),
+						$id('node_id'),
+						// When the tool took the sample, from its own timestamp.
+						$time('observed_at'),
+						// When the plugin stored it.
+						$time('ingested_at'),
+						// When a successful collection last reported this GPU,
+						// even with an unchanged sample.
+						$time('reported_at'),
+						$text('backend', 32),
+						$text('tool_version', 64),
+					],
+					array_map($metric, self::OBSERVATION_METRICS),
+					// The raw clock event reasons mask, so bits without an
+					// indicator are kept (ADR 0009).
+					[['name' => 'thr_mask', 'type' => 'bigint(20)', 'unsigned' => true, 'NULL' => true]],
+				),
+				'primary' => 'gpu_id',
+				'keys'    => [['name' => 'node_id', 'columns' => ['node_id']]],
+			],
+			// How the latest collection at each node ended (PLAN,
+			// Measurement state). The state is an ExecutionState value; the
+			// detail never quotes tool output.
+			'plugin_gpu_collection' => $innodb + [
+				'comment' => 'Latest collection result per node',
+				'columns' => [
+					$id('node_id'),
+					$text('state', 32),
+					$text('detail', 255),
+					$time('started_at'),
+					$time('finished_at'),
+					// The newest sample time in the collection.
+					$time('observed_at'),
+					$count('gpus'),
+					$count('new_gpus'),
+					$count('rejected_lines'),
+					// Runs skipped because another held the node, since the
+					// last one that ran.
+					$count('skipped'),
+					$time('last_ok_at'),
+				],
+				'primary' => 'node_id',
+			],
+			// A data query reindex the plugin owes a node's device, kept
+			// until it runs. Cacti's run_data_query() returns true without
+			// reindexing a device that is down or disabled, so a request
+			// stays here until the device is up (REQ-INDEX-004).
+			'plugin_gpu_reindex' => $innodb + [
+				'comment' => 'Pending data query reindexes per node',
+				'columns' => [
+					$id('node_id'),
+					$time('requested_at'),
+					$text('reason', 64),
+					// Moves on with every request; see ReindexRepository::done().
+					$count('generation'),
+					$count('attempts'),
+					$time('last_attempt_at'),
+					$text('detail', 255),
+				],
+				'primary' => 'node_id',
+			],
+			// GPUs an operator removed from the data query (REQ-INDEX-005).
+			// The identity record and its graphs stay; the GPU only stops
+			// being an index, and returns as one if it is reported again.
+			'plugin_gpu_retired' => $innodb + [
+				'comment' => 'GPUs removed from the data query by an operator',
+				'columns' => [
+					$id('gpu_id'),
+					$time('retired_at'),
+					$id('retired_by') + ['default' => '0'],
+				],
+				'primary' => 'gpu_id',
 			],
 		];
 	}

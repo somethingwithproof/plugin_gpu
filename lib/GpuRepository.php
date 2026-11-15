@@ -116,16 +116,63 @@ final class GpuRepository {
 	 * The operator's confirmation of a pending move (REQ-ID-004). The GPU
 	 * keeps its record, and so its history; only its node changes.
 	 */
-	public function confirmMove(int $id): bool {
-		$ok = db_execute_prepared("UPDATE plugin_gpu_gpu SET node_id = pending_node_id, pending_node_id = 0, pending_since = 0, missing_count = 0, presence = 'present' WHERE id = ? AND pending_node_id > 0", [$id], true, $this->connection);
+	/**
+	 * Move a GPU to the node it was seen at. Only the move the operator was
+	 * shown and authorized is applied: if a collection changed the record's
+	 * node or pending node since, nothing changes.
+	 */
+	public function confirmMove(int $id, int $fromNodeId, int $toNodeId): bool {
+		$ok = db_execute_prepared("UPDATE plugin_gpu_gpu SET node_id = pending_node_id, pending_node_id = 0, pending_since = 0, missing_count = 0, presence = 'present' WHERE id = ? AND node_id = ? AND pending_node_id = ? AND pending_node_id > 0", [$id, $fromNodeId, $toNodeId], true, $this->connection);
 
 		return $ok && db_affected_rows($this->connection) === 1;
 	}
 
-	public function rejectMove(int $id): bool {
-		$ok = db_execute_prepared('UPDATE plugin_gpu_gpu SET pending_node_id = 0, pending_since = 0 WHERE id = ? AND pending_node_id > 0', [$id], true, $this->connection);
+	public function rejectMove(int $id, int $fromNodeId, int $toNodeId): bool {
+		$ok = db_execute_prepared('UPDATE plugin_gpu_gpu SET pending_node_id = 0, pending_since = 0 WHERE id = ? AND node_id = ? AND pending_node_id = ? AND pending_node_id > 0', [$id, $fromNodeId, $toNodeId], true, $this->connection);
 
 		return $ok && db_affected_rows($this->connection) === 1;
+	}
+
+	/**
+	 * Remove an absent GPU from its node's data query, on an operator's
+	 * request (REQ-INDEX-005). A present GPU is refused: the next collection
+	 * would only return it.
+	 */
+	public function retire(int $id, int $nodeId, int $userId, int $now): bool {
+		$ok = db_execute_prepared("INSERT IGNORE INTO plugin_gpu_retired (gpu_id, retired_at, retired_by) SELECT id, ?, ? FROM plugin_gpu_gpu WHERE id = ? AND node_id = ? AND presence = 'absent'", [$now, $userId, $id, $nodeId], true, $this->connection);
+
+		return $ok && db_affected_rows($this->connection) === 1;
+	}
+
+	/**
+	 * @return list<int>
+	 */
+	public function retiredIds(): array {
+		return array_map(static fn (array $row): int => Row::int($row, 'gpu_id'), Row::rows(db_fetch_assoc_prepared('SELECT gpu_id FROM plugin_gpu_retired ORDER BY gpu_id', [], true, $this->connection)));
+	}
+
+	public function find(int $id): ?GpuRecord {
+		$row = db_fetch_row_prepared('SELECT * FROM plugin_gpu_gpu WHERE id = ?', [$id], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? GpuRecord::fromRow($row) : null;
+	}
+
+	/**
+	 * Return GPUs an operator removed from the data query to it, because a
+	 * collection reported them again (REQ-INDEX-005).
+	 *
+	 * @param list<int> $ids
+	 *
+	 * @return int how many were retired
+	 */
+	public function unretire(array $ids): int {
+		if ($ids === []) {
+			return 0;
+		}
+
+		$ok = db_execute_prepared('DELETE FROM plugin_gpu_retired WHERE gpu_id IN (' . implode(', ', array_fill(0, count($ids), '?')) . ')', $ids, true, $this->connection);
+
+		return $ok ? max(0, (int) db_affected_rows($this->connection)) : 0;
 	}
 
 	/**

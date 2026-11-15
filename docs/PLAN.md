@@ -1,6 +1,6 @@
 # Cacti 1.2 GPU Plugin Plan
 
-Status: in development, plan revision 2 (2026-11-15). Revision 2 folds in the milestone 1 documentation and source research in [`docs/research/`](research/); items that need hardware are marked *live* and listed in each research page's Live checks table. Milestone 2 (foundation) is implemented: the PHP guard, lifecycle, realms and pages, node registry, GPU identity records, and the test harness. Where it differs from the text below, the difference is stated in place. Milestone 3 is not on `main`, so nothing collects from a GPU yet: no vendor tool is run, no data query exists, and no graph is created. There is no release. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
+Status: in development, plan revision 2 (2026-11-15). Revision 2 folds in the milestone 1 documentation and source research in [`docs/research/`](research/); items that need hardware are marked *live* and listed in each research page's Live checks table. Milestone 2 (foundation) is implemented: the PHP guard, lifecycle, realms and pages, node registry, GPU identity records, and the test harness. Where it differs from the text below, the difference is stated in place. Milestone 3 (NVIDIA collection and Cacti objects) is merged too: the SNMP extend reader and parser, the collector and cache, the data query, templates, and eight graphs per GPU, tested only against a real `snmpd` with synthetic `nvidia-smi` output. Milestone 4 (alerting, health, release) is not done, and there is no release. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
 
 `plugin_gpu` brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and clock throttling reasons from NVIDIA and AMD tools into Cacti 1.2. Each GPU becomes an index of a data query on its node's Cacti device, so operators see GPU graphs next to the node's other graphs, under Cacti's own permissions, and alert on them with Thold and Maint.
 
@@ -199,7 +199,7 @@ flowchart TB
     subgraph Node["GPU node"]
         TOOL[nvidia-smi, DCGM, amd-smi]
     end
-    COL -->|collection path, decision 7| TOOL
+    COL -->|SNMP extend reads, ADR 0008| TOOL
     SS -->|poller_output| THOLD
     GR --> DQ[Data query indexes, one per GPU]
     SS --> DQ
@@ -242,6 +242,8 @@ Rules, tested by fixtures (REQ-ID-001 to 006):
 | Data source and graphs | Graph templates per GPU | Created by Cacti's data query path from the templates |
 | Data source for staleness | A field of the same data query (`age`) | Always numeric |
 
+As built in milestone 3: the data query is *GPU - Devices*, one data template (*GPU - Metrics*) holds every model field, and eight graph templates (Utilization, Memory, Temperature, Power, Clocks, Throttle, ECC Errors, Sample Age) are created for each present GPU. Every model field is drawn by one of them, because `rrdtool_function_create()` puts into the RRD file only the data source items some graph item uses; an undrawn field such as a throttle indicator or `age` would never be stored, so Thold could not use it. The plugin copies the data query XML to `<path_cacti>/resource/script_server/plugin_gpu.xml`, so that directory must be writable by the installing user. Absent GPUs stay in the listing rather than using `index_transient`; an operator's **Remove from Data Query** on an absent GPU takes it out, and it returns if reported again. The index delimiter is `!`, which a `vendor/UUID` key cannot contain, and the data query sets `arg_num_indexes`. Uninstall leaves the templates and the XML in place for now (#30).
+
 Templates ship as Cacti template XML and are imported with `import_xml_data()`, matched by hash so re-imports update rather than duplicate, under a lock so two upgrades cannot import together. The data query uses reindex method None; the plugin runs a forced reindex after each inventory change so titles refresh. `api_device_update_host_template()` (called from `api_device_save()` when a template is applied) runs `REPLACE INTO host_snmp_query` with the global default reindex method for data queries that have no cache rows yet, so the plugin sets None again afterward; `api_device_save()` itself only forces method 0 for devices with SNMP version 0. Confirmed by source at `release/1.2.31` and `1.2.x`; running it is *live* ([research/cacti-core.md](research/cacti-core.md)). A data query XML may instead set `index_transient`, which stops removed indexes being marked orphan; M3 chooses between that and keeping absent GPUs in the listing.
 
 When the device is Down or disabled, `run_data_query()` returns `true` without reindexing, even for a forced reindex, and method None schedules no later one. The plugin records each skipped reindex and runs it again once the device is Up and enabled, then checks that the expected indexes are present.
@@ -258,15 +260,17 @@ One set of fields describes every GPU, so a single set of templates and Thold te
 |---|---|---|---|---|
 | `util_gpu` | percent | `utilization.gpu` | field 1613 (ratio, multiplied by 100; first in DCGM v4.6.0) or 203 (percent; deprecated at v4.7.0) | `amd-smi metric --usage` (#18) |
 | `util_mem` | percent | `utilization.memory` | #15 | #18 |
-| `mem_used`, `mem_total` | one unit, chosen in #14 | `memory.used`, `memory.total` | 252 and 250 (MiB, deprecated) or 1627 and 1625 (used and capacity in bytes; 1627 first in DCGM v4.7.0) | #18 |
+| `mem_used`, `mem_total` | bytes (milestone 3) | `memory.used`, `memory.total` | 252 and 250 (MiB, deprecated) or 1627 and 1625 (used and capacity in bytes; 1627 first in DCGM v4.7.0) | #18 |
 | `temp_gpu` | degrees C | `temperature.gpu` | 150 | `--temperature` |
 | `power`, `power_limit` | watts | `power.draw`, `power.limit` | 155 and 160 | `--power` |
 | `clock_sm`, `clock_mem` | MHz | `clocks.sm`, `clocks.mem` | #15 | #18 |
-| `throttle_*` | 0 or 1 per reason | decoded from the event reasons bitmask | decoded from field 112 | accumulators, MI300 or newer (#18) |
+| `thr_*` | 0 or 1 per reason | decoded from the event reasons bitmask | decoded from field 112 | accumulators, MI300 or newer (#18) |
 | `ecc_corr`, `ecc_uncorr` | count since driver load | `ecc.errors.*.volatile.total` | 310 and 311 | `--ecc` |
 | `retired_pending` | 0 or 1 | `retired_pages.pending` | 392 | #18 |
 | `xid_last` | XID number | per #8 | field 230 | not applicable |
 | `age` | seconds | computed | computed | computed |
+
+Milestone 3 names the throttle indicators `thr_*` (for example `thr_sw_power_cap`, `thr_hw_slowdown`) so every data source name fits Cacti's 19-character limit, and reads the mask as hex or decimal. The NVIDIA backend reads the mask through the old query name `clocks_throttle_reasons.active`, because the new `clocks_event_reasons.*` names are not confirmed per driver line (#17); REQ-NVSMI-005 is therefore only partly met. GPU names come from a second extend entry, because a product name is free text that can contain the CSV separator. [docs/metrics.md](metrics.md) is generated from the model and is the field reference.
 
 Rules:
 
@@ -318,7 +322,7 @@ A MIG-enabled GPU exposes GPU instances and compute instances that can be create
 
 ## Remote collectors
 
-When GPU nodes are in other sites, a Cacti remote data collector near them runs the collector and script server input, following the pattern other collector-aware plugins use.
+When GPU nodes are in other sites, a Cacti remote data collector near them runs the collector and script server input, following the pattern other collector-aware plugins use. Milestone 3 collects only nodes whose device is on the main poller and counts the rest as remote; the rest of this section is phase 3.
 
 - Plugin configuration tables replicate to remote collectors through the `replicate_out` hook.
 - The collector on each poller handles only nodes whose `poller_id` matches.
@@ -408,7 +412,7 @@ Phase 2 needs a security review of the DCGM and amd-smi invocation paths and any
 - **Alerting.** Thold fires and recovers on fixture throttle, ECC, and staleness; Maint suppresses it.
 - **Remote.** Collector offline, recovery mode, replication after reconnect.
 - **Failure scenarios before each phase release:** tool missing, timeout, permission denied, driver unloaded, GPU lost mid-collection, node unreachable, clock skew, full disk, interrupted collector, duplicate collector start, interrupted upgrade.
-- **Harness.** Use the harness maintained Cacti plugins use, and confirm with maintainers before adding test or CI infrastructure (#12). M2 adopts it provisionally: Pest from the locked plugin harness in Cacti's `tests/tools/plugin-harness`, as maintained plugins run it, until #12 is decided. Identity fixtures in M2 are synthetic sequences, not captured tool output; captured fixtures arrive with the first backend.
+- **Harness.** Use the harness maintained Cacti plugins use, and confirm with maintainers before adding test or CI infrastructure (#12). M2 adopts it provisionally: Pest from the locked plugin harness in Cacti's `tests/tools/plugin-harness`, as maintained plugins run it, until #12 is decided. Identity fixtures in M2 are synthetic sequences, not captured tool output; captured fixtures arrive with the first backend. Milestone 3's `nvidia-smi` fixtures are also synthetic, written to the documented field order; captured output (#14) must replace them before a release. Its end-to-end test runs a real net-snmp `snmpd` with the documented extend lines and a fake `nvidia-smi`, and Cacti's own poller writes the RRD files.
 
 ## Milestones
 
@@ -429,8 +433,8 @@ Milestone size estimates (ranges from measured reference plugins, no durations) 
 |---|---|---|---|
 | Collection path (#7) | Decided 2026-11-15: SNMP extend ([ADR 0008](decisions/0008-collect-through-snmp-extend.md)) | Milestone 3 | Owner |
 | XID source (#8) | DCGM field, kernel log, none in phase 1 | Milestone 3 | #16 |
-| Common metric model (#9) | Common core plus vendor extensions (proposed); vendor-specific templates | Milestone 3 | Cacti maintainers |
-| Attach to existing devices (#10) | Existing device (proposed); plugin-owned devices | Milestone 3 | Cacti maintainers |
+| Common metric model (#9) | Decided 2026-11-15: common core plus vendor extensions ([ADR 0009](decisions/0009-common-metric-core-with-vendor-extensions.md)) | Milestone 3 | Owner |
+| Attach to existing devices (#10) | Decided 2026-11-15: attach to the existing device, create one only on request ([ADR 0010](decisions/0010-attach-to-existing-node-devices.md)) | Milestone 3 | Owner |
 | Repository home and name (#11) | `Cacti/plugin_gpu` (proposed); community plugin | Before code is published | Cacti maintainers |
 | Test harness (#12) | Whatever maintained plugins use | Milestone 2 | Cacti maintainers |
 | MIG representation (#13) | Indexes, separate data query, parent only | Milestone 6 | #20 |

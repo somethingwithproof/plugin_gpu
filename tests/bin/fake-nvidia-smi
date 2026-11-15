@@ -1,0 +1,49 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# This file is part of plugin_gpu, a plugin for Cacti.
+# https://github.com/somethingwithproof/plugin_gpu
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+
+# A stand-in for /usr/bin/nvidia-smi in the end-to-end test, run by snmpd
+# through the documented extend lines (docs/node-setup.md). snmpd starts it
+# with an empty environment, so its state lives in fixed files under
+# /var/lib/gpu-e2e, which tests/bin/e2e.php writes:
+#
+#   expected-query  the metrics --query-gpu value the plugin's model asks for
+#   current.metrics fixture lines, with @NOW@ for the sample time
+#   current.names   fixture lines for the names entry
+#   current.status  optional: exit with this status and an NVML error on
+#                   stderr, as a broken driver does
+#
+# It accepts only the two documented argument vectors, so a drift between
+# the documentation and the plugin's field list fails the test.
+
+set -eu
+
+dir=/var/lib/gpu-e2e
+
+if [ -s "$dir/current.status" ]; then
+	echo 'Failed to initialize NVML: Driver/library version mismatch' >&2
+	exit "$(cat "$dir/current.status")"
+fi
+
+if [ "$#" -eq 2 ] && [ "$1" = "--query-gpu=$(cat "$dir/expected-query")" ] && [ "$2" = '--format=csv,noheader,nounits' ]; then
+	now=$(date -u '+%Y/%m/%d %H:%M:%S.000')
+	sed "s#@NOW@#$now#" "$dir/current.metrics"
+elif [ "$#" -eq 2 ] && [ "$1" = '--query-gpu=uuid,name' ] && [ "$2" = '--format=csv,noheader' ]; then
+	cat "$dir/current.names"
+else
+	echo "fake nvidia-smi: unexpected arguments: $*" >&2
+	exit 2
+fi
