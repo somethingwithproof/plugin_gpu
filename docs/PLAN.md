@@ -429,8 +429,8 @@ Milestone size estimates (ranges from measured reference plugins, no durations) 
 |---|---|---|---|
 | Collection path (#7) | Decided 2026-11-15: SNMP extend ([ADR 0008](decisions/0008-collect-through-snmp-extend.md)) | Milestone 3 | Owner |
 | XID source (#8) | DCGM field, kernel log, none in phase 1 | Milestone 3 | #16 |
-| Common metric model (#9) | Common core plus vendor extensions (proposed); vendor-specific templates | Milestone 3 | Cacti maintainers |
-| Attach to existing devices (#10) | Existing device (proposed); plugin-owned devices | Milestone 3 | Cacti maintainers |
+| Common metric model (#9) | Decided 2026-11-15: common core plus vendor extensions ([ADR 0009](decisions/0009-common-metric-core-with-vendor-extensions.md)) | Milestone 3 | Owner |
+| Attach to existing devices (#10) | Decided 2026-11-15: attach to the existing device, create one only on request ([ADR 0010](decisions/0010-attach-to-existing-node-devices.md)) | Milestone 3 | Owner |
 | Repository home and name (#11) | `Cacti/plugin_gpu` (proposed); community plugin | Before code is published | Cacti maintainers |
 | Test harness (#12) | Whatever maintained plugins use | Milestone 2 | Cacti maintainers |
 | MIG representation (#13) | Indexes, separate data query, parent only | Milestone 6 | #20 |

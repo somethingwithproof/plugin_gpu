@@ -12,5 +12,7 @@ Each record captures one architecture decision: its context, the decision, its c
 | [0006](0006-php-82-floor-with-80-parse-guard.md) | Require PHP 8.2, keep entry points parseable on PHP 8.0 | Accepted |
 | [0007](0007-run-vendor-tools-with-fixed-argument-lists.md) | Run vendor tools with fixed argument lists, no shell, and no elevated privilege | Accepted |
 | [0008](0008-collect-through-snmp-extend.md) | Collect through SNMP `extend` on the GPU node | Accepted |
+| [0009](0009-common-metric-core-with-vendor-extensions.md) | One common metric core, with vendor extensions in their own templates | Accepted |
+| [0010](0010-attach-to-existing-node-devices.md) | Attach the GPU data query to the node's existing Cacti device | Accepted |
 
-Open decisions are tracked as issues labelled `type: decision`. The collection path (#7) was decided on 2026-11-15 in record 0008.
+Open decisions are tracked as issues labelled `type: decision`. The collection path (#7) was decided on 2026-11-15 in record 0008, the common metric model (#9) in record 0009, and attaching to existing devices (#10) in record 0010.
