@@ -318,8 +318,29 @@ perm_expect($orphanState() === 'disabled', 'a node whose device was deleted can 
 perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'save', 'id' => $orphan, 'host_id' => 999999, 'enabled' => 'on'));
 perm_expect($orphanState() === 'disabled', 'a node whose device was deleted cannot be enabled again');
 
+list(, $export) = perm_http($base . 'gpu_nodes.php?action=export', $jar);
+$document = json_decode($export, true);
+perm_expect(is_array($document) && !in_array($orphan, array_column($document['nodes'], 'id'), true), 'a node whose device was deleted is left out of the export');
+
+// One with GPU records stays, as any node with records does; an empty one
+// may be deleted by any GPU Admin, since no device permission applies.
+db_execute_prepared("INSERT INTO plugin_gpu_node (host_id, admin_state) VALUES (999998, 'disabled')");
+$orphanWithGpu = (int) db_fetch_insert_id();
+db_execute_prepared("INSERT INTO plugin_gpu_gpu (vendor, uuid, node_id, pci_bus_id, name, presence) VALUES ('nvidia', 'GPU-00000000-0000-4000-8000-0000000000f6', ?, '00000000:40:00.0', 'Orphaned GPU', 'absent')", array($orphanWithGpu));
+
+perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'delete', 'id' => $orphanWithGpu));
+perm_expect((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_gpu_node WHERE id = ?', array($orphanWithGpu)) === 1, 'a node whose device was deleted is kept while GPU records belong to it');
+
 perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'delete', 'id' => $orphan));
-perm_expect($orphanState() === 'disabled', 'a node whose device was deleted is not deleted by a scoped GPU Admin');
+perm_expect((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_gpu_node WHERE id = ?', array($orphan)) === 0, 'an empty node whose device was deleted is deleted by a scoped GPU Admin');
+
+// With Cacti's device management, a device this user would not be allowed
+// to see is removed again in the same request, and no node is made for it.
+db_execute_prepared('INSERT INTO user_auth_realm (realm_id, user_id) VALUES (3, ?)', array($users['scoped']));
+list(, $form)   = perm_http($base . 'gpu_nodes.php?action=edit', $jar);
+list(, $result) = perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => perm_token($form), 'action' => 'create_device', 'description' => 'Invisible created', 'hostname' => 'invisible.invalid'));
+perm_expect((int) db_fetch_cell("SELECT COUNT(*) FROM host WHERE hostname = 'invisible.invalid'") === 0 && (int) db_fetch_cell('SELECT COUNT(*) FROM plugin_gpu_node WHERE host_id NOT IN (SELECT id FROM host) AND host_id NOT IN (999998)') === 0 && strpos($result, 'was not kept') !== false, 'a created device the creator may not see is removed again, with an error');
+db_execute_prepared('DELETE FROM user_auth_realm WHERE realm_id = 3 AND user_id = ?', array($users['scoped']));
 
 unlink($jar);
 

@@ -438,6 +438,8 @@ Milestone size estimates (ranges from measured reference plugins, no durations) 
 | Repository home and name (#11) | `Cacti/plugin_gpu` (proposed); community plugin | Before code is published | Cacti maintainers |
 | Test harness (#12) | Whatever maintained plugins use | Milestone 2 | Cacti maintainers |
 | MIG representation (#13) | Indexes, separate data query, parent only | Milestone 6 | #20 |
+| Nodes on deleted devices | Decided for milestone 4: a GPU Admin may disable or delete a node whose device no longer exists, since no device permission can apply to it; such nodes are left out of the export (`NodeAccess`) | Milestone 4 | Owner |
+| A created device its creator cannot see | Decided for milestone 4: the device is removed again through `api_device_remove()` in the same request and an error is shown, so no node points at a device its creator cannot manage (`gpu_nodes.php`) | Milestone 4 | Owner |
 
 ## Risks
 

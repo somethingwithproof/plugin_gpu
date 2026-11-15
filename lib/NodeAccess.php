@@ -23,10 +23,12 @@ namespace Somethingwithproof\Gpu;
  * Cacti's device permissions (REQ-DEV-002). A GPU Admin acts only on nodes
  * whose device the user may see. A move needs both nodes.
  *
- * One exemption: a node whose device was deleted is visible, and may only be
- * disabled, so a stale node can be stopped. No device permission can be
- * checked for it, so nothing else is allowed on it, and its GPU records are
- * not shown or exported.
+ * One exemption: a node whose device was deleted is visible to every GPU
+ * Admin, and may only be disabled or deleted, so a stale node can be stopped
+ * or cleared away (owner decision for milestone 4). No device permission can
+ * be checked for it, so nothing else is allowed on it, and it and its GPU
+ * records are left out of the export, which carries only what the user may
+ * manage.
  */
 final class NodeAccess {
 	/**
@@ -44,6 +46,14 @@ final class NodeAccess {
 	}
 
 	public function canSee(?Node $node): bool {
+		return $node !== null && (!$node->deviceExists || $this->canManage($node));
+	}
+
+	/**
+	 * Whether the user may delete the node: a node they may manage, or one
+	 * whose device was deleted.
+	 */
+	public function canRemove(?Node $node): bool {
 		return $node !== null && (!$node->deviceExists || $this->canManage($node));
 	}
 
