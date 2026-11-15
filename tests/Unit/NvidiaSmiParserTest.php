@@ -256,6 +256,24 @@ it('reads an extend entry\'s status, line count, and lines in line order', funct
 		->and($output->truncated())->toBeFalse();
 });
 
+it('reports an agent that answers the status but gives none of the lines as unreachable, not as cut output', function () {
+	$index = SnmpExtendReader::index('cacti_gpu');
+
+	$GLOBALS['__gpu_snmp'] = ["1.3.6.1.4.1.8072.1.3.2.3.1.4.$index" => '0', "1.3.6.1.4.1.8072.1.3.2.3.1.3.$index" => '8'];
+
+	try {
+		(new SnmpExtendReader(0))->read(smi_device(), 'cacti_gpu');
+		$error = null;
+	} catch (\Somethingwithproof\Gpu\CollectionError $e) {
+		$error = $e;
+	}
+
+	$GLOBALS['__gpu_snmp'] = [];
+
+	expect($error?->state)->toBe(\Somethingwithproof\Gpu\ExecutionState::Unreachable)
+		->and($error?->getMessage())->toBe('The SNMP agent gave none of the 8 output lines of cacti_gpu');
+});
+
 it('gives the first read of an entry time for snmpd to run the command, whatever the device timeout', function () {
 	$index = SnmpExtendReader::index('cacti_gpu');
 
