@@ -144,6 +144,17 @@ final class CactiObjectRepository {
 	}
 
 	/**
+	 * The ids of the data sources the device already has for the data query.
+	 *
+	 * @return list<int>|null
+	 */
+	public function dataSources(int $hostId, int $dataQueryId): ?array {
+		$rows = db_fetch_assoc_prepared('SELECT id FROM data_local WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
+
+		return is_array($rows) ? array_map(static fn (array $row): int => Row::int($row, 'id'), Row::rows($rows)) : null;
+	}
+
+	/**
 	 * The graphs the device already has for the data query, as
 	 * "graph type id:index" keys.
 	 *

@@ -277,4 +277,9 @@ if (!function_exists('api_device_dq_add')) {
 	function push_out_host($host_id, $local_data_id = 0, $data_template_id = 0) {
 		$GLOBALS['__gpu_cacti'][] = ['push_out_host', $host_id, $local_data_id];
 	}
+
+	// A test sets the RRD path of a data source id in __gpu_rrd_paths.
+	function get_data_source_path($local_data_id, $expand_paths) {
+		return $GLOBALS['__gpu_rrd_paths'][(int) $local_data_id] ?? '';
+	}
 }

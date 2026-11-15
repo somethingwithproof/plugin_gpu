@@ -235,6 +235,50 @@ it('creates each graph type once for every present, cached GPU, and none for an 
 		->and(prov_calls('push_out_host'))->toBe([['push_out_host', 40, 1]]);
 });
 
+it('moves aside an RRD file already at a new data source\'s path, so a GPU inherits no history', function () {
+	$dir  = sys_get_temp_dir() . '/gpu-prov-' . bin2hex(random_bytes(4));
+	$path = $dir . '/gpu-node_util_gpu_1.rrd';
+
+	mkdir($dir);
+	file_put_contents($path, 'old history');
+
+	$GLOBALS['__gpu_rrd_paths'] = [1 => $path];
+
+	prov()->provision(prov_node(), prov_device(), null);
+
+	$moved = glob($path . '.gpu-orphan-*');
+
+	expect(is_file($path))->toBeFalse()
+		->and($moved)->toBe([$path . '.gpu-orphan-1000'])
+		->and(file_get_contents($moved[0]))->toBe('old history')
+		->and(implode("\n", array_column($GLOBALS['__gpu_log'], 'message')))->toContain('new data source 1 found an RRD file already at its path')
+		->and(implode("\n", array_column($GLOBALS['__gpu_log'], 'message')))->not->toContain($dir);
+
+	unlink($moved[0]);
+	rmdir($dir);
+	$GLOBALS['__gpu_rrd_paths'] = [];
+});
+
+it('leaves the RRD file of a data source that already existed alone', function () {
+	$dir  = sys_get_temp_dir() . '/gpu-prov-' . bin2hex(random_bytes(4));
+	$path = $dir . '/gpu-node_util_gpu_1.rrd';
+
+	mkdir($dir);
+	file_put_contents($path, 'its own history');
+
+	$GLOBALS['__gpu_rrd_paths']               = [1 => $path];
+	$GLOBALS['__gpu_db_rows']['FROM data_local'] = [['id' => 1]];
+
+	prov()->provision(prov_node(), prov_device(), null);
+
+	expect(file_get_contents($path))->toBe('its own history')
+		->and(glob($path . '.gpu-orphan-*'))->toBe([]);
+
+	unlink($path);
+	rmdir($dir);
+	$GLOBALS['__gpu_rrd_paths'] = [];
+});
+
 it('does nothing when the templates are not installed', function () {
 	$GLOBALS['__gpu_db_rows']['FROM `snmp_query`'] = [];
 

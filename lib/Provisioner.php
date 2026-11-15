@@ -232,10 +232,13 @@ final class Provisioner {
 		$graphed = $this->cacti->graphed($node->hostId, $query);
 		$cached  = $this->cacti->cachedIndexes($node->hostId, $query);
 		$listed  = $this->cache->listed($node->hostId);
+		$sources = $this->cacti->dataSources($node->hostId, $query);
 
-		if ($graphed === null || $cached === null || $listed === null) {
+		if ($graphed === null || $cached === null || $listed === null || $sources === null) {
 			return 0;
 		}
+
+		$sources = array_flip($sources);
 
 		$cachedSet = array_flip($cached);
 		$created   = 0;
@@ -268,9 +271,16 @@ final class Provisioner {
 				}
 
 				foreach ((array) ($graph['local_data_id'] ?? []) as $dataSource) {
-					if (is_numeric($dataSource)) {
-						push_out_host($node->hostId, (int) $dataSource);
+					if (!is_numeric($dataSource)) {
+						continue;
 					}
+
+					if (!isset($sources[(int) $dataSource])) {
+						$this->setAsideInherited($node, (int) $dataSource);
+						$sources[(int) $dataSource] = true;
+					}
+
+					push_out_host($node->hostId, (int) $dataSource);
 				}
 
 				$graphed[$queryGraph . ':' . $index] = true;
@@ -283,5 +293,31 @@ final class Provisioner {
 		}
 
 		return $created;
+	}
+
+	/**
+	 * A data source this run created has no history, so an RRD file already
+	 * at its path belongs to something else: typically a GPU whose records
+	 * were lost when the database was restored from a backup older than the
+	 * RRD directory, after which Cacti hands out the same data source ids,
+	 * and so the same file names, again. Cacti would write the new GPU's
+	 * values into that file. The file is renamed instead, kept for the
+	 * operator, and a warning names the data source but not the path,
+	 * which contains the device description (REQ-BACKUP-003).
+	 */
+	private function setAsideInherited(Node $node, int $dataSource): void {
+		$path = (string) get_data_source_path($dataSource, true);
+
+		if ($path === '' || !is_file($path)) {
+			return;
+		}
+
+		$suffix = '.gpu-orphan-' . $this->clock->now();
+
+		if (@rename($path, $path . $suffix)) {
+			Log::warning(sprintf('Node %d: new data source %d found an RRD file already at its path; the file was renamed with the suffix %s so its history attaches to no other GPU', $node->id, $dataSource, $suffix));
+		} else {
+			Log::warning(sprintf('Node %d: new data source %d found an RRD file already at its path, and the file could not be renamed; move it aside before Cacti writes to it', $node->id, $dataSource));
+		}
 	}
 }
