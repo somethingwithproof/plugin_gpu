@@ -24,14 +24,14 @@ Read the nvidia-smi manual, the DCGM feature overview and `dcgmi` option parsers
 
 ## Invocation arithmetic
 
-Exact; independent of any tool timing. `N` = nodes, `G` = GPUs per node, `F` = fields per GPU, `C` = collection interval, `P` = Cacti poll interval.
+Exact for the rows that do not depend on a cache window; the SNMP extend row is an upper bound when `C` is shorter than the window. Independent of tool timing. `N` = nodes, `G` = GPUs per node, `F` = fields per GPU, `C` = collection interval, `P` = Cacti poll interval.
 
 | Design | Vendor tool invocations per `C` | Cacti script server calls per `P` | Notes |
 |---|---|---|---|
 | Run the tool on every Cacti poll (script server runs the tool) | `N * P/C` where `C = P`: `N` per poll, but one per data source item unless the script caches, so up to `N*G*F` | `N*G*F` | The plan rejects this (ADR 0007: the script server input reads a cache) |
 | Collector writes a cache once per `C`; script server reads it | `N` | `N*G*F` cache reads | The plan's design. Example: 1,000 nodes of 8 GPUs and 12 fields is 1,000 invocations per `C` and 96,000 cache reads per `P` |
 | Exporter scrape (path C) | 0 on the node; one HTTP request per node per `C` | same cache reads | The node runs the exporter continuously |
-| SNMP extend (path B) | `N` per `C`, at most one execution per extend cache window (5 s default) per node | same | The poller's SNMP walk triggers the execution |
+| SNMP extend (path B) | `N` per `C` when `C` is at least the 5 s cache window; at most `N` per `C` when `C` is shorter, because polls inside one window reuse the cached execution | same | The poller's SNMP walk triggers the execution |
 | Single looping process per node (`-l`) | 0 new processes per `C`; 1 long-lived process | same | Needs process supervision |
 
 With the plan's example, the collector must finish 1,000 node collections inside `C`. If one node takes `t` seconds and `W` collections run in parallel, a round takes about `N*t/W` seconds; this is why the plan has a time budget per poller (an engineering rule, not a measurement).

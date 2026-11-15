@@ -241,7 +241,9 @@ Rules, tested by fixtures (REQ-ID-001 to 006):
 | Data source and graphs | Graph templates per GPU | Created by Cacti's data query path from the templates |
 | Data source for staleness | A field of the same data query (`age`) | Always numeric |
 
-Templates ship as Cacti template XML and are imported with `import_xml_data()`, matched by hash so re-imports update rather than duplicate, under a lock so two upgrades cannot import together. The data query uses reindex method None; the plugin runs a forced reindex after each inventory change so titles refresh. `api_device_update_host_template()` (called from `api_device_save()` when a template is applied) runs `REPLACE INTO host_snmp_query` with the global default reindex method for data queries that have no cache rows yet, so the plugin sets None again afterwards; `api_device_save()` itself only forces method 0 for devices with SNMP version 0. Confirmed by source at `release/1.2.31` and `1.2.x`; running it is *live* ([research/cacti-core.md](research/cacti-core.md)). A data query XML may instead set `index_transient`, which stops removed indexes being marked orphan; M3 chooses between that and keeping absent GPUs in the listing.
+Templates ship as Cacti template XML and are imported with `import_xml_data()`, matched by hash so re-imports update rather than duplicate, under a lock so two upgrades cannot import together. The data query uses reindex method None; the plugin runs a forced reindex after each inventory change so titles refresh. `api_device_update_host_template()` (called from `api_device_save()` when a template is applied) runs `REPLACE INTO host_snmp_query` with the global default reindex method for data queries that have no cache rows yet, so the plugin sets None again afterward; `api_device_save()` itself only forces method 0 for devices with SNMP version 0. Confirmed by source at `release/1.2.31` and `1.2.x`; running it is *live* ([research/cacti-core.md](research/cacti-core.md)). A data query XML may instead set `index_transient`, which stops removed indexes being marked orphan; M3 chooses between that and keeping absent GPUs in the listing.
+
+When the device is Down or disabled, `run_data_query()` returns `true` without reindexing, even for a forced reindex, and method None schedules no later one. The plugin records each skipped reindex and runs it again once the device is Up and enabled, then checks that the expected indexes are present.
 
 Poller items are one per data query field per GPU. At 8,000 GPUs and 12 fields that is 96,000 poller items per collection cycle, which is why the script server input only reads a cache (#25, #49).
 
@@ -255,7 +257,7 @@ One set of fields describes every GPU, so a single set of templates and Thold te
 |---|---|---|---|---|
 | `util_gpu` | percent | `utilization.gpu` | field 1613 (ratio, multiplied by 100; first in DCGM v4.6.0) or 203 (percent; deprecated at v4.7.0) | `amd-smi metric --usage` (#18) |
 | `util_mem` | percent | `utilization.memory` | #15 | #18 |
-| `mem_used`, `mem_total` | one unit, chosen in #14 | `memory.used`, `memory.total` | 252 and 250 (MiB, deprecated) or 1627 (bytes; first in DCGM v4.7.0) | #18 |
+| `mem_used`, `mem_total` | one unit, chosen in #14 | `memory.used`, `memory.total` | 252 and 250 (MiB, deprecated) or 1627 and 1625 (used and capacity in bytes; 1627 first in DCGM v4.7.0) | #18 |
 | `temp_gpu` | degrees C | `temperature.gpu` | 150 | `--temperature` |
 | `power`, `power_limit` | watts | `power.draw`, `power.limit` | 155 and 160 | `--power` |
 | `clock_sm`, `clock_mem` | MHz | `clocks.sm`, `clocks.mem` | #15 | #18 |
@@ -274,7 +276,7 @@ Rules:
 
 ### Throttle reasons
 
-The active reasons are a bitmask. The plugin decodes it into one indicator per reason, so Thold can alert on the reasons that indicate a fault. Software power cap, software thermal, hardware thermal, and hardware power brake each get an indicator. Hardware slowdown (0x8) is documented as active when either hardware thermal or hardware power brake is active and as slated for removal, so it gets none. NVML 13.4.92 defines eleven bits (0x1 to 0x400), including Board Limit (0x200) and Reliability (0x400), which DCGM `v4.7.0` does not name, so the raw mask must keep bits the decoder does not know. Indicator names must fit Cacti's 19-character data source item limit ([research/clock-event-reasons.md](research/clock-event-reasons.md)). Idle is normal behavior and the nvidia-smi documentation marks Idle and Application Clocks Setting deprecated, so no default threshold uses them. The raw mask is stored so unrecognized bits are not lost. Which reasons are actionable is refined by #17.
+The active reasons are a bitmask. The plugin decodes it into one indicator per reason, so Thold can alert on the reasons that indicate a fault. Software power cap, software thermal, hardware thermal, and hardware power brake each get an indicator. Hardware slowdown (0x8) keeps an indicator for now: the manual says it is active when either hardware thermal or hardware power brake is active, but the NVML header also lists Fast Trigger power protection and PState or clock changes as causes, and says the behavior may be removed. Whether 0x8 occurs without 0x40 or 0x80 is *live*. NVML 13.4.92 defines eleven bits (0x1 to 0x400), including Board Limit (0x200) and Reliability (0x400), which DCGM `v4.7.0` does not name, so the raw mask must keep bits the decoder does not know. Indicator names must fit Cacti's 19-character data source item limit ([research/clock-event-reasons.md](research/clock-event-reasons.md)). Idle is normal behavior and the nvidia-smi documentation marks Idle and Application Clocks Setting deprecated, so no default threshold uses them. The raw mask is stored so unrecognized bits are not lost. Which reasons are actionable is refined by #17.
 
 ### XID and ECC signals
 
@@ -442,7 +444,7 @@ Milestone size estimates (ranges from measured reference plugins, no durations) 
 | A card swap in the same slot | History attaches to the wrong GPU | Identity by UUID; replacement flagged, never inherited |
 | Object counts slow Cacti at 8,000 GPUs | Poor experience for all users | Measure at M4; document a supported GPU count |
 | Collection path needs privilege or a command runner on the node | New attack surface | Decision #7 weighs it; fixed commands and review |
-| Address-based `remote_agent` authorization | A host sharing a poller's address can call actions; at `release/1.2.31` the address comes from `get_client_addr()`, which can honor proxy headers, and at `1.2.x` from `REMOTE_ADDR` | https, restricted network, read-only actions |
+| Address-based `remote_agent` authorization | A host sharing a poller's address can call actions; at `release/1.2.31` the address comes from `get_client_addr()`, which reads proxy headers only when the site sets `proxy_headers` in its configuration (then any host that can reach the endpoint can supply a header), and at `1.2.x` the check uses `REMOTE_ADDR` | https, restricted network, read-only actions; leave `proxy_headers` unset for collector endpoints, or have the trusted proxy strip and replace those headers |
 | Hardware access for tests | Fixtures may not reflect all GPUs | Capture from real hardware, pilot before release |
 | Volunteer capacity | Later phases stall | Each phase ships on its own |
 

@@ -41,6 +41,7 @@ IDs read from `dcgm_fields.h` at both DCGM tags ([v3.3.9](https://github.com/NVI
 | XID | 230 | `DCGM_FI_DEV_XID_ERRORS` | `DCGM_FI_DEV_XID_ERROR` (old aliased) | v4.6.0 | the XID number | confirmed; see [xid.md](xid.md) |
 | FB total, free, used | 250, 251, 252 | `DCGM_FI_DEV_FB_*` | same; 252 marked "Used Frame Buffer in MiB. Deprecated" | n/a | MiB | confirmed |
 | FB used bytes | 1627 | absent | `DCGM_FI_DEV_FB_USED_BYTES` | **v4.7.0** | bytes | confirmed |
+| FB capacity and free bytes | 1625, 1626 | absent | `DCGM_FI_DEV_FB_CAPACITY_BYTES`, `DCGM_FI_DEV_FB_FREE_BYTES` | not scanned | bytes | confirmed at v4.7.0 ([dcgm_fields.h:3688-3698](https://github.com/NVIDIA/DCGM/blob/9fae2867e6e5264fa0fca22a07dc898d591baa21/dcgmlib/dcgm_fields.h#L3688-L3698)) |
 | ECC SBE, DBE volatile totals | 310, 311 | `DCGM_FI_DEV_ECC_{SBE,DBE}_VOL_TOTAL` | same | n/a | count since driver load | confirmed IDs; the "since driver load" wording is from the nvidia-smi help text for the equivalent field |
 | ECC SBE, DBE aggregate totals | 312, 313 | `DCGM_FI_DEV_ECC_{SBE,DBE}_AGG_TOTAL` | same | n/a | persistent count | confirmed IDs |
 | Pending page retirement | 392 | `DCGM_FI_DEV_RETIRED_PENDING` | `DCGM_FI_DEV_PAGE_RETIRED_PENDING` (aliased) | not scanned | 0 or 1 | confirmed |

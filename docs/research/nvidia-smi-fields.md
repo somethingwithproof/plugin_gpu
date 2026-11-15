@@ -33,7 +33,7 @@ Read the current nvidia-smi manual page and its changelog (fetched 2026-11-15), 
 ## What the design needs from this
 
 - Field names: the plan's list is usable. The plan's `power.limit` is the software limit; the snapshot also lists `enforced.power.limit`, and the Known Issues section names `gpu.power.current_limit`. #14's fixture must record which one each supported driver returns.
-- The plan's unknown-value rule needs a tested set of placeholders: `N/A`, `[N/A]`, `[Not Supported]`, `Not Supported`, and an empty field. The parser should reject a column count that differs from the field list and map every non-numeric value in a numeric column to unknown (`U`).
+- The plan's unknown-value rule needs a tested set of placeholders: `N/A`, `[N/A]`, `[Not Supported]`, `Not Supported`, and an empty field. The parser should reject a column count that differs from the field list and map every non-numeric value in a numeric column to unknown (`U`). Bitmask columns (`clocks_throttle_reasons.*`, `clocks_event_reasons.*`) must be parsed as hexadecimal as well as decimal before that rule applies, because the help text says only "Bitmask ... See nvml.h" and the printed base is unverified (*live*); a `0x`-prefixed value must not be mapped to unknown.
 - CSV separator inside values: the GPU `name` field is free text. The plan never needs `name`; if it is shown, it is queried in its own call or last, and the parse rejects rows whose column count differs. Whether a product name can contain a comma is unverified.
 - `nounits` and the memory unit: unverified, see Live checks. The plan can avoid the question by requesting `nounits` and treating memory as MiB only after a fixture shows it, which is what #14's exit criteria ask.
 
