@@ -1,0 +1,100 @@
+{
+  "description": "An operator confirms the move. The GPU keeps its record and history at the new node, and the next collection there updates its attributes.",
+  "source": "synthetic: hand-written identity sequences, not captured tool output; every UUID uses the reserved all-zero prefix",
+  "nodes": {
+    "1": "enabled",
+    "2": "enabled",
+    "3": "disabled"
+  },
+  "absent_after": 2,
+  "steps": [
+    {
+      "at": 1000,
+      "node": 1,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+          "index": 0,
+          "bus": "00000000:3B:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    },
+    {
+      "at": 1060,
+      "node": 2,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+          "index": 0,
+          "bus": "00000000:5E:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    },
+    {
+      "confirm_move": "GPU-00000000-0000-4000-8000-0000000000a1"
+    },
+    {
+      "at": 1180,
+      "node": 2,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+          "index": 0,
+          "bus": "00000000:5E:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    },
+    {
+      "at": 1240,
+      "node": 1,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": []
+    },
+    {
+      "at": 1300,
+      "node": 1,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+          "index": 0,
+          "bus": "00000000:3B:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    }
+  ],
+  "expect": [
+    {
+      "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+      "node": 2,
+      "bus": "00000000:5E:00.0",
+      "pending_node": 0,
+      "presence": "present",
+      "missing": 0,
+      "first_seen": 1000,
+      "last_seen": 1180
+    },
+    {
+      "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+      "node": 1,
+      "bus": "00000000:3B:00.0",
+      "replaces": null
+    }
+  ]
+}

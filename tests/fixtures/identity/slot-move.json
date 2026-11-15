@@ -1,0 +1,74 @@
+{
+  "description": "The same card moves to another slot in the same node. Its bus ID and index change in place; no record is created and nothing is flagged.",
+  "source": "synthetic: hand-written identity sequences, not captured tool output; every UUID uses the reserved all-zero prefix",
+  "nodes": {
+    "1": "enabled",
+    "2": "enabled",
+    "3": "disabled"
+  },
+  "absent_after": 2,
+  "steps": [
+    {
+      "at": 1000,
+      "node": 1,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+          "index": 0,
+          "bus": "00000000:3B:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        },
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+          "index": 1,
+          "bus": "00000000:3C:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    },
+    {
+      "at": 1060,
+      "node": 1,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+          "index": 0,
+          "bus": "00000000:3C:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        },
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+          "index": 1,
+          "bus": "00000000:5E:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    }
+  ],
+  "expect": [
+    {
+      "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+      "node": 1,
+      "index": 1,
+      "bus": "00000000:5E:00.0",
+      "presence": "present",
+      "replaces": null
+    },
+    {
+      "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+      "node": 1,
+      "index": 0,
+      "bus": "00000000:3C:00.0",
+      "presence": "present",
+      "replaces": null
+    }
+  ]
+}

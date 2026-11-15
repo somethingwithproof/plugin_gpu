@@ -1,0 +1,74 @@
+{
+  "description": "A replacement card in a known slot that also comes up under a different index is still flagged: the rule matches the bus ID, because the index can change at any boot.",
+  "source": "synthetic: hand-written identity sequences, not captured tool output; every UUID uses the reserved all-zero prefix",
+  "nodes": {
+    "1": "enabled",
+    "2": "enabled",
+    "3": "disabled"
+  },
+  "absent_after": 2,
+  "steps": [
+    {
+      "at": 1000,
+      "node": 1,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+          "index": 0,
+          "bus": "00000000:3B:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        },
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+          "index": 1,
+          "bus": "00000000:3C:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    },
+    {
+      "at": 1060,
+      "node": 1,
+      "tool": "nvidia-smi",
+      "tool_version": "580.95.05",
+      "gpus": [
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+          "index": 0,
+          "bus": "00000000:3C:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        },
+        {
+          "uuid": "GPU-00000000-0000-4000-8000-0000000000c3",
+          "index": 1,
+          "bus": "00000000:3B:00.0",
+          "name": "NVIDIA Test GPU",
+          "driver": "580.95.05"
+        }
+      ]
+    }
+  ],
+  "expect": [
+    {
+      "uuid": "GPU-00000000-0000-4000-8000-0000000000a1",
+      "presence": "present",
+      "missing": 1
+    },
+    {
+      "uuid": "GPU-00000000-0000-4000-8000-0000000000b2",
+      "index": 0,
+      "presence": "present"
+    },
+    {
+      "uuid": "GPU-00000000-0000-4000-8000-0000000000c3",
+      "index": 1,
+      "bus": "00000000:3B:00.0",
+      "replaces": "GPU-00000000-0000-4000-8000-0000000000a1"
+    }
+  ]
+}
