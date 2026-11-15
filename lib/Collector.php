@@ -108,6 +108,15 @@ final class Collector {
 		$now      = $this->clock->now();
 		$stored   = 0;
 		$reported = [];
+		$missing  = 0;
+
+		// Ask for the reindex as soon as the records changed, so a failure
+		// to store the samples below does not lose it.
+		$reason = self::reindexReason($changes);
+
+		if ($reason !== '') {
+			$this->reindex->request($node->id, $reason, $now);
+		}
 
 		foreach ($collection->readings as $reading) {
 			$record = $byKey[$reading->report->key()] ?? null;
@@ -116,7 +125,15 @@ final class Collector {
 			// operator to confirm the move (REQ-ID-004). Its values are not
 			// stored until then, so they never appear under the old node's
 			// graphs.
-			if ($record === null || $record->id === 0 || $record->nodeId !== $node->id) {
+			if ($record === null || $record->id === 0) {
+				// The record for a reported GPU should exist once the
+				// inventory was recorded; its insert failed.
+				$missing++;
+
+				continue;
+			}
+
+			if ($record->nodeId !== $node->id) {
 				continue;
 			}
 
@@ -130,8 +147,8 @@ final class Collector {
 		$state = $collection->state();
 		$total = count($collection->readings);
 
-		if ($stored < count($reported)) {
-			$detail = sprintf('%d of %d GPU samples could not be stored', count($reported) - $stored, count($reported));
+		if ($stored < count($reported) || $missing > 0) {
+			$detail = sprintf('%d of %d GPU samples could not be stored', count($reported) - $stored + $missing, count($reported) + $missing);
 
 			$this->collections->finish($node->id, ExecutionState::NotStored, $detail, $now, $collection->newestSample(), $total, count($changes->created));
 
@@ -139,13 +156,18 @@ final class Collector {
 		}
 
 		$returned = $this->gpus->unretire($reported);
-		$reason   = self::reindexReason($changes, $returned);
 
-		if ($reason !== '') {
-			$this->reindex->request($node->id, $reason, $now);
+		if ($reason === '' && $returned > 0) {
+			$this->reindex->request($node->id, 'retired GPU returned', $now);
 		}
 
-		$this->collections->finish($node->id, $state, '', $now, $collection->newestSample(), $total, count($changes->created));
+		if (!$this->collections->finish($node->id, $state, '', $now, $collection->newestSample(), $total, count($changes->created))) {
+			$detail = 'The collection status could not be stored';
+
+			Log::warning(sprintf('Node %d: %s', $node->id, $detail));
+
+			return [ExecutionState::NotStored, $detail];
+		}
 
 		return [$state, ''];
 	}

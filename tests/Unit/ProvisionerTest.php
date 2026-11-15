@@ -39,12 +39,14 @@ beforeEach(function () {
 	$GLOBALS['__gpu_log']           = [];
 	$GLOBALS['__gpu_cacti']         = [];
 	$GLOBALS['__gpu_affected_rows'] = 1;
+	$GLOBALS['__gpu_db_fail']       = [];
 	$GLOBALS['__gpu_db_rows']       = [
 		'FROM `snmp_query`'         => [['id' => 78]],
 		'FROM host_snmp_query'      => [['reindex_method' => 0]],
 		'FROM snmp_query_graph'     => [['id' => 11, 'graph_template_id' => 343], ['id' => 12, 'graph_template_id' => 344]],
 		'FROM graph_local'          => [],
 		'FROM host_snmp_cache'      => [['snmp_index' => PROV_KEY_B], ['snmp_index' => PROV_KEY_A]],
+		'SELECT status, disabled FROM host' => [['status' => 3, 'disabled' => '']],
 		'LEFT JOIN plugin_gpu_retired' => [
 			['vendor' => 'nvidia', 'uuid' => 'GPU-00000000-0000-4000-8000-000000000001', 'presence' => 'present'],
 			['vendor' => 'nvidia', 'uuid' => 'GPU-00000000-0000-4000-8000-000000000002', 'presence' => 'absent'],
@@ -137,6 +139,64 @@ it('completes a reindex only once Cacti lists exactly the plugin\'s GPUs', funct
 
 	expect($result['deferred'])->toBeTrue()
 		->and(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM plugin_gpu_reindex')))->toBe([]);
+});
+
+it('keeps the request when the device went down while Cacti reindexed it', function () {
+	$GLOBALS['__gpu_db_rows']['SELECT status, disabled FROM host'] = [['status' => 1, 'disabled' => '']];
+
+	$result = prov()->provision(prov_node(), prov_device(), prov_request());
+
+	expect($result['deferred'])->toBeTrue()
+		->and(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM plugin_gpu_reindex')))->toBe([]);
+});
+
+it('keeps the request when the GPU records cannot be read, instead of reading them as none', function () {
+	$GLOBALS['__gpu_db_rows']['LEFT JOIN plugin_gpu_retired'] = fn () => false;
+
+	$result = prov()->provision(prov_node(), prov_device(), prov_request());
+
+	expect($result['deferred'])->toBeTrue()
+		->and(prov_calls('run_data_query'))->toBe([])
+		->and(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM host_snmp_cache')))->toBe([]);
+});
+
+it('clears the cache and orphans the data sources when the listing has no GPU left', function () {
+	$cleared = false;
+	$GLOBALS['__gpu_db_rows']['LEFT JOIN plugin_gpu_retired'] = [];
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache']         = function () use (&$cleared) {
+		$cleared = array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM host_snmp_cache')) !== [];
+
+		return $cleared ? [] : [['snmp_index' => PROV_KEY_A]];
+	};
+
+	$result = prov()->provision(prov_node(), prov_device(), prov_request());
+	$writes = array_column($GLOBALS['__gpu_db_exec'], 'sql');
+
+	expect($result['reindexed'])->toBeTrue()
+		->and(prov_calls('run_data_query'))->toBe([])
+		->and($writes)->toContain('DELETE FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ?')
+		->and($writes)->toContain('UPDATE data_local SET orphan = 1 WHERE host_id = ? AND snmp_query_id = ?');
+});
+
+it('asks for a reindex when no request waits but the listing differs from Cacti\'s cache', function () {
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = [['snmp_index' => PROV_KEY_A]];
+
+	prov()->provision(prov_node(), prov_device(), null);
+
+	$request = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'INSERT INTO plugin_gpu_reindex')));
+
+	expect($request)->toHaveCount(1)
+		->and($request[0]['params'])->toBe([3, 1000, 'listing differs from the cache']);
+
+	// Matching listings ask for nothing; neither does a device Cacti holds down.
+	$GLOBALS['__gpu_db_exec'] = [];
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = [['snmp_index' => PROV_KEY_B], ['snmp_index' => PROV_KEY_A]];
+	prov()->provision(prov_node(), prov_device(), null);
+
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = [['snmp_index' => PROV_KEY_A]];
+	prov()->provision(prov_node(), prov_device(1), null);
+
+	expect(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'INSERT INTO plugin_gpu_reindex')))->toBe([]);
 });
 
 it('creates each graph type once for every present, cached GPU, and none for an absent one', function () {

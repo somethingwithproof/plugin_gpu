@@ -69,6 +69,31 @@ final class CactiObjectRepository {
 	}
 
 	/**
+	 * Whether Cacti would skip a reindex of the device now: it is down or
+	 * disabled. Null when the device row could not be read.
+	 */
+	public function reindexBlocked(int $hostId): ?bool {
+		$row = db_fetch_row_prepared('SELECT status, disabled FROM host WHERE id = ?', [$hostId], true, $this->connection);
+
+		if (!is_array($row) || $row === []) {
+			return null;
+		}
+
+		return NodeDevice::fromRow($row + ['id' => $hostId])->reindexBlocked();
+	}
+
+	/**
+	 * Remove every cached index of the device's data query and mark its
+	 * data sources orphaned: what run_data_query() does for removed
+	 * indexes, for the case it does not handle, a listing with none.
+	 */
+	public function clearIndexes(int $hostId, int $dataQueryId): bool {
+		$cleared = db_execute_prepared('DELETE FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
+
+		return db_execute_prepared('UPDATE data_local SET orphan = 1 WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection) && $cleared;
+	}
+
+	/**
 	 * The data query's graph types: snmp_query_graph id => graph template id.
 	 *
 	 * @return array<int, int>

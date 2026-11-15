@@ -49,6 +49,7 @@ beforeEach(function () {
 	$GLOBALS['__gpu_db_rows']       = ['GET_LOCK' => [['l' => 1]]];
 	$GLOBALS['__gpu_log']           = [];
 	$GLOBALS['__gpu_affected_rows'] = 0;
+	$GLOBALS['__gpu_db_fail']       = [];
 });
 
 /**
@@ -170,6 +171,38 @@ it('stores each reported GPU\'s values against its record and asks for a reindex
 	$reindex = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'plugin_gpu_reindex')))[0];
 
 	expect($reindex['params'])->toBe([3, COLLECT_NOW, 'new GPU']);
+});
+
+it('fails the collection as not stored when a new GPU\'s record could not be inserted', function () {
+	// The insert fails, so the second read still finds no record.
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = [];
+	$GLOBALS['__gpu_db_fail']                        = ['INSERT INTO plugin_gpu_gpu'];
+
+	expect(collector(new FixtureReader('r595-1gpu'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::NotStored)
+		->and(collect_writes('plugin_gpu_observation'))->toBe([]);
+
+	$finish = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'INSERT INTO plugin_gpu_collection (node_id, state')));
+
+	expect($finish[0]['params'][1])->toBe('not_stored')
+		->and($finish[0]['params'][2])->toBe('1 of 1 GPU samples could not be stored');
+});
+
+it('keeps the reindex request for a new GPU when its sample could not be stored', function () {
+	$reads = 0;
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = function () use (&$reads) {
+		return $reads++ === 0 ? [] : collect_known();
+	};
+	$GLOBALS['__gpu_db_fail'] = ['INSERT INTO plugin_gpu_observation'];
+
+	expect(collector(new FixtureReader('r595-1gpu'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::NotStored)
+		->and(collect_writes('plugin_gpu_reindex'))->toHaveCount(1);
+});
+
+it('reports a collection whose status could not be stored as not stored', function () {
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = collect_known();
+	$GLOBALS['__gpu_db_fail']                        = ['INSERT INTO plugin_gpu_collection (node_id, state'];
+
+	expect(collector(new FixtureReader('r595-1gpu'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::NotStored);
 });
 
 it('does not store values for a GPU whose record waits for a move to be confirmed', function () {

@@ -29,8 +29,11 @@ namespace Somethingwithproof\Gpu;
  * reindexes after each inventory change itself (REQ-INDEX-004) and must not
  * depend on Cacti's scheduled reindex. Cacti's run_data_query() returns true
  * without reindexing a device that is down or disabled, so a reindex counts
- * as done only once Cacti's cache lists exactly the GPUs the plugin lists;
- * until then the request stays and is retried every cycle.
+ * as done only once Cacti's cache lists exactly the GPUs the plugin lists
+ * and the device was not down when it ran; until then the request stays and
+ * is retried every cycle. A cycle without a request still compares the two
+ * listings and asks for a reindex when they differ, so a request that was
+ * lost (a failed write, an interrupted collection) is made again.
  */
 final class Provisioner {
 	// Cacti's DATA_QUERY_AUTOINDEX_NONE.
@@ -97,6 +100,13 @@ final class Provisioner {
 			} else {
 				$result['deferred'] = true;
 			}
+		} elseif (!$device->reindexBlocked()) {
+			$expected = $this->expected($node);
+			$cached   = $this->cached($node, $query);
+
+			if ($expected !== null && $cached !== null && $expected !== $cached) {
+				$this->reindex->request($node->id, 'listing differs from the cache', $this->clock->now());
+			}
 		}
 
 		if (!$device->disabled) {
@@ -118,15 +128,33 @@ final class Provisioner {
 		// Forced, because Cacti refreshes titles only for indexes that
 		// changed, and a GPU's index (its identity key) never does: a new
 		// GPU index, name, or bus ID would otherwise stay out of the titles.
-		run_data_query($node->hostId, $query, false, true);
+		$expected = $this->expected($node);
 
-		$expected = array_map(static fn (array $row): string => Row::string($row, 'vendor') . '/' . Row::string($row, 'uuid'), $this->cache->listed($node->hostId) ?? []);
-		$cached   = $this->cacti->cachedIndexes($node->hostId, $query);
+		if ($expected === null) {
+			$this->reindex->deferred($node->id, 'The GPU records could not be read; retried next cycle', $now);
 
-		sort($expected);
+			return false;
+		}
 
-		if ($cached !== null) {
-			sort($cached);
+		if ($expected === []) {
+			// Cacti keeps its cache when a script data query lists no index,
+			// so the last GPU removed from the listing would stay cached.
+			// Drop the device's cache for the query and mark its data
+			// sources orphaned, as Cacti does for each removed index.
+			$this->cacti->clearIndexes($node->hostId, $query);
+		} else {
+			run_data_query($node->hostId, $query, false, true);
+		}
+
+		$cached = $this->cached($node, $query);
+
+		// Cacti reads the device's status when it starts, and skips the
+		// reindex (still returning true) if the device went down after this
+		// cycle read it. The same identity keys would then look served.
+		if ($this->cacti->reindexBlocked($node->hostId) !== false) {
+			$this->reindex->deferred($node->id, 'The device went down or was disabled during the reindex; retried once it is up', $now);
+
+			return false;
 		}
 
 		if ($cached === null || $cached !== $expected) {
@@ -140,6 +168,38 @@ final class Provisioner {
 		Log::info(sprintf('Node %d: GPU data query reindexed (%d GPUs)', $node->id, count($expected)));
 
 		return true;
+	}
+
+	/**
+	 * The identity keys the plugin lists for the node, sorted; null when the
+	 * records could not be read.
+	 *
+	 * @return list<string>|null
+	 */
+	private function expected(Node $node): ?array {
+		$listed = $this->cache->listed($node->hostId);
+
+		if ($listed === null) {
+			return null;
+		}
+
+		$keys = array_map(static fn (array $row): string => Row::string($row, 'vendor') . '/' . Row::string($row, 'uuid'), $listed);
+		sort($keys);
+
+		return $keys;
+	}
+
+	/**
+	 * @return list<string>|null the indexes Cacti has cached, sorted
+	 */
+	private function cached(Node $node, int $query): ?array {
+		$cached = $this->cacti->cachedIndexes($node->hostId, $query);
+
+		if ($cached !== null) {
+			sort($cached);
+		}
+
+		return $cached;
 	}
 
 	/**
