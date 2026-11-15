@@ -63,9 +63,11 @@ final readonly class NodeDevice {
 			snmpVersion: Row::int($row, 'snmp_version'),
 			snmpCommunity: Row::string($row, 'snmp_community'),
 			snmpUsername: Row::string($row, 'snmp_username'),
-			snmpPassword: Row::string($row, 'snmp_password'),
+			// Cacti stores passphrases as entered; a trimmed one would not
+			// match the agent's user.
+			snmpPassword: Row::untrimmed($row, 'snmp_password'),
 			snmpAuthProtocol: Row::string($row, 'snmp_auth_protocol'),
-			snmpPrivPassphrase: Row::string($row, 'snmp_priv_passphrase'),
+			snmpPrivPassphrase: Row::untrimmed($row, 'snmp_priv_passphrase'),
 			snmpPrivProtocol: Row::string($row, 'snmp_priv_protocol'),
 			snmpContext: Row::string($row, 'snmp_context'),
 			snmpEngineId: Row::string($row, 'snmp_engine_id'),

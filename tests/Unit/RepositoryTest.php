@@ -26,7 +26,9 @@ use Somethingwithproof\Gpu\GpuSnapshot;
 use Somethingwithproof\Gpu\IdentityReconciler;
 use Somethingwithproof\Gpu\Inventory;
 use Somethingwithproof\Gpu\InventoryExport;
+use Somethingwithproof\Gpu\LockRepository;
 use Somethingwithproof\Gpu\Node;
+use Somethingwithproof\Gpu\NodeDevice;
 use Somethingwithproof\Gpu\NodeRepository;
 use Somethingwithproof\Gpu\Presence;
 use Somethingwithproof\Gpu\Vendor;
@@ -190,4 +192,31 @@ it('keeps HTML delimiters out of the export, which csrf-magic would otherwise re
 
 	expect(stripos($json, '<html'))->toBeFalse()
 		->and($document['nodes'][0]['description'])->toBe('<html> rack 4');
+});
+
+it('hashes lock names to fit the server\'s 64-character limit, the same way for take and release', function () {
+	$seen = [];
+	$GLOBALS['__gpu_db_rows']['_LOCK('] = function ($sql) use (&$seen) {
+		$seen[] = $sql;
+
+		return [['l' => 1]];
+	};
+
+	$locks = new LockRepository(false);
+
+	expect($locks->acquire('node_1'))->toBeTrue();
+	$locks->release('node_1');
+
+	unset($GLOBALS['__gpu_db_rows']['_LOCK(']);
+
+	expect($seen[0])->toBe("SELECT GET_LOCK(SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256), 0)")
+		->and($seen[1])->toBe("SELECT RELEASE_LOCK(SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256))");
+});
+
+it('keeps SNMPv3 passphrases exactly as Cacti stored them', function () {
+	$device = NodeDevice::fromRow(['id' => 4, 'hostname' => ' node ', 'snmp_password' => ' auth pass ', 'snmp_priv_passphrase' => 'priv ']);
+
+	expect($device->snmpPassword)->toBe(' auth pass ')
+		->and($device->snmpPrivPassphrase)->toBe('priv ')
+		->and($device->hostname)->toBe('node');
 });

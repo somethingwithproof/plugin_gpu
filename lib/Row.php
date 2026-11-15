@@ -83,6 +83,18 @@ final class Row {
 	}
 
 	/**
+	 * A string exactly as stored, for values whose spaces are significant,
+	 * such as SNMPv3 passphrases.
+	 *
+	 * @param array<array-key, mixed> $row
+	 */
+	public static function untrimmed(array $row, string $key): string {
+		$value = $row[$key] ?? null;
+
+		return is_scalar($value) ? (string) $value : '';
+	}
+
+	/**
 	 * Result of a db_fetch_assoc*() call, which returns false on error. An
 	 * error reads as no rows, and non-array rows are dropped.
 	 *

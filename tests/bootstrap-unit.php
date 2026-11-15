@@ -92,6 +92,13 @@ if (!function_exists('db_execute_prepared')) {
 	function db_execute_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
 		$GLOBALS['__gpu_db_exec'][] = ['sql' => $sql, 'params' => $params];
 
+		// A test makes a write fail by naming a fragment of its statement.
+		foreach ($GLOBALS['__gpu_db_fail'] ?? [] as $fragment) {
+			if (str_contains($sql, $fragment)) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 }
@@ -154,12 +161,18 @@ if (!function_exists('db_fetch_insert_id')) {
 }
 
 // An SNMP agent: $GLOBALS['__gpu_snmp'] maps numeric OIDs (no leading dot)
-// to values. A get of a missing OID answers like Cacti does for no answer.
-$GLOBALS['__gpu_snmp'] = [];
+// to values, or to closures called on each get. A get of a missing OID
+// answers like Cacti does for no answer. Each get is recorded with its
+// timeout in $GLOBALS['__gpu_snmp_gets'].
+$GLOBALS['__gpu_snmp']      = [];
+$GLOBALS['__gpu_snmp_gets'] = [];
 
 if (!function_exists('cacti_snmp_get')) {
 	function cacti_snmp_get($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '', $auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '', $port = 161, $timeout_ms = 500, $retries = 0, $environ = 'SNMP', $engineid = '', $value_output_format = 1) {
-		return $GLOBALS['__gpu_snmp'][ltrim($oid, '.')] ?? 'U';
+		$GLOBALS['__gpu_snmp_gets'][] = [ltrim($oid, '.'), $timeout_ms];
+		$value                        = $GLOBALS['__gpu_snmp'][ltrim($oid, '.')] ?? 'U';
+
+		return $value instanceof Closure ? $value() : $value;
 	}
 
 	function cacti_snmp_walk($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '', $auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '', $port = 161, $timeout_ms = 500, $retries = 0, $bulk_walk_size = 10, $environ = 'SNMP', $engineid = '', $value_output_format = 1) {

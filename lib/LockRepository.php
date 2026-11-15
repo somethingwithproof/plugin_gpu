@@ -26,6 +26,10 @@ namespace Somethingwithproof\Gpu;
  * REQ-TPL-005).
  */
 final class LockRepository {
+	// The server-wide lock name: hashed, because MySQL and MariaDB limit
+	// lock names to 64 characters and a database name alone may be longer.
+	private const NAME = "SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256)";
+
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -34,10 +38,10 @@ final class LockRepository {
 	 * the server could not be asked.
 	 */
 	public function acquire(string $name): bool {
-		return (int) db_fetch_cell_prepared("SELECT GET_LOCK(CONCAT(DATABASE(), '.plugin_gpu.', ?), 0)", [$name], '', true, $this->connection) === 1;
+		return (int) db_fetch_cell_prepared('SELECT GET_LOCK(' . self::NAME . ', 0)', [$name], '', true, $this->connection) === 1;
 	}
 
 	public function release(string $name): void {
-		db_fetch_cell_prepared("SELECT RELEASE_LOCK(CONCAT(DATABASE(), '.plugin_gpu.', ?))", [$name], '', true, $this->connection);
+		db_fetch_cell_prepared('SELECT RELEASE_LOCK(' . self::NAME . ')', [$name], '', true, $this->connection);
 	}
 }

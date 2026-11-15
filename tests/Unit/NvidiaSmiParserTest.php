@@ -256,6 +256,46 @@ it('reads an extend entry\'s status, line count, and lines in line order', funct
 		->and($output->truncated())->toBeFalse();
 });
 
+it('gives the first read of an entry time for snmpd to run the command, whatever the device timeout', function () {
+	$index = SnmpExtendReader::index('cacti_gpu');
+
+	$GLOBALS['__gpu_snmp']      = ["1.3.6.1.4.1.8072.1.3.2.3.1.4.$index" => '0', "1.3.6.1.4.1.8072.1.3.2.3.1.3.$index" => '0'];
+	$GLOBALS['__gpu_snmp_gets'] = [];
+
+	(new SnmpExtendReader(0))->read(smi_device(), 'cacti_gpu');
+
+	$gets = $GLOBALS['__gpu_snmp_gets'];
+	$GLOBALS['__gpu_snmp'] = [];
+
+	expect($gets[0])->toBe(["1.3.6.1.4.1.8072.1.3.2.3.1.4.$index", 15000])
+		->and(SnmpExtendReader::EXTEND_TIMEOUT_MS)->toBeGreaterThan((\Somethingwithproof\Gpu\SnmpdConfig::TIMEOUT + \Somethingwithproof\Gpu\SnmpdConfig::KILL_AFTER) * 1000);
+});
+
+it('rejects output that snmpd replaced with another run while it was read', function () {
+	$index   = SnmpExtendReader::index('cacti_gpu');
+	$results = ['0', '124'];
+
+	// The cache expired after the first result: the next run timed out.
+	$GLOBALS['__gpu_snmp'] = [
+		"1.3.6.1.4.1.8072.1.3.2.3.1.4.$index" => function () use (&$results) {
+			return array_shift($results) ?? '124';
+		},
+		"1.3.6.1.4.1.8072.1.3.2.3.1.3.$index" => '1',
+		"1.3.6.1.4.1.8072.1.3.2.4.1.2.$index.1" => 'partial',
+	];
+
+	try {
+		(new SnmpExtendReader(0))->read(smi_device(), 'cacti_gpu');
+	} catch (CollectionError $e) {
+		$changed = $e;
+	}
+
+	$GLOBALS['__gpu_snmp'] = [];
+
+	expect($changed->state)->toBe(ExecutionState::InvalidOutput)
+		->and($changed->getMessage())->toContain('changed while it was read');
+});
+
 it('tells a missing extend entry from an agent that does not answer', function () {
 	$GLOBALS['__gpu_snmp'] = ['1.3.6.1.2.1.1.3.0' => '123456'];
 

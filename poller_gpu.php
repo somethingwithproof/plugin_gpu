@@ -71,7 +71,12 @@ if (!(new \Somethingwithproof\Gpu\Schema(false))->isCurrent()) {
 $gpu_interval = (int) read_config_option('poller_interval');
 $gpu_budget   = max(30, (int) (($gpu_interval > 0 ? $gpu_interval : 300) * 0.8));
 
-if (!register_process_start('gpu', 'collector', 0, $gpu_budget + 120)) {
+// One collector at a time, held through collection and provisioning. The
+// database lock is atomic; Cacti's process registry is kept for monitoring
+// but can let two starts through together.
+$gpu_lock = new \Somethingwithproof\Gpu\LockRepository(false);
+
+if (!$gpu_lock->acquire('collector') || !register_process_start('gpu', 'collector', 0, $gpu_budget + 120)) {
 	cacti_log('NOTE: The GPU collector is already running', false, 'GPU', POLLER_VERBOSITY_MEDIUM);
 	exit(0);
 }
@@ -82,6 +87,7 @@ try {
 	$gpu_stats = gpu_poller()->run(gpu_settings(), $gpu_budget);
 } finally {
 	unregister_process('gpu', 'collector', 0);
+	$gpu_lock->release('collector');
 }
 
 cacti_log(sprintf('STATS: Time:%.2f Nodes:%d Ok:%d Failed:%d Skipped:%d Remote:%d Reindexed:%d Deferred:%d Graphs:%d StoppedEarly:%s', microtime(true) - $gpu_start, $gpu_stats['nodes'], $gpu_stats['ok'], $gpu_stats['failed'], $gpu_stats['skipped'], $gpu_stats['remote'], $gpu_stats['reindexed'], $gpu_stats['deferred'], $gpu_stats['graphs'], $gpu_stats['stopped_early'] ? 'yes' : 'no'), false, 'GPU', POLLER_VERBOSITY_MEDIUM);

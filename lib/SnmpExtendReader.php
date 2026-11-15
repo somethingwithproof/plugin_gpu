@@ -40,6 +40,11 @@ final class SnmpExtendReader implements ExtendReader {
 	// silent agent.
 	private const UPTIME    = '.1.3.6.1.2.1.1.3.0';
 
+	// The first read after snmpd's cache expires waits while the agent runs
+	// the command, up to timeout(1)'s limit and kill delay, so it gets that
+	// long plus a margin for the network, whatever the device's timeout.
+	public const EXTEND_TIMEOUT_MS = (SnmpdConfig::TIMEOUT + SnmpdConfig::KILL_AFTER + 3) * 1000;
+
 	public function __construct(private readonly int $retries) {
 	}
 
@@ -49,7 +54,7 @@ final class SnmpExtendReader implements ExtendReader {
 
 	public function read(NodeDevice $device, string $token): ExtendOutput {
 		$index  = self::index($token);
-		$result = $this->get($device, self::RESULT . '.' . $index);
+		$result = $this->get($device, self::RESULT . '.' . $index, max($device->snmpTimeout, self::EXTEND_TIMEOUT_MS));
 
 		if (!is_numeric($result)) {
 			$uptime = $this->get($device, self::UPTIME);
@@ -75,11 +80,23 @@ final class SnmpExtendReader implements ExtendReader {
 
 		ksort($lines);
 
+		// The result, the line count, and the lines are separate requests,
+		// and snmpd may run the command again between them when its cache
+		// expires. Reading the result and count again after the lines shows
+		// whether they all came from one run; a run that changed them (a
+		// timeout that left partial output, for example) is not used.
+		$after         = $this->get($device, self::RESULT . '.' . $index, max($device->snmpTimeout, self::EXTEND_TIMEOUT_MS));
+		$declaredAfter = $this->get($device, self::NUM_LINES . '.' . $index);
+
+		if ($after !== $result || $declaredAfter !== $declared) {
+			throw new CollectionError(ExecutionState::InvalidOutput, sprintf('The output of %s changed while it was read; the next collection reads it again', $token));
+		}
+
 		return new ExtendOutput((int) $result, is_numeric($declared) ? (int) $declared : -1, array_values($lines));
 	}
 
-	private function get(NodeDevice $device, string $oid): string {
-		return trim((string) cacti_snmp_get($device->hostname, $device->snmpCommunity, $oid, $device->snmpVersion, $device->snmpUsername, $device->snmpPassword, $device->snmpAuthProtocol, $device->snmpPrivPassphrase, $device->snmpPrivProtocol, $device->snmpContext, $device->snmpPort, $device->snmpTimeout, $this->retries, 'GPU', $device->snmpEngineId));
+	private function get(NodeDevice $device, string $oid, ?int $timeout = null): string {
+		return trim((string) cacti_snmp_get($device->hostname, $device->snmpCommunity, $oid, $device->snmpVersion, $device->snmpUsername, $device->snmpPassword, $device->snmpAuthProtocol, $device->snmpPrivPassphrase, $device->snmpPrivProtocol, $device->snmpContext, $device->snmpPort, $timeout ?? $device->snmpTimeout, $this->retries, 'GPU', $device->snmpEngineId));
 	}
 
 	/**
