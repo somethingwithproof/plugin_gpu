@@ -151,6 +151,28 @@ if (!function_exists('db_fetch_insert_id')) {
 	}
 }
 
+// An SNMP agent: $GLOBALS['__gpu_snmp'] maps numeric OIDs (no leading dot)
+// to values. A get of a missing OID answers like Cacti does for no answer.
+$GLOBALS['__gpu_snmp'] = [];
+
+if (!function_exists('cacti_snmp_get')) {
+	function cacti_snmp_get($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '', $auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '', $port = 161, $timeout_ms = 500, $retries = 0, $environ = 'SNMP', $engineid = '', $value_output_format = 1) {
+		return $GLOBALS['__gpu_snmp'][ltrim($oid, '.')] ?? 'U';
+	}
+
+	function cacti_snmp_walk($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '', $auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '', $port = 161, $timeout_ms = 500, $retries = 0, $bulk_walk_size = 10, $environ = 'SNMP', $engineid = '', $value_output_format = 1) {
+		$out = [];
+
+		foreach ($GLOBALS['__gpu_snmp'] as $key => $value) {
+			if (str_starts_with($key, ltrim($oid, '.') . '.')) {
+				$out[] = ['oid' => '.' . $key, 'value' => $value];
+			}
+		}
+
+		return $out;
+	}
+}
+
 // Enough of Cacti's HTML helpers for a page class to render into a buffer.
 if (!function_exists('html_escape')) {
 	function html_escape($string) {

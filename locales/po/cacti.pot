@@ -48,6 +48,54 @@ msgstr ""
 msgid "The GPU stays with its recorded node."
 msgstr ""
 
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr ""
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr ""
+
 #: lib/InventoryPage.php
 msgid "Driver"
 msgstr ""
