@@ -57,3 +57,9 @@ SNMP v1 and v2c also work, but they send the community and every value in plaint
 3. The collector runs at the end of every poller cycle. Each GPU it finds becomes an index of the GPU data query, and the plugin creates the GPU graphs for it.
 
 Nodes on remote data collectors are not collected yet; remote collectors are phase 3.
+
+### An SNMP port other than 161 on Cacti 1.2.x
+
+Cacti's 1.2.x branch (after 1.2.31) puts the device's address in brackets for a single SNMP get when the port is not 161, as in `[192.0.2.10]:1161`. PHP's SNMP extension reads a bracketed name as an IPv6 address, so the get fails for an IPv4 address or for a host name with no IPv6 address, with `Unknown failure while resolving '[192.0.2.10]:1161'` in Cacti's log. Cacti 1.2.31 and a node on port 161 are not affected.
+
+The plugin reads the node through a Cacti SNMP session, as Cacti's poller does, which brackets only an address that contains a colon, so collection works on any port. Cacti's own SNMP availability check uses the single get, though, so with cmd.php as the poller a node on another port is marked down and the plugin then waits to reindex it. On Cacti 1.2.x, until that is fixed in Cacti, keep the node's agent on port 161, or set the device's Downed Device Detection to Ping or None. The end-to-end test does the latter.

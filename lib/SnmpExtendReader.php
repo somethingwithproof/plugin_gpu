@@ -54,17 +54,17 @@ final class SnmpExtendReader implements ExtendReader {
 
 	public function read(NodeDevice $device, string $token): ExtendOutput {
 		$index  = self::index($token);
-		$result = $this->get($device, self::RESULT . '.' . $index, max($device->snmpTimeout, self::EXTEND_TIMEOUT_MS));
+		$result = $this->value($device, self::RESULT . '.' . $index, max($device->snmpTimeout, self::EXTEND_TIMEOUT_MS));
 
 		if (!is_numeric($result)) {
-			$uptime = $this->get($device, self::UPTIME);
+			$uptime = $this->value($device, self::UPTIME);
 
 			throw $uptime !== '' && $uptime !== 'U'
 				? new CollectionError(ExecutionState::NotConfigured, sprintf('The SNMP agent has no extend entry named %s', $token))
 				: new CollectionError(ExecutionState::Unreachable, 'The SNMP agent did not answer');
 		}
 
-		$declared = $this->get($device, self::NUM_LINES . '.' . $index);
+		$declared = $this->value($device, self::NUM_LINES . '.' . $index);
 		$lines    = [];
 		$prefix   = ltrim(self::OUT_LINE . '.' . $index . '.', '.');
 
@@ -85,8 +85,8 @@ final class SnmpExtendReader implements ExtendReader {
 		// expires. Reading the result and count again after the lines shows
 		// whether they all came from one run; a run that changed them (a
 		// timeout that left partial output, for example) is not used.
-		$after         = $this->get($device, self::RESULT . '.' . $index, max($device->snmpTimeout, self::EXTEND_TIMEOUT_MS));
-		$declaredAfter = $this->get($device, self::NUM_LINES . '.' . $index);
+		$after         = $this->value($device, self::RESULT . '.' . $index, max($device->snmpTimeout, self::EXTEND_TIMEOUT_MS));
+		$declaredAfter = $this->value($device, self::NUM_LINES . '.' . $index);
 
 		if ($after !== $result || $declaredAfter !== $declared) {
 			throw new CollectionError(ExecutionState::InvalidOutput, sprintf('The output of %s changed while it was read; the next collection reads it again', $token));
@@ -95,8 +95,41 @@ final class SnmpExtendReader implements ExtendReader {
 		return new ExtendOutput((int) $result, is_numeric($declared) ? (int) $declared : -1, array_values($lines));
 	}
 
-	private function get(NodeDevice $device, string $oid, ?int $timeout = null): string {
-		return trim((string) cacti_snmp_get($device->hostname, $device->snmpCommunity, $oid, $device->snmpVersion, $device->snmpUsername, $device->snmpPassword, $device->snmpAuthProtocol, $device->snmpPrivPassphrase, $device->snmpPrivProtocol, $device->snmpContext, $device->snmpPort, $timeout ?? $device->snmpTimeout, $this->retries, 'GPU', $device->snmpEngineId));
+	/**
+	 * One value from the device, trimmed; '' or 'U' when it gave none.
+	 *
+	 * Read through a Cacti SNMP session built from the device's fields, as
+	 * Cacti's poller and data queries read a device. Cacti 1.2.x's
+	 * cacti_snmp_get() puts an IPv4 address or a host name in brackets when
+	 * the port is not 161, and PHP's SNMP extension then resolves the name
+	 * as IPv6 only, so every read of such a device fails ("Unknown failure
+	 * while resolving '[192.0.2.10]:1161'"). Its sessions bracket only an
+	 * address that contains a colon. cacti_snmp_get() is still used when no
+	 * session can be made, such as on Cacti 1.2.31 without PHP's SNMP
+	 * extension, where it runs the Net-SNMP tools and is not affected.
+	 */
+	public function value(NodeDevice $device, string $oid, ?int $timeout = null): string {
+		$timeout ??= $device->snmpTimeout;
+
+		try {
+			$session = cacti_snmp_session($device->hostname, $device->snmpCommunity, $device->snmpVersion, $device->snmpUsername, $device->snmpPassword, $device->snmpAuthProtocol, $device->snmpPrivPassphrase, $device->snmpPrivProtocol, $device->snmpContext, $device->snmpEngineId, $device->snmpPort, $timeout, $this->retries, $device->maxOids);
+		} catch (\Throwable) {
+			// Cacti 1.2.31 lets an Error from PHP's SNMP class through: the
+			// class is missing, or it rejects an SNMPv3 protocol.
+			$session = false;
+		}
+
+		if (!is_object($session)) {
+			return trim((string) cacti_snmp_get($device->hostname, $device->snmpCommunity, $oid, $device->snmpVersion, $device->snmpUsername, $device->snmpPassword, $device->snmpAuthProtocol, $device->snmpPrivPassphrase, $device->snmpPrivProtocol, $device->snmpContext, $device->snmpPort, $timeout, $this->retries, 'GPU', $device->snmpEngineId));
+		}
+
+		try {
+			$value = cacti_snmp_session_get($session, $oid);
+		} catch (\Throwable) {
+			$value = false;
+		}
+
+		return is_scalar($value) && $value !== false ? trim((string) $value) : '';
 	}
 
 	/**

@@ -317,3 +317,43 @@ it('tells a missing extend entry from an agent that does not answer', function (
 		->and($missing->getMessage())->toBe('The SNMP agent has no extend entry named cacti_gpu')
 		->and($silent->state)->toBe(ExecutionState::Unreachable);
 });
+
+it('reads through a Cacti SNMP session with the device\'s host and port as stored', function () {
+	$device = \Somethingwithproof\Gpu\NodeDevice::fromRow(['id' => 4, 'hostname' => '192.0.2.10', 'snmp_version' => 3, 'snmp_port' => 1161, 'snmp_timeout' => 700]);
+
+	$GLOBALS['__gpu_snmp']          = ['1.3.6.1.2.1.1.3.0' => '123456'];
+	$GLOBALS['__gpu_snmp_sessions'] = [];
+	$GLOBALS['__gpu_snmp_direct']   = [];
+
+	$value = (new SnmpExtendReader(0))->value($device, '.1.3.6.1.2.1.1.3.0');
+
+	$sessions = $GLOBALS['__gpu_snmp_sessions'];
+	$direct   = $GLOBALS['__gpu_snmp_direct'];
+	$GLOBALS['__gpu_snmp'] = [];
+
+	// Not cacti_snmp_get(): Cacti 1.2.x puts this address in brackets.
+	expect($value)->toBe('123456')
+		->and($sessions)->toBe([['192.0.2.10', 1161, 700]])
+		->and($direct)->toBe([]);
+});
+
+it('falls back to cacti_snmp_get() when Cacti cannot make an SNMP session', function (\Throwable|false $session) {
+	$device = \Somethingwithproof\Gpu\NodeDevice::fromRow(['id' => 4, 'hostname' => '192.0.2.10', 'snmp_version' => 3, 'snmp_port' => 1161]);
+
+	$GLOBALS['__gpu_snmp']         = ['1.3.6.1.2.1.1.3.0' => '123456'];
+	$GLOBALS['__gpu_snmp_session'] = $session;
+	$GLOBALS['__gpu_snmp_direct']  = [];
+
+	$value = (new SnmpExtendReader(0))->value($device, '.1.3.6.1.2.1.1.3.0');
+
+	$direct = $GLOBALS['__gpu_snmp_direct'];
+	$GLOBALS['__gpu_snmp']         = [];
+	$GLOBALS['__gpu_snmp_session'] = true;
+
+	expect($value)->toBe('123456')
+		->and($direct)->toBe([['192.0.2.10', 1161]]);
+})->with([
+	'no session'                 => [false],
+	'PHP\'s SNMP class missing'  => [new \Error('Class "SNMP" not found')],
+	'an SNMPv3 protocol refused' => [new \ValueError('Authentication protocol must be "SHA" or "MD5"')],
+]);

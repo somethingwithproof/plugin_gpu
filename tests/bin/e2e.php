@@ -216,8 +216,15 @@ $e2e_template = (new \Somethingwithproof\Gpu\CactiObjectRepository(false))->idBy
 
 e2e_check($e2e_template > 0, 'the GPU Node device template is installed');
 
+// Cacti's SNMP availability check uses cacti_snmp_get(), which on Cacti
+// 1.2.x (where snmp_format_agent() puts the target in brackets) cannot
+// reach an IPv4 agent on a port other than 161, so cmd.php would hold the
+// device down. Use the workaround docs/node-setup.md gives there: an
+// availability method that does not use SNMP.
+$e2e_avail = function_exists('snmp_format_agent') && (int) $e2e_agent[1] !== 161 ? AVAIL_NONE : AVAIL_SNMP;
+
 $e2e_host = (int) api_device_save(0, $e2e_template, 'gpu-node-e2e', $e2e_agent[0], '', 3, 'cactigpu', $e2e_secrets[0], (int) $e2e_agent[1], 1000, '',
-	2, 1, 23, 400, 1, '', 'SHA256', $e2e_secrets[1], 'AES128', '', '', 10, 1, 1, 0);
+	$e2e_avail, 1, 23, 400, 1, '', 'SHA256', $e2e_secrets[1], 'AES128', '', '', 10, 1, 1, 0);
 
 e2e_check($e2e_host > 0, 'the node device was created through api_device_save()');
 
@@ -233,11 +240,12 @@ e2e_check((int) db_fetch_cell_prepared('SELECT reindex_method FROM host_snmp_que
 
 // Wait, within a bound, until the agent answers over SNMPv3 with the
 // device's own settings, so a slow agent start is not read as a failure.
+// The read goes the way collection reads the device.
 $e2e_device = $e2e_node !== null ? gpu_nodes()->device($e2e_node) : null;
 $e2e_ready  = false;
 
 for ($i = 0; $i < 30 && $e2e_device !== null && !$e2e_ready; $i++) {
-	$e2e_uptime = (string) cacti_snmp_get($e2e_device->hostname, '', '.1.3.6.1.2.1.1.3.0', 3, $e2e_device->snmpUsername, $e2e_device->snmpPassword, $e2e_device->snmpAuthProtocol, $e2e_device->snmpPrivPassphrase, $e2e_device->snmpPrivProtocol, '', $e2e_device->snmpPort, 1000, 0, 'GPU', '');
+	$e2e_uptime = (new \Somethingwithproof\Gpu\SnmpExtendReader(0))->value($e2e_device, '.1.3.6.1.2.1.1.3.0', 1000);
 	$e2e_ready  = $e2e_uptime !== '' && $e2e_uptime !== 'U';
 
 	if (!$e2e_ready) {

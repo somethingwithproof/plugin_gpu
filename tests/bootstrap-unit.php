@@ -163,14 +163,41 @@ if (!function_exists('db_fetch_insert_id')) {
 // An SNMP agent: $GLOBALS['__gpu_snmp'] maps numeric OIDs (no leading dot)
 // to values, or to closures called on each get. A get of a missing OID
 // answers like Cacti does for no answer. Each get is recorded with its
-// timeout in $GLOBALS['__gpu_snmp_gets'].
-$GLOBALS['__gpu_snmp']      = [];
-$GLOBALS['__gpu_snmp_gets'] = [];
+// timeout in $GLOBALS['__gpu_snmp_gets']. Each session is recorded in
+// $GLOBALS['__gpu_snmp_sessions'] with the target it was given; setting
+// $GLOBALS['__gpu_snmp_session'] to false or a Throwable makes
+// cacti_snmp_session() return false or throw it, and each get through
+// cacti_snmp_get() is then recorded as well in $GLOBALS['__gpu_snmp_direct'].
+$GLOBALS['__gpu_snmp']          = [];
+$GLOBALS['__gpu_snmp_gets']     = [];
+$GLOBALS['__gpu_snmp_sessions'] = [];
+$GLOBALS['__gpu_snmp_session']  = true;
+$GLOBALS['__gpu_snmp_direct']   = [];
+
+if (!function_exists('cacti_snmp_session')) {
+	function cacti_snmp_session($hostname, $community, $version, $auth_user = '', $auth_pass = '', $auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '', $engineid = '', $port = 161, $timeout_ms = 500, $retries = 0, $max_oids = 10, $bulk_walk_size = 10) {
+		$GLOBALS['__gpu_snmp_sessions'][] = [$hostname, $port, $timeout_ms];
+
+		if ($GLOBALS['__gpu_snmp_session'] instanceof Throwable) {
+			throw $GLOBALS['__gpu_snmp_session'];
+		}
+
+		return $GLOBALS['__gpu_snmp_session'] === false ? false : (object) ['timeout' => $timeout_ms];
+	}
+
+	function cacti_snmp_session_get($session, $oid, $strip_alpha = false) {
+		$GLOBALS['__gpu_snmp_gets'][] = [ltrim($oid, '.'), $session->timeout];
+		$value                        = $GLOBALS['__gpu_snmp'][ltrim($oid, '.')] ?? false;
+
+		return $value instanceof Closure ? $value() : $value;
+	}
+}
 
 if (!function_exists('cacti_snmp_get')) {
 	function cacti_snmp_get($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '', $auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '', $port = 161, $timeout_ms = 500, $retries = 0, $environ = 'SNMP', $engineid = '', $value_output_format = 1) {
-		$GLOBALS['__gpu_snmp_gets'][] = [ltrim($oid, '.'), $timeout_ms];
-		$value                        = $GLOBALS['__gpu_snmp'][ltrim($oid, '.')] ?? 'U';
+		$GLOBALS['__gpu_snmp_gets'][]   = [ltrim($oid, '.'), $timeout_ms];
+		$GLOBALS['__gpu_snmp_direct'][] = [$hostname, $port];
+		$value                          = $GLOBALS['__gpu_snmp'][ltrim($oid, '.')] ?? 'U';
 
 		return $value instanceof Closure ? $value() : $value;
 	}
