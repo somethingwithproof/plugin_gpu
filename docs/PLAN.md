@@ -1,6 +1,6 @@
 # Cacti 1.2 GPU Plugin Plan
 
-Status: proposal, revision 2 (2026-11-15). Revision 2 folds in the milestone 1 documentation and source research in [`docs/research/`](research/); items that need hardware are marked *live* and listed in each research page's Live checks table. Milestone 2 (foundation) is implemented: the PHP guard, lifecycle, realms and pages, node registry, GPU identity records, and the test harness. Where it differs from the text below, the difference is stated in place. Nothing that collects from a GPU exists yet. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
+Status: in development, plan revision 2 (2026-11-15). Revision 2 folds in the milestone 1 documentation and source research in [`docs/research/`](research/); items that need hardware are marked *live* and listed in each research page's Live checks table. Milestone 2 (foundation) is implemented: the PHP guard, lifecycle, realms and pages, node registry, GPU identity records, and the test harness. Where it differs from the text below, the difference is stated in place. Milestone 3 is not on `main`, so nothing collects from a GPU yet: no vendor tool is run, no data query exists, and no graph is created. There is no release. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
 
 `plugin_gpu` brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and clock throttling reasons from NVIDIA and AMD tools into Cacti 1.2. Each GPU becomes an index of a data query on its node's Cacti device, so operators see GPU graphs next to the node's other graphs, under Cacti's own permissions, and alert on them with Thold and Maint.
 
@@ -165,7 +165,7 @@ Each assumption above was researched from documentation and source on 2026-11-15
 | AMD fields and `rocm-smi` | Keys read from CLI source at ROCm 7.2.4; no `rocm-smi` target; real output *live* | [amd-smi](research/amd-smi.md) |
 | Cacti core rows | Confirmed by source, with corrections applied in this revision | [cacti-core](research/cacti-core.md) |
 
-Evidence for decision #7 is collected in [research/collection-path.md](research/collection-path.md); it records no outcome. Estimates are in [research/estimates.md](research/estimates.md).
+Evidence for decision #7 is collected in [research/collection-path.md](research/collection-path.md); it records no outcome; the decision is in [ADR 0008](decisions/0008-collect-through-snmp-extend.md). Estimates are in [research/estimates.md](research/estimates.md).
 
 ## Collection paths
 
@@ -461,4 +461,4 @@ Not scheduled; revisited after phase 1:
 
 ## Upstream process
 
-This repository holds the proposal and tracks its requirements as GitHub issues and milestones. Before code is proposed for the Cacti organization, open an issue there describing the problem, the phase plan, and the open decisions, and ask maintainers about the repository, name, attaching to existing devices, and the test harness (#28). No Thold or Maint change is needed.
+This repository holds the plan and tracks its requirements as GitHub issues and milestones. Before code is proposed for the Cacti organization, open an issue there describing the problem, the phase plan, and the open decisions, and ask maintainers about the repository, name, attaching to existing devices, and the test harness (#28). No Thold or Maint change is needed.
