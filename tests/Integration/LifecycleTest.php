@@ -231,6 +231,58 @@ it('keeps tables on uninstall by default, and drops them only when the box was c
 		->and($dropped['schema'])->toBeEmpty();
 });
 
+it('leaves the plugin\'s templates and data query XML on uninstall unless asked to remove them', function () {
+	$installed = lifecycle('install');
+	$after     = lifecycle('uninstall');
+
+	expect($after['objects'])->toBe($installed['objects'])
+		->and($after['objects']['dq_file'])->toBeTrue()
+		->and($after['cacti'])->toBe($installed['cacti']);
+});
+
+it('removes the plugin\'s unused templates and its unchanged data query XML on uninstall when asked, and nothing else', function () {
+	$installed = lifecycle('install');
+
+	lifecycle('set_setting', 'gpu_uninstall_remove_objects=on');
+
+	$after = lifecycle('uninstall');
+
+	expect($after['objects'])->toBe(['data_query' => 0, 'data_template' => 0, 'graph_templates' => 0, 'graph_items' => 0, 'device_template' => 0, 'dq_graphs' => 0, 'dq_file' => false])
+		->and($after['cacti'])->toBe($installed['cacti']);
+
+	// A reinstall imports them again.
+	expect(lifecycle('install')['objects'])->toBe($installed['objects']);
+});
+
+it('keeps a changed data query XML and every template something outside the plugin uses', function () {
+	$installed = lifecycle('install');
+
+	lifecycle('set_setting', 'gpu_uninstall_remove_objects=on');
+	lifecycle('link_graph_template');
+	lifecycle('edit_data_query_file');
+
+	$after = lifecycle('uninstall');
+
+	// The linked graph template stays, and with it the data template it
+	// draws; the device template and data query that only the plugin used
+	// go. The edited file is kept.
+	expect($after['objects'])->toBe(['data_query' => 0, 'data_template' => 1, 'graph_templates' => 1, 'graph_items' => $after['objects']['graph_items'], 'device_template' => 0, 'dq_graphs' => 0, 'dq_file' => true])
+		->and($after['objects']['graph_items'])->toBeGreaterThan(0)
+		->and($after['cacti'])->toBe($installed['cacti']);
+});
+
+it('keeps every template while a device uses the GPU Node template', function () {
+	lifecycle('install');
+	lifecycle('set_setting', 'gpu_uninstall_remove_objects=on');
+
+	$used  = lifecycle('use_device_template');
+	$after = lifecycle('uninstall');
+
+	expect($after['objects'])->toBe($used['objects'])
+		->and($after['objects']['device_template'])->toBe(1)
+		->and($after['cacti'])->toBe($used['cacti']);
+});
+
 it('honours keep tables on uninstall when the runtime is refused', function () {
 	lifecycle('install');
 	lifecycle('seed');

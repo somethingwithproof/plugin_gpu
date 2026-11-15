@@ -44,6 +44,7 @@ Settings are under **Configuration > Settings > GPU**:
 | Mark Absent After | 3 | Successful collections that must miss a GPU before it is marked absent, 1 to 100. A failed or empty collection never counts. |
 | Stale After | 600 seconds | How old a sample may be before its values print `U`, 60 to 86400. `age` keeps counting. |
 | Keep Plugin Tables on Uninstall | on | Uninstall keeps node and GPU records unless this is cleared. |
+| Remove the plugin's Cacti objects on uninstall | off | Uninstall also removes the plugin's unused templates and its unchanged data query XML. It never deletes RRD files, devices, graphs, or data sources. |
 
 ## Upgrade
 
@@ -65,10 +66,18 @@ Schema versions, recorded in the `gpu_schema_version` setting:
 
 1. Export the records under **GPU Nodes** if you want them.
 2. Clear *Keep Plugin Tables on Uninstall* only if the records should be dropped.
-3. Uninstall **GPU** in **Configuration > Plugins**.
-4. Remove the two `extend` lines from each node's `snmpd.conf` and restart snmpd.
+3. Check *Remove the plugin's Cacti objects on uninstall* only if the plugin's templates and data query XML should go too.
+4. Uninstall **GPU** in **Configuration > Plugins**.
+5. Remove the two `extend` lines from each node's `snmpd.conf` and restart snmpd.
 
-Uninstall never changes a Cacti device, data source, graph, or RRD file. The GPU templates, the data query XML, and any Thold thresholds made from the GPU templates stay until you delete them (#30 tracks removing the plugin's templates).
+Uninstall never deletes RRD files, devices, graphs, or data sources, whatever the settings.
+
+With *Remove the plugin's Cacti objects on uninstall* checked (default off), uninstall also removes:
+
+- each template the plugin imported, found by its hash: the *GPU Node* device template, the *GPU - Devices* data query, the *GPU - Metrics* data template, and the GPU graph templates, each only where nothing outside the plugin uses it. A device on the *GPU Node* template, a data source or graph made from a GPU template, another device template that links a GPU graph template, or a Thold threshold template on the GPU data template keeps the template it uses. A graph or data template is kept whenever the data query or device template that contains it is kept;
+- `resource/script_server/plugin_gpu.xml`, only if the plugin wrote it, the file is unchanged, and the data query went.
+
+Cacti's log lists what was removed and what was kept. With the setting off, everything stays until you delete it. Thold thresholds made from the GPU templates are Thold's and always stay. On PHP below 8.2, where the plugin cannot load, uninstall removes no Cacti object.
 
 ## Unavailable values
 

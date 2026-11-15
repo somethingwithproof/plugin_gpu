@@ -52,6 +52,11 @@ switch ($action) {
 		}
 
 		db_execute("DELETE FROM settings WHERE name LIKE 'gpu\\_%'");
+
+		// What the template removal tests add outside the plugin.
+		db_execute("DELETE FROM host_template_graph WHERE host_template_id IN (SELECT id FROM host_template WHERE name = 'gpu-lifecycle-other')");
+		db_execute("DELETE FROM host_template WHERE name = 'gpu-lifecycle-other'");
+		db_execute("DELETE FROM host WHERE description = 'gpu-lifecycle-device'");
 		db_execute("DELETE FROM plugin_db_changes WHERE plugin = 'gpu'");
 
 		break;
@@ -236,6 +241,21 @@ switch ($action) {
 		db_execute("REPLACE INTO settings (name, value) VALUES ('admin_user', '1')");
 
 		break;
+	case 'link_graph_template':
+		// Another device template uses one GPU graph template.
+		db_execute("INSERT INTO host_template (hash, name) VALUES ('', 'gpu-lifecycle-other')");
+		db_execute_prepared("INSERT INTO host_template_graph (host_template_id, graph_template_id) SELECT ?, id FROM graph_templates WHERE name = 'GPU - Temperature'", array(db_fetch_insert_id()));
+
+		break;
+	case 'use_device_template':
+		// A device of the GPU Node template.
+		db_execute("INSERT INTO host (description, hostname, host_template_id) SELECT 'gpu-lifecycle-device', 'gpu-lifecycle.invalid', id FROM host_template WHERE name = 'GPU Node'");
+
+		break;
+	case 'edit_data_query_file':
+		file_put_contents($config['base_path'] . '/resource/script_server/plugin_gpu.xml', "<!-- changed by an operator -->\n", FILE_APPEND);
+
+		break;
 	case 'state':
 		break;
 	default:
@@ -271,5 +291,11 @@ print json_encode(array(
 		'device_template' => (int) db_fetch_cell("SELECT COUNT(*) FROM host_template WHERE name = 'GPU Node'"),
 		'dq_graphs'       => (int) db_fetch_cell("SELECT COUNT(*) FROM snmp_query_graph AS g INNER JOIN snmp_query AS q ON q.id = g.snmp_query_id WHERE q.name = 'GPU - Devices'"),
 		'dq_file'         => is_file($config['base_path'] . '/resource/script_server/plugin_gpu.xml'),
+	),
+	// What a template removal must never touch.
+	'cacti' => array(
+		'devices'      => (int) db_fetch_cell('SELECT COUNT(*) FROM host'),
+		'data_sources' => (int) db_fetch_cell('SELECT COUNT(*) FROM data_local'),
+		'graphs'       => (int) db_fetch_cell('SELECT COUNT(*) FROM graph_local'),
 	),
 ), JSON_PRETTY_PRINT) . PHP_EOL;

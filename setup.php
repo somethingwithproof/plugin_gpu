@@ -310,6 +310,15 @@ function plugin_gpu_uninstall(): void {
 	} else {
 		$schema->forgetVersion();
 	}
+
+	// REQ-LIFE-004: removing the plugin's own templates and data query XML
+	// is a separate choice, off by default. It never removes a device, data
+	// source, graph, or RRD file.
+	if (gpu_settings()->removeObjectsOnUninstall) {
+		$report = gpu_templates()->remove(new \Somethingwithproof\Gpu\CactiTemplateRepository(false));
+
+		\Somethingwithproof\Gpu\Log::info(sprintf('Uninstall removed %d of the plugin\'s Cacti objects; kept because still in use or changed: %s', count($report['removed']), $report['kept'] === [] ? 'none' : implode(', ', $report['kept'])));
+	}
 }
 
 /**

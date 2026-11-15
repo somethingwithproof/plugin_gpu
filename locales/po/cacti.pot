@@ -565,6 +565,14 @@ msgstr ""
 msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
 msgstr ""
 
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr ""
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr ""
+
 #: lib/ThrottleMask.php
 #, php-format
 msgid "bits without an indicator: %s"

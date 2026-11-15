@@ -28,6 +28,7 @@ final readonly class Settings {
 		'gpu_absent_after',
 		'gpu_stale_after',
 		'gpu_uninstall_keep_tables',
+		'gpu_uninstall_remove_objects',
 	];
 
 	public const DEFAULT_ABSENT_AFTER = 3;
@@ -44,6 +45,7 @@ final readonly class Settings {
 		public int $absentAfter,
 		public bool $keepTablesOnUninstall,
 		public int $staleAfter = self::DEFAULT_STALE_AFTER,
+		public bool $removeObjectsOnUninstall = false,
 	) {
 	}
 
@@ -59,6 +61,7 @@ final readonly class Settings {
 			absentAfter: min(Row::int($row, 'gpu_absent_after', self::DEFAULT_ABSENT_AFTER, 1), self::MAX_ABSENT_AFTER),
 			keepTablesOnUninstall: array_key_exists('gpu_uninstall_keep_tables', $row) ? Row::bool($row, 'gpu_uninstall_keep_tables') : true,
 			staleAfter: max(self::MIN_STALE_AFTER, min(Row::int($row, 'gpu_stale_after', self::DEFAULT_STALE_AFTER, 1), self::MAX_STALE_AFTER)),
+			removeObjectsOnUninstall: Row::bool($row, 'gpu_uninstall_remove_objects'),
 		);
 	}
 
@@ -106,6 +109,12 @@ final readonly class Settings {
 				'description'   => __('When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way.', 'gpu'),
 				'method'        => 'checkbox',
 				'default'       => 'on',
+			],
+			'gpu_uninstall_remove_objects' => [
+				'friendly_name' => __('Remove the plugin\'s Cacti objects on uninstall', 'gpu'),
+				'description'   => __('When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept.', 'gpu'),
+				'method'        => 'checkbox',
+				'default'       => '',
 			],
 		];
 	}

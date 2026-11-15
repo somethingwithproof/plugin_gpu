@@ -18,6 +18,7 @@ Phase 1 (NVIDIA through SNMP extend), first version 0.1.0. Not yet run on GPU ha
 - Thold threshold templates for temperature, power against its limit, the hardware and thermal throttle indicators, new uncorrected ECC errors, pending page retirement, and sample age ([docs/alerting.md](docs/alerting.md)).
 - The GPU Health page: freshness, last collection outcome, Maint state, backend, tool and driver versions, GPU presence, ECC state, and the raw clock event mask. It never contacts a node.
 - An RRD file found at a new GPU data source's path is renamed instead of reused, so a database restored older than the RRD directory attaches no history to another GPU ([docs/backup.md](docs/backup.md)).
+- *Remove the plugin's Cacti objects on uninstall* (default off): uninstall then removes the plugin's templates that nothing outside it uses, and its data query XML if unchanged. It never deletes RRD files, devices, graphs, or data sources.
 - Operator, alerting, backup, performance, and security review documentation.
 
 ### Upgrade notes
@@ -30,4 +31,3 @@ Phase 1 (NVIDIA through SNMP extend), first version 0.1.0. Not yet run on GPU ha
 
 - XID errors: no source fits the fixed `nvidia-smi` commands; decision #8.
 - DCGM and AMD backends (phase 2), MIG instances and remote data collectors (phase 3).
-- Removing the plugin's templates on uninstall (#30).

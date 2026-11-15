@@ -165,6 +165,104 @@ final class TemplateInstaller {
 	}
 
 	/**
+	 * Remove what install() put in place, for an uninstall asked to
+	 * (REQ-LIFE-004): each template the plugin imported, found by its hash,
+	 * that nothing outside the plugin uses, and the data query XML when the
+	 * data query went too and the file is the one the plugin wrote,
+	 * unchanged. Never a device, data source, graph, or RRD file.
+	 *
+	 * A graph or data template is removed only with the data query and
+	 * device template that contain it, so a kept container never points at
+	 * a missing part.
+	 *
+	 * @return array{removed: list<string>, kept: list<string>}
+	 */
+	public function remove(CactiTemplateRepository $templates): array {
+		$report = ['removed' => [], 'kept' => []];
+		$host   = $this->cacti->idByHash('host_template', TemplateXml::hash('02', TemplateXml::DEVICE_TEMPLATE));
+		$query  = $this->cacti->idByHash('snmp_query', TemplateXml::hash('04', TemplateXml::DATA_QUERY));
+		$data   = $this->cacti->idByHash('data_template', TemplateXml::hash('01', TemplateXml::DATA_TEMPLATE));
+		$graphs = [];
+
+		foreach (array_keys(TemplateXml::graphs()) as $name) {
+			$id = $this->cacti->idByHash('graph_templates', TemplateXml::hash('00', $name));
+
+			if ($id > 0) {
+				$graphs[$name] = $id;
+			}
+		}
+
+		$hostGone = $host === 0 || self::step($report, TemplateXml::DEVICE_TEMPLATE, !$templates->hostTemplateInUse($host), static fn (): bool => $templates->removeHostTemplate($host));
+		$queryGone = $query === 0 || ($hostGone && self::step($report, TemplateXml::DATA_QUERY, !$templates->dataQueryInUse($query, $host), static fn (): bool => $templates->removeDataQuery($query)));
+
+		if (!$hostGone && $query > 0) {
+			$report['kept'][] = TemplateXml::DATA_QUERY;
+		}
+
+		$graphsGone = true;
+
+		foreach ($graphs as $name => $id) {
+			$free = $queryGone && $hostGone && !$templates->graphTemplateInUse($id, $query, $host);
+
+			$graphsGone = self::step($report, $name, $free, static fn (): bool => $templates->removeGraphTemplate($id)) && $graphsGone;
+		}
+
+		if ($data > 0) {
+			self::step($report, TemplateXml::DATA_TEMPLATE, $queryGone && $graphsGone && !$templates->dataTemplateInUse($data, $query, array_values($graphs)), static fn (): bool => $templates->removeDataTemplate($data));
+		}
+
+		if ($queryGone) {
+			$this->removeDataQueryFile($report, $templates);
+			$templates->deleteSetting(self::SETTING_HASH);
+		}
+
+		return $report;
+	}
+
+	/**
+	 * Remove one object when it is free, and note the outcome.
+	 *
+	 * @param array{removed: list<string>, kept: list<string>} $report
+	 * @param \Closure(): bool                                  $remove
+	 */
+	private static function step(array &$report, string $name, bool $free, \Closure $remove): bool {
+		if ($free && $remove()) {
+			$report['removed'][] = $name;
+
+			return true;
+		}
+
+		$report['kept'][] = $name;
+
+		return false;
+	}
+
+	/**
+	 * The data query XML goes only if the plugin wrote it there and nobody
+	 * changed it since.
+	 *
+	 * @param array{removed: list<string>, kept: list<string>} $report
+	 */
+	private function removeDataQueryFile(array &$report, CactiTemplateRepository $templates): void {
+		$target = $this->dataQueryTarget();
+		$source = (string) @file_get_contents($this->pluginPath . '/resource/script_server/' . TemplateXml::DATA_QUERY_FILE);
+
+		if (!is_file($target)) {
+			return;
+		}
+
+		if ($this->cacti->setting(self::SETTING_FILE) === $target && $source !== '' && @file_get_contents($target) === $source && @unlink($target)) {
+			$report['removed'][] = TemplateXml::DATA_QUERY_FILE;
+
+			$templates->deleteSetting(self::SETTING_FILE);
+
+			return;
+		}
+
+		$report['kept'][] = TemplateXml::DATA_QUERY_FILE;
+	}
+
+	/**
 	 * import_xml_data() returns false or a list of objects per type, each
 	 * with a result of success or fail.
 	 */
