@@ -21,3 +21,7 @@ Each GPU is an index of one script server data query on the node's device, keyed
 
 - **A device per GPU.** Splits a machine across devices.
 - **One graph per node with all GPUs as data source items.** Cannot show a variable GPU count without editing templates.
+
+## Revision note (2026-11-15)
+
+Milestone 1 research ([cacti-core](../research/cacti-core.md)) confirmed the orphan behavior and the `resource/` confinement above at `release/1.2.31` and `1.2.x`. Two refinements: the reindex method is reset to the global default by `api_device_update_host_template()` when a device template carrying the data query is applied (not by `api_device_save()` itself), and a data query XML can set `index_transient` so a removed index is not marked orphan at all. M3 chooses between that and keeping absent GPUs in the listing.

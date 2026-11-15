@@ -1,6 +1,6 @@
 # Cacti 1.2 GPU Plugin Plan
 
-Status: proposal, revision 1 (2026-11-14). Nothing described here as a plugin capability exists yet. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
+Status: proposal, revision 2 (2026-11-15). Revision 2 folds in the milestone 1 documentation and source research in [`docs/research/`](research/); items that need hardware are marked *live* and listed in each research page's Live checks table. Nothing described here as a plugin capability exists yet. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
 
 `plugin_gpu` brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and clock throttling reasons from NVIDIA and AMD tools into Cacti 1.2. Each GPU becomes an index of a data query on its node's Cacti device, so operators see GPU graphs next to the node's other graphs, under Cacti's own permissions, and alert on them with Thold and Maint.
 
@@ -66,9 +66,9 @@ Each phase ships to users. Later phases are re-estimated after the phase before 
 
 Code loaded after the check may use PHP features through 8.2 where they make the code clearer, including `readonly` classes, enums, and DNF types. Features from PHP 8.3 and later are not used. Properties are always declared, because PHP 8.2 deprecates dynamic properties. PHPStan runs at `phpVersion` 8.2. See ADR 0006.
 
-**Vendor tools.** The supported driver, DCGM, and ROCm lines are not chosen yet; #26 chooses them from vendor lifecycle pages and records them here. The DCGM field IDs the plan uses were compared at two tags: `v3.3.9` and `v4.7.0`.
+**Vendor tools.** The supported driver, DCGM, and ROCm lines are not chosen yet. [research/compatibility-matrix.md](research/compatibility-matrix.md) lists the vendor-supported lines (NVIDIA R580, R595, R620; ROCm 10.1.0 as the current release) and proposes a support set for the owner to confirm; fixture and pilot hardware are *live*. The DCGM field IDs the plan uses were compared at two tags: `v3.3.9` and `v4.7.0`.
 
-**Plugin metadata.** `INFO` will declare `compat = 1.2.31`. The capability set, including `remote_collect:1` for phase 3, is set in M2 and M6. The author, copyright holder, and contact in `INFO` and file headers are Thomas Vincent, and the homepage is this repository.
+**Plugin metadata.** `INFO` will declare `compat = 1.2.31`. The capability set is set in M2 and M6. For phase 3 it includes `remote_collect:1` (for `poller_output` and the script server input) and `remote_poller:1`, because `poller_bottom`, where the collector runs, is gated by `remote_poller` on a remote collector. The author, copyright holder, and contact in `INFO` and file headers are Thomas Vincent, and the homepage is this repository.
 
 ## Upstream behavior the design depends on
 
@@ -96,7 +96,7 @@ Facts are listed with the source and the version or commit checked, and the date
 | `DCGM_FI_DEV_XID_ERROR` is documented as "XID errors. The value is the specific XID error", and `dcgm-exporter` describes its metric as "Value of the last XID error encountered", a gauge. | The field is one value per GPU, not a count of events. Whether it can miss repeats or clear is unknown (#16). | `dcgm_fields.h` at `v4.7.0`; [`etc/default-counters.csv` at 4.9.0](https://github.com/NVIDIA/dcgm-exporter/blob/4.9.0/etc/default-counters.csv) |
 | The clock events bitmask maps 1:1 to NVML reasons: `0x1` idle, `0x2` clocks setting, `0x4` SW power cap, `0x8` HW slowdown, `0x10` sync boost, `0x20` SW thermal, `0x40` HW thermal, `0x80` HW power brake, `0x100` display clocks. | The plugin can decode the bitmask into per-reason indicators. | `dcgm_fields.h` at `v4.7.0` (`DCGM_CLOCKS_EVENT_REASON_*`) and `v3.3.9` (`DCGM_CLOCKS_THROTTLE_REASON_*`) |
 | `dcgm-exporter` 4.9.0 lists XID, throttle, and ECC counters as commented-out optional entries, and enables temperature, power, utilization ratio, framebuffer, and XID by default. Its documented defaults are listener `:9400`, collection interval 30000 ms, embedded host engine unless `-r` is set. | Freshness through `dcgm-exporter` is bounded by its collection interval. | `default-counters.csv` at 4.9.0; [dcgm-exporter command reference](https://docs.nvidia.com/datacenter/dcgm/latest/reference/command-line-reference/dcgm-exporter.html), read 2026-11-14 |
-| `dcgmi dmon -e` takes field IDs and samples at 1 Hz by default with a 100 ms minimum; `dcgmi discovery -l` lists GPU ID, name, PCI bus ID, and UUID; `dcgmi discovery -c` shows GPU instances and compute instances. DCGM treats XIDs as a built-in policy condition and `dcgmi health` reports `DCGM_FR_XID_ERROR`. | A DCGM backend can enumerate GPUs and MIG instances; the DCGM guide does not document a CSV output. | [DCGM feature overview](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html), read 2026-11-14 |
+| `dcgmi dmon -e` takes field IDs and queries at a 1000 ms delay by default (minimum 1 ms; the 100 ms minimum belongs to DCGM profiling metrics); `dcgmi discovery -l` lists GPU ID, name, PCI bus ID, and UUID; `dcgmi discovery -c` shows GPU instances and compute instances. DCGM treats XIDs as a built-in policy condition and `dcgmi health` reports `DCGM_FR_XID_ERROR`. | A DCGM backend can enumerate GPUs and MIG instances; the DCGM guide does not document a CSV output. | [DCGM feature overview](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html), read 2026-11-14 |
 | DCGM's source is Apache 2.0. | The plugin may reference its field IDs and documentation without a license conflict; it does not link to DCGM. | [LICENSE at v4.7.0](https://github.com/NVIDIA/DCGM/blob/v4.7.0/LICENSE) |
 
 **AMD tools**
@@ -145,7 +145,27 @@ These are used by the design, were not verified, and are not stated as fact anyw
 | The user `snmpd` runs `extend` commands as, and index stability of the extend tables. | Collection path B | #22 |
 | Cost of a collection per tool and GPU count. | Interval, performance | #25 |
 | `amd-smi` field names, units, UUID stability, and whether supported ROCm releases need `rocm-smi`. | AMD backend | #18 |
-| The Cacti core rows above hold on current `1.2.x`. | Everything | #24 |
+| The Cacti core rows above hold on current `1.2.x`. | Everything | Confirmed by source at `1.2.x` e2d5c25 and `release/1.2.31` 1e8eaca ([research/cacti-core.md](research/cacti-core.md)); behavior not run |
+
+### Research status (revision 2)
+
+Each assumption above was researched from documentation and source on 2026-11-15. Nothing was run on hardware; *live* means the answer needs a GPU node, an account, or a running service.
+
+| Assumption | Outcome | Page |
+|---|---|---|
+| Event reason query names | Old names confirmed in a 2021 snapshot; new `clocks_event_reasons.*` names and per-driver availability *live*; bit table settled | [clock-event-reasons](research/clock-event-reasons.md) |
+| Placeholder and units | Manual says `N/A`; snapshot shows `[Not Supported]`; units *live* | [nvidia-smi-fields](research/nvidia-smi-fields.md) |
+| Unprivileged tools | Documentation shows device files default to mode 0666 and no root requirement for the plan's queries; actual runs *live* | [privileges](research/privileges.md) |
+| `DCGM_FI_DEV_XID_ERROR` behavior | DCGM appends one sample per event; a latest-value read cannot count; clearing *live* | [xid](research/xid.md) |
+| Exporter labels | Label set read from source; rendered output *live* | [dcgm](research/dcgm.md), [dcgm-exporter](research/dcgm-exporter.md) |
+| Identity across changes | NVML documents UUID as immutable and index as unstable; passthrough, RMA, and AMD *live* | [identity](research/identity.md) |
+| MIG identifiers | UUID is immutable per instance lifetime; reuse rule *live* | [mig](research/mig.md) |
+| `extend` run-as and index stability | Run-as is `snmpd`'s user (source); slow-command effect *live*; UUID cannot be the SNMP index | [snmp-extend](research/snmp-extend.md) |
+| Collection cost | Cost structure and invocation arithmetic only; all timings *live* | [tool-cost](research/tool-cost.md) |
+| AMD fields and `rocm-smi` | Keys read from CLI source at ROCm 7.2.4; no `rocm-smi` target; real output *live* | [amd-smi](research/amd-smi.md) |
+| Cacti core rows | Confirmed by source, with corrections applied in this revision | [cacti-core](research/cacti-core.md) |
+
+Evidence for decision #7 is collected in [research/collection-path.md](research/collection-path.md); it records no outcome. Estimates are in [research/estimates.md](research/estimates.md).
 
 ## Collection paths
 
@@ -221,7 +241,7 @@ Rules, tested by fixtures (REQ-ID-001 to 006):
 | Data source and graphs | Graph templates per GPU | Created by Cacti's data query path from the templates |
 | Data source for staleness | A field of the same data query (`age`) | Always numeric |
 
-Templates ship as Cacti template XML and are imported with `import_xml_data()`, matched by hash so re-imports update rather than duplicate, under a lock so two upgrades cannot import together. The data query uses reindex method None; the plugin runs a forced reindex after each inventory change so titles refresh. `api_device_save()` can reapply a default reindex method when a template is applied, so the plugin sets None again afterwards. This was observed in a sibling plugin that uses the same pattern, and #24 confirms it at 1.2.31 before the plan depends on it.
+Templates ship as Cacti template XML and are imported with `import_xml_data()`, matched by hash so re-imports update rather than duplicate, under a lock so two upgrades cannot import together. The data query uses reindex method None; the plugin runs a forced reindex after each inventory change so titles refresh. `api_device_update_host_template()` (called from `api_device_save()` when a template is applied) runs `REPLACE INTO host_snmp_query` with the global default reindex method for data queries that have no cache rows yet, so the plugin sets None again afterwards; `api_device_save()` itself only forces method 0 for devices with SNMP version 0. Confirmed by source at `release/1.2.31` and `1.2.x`; running it is *live* ([research/cacti-core.md](research/cacti-core.md)). A data query XML may instead set `index_transient`, which stops removed indexes being marked orphan; M3 chooses between that and keeping absent GPUs in the listing.
 
 Poller items are one per data query field per GPU. At 8,000 GPUs and 12 fields that is 96,000 poller items per collection cycle, which is why the script server input only reads a cache (#25, #49).
 
@@ -233,9 +253,9 @@ One set of fields describes every GPU, so a single set of templates and Thold te
 
 | Field | Unit | NVIDIA source | DCGM source | AMD source |
 |---|---|---|---|---|
-| `util_gpu` | percent | `utilization.gpu` | field 1613 (ratio, multiplied by 100) or 203 | `amd-smi metric --usage` (#18) |
+| `util_gpu` | percent | `utilization.gpu` | field 1613 (ratio, multiplied by 100; first in DCGM v4.6.0) or 203 (percent; deprecated at v4.7.0) | `amd-smi metric --usage` (#18) |
 | `util_mem` | percent | `utilization.memory` | #15 | #18 |
-| `mem_used`, `mem_total` | one unit, chosen in #14 | `memory.used`, `memory.total` | 252 and 250 (MiB, legacy) or 1627 (bytes) | #18 |
+| `mem_used`, `mem_total` | one unit, chosen in #14 | `memory.used`, `memory.total` | 252 and 250 (MiB, deprecated) or 1627 (bytes; first in DCGM v4.7.0) | #18 |
 | `temp_gpu` | degrees C | `temperature.gpu` | 150 | `--temperature` |
 | `power`, `power_limit` | watts | `power.draw`, `power.limit` | 155 and 160 | `--power` |
 | `clock_sm`, `clock_mem` | MHz | `clocks.sm`, `clocks.mem` | #15 | #18 |
@@ -254,11 +274,11 @@ Rules:
 
 ### Throttle reasons
 
-The active reasons are a bitmask. The plugin decodes it into one indicator per reason, so Thold can alert on the reasons that indicate a fault. Software power cap, software thermal, hardware thermal, hardware slowdown, and hardware power brake each get an indicator. Idle is normal behavior and the nvidia-smi documentation marks Idle and Application Clocks Setting deprecated, so no default threshold uses them. The raw mask is stored so unrecognized bits are not lost. Which reasons are actionable is refined by #17.
+The active reasons are a bitmask. The plugin decodes it into one indicator per reason, so Thold can alert on the reasons that indicate a fault. Software power cap, software thermal, hardware thermal, and hardware power brake each get an indicator. Hardware slowdown (0x8) is documented as active when either hardware thermal or hardware power brake is active and as slated for removal, so it gets none. NVML 13.4.92 defines eleven bits (0x1 to 0x400), including Board Limit (0x200) and Reliability (0x400), which DCGM `v4.7.0` does not name, so the raw mask must keep bits the decoder does not know. Indicator names must fit Cacti's 19-character data source item limit ([research/clock-event-reasons.md](research/clock-event-reasons.md)). Idle is normal behavior and the nvidia-smi documentation marks Idle and Application Clocks Setting deprecated, so no default threshold uses them. The raw mask is stored so unrecognized bits are not lost. Which reasons are actionable is refined by #17.
 
 ### XID and ECC signals
 
-ECC and retired-page values are numbers the GPU reports. XID is different: the kernel log carries each event, and DCGM carries one number per GPU described as the last XID. The plugin therefore does not present the XID field as an error count. Decision #8 picks the source after #16 measures behavior. If a kernel log reader is chosen, it is read-only, limited to lines matching the XID pattern, and bounded in size and age. No error value triggers a reset, drain, or retirement action.
+ECC and retired-page values are numbers the GPU reports. XID is different: the kernel log carries each event, and DCGM carries one number per GPU described as the last XID. The plugin therefore does not present the XID field as an error count. DCGM source shows each XID event is appended as a sample, so only a reader that asks for samples since a cursor can count repeats; a latest-value read cannot ([research/xid.md](research/xid.md)). Decision #8 picks the source; clearing behavior and kernel log access are *live*. If a kernel log reader is chosen, it is read-only, limited to lines matching the XID pattern, and bounded in size and age. No error value triggers a reset, drain, or retirement action.
 
 ## Measurement state
 
@@ -267,7 +287,7 @@ ECC and retired-page values are numbers the GPU reports. XID is different: the k
 | Freshness | Current, delayed, stale, never observed | Observation time against the expected interval |
 | Execution | Completed, tool error, permission denied, timed out, unknown | Exit status, timeout, and output validation |
 | GPU presence | Present, absent, possible replacement | Inventory records |
-| Maintenance | In maintenance, not in maintenance | Maint's device hook for the node's device |
+| Maintenance | In maintenance, not in maintenance | Maint's `plugin_maint_check_cacti_host()` for the node's device (guarded call; the `is_device_in_maintenance` hook has no caller in core) |
 
 Each cached observation carries observation time, ingestion time, expected interval, backend, and tool version. A recent page refresh never counts as a recent measurement.
 
@@ -398,6 +418,8 @@ Phase 2 needs a security review of the DCGM and amd-smi invocation paths and any
 | 5. DCGM and AMD backends | 2 | DCGM backend, amd-smi backend, AMD identity and mapping, security review | Same fixture suite passes on each backend; review complete |
 | 6. MIG and remote collectors | 3 | MIG, remote collectors, offline and recovery, `remote_agent` actions, security review | MIG and remote scenarios correct; review complete |
 
+Milestone size estimates (ranges from measured reference plugins, no durations) are in [research/estimates.md](research/estimates.md).
+
 ## Open decisions
 
 | Decision | Options | Needed before | Decided by |
@@ -420,7 +442,7 @@ Phase 2 needs a security review of the DCGM and amd-smi invocation paths and any
 | A card swap in the same slot | History attaches to the wrong GPU | Identity by UUID; replacement flagged, never inherited |
 | Object counts slow Cacti at 8,000 GPUs | Poor experience for all users | Measure at M4; document a supported GPU count |
 | Collection path needs privilege or a command runner on the node | New attack surface | Decision #7 weighs it; fixed commands and review |
-| Address-based `remote_agent` authorization | A host sharing a poller's address can call actions | https, restricted network, read-only actions |
+| Address-based `remote_agent` authorization | A host sharing a poller's address can call actions; at `release/1.2.31` the address comes from `get_client_addr()`, which can honor proxy headers, and at `1.2.x` from `REMOTE_ADDR` | https, restricted network, read-only actions |
 | Hardware access for tests | Fixtures may not reflect all GPUs | Capture from real hardware, pilot before release |
 | Volunteer capacity | Later phases stall | Each phase ships on its own |
 
