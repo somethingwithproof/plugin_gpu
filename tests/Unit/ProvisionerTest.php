@@ -45,14 +45,37 @@ beforeEach(function () {
 		'FROM host_snmp_query'      => [['reindex_method' => 0]],
 		'FROM snmp_query_graph'     => [['id' => 11, 'graph_template_id' => 343], ['id' => 12, 'graph_template_id' => 344]],
 		'FROM graph_local'          => [],
-		'FROM host_snmp_cache'      => [['snmp_index' => PROV_KEY_B], ['snmp_index' => PROV_KEY_A]],
+		'FROM host_snmp_cache'      => prov_cache(PROV_KEY_B, PROV_KEY_A),
 		'SELECT status, disabled FROM host' => [['status' => 3, 'disabled' => '']],
 		'LEFT JOIN plugin_gpu_retired' => [
-			['vendor' => 'nvidia', 'uuid' => 'GPU-00000000-0000-4000-8000-000000000001', 'presence' => 'present'],
-			['vendor' => 'nvidia', 'uuid' => 'GPU-00000000-0000-4000-8000-000000000002', 'presence' => 'absent'],
+			['vendor' => 'nvidia', 'uuid' => 'GPU-00000000-0000-4000-8000-000000000001', 'gpu_index' => 0, 'name' => 'NVIDIA A100', 'pci_bus_id' => '00000000:01:00.0', 'presence' => 'present'],
+			['vendor' => 'nvidia', 'uuid' => 'GPU-00000000-0000-4000-8000-000000000002', 'gpu_index' => 1, 'name' => 'NVIDIA A100', 'pci_bus_id' => '00000000:02:00.0', 'presence' => 'absent'],
 		],
 	];
 });
+
+/**
+ * Cacti's cache rows for the given GPUs, as a reindex of the listing above
+ * stores them; $fields overrides values by field name.
+ */
+function prov_cache(string ...$keys): array {
+	return prov_cache_with([], ...$keys);
+}
+
+function prov_cache_with(array $fields, string ...$keys): array {
+	$rows = [];
+
+	foreach ($keys as $key) {
+		$n      = $key === PROV_KEY_A ? 0 : 1;
+		$values = $fields + ['gpuKey' => $key, 'gpuIndex' => (string) $n, 'gpuName' => 'NVIDIA A100', 'gpuBusId' => sprintf('00000000:%02d:00.0', $n + 1)];
+
+		foreach ($values as $field => $value) {
+			$rows[] = ['snmp_index' => $key, 'field_name' => $field, 'field_value' => $value];
+		}
+	}
+
+	return $rows;
+}
 
 function prov(): Provisioner {
 	return new Provisioner(new CactiObjectRepository(false), new CacheRepository(false), new ReindexRepository(false), new FixedClock(1000));
@@ -133,7 +156,7 @@ it('completes a reindex only once Cacti lists exactly the plugin\'s GPUs', funct
 
 	// run_data_query() returned true but the cache still lacks a GPU.
 	$GLOBALS['__gpu_db_exec'] = [];
-	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = [['snmp_index' => PROV_KEY_A]];
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = prov_cache(PROV_KEY_A);
 
 	$result = prov()->provision(prov_node(), prov_device(), prov_request());
 
@@ -166,7 +189,7 @@ it('clears the cache and orphans the data sources when the listing has no GPU le
 	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache']         = function () use (&$cleared) {
 		$cleared = array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM host_snmp_cache')) !== [];
 
-		return $cleared ? [] : [['snmp_index' => PROV_KEY_A]];
+		return $cleared ? [] : prov_cache(PROV_KEY_A);
 	};
 
 	$result = prov()->provision(prov_node(), prov_device(), prov_request());
@@ -179,7 +202,7 @@ it('clears the cache and orphans the data sources when the listing has no GPU le
 });
 
 it('asks for a reindex when no request waits but the listing differs from Cacti\'s cache', function () {
-	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = [['snmp_index' => PROV_KEY_A]];
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = prov_cache(PROV_KEY_A);
 
 	prov()->provision(prov_node(), prov_device(), null);
 
@@ -190,10 +213,10 @@ it('asks for a reindex when no request waits but the listing differs from Cacti\
 
 	// Matching listings ask for nothing; neither does a device Cacti holds down.
 	$GLOBALS['__gpu_db_exec'] = [];
-	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = [['snmp_index' => PROV_KEY_B], ['snmp_index' => PROV_KEY_A]];
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = prov_cache(PROV_KEY_B, PROV_KEY_A);
 	prov()->provision(prov_node(), prov_device(), null);
 
-	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = [['snmp_index' => PROV_KEY_A]];
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = prov_cache(PROV_KEY_A);
 	prov()->provision(prov_node(), prov_device(1), null);
 
 	expect(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'INSERT INTO plugin_gpu_reindex')))->toBe([]);
@@ -251,4 +274,37 @@ it('offers only devices the acting user may see', function () {
 
 	expect($html)->toContain('<option value="5">visible</option>')
 		->and($html)->not->toContain('value="6"');
+});
+
+it('asks for a reindex when Cacti cached the same GPUs with an old index, name, or bus ID', function () {
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = array_merge(prov_cache(PROV_KEY_B), prov_cache_with(['gpuName' => 'NVIDIA A40'], PROV_KEY_A));
+
+	prov()->provision(prov_node(), prov_device(), null);
+
+	$request = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'INSERT INTO plugin_gpu_reindex')));
+
+	expect($request)->toHaveCount(1)
+		->and($request[0]['params'])->toBe([3, 1000, 'listing differs from the cache']);
+});
+
+it('keeps the request when the reindex left an old index, name, or bus ID in Cacti\'s cache', function () {
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache'] = array_merge(prov_cache(PROV_KEY_B), prov_cache_with(['gpuIndex' => '7'], PROV_KEY_A));
+
+	$result   = prov()->provision(prov_node(), prov_device(), prov_request());
+	$deferred = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'attempts = attempts + 1')));
+
+	expect($result['deferred'])->toBeTrue()
+		->and($deferred[0]['params'][1])->toBe('Cacti did not cache every GPU\'s current index, name, and bus ID; retried next cycle')
+		->and(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM plugin_gpu_reindex')))->toBe([]);
+});
+
+it('keeps the request when the data sources of a cleared cache could not be marked orphaned', function () {
+	$GLOBALS['__gpu_db_rows']['LEFT JOIN plugin_gpu_retired'] = [];
+	$GLOBALS['__gpu_db_rows']['FROM host_snmp_cache']         = [];
+	$GLOBALS['__gpu_db_fail']                                 = ['UPDATE data_local SET orphan'];
+
+	$result = prov()->provision(prov_node(), prov_device(), prov_request());
+
+	expect($result['deferred'])->toBeTrue()
+		->and(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM plugin_gpu_reindex')))->toBe([]);
 });

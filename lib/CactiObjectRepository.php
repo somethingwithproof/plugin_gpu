@@ -69,6 +69,41 @@ final class CactiObjectRepository {
 	}
 
 	/**
+	 * The values Cacti has cached for the given fields of the device's data
+	 * query: index => field name => value, each index's fields in the order
+	 * given.
+	 *
+	 * @param list<string> $fields
+	 *
+	 * @return array<string, array<string, string>>|null null when the read failed
+	 */
+	public function cachedFields(int $hostId, int $dataQueryId, array $fields): ?array {
+		$rows = db_fetch_assoc_prepared('SELECT snmp_index, field_name, field_value FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ? AND field_name IN (' . implode(', ', array_fill(0, count($fields), '?')) . ')', array_merge([$hostId, $dataQueryId], $fields), true, $this->connection);
+
+		if (!is_array($rows)) {
+			return null;
+		}
+
+		$values = [];
+
+		foreach (Row::rows($rows) as $row) {
+			$values[Row::string($row, 'snmp_index')][Row::string($row, 'field_name')] = Row::untrimmed($row, 'field_value');
+		}
+
+		$out = [];
+
+		foreach ($values as $index => $byField) {
+			foreach ($fields as $field) {
+				if (isset($byField[$field])) {
+					$out[(string) $index][$field] = $byField[$field];
+				}
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Whether Cacti would skip a reindex of the device now: it is down or
 	 * disabled. Null when the device row could not be read.
 	 */

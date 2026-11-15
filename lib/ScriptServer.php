@@ -122,9 +122,30 @@ final class ScriptServer {
 	}
 
 	/**
+	 * Each input field's value for a GPU record, by data query field name,
+	 * as Cacti stores it in its cache from this listing: the listed text,
+	 * hex encoded when it is not valid text, as data_query_format_record()
+	 * does.
+	 *
+	 * @param array<array-key, mixed> $row
+	 *
+	 * @return array<string, string>
+	 */
+	public static function inputs(array $row): array {
+		$out = [];
+
+		foreach (TemplateXml::INPUT_FIELDS as $field => [$queryName]) {
+			$value       = self::text($row, self::input($queryName) ?? '');
+			$out[$field] = mb_detect_encoding($value) === false ? bin2hex($value) : $value;
+		}
+
+		return $out;
+	}
+
+	/**
 	 * @param array<array-key, mixed> $row
 	 */
-	private static function key(array $row): string {
+	public static function key(array $row): string {
 		return Row::string($row, 'vendor') . '/' . Row::string($row, 'uuid');
 	}
 
