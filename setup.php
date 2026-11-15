@@ -142,6 +142,14 @@ function gpu_settings(): \Somethingwithproof\Gpu\Settings {
 	return (new \Somethingwithproof\Gpu\SettingsRepository(false))->load();
 }
 
+function gpu_nodes(): \Somethingwithproof\Gpu\NodeRepository {
+	return new \Somethingwithproof\Gpu\NodeRepository(false, new \Somethingwithproof\Gpu\SystemClock());
+}
+
+function gpu_gpus(): \Somethingwithproof\Gpu\GpuRepository {
+	return new \Somethingwithproof\Gpu\GpuRepository(false);
+}
+
 /**
  * Bring the schema, hooks, and realms up to the code's version.
  *

@@ -16,20 +16,220 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Driver"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Index"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Last Seen"
+msgstr ""
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Node"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr ""
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "State"
+msgstr ""
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr ""
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once collection, which arrives in a later release, reports them."
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Absent"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Present"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr ""
+
+#: lib/InventoryPage.php
+msgid "Never"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr ""
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr ""
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Actions"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr ""
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Disabled"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Enabled"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Download every node and GPU record as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr ""
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr ""
+
 #: lib/Pages.php
 msgid "GPU View"
 msgstr ""
 
 #: lib/Pages.php
 msgid "GPU Admin"
-msgstr ""
-
-#: lib/Pages.php
-msgid "GPU Nodes"
-msgstr ""
-
-#: lib/Pages.php
-msgid "GPU Inventory"
 msgstr ""
 
 #: lib/Settings.php

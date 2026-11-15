@@ -76,6 +76,21 @@ it('puts every page in exactly one realm', function () {
 	}
 });
 
+it('lists every page script the plugin ships in a realm', function () {
+	$root    = dirname(__DIR__, 2);
+	$scripts = array_map('basename', glob($root . '/gpu*.php'));
+
+	expect($scripts)->not->toBeEmpty();
+
+	foreach ($scripts as $script) {
+		expect(in_array($script, Pages::files(), true))->toBeTrue($script);
+	}
+
+	foreach (Pages::files() as $file) {
+		expect(is_file($root . '/' . $file))->toBeTrue($file);
+	}
+});
+
 it('gives every menu page a breadcrumb under the console', function () {
 	$nav = Pages::navigation();
 
