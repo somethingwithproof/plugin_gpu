@@ -29,6 +29,7 @@ use Somethingwithproof\Gpu\GpuRecord;
 use Somethingwithproof\Gpu\GpuRepository;
 use Somethingwithproof\Gpu\IdentityReconciler;
 use Somethingwithproof\Gpu\Inventory;
+use Somethingwithproof\Gpu\MetricModel;
 use Somethingwithproof\Gpu\LockRepository;
 use Somethingwithproof\Gpu\Node;
 use Somethingwithproof\Gpu\NodeDevice;
@@ -155,7 +156,7 @@ it('stores each reported GPU\'s values against its record and asks for a reindex
 		->and(collect_writes('plugin_gpu_reindex'))->toHaveCount(1);
 
 	$store = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'INSERT INTO plugin_gpu_observation')))[0];
-	$named = array_combine(array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], Schema::OBSERVATION_METRICS, ['thr_mask']), $store['params']);
+	$named = array_combine(array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], array_values(array_diff(Schema::observationMetrics(), array_keys(MetricModel::DELTAS))), ['thr_mask', 'ecc_mode']), $store['params']);
 
 	expect($named['gpu_id'])->toBe(9)
 		->and($named['node_id'])->toBe(3)
@@ -165,6 +166,8 @@ it('stores each reported GPU\'s values against its record and asks for a reindex
 		->and($named['util_gpu'])->toBe(30.0)
 		->and($named['power'])->toBeNull()
 		->and($named['thr_mask'])->toBe(0)
+		->and($named['ecc_mode'])->toBe('unavailable')
+		->and($named)->not->toHaveKey('ecc_corr_new')
 		->and($store['sql'])->toContain('observed_at = IF(VALUES(observed_at) > observed_at, VALUES(observed_at), observed_at)')
 		->and(strrpos($store['sql'], 'observed_at = IF('))->toBeGreaterThan(strrpos($store['sql'], 'thr_mask = IF('));
 
@@ -262,5 +265,17 @@ it('reads the staleness limit within its bounds', function (mixed $stored, int $
 ]);
 
 it('keeps one observation column per stored model field', function () {
-	expect(Schema::OBSERVATION_METRICS)->toBe(array_values(array_diff(\Somethingwithproof\Gpu\MetricModel::names(), ['age'])));
+	expect(Schema::observationMetrics())->toEqualCanonicalizing(array_values(array_diff(\Somethingwithproof\Gpu\MetricModel::names(), ['age'])));
+});
+
+it('computes new ECC errors from the stored total, as unknown across a reset or a missing total', function () {
+	(new \Somethingwithproof\Gpu\ObservationRepository(false))->store(9, 3, smi_parse('r580-8gpu')->readings[0], 'nvidia-smi', '580.95.05', COLLECT_NOW);
+
+	$sql = $GLOBALS['__gpu_db_exec'][0]['sql'];
+
+	// Before the totals are replaced, and only for a newer sample.
+	expect($sql)->toContain('ecc_corr_new = IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_corr) >= ecc_corr, VALUES(ecc_corr) - ecc_corr, NULL), ecc_corr_new)')
+		->and($sql)->toContain('ecc_uncorr_new = IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_uncorr) >= ecc_uncorr, VALUES(ecc_uncorr) - ecc_uncorr, NULL), ecc_uncorr_new)')
+		->and(strpos($sql, 'ecc_corr_new = IF('))->toBeLessThan(strpos($sql, 'ecc_corr = IF('))
+		->and(strpos($sql, 'ecc_uncorr_new = IF('))->toBeLessThan(strpos($sql, 'ecc_uncorr = IF('));
 });

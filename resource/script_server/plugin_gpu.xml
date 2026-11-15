@@ -89,11 +89,31 @@
 			<direction>output</direction>
 			<query_name>ecc_uncorr</query_name>
 		</ecc_uncorr>
+		<ecc_corr_new>
+			<name>Corrected ECC errors since the previous sample</name>
+			<direction>output</direction>
+			<query_name>ecc_corr_new</query_name>
+		</ecc_corr_new>
+		<ecc_uncorr_new>
+			<name>Uncorrected ECC errors since the previous sample</name>
+			<direction>output</direction>
+			<query_name>ecc_uncorr_new</query_name>
+		</ecc_uncorr_new>
 		<retired_pending>
 			<name>Page retirement pending</name>
 			<direction>output</direction>
 			<query_name>retired_pending</query_name>
 		</retired_pending>
+		<retired_sbe>
+			<name>Pages retired after single-bit ECC errors</name>
+			<direction>output</direction>
+			<query_name>retired_sbe</query_name>
+		</retired_sbe>
+		<retired_dbe>
+			<name>Pages retired after a double-bit ECC error</name>
+			<direction>output</direction>
+			<query_name>retired_dbe</query_name>
+		</retired_dbe>
 		<thr_sw_power_cap>
 			<name>Clocks held by the software power cap</name>
 			<direction>output</direction>

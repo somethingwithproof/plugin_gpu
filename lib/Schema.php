@@ -35,7 +35,7 @@ namespace Somethingwithproof\Gpu;
  * RRD file, or contacts a GPU node (REQ-LIFE-003, REQ-LIFE-005).
  */
 final class Schema {
-	public const VERSION = 2;
+	public const VERSION = 3;
 
 	public const HOOKS = [
 		'config_arrays'        => 'gpu_config_arrays',
@@ -54,6 +54,11 @@ final class Schema {
 		'clock_sm', 'clock_mem', 'ecc_corr', 'ecc_uncorr', 'retired_pending',
 		'thr_sw_power_cap', 'thr_hw_slowdown', 'thr_sw_thermal', 'thr_hw_thermal', 'thr_hw_power_brake',
 	];
+
+	// The metric columns migration 3 added. The two _new columns are
+	// computed by ObservationRepository from consecutive samples
+	// (MetricModel::DELTAS).
+	public const OBSERVATION_METRICS_3 = ['ecc_corr_new', 'ecc_uncorr_new', 'retired_sbe', 'retired_dbe'];
 
 	private const PLUGIN  = 'gpu';
 	private const SETTING = 'gpu_schema_version';
@@ -151,7 +156,46 @@ final class Schema {
 		return [
 			1 => fn (): bool => $this->createTables(array_intersect_key(self::tables(), array_flip(['plugin_gpu_node', 'plugin_gpu_gpu']))),
 			2 => fn (): bool => $this->createTables(array_intersect_key(self::tables(), array_flip(['plugin_gpu_observation', 'plugin_gpu_collection', 'plugin_gpu_reindex', 'plugin_gpu_retired']))),
+			// ECC delta, retired-page, and ECC mode columns (#45). A fresh
+			// install created them in migration 2, from the current table.
+			3 => fn (): bool => $this->addColumns('plugin_gpu_observation', self::observationColumns3()),
 		];
+	}
+
+	/**
+	 * Every metric column of plugin_gpu_observation.
+	 *
+	 * @return list<string>
+	 */
+	public static function observationMetrics(): array {
+		return array_merge(self::OBSERVATION_METRICS, self::OBSERVATION_METRICS_3);
+	}
+
+	/**
+	 * @return list<array<string, mixed>>
+	 */
+	private static function observationColumns3(): array {
+		return array_merge(
+			array_map(static fn (string $name): array => ['name' => $name, 'type' => 'double', 'NULL' => true], self::OBSERVATION_METRICS_3),
+			[['name' => 'ecc_mode', 'type' => 'varchar(16)', 'NULL' => false, 'default' => '']],
+		);
+	}
+
+	/**
+	 * @param list<array<string, mixed>> $columns
+	 */
+	private function addColumns(string $table, array $columns): bool {
+		foreach ($columns as $column) {
+			db_add_column($table, $column, true, $this->connection);
+
+			if (db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?', [$table, $column['name']], '', true, $this->connection) < 1) {
+				Log::error(sprintf('Unable to add column %s to %s', Row::string($column, 'name'), $table));
+
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -281,6 +325,7 @@ final class Schema {
 					// The raw clock event reasons mask, so bits without an
 					// indicator are kept (ADR 0009).
 					[['name' => 'thr_mask', 'type' => 'bigint(20)', 'unsigned' => true, 'NULL' => true]],
+					self::observationColumns3(),
 				),
 				'primary' => 'gpu_id',
 				'keys'    => [['name' => 'node_id', 'columns' => ['node_id']]],

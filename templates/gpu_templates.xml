@@ -1896,6 +1896,476 @@
 			</hash_090103191107270c378ca31b2be9e7cdaf2eef>
 		</inputs>
 	</hash_000103a74a22a26e30e91efb4e805bff01e83b>
+	<hash_00010377a7e64e0140f9f50eda31b194c57dbe>
+		<name>GPU - New ECC Errors</name>
+		<multiple></multiple>
+		<test_source></test_source>
+		<graph>
+			<t_title>on</t_title>
+			<title>|host_description| - GPU |query_gpuIndex| |query_gpuName| - New ECC Errors</title>
+			<t_vertical_label></t_vertical_label>
+			<vertical_label>errors since the previous sample</vertical_label>
+			<t_image_format_id></t_image_format_id>
+			<image_format_id>3</image_format_id>
+			<t_height></t_height>
+			<height>200</height>
+			<t_width></t_width>
+			<width>700</width>
+			<t_base_value></t_base_value>
+			<base_value>1000</base_value>
+			<t_slope_mode></t_slope_mode>
+			<slope_mode>on</slope_mode>
+			<t_auto_scale></t_auto_scale>
+			<auto_scale>on</auto_scale>
+			<t_auto_scale_opts></t_auto_scale_opts>
+			<auto_scale_opts>2</auto_scale_opts>
+			<t_auto_scale_log></t_auto_scale_log>
+			<auto_scale_log></auto_scale_log>
+			<t_scale_log_units></t_scale_log_units>
+			<scale_log_units></scale_log_units>
+			<t_auto_scale_rigid></t_auto_scale_rigid>
+			<auto_scale_rigid></auto_scale_rigid>
+			<t_upper_limit></t_upper_limit>
+			<upper_limit>0</upper_limit>
+			<t_lower_limit></t_lower_limit>
+			<lower_limit>0</lower_limit>
+			<t_unit_value></t_unit_value>
+			<unit_value></unit_value>
+			<t_unit_exponent_value></t_unit_exponent_value>
+			<unit_exponent_value></unit_exponent_value>
+			<t_unit_length></t_unit_length>
+			<unit_length></unit_length>
+			<t_no_gridfit></t_no_gridfit>
+			<no_gridfit></no_gridfit>
+			<t_alt_y_grid></t_alt_y_grid>
+			<alt_y_grid></alt_y_grid>
+			<t_right_axis></t_right_axis>
+			<right_axis></right_axis>
+			<t_right_axis_label></t_right_axis_label>
+			<right_axis_label></right_axis_label>
+			<t_right_axis_format></t_right_axis_format>
+			<right_axis_format>0</right_axis_format>
+			<t_right_axis_formatter></t_right_axis_formatter>
+			<right_axis_formatter>0</right_axis_formatter>
+			<t_left_axis_formatter></t_left_axis_formatter>
+			<left_axis_formatter>0</left_axis_formatter>
+			<t_auto_padding></t_auto_padding>
+			<auto_padding>on</auto_padding>
+			<t_dynamic_labels></t_dynamic_labels>
+			<dynamic_labels></dynamic_labels>
+			<t_force_rules_legend></t_force_rules_legend>
+			<force_rules_legend></force_rules_legend>
+			<t_tab_width></t_tab_width>
+			<tab_width></tab_width>
+			<t_legend_position></t_legend_position>
+			<legend_position>0</legend_position>
+			<t_legend_direction></t_legend_direction>
+			<legend_direction>0</legend_direction>
+		</graph>
+		<items>
+			<hash_100103f1cf7206265c8b838bbb7e571dcde2c0>
+				<graph_type_id>4</graph_type_id>
+				<task_item_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</task_item_id>
+				<color_id>0072C6</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Corrected</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>1</sequence>
+			</hash_100103f1cf7206265c8b838bbb7e571dcde2c0>
+			<hash_10010354ea49d2dd05855236b68e11694ea7cd>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>4</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Current:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>2</sequence>
+			</hash_10010354ea49d2dd05855236b68e11694ea7cd>
+			<hash_100103e5b6d1c9b42f3cd8a3021d4cd3a119fe>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Average:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>3</sequence>
+			</hash_100103e5b6d1c9b42f3cd8a3021d4cd3a119fe>
+			<hash_100103e33a216be96c01c918d48717604f347e>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>3</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Maximum:</text_format>
+				<hard_return>on</hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>4</sequence>
+			</hash_100103e33a216be96c01c918d48717604f347e>
+			<hash_10010375835668cb37781c565a2bccf6737183>
+				<graph_type_id>5</graph_type_id>
+				<task_item_id>hash_080103c46dce5c285e4686088f1b510da6e966</task_item_id>
+				<color_id>B00020</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Uncorrected</text_format>
+				<hard_return></hard_return>
+				<line_width>2.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>5</sequence>
+			</hash_10010375835668cb37781c565a2bccf6737183>
+			<hash_100103c28ee6c6feea444b9be37f3d4deadb16>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_080103c46dce5c285e4686088f1b510da6e966</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>4</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Current:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>6</sequence>
+			</hash_100103c28ee6c6feea444b9be37f3d4deadb16>
+			<hash_10010370b991cf83afc4fe1cd0d7cf61085b88>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_080103c46dce5c285e4686088f1b510da6e966</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Average:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>7</sequence>
+			</hash_10010370b991cf83afc4fe1cd0d7cf61085b88>
+			<hash_100103a35b2ec748bce481ff6887343bb0ba6a>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_080103c46dce5c285e4686088f1b510da6e966</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>3</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Maximum:</text_format>
+				<hard_return>on</hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>8</sequence>
+			</hash_100103a35b2ec748bce481ff6887343bb0ba6a>
+		</items>
+		<inputs>
+			<hash_0901035935119f6e80f4ca48eb1cc84bb6ab12>
+				<name>Data Source [ecc_corr_new]</name>
+				<description></description>
+				<column_name>task_item_id</column_name>
+				<items>hash_000103f1cf7206265c8b838bbb7e571dcde2c0|hash_00010354ea49d2dd05855236b68e11694ea7cd|hash_000103e5b6d1c9b42f3cd8a3021d4cd3a119fe|hash_000103e33a216be96c01c918d48717604f347e</items>
+			</hash_0901035935119f6e80f4ca48eb1cc84bb6ab12>
+			<hash_090103ee0c8f67771b4bbcc1a825b85b133255>
+				<name>Data Source [ecc_uncorr_new]</name>
+				<description></description>
+				<column_name>task_item_id</column_name>
+				<items>hash_00010375835668cb37781c565a2bccf6737183|hash_000103c28ee6c6feea444b9be37f3d4deadb16|hash_00010370b991cf83afc4fe1cd0d7cf61085b88|hash_000103a35b2ec748bce481ff6887343bb0ba6a</items>
+			</hash_090103ee0c8f67771b4bbcc1a825b85b133255>
+		</inputs>
+	</hash_00010377a7e64e0140f9f50eda31b194c57dbe>
+	<hash_000103847b4bc7d3af133d9c40ac28658b3a18>
+		<name>GPU - Retired Pages</name>
+		<multiple></multiple>
+		<test_source></test_source>
+		<graph>
+			<t_title>on</t_title>
+			<title>|host_description| - GPU |query_gpuIndex| |query_gpuName| - Retired Pages</title>
+			<t_vertical_label></t_vertical_label>
+			<vertical_label>pages</vertical_label>
+			<t_image_format_id></t_image_format_id>
+			<image_format_id>3</image_format_id>
+			<t_height></t_height>
+			<height>200</height>
+			<t_width></t_width>
+			<width>700</width>
+			<t_base_value></t_base_value>
+			<base_value>1000</base_value>
+			<t_slope_mode></t_slope_mode>
+			<slope_mode>on</slope_mode>
+			<t_auto_scale></t_auto_scale>
+			<auto_scale>on</auto_scale>
+			<t_auto_scale_opts></t_auto_scale_opts>
+			<auto_scale_opts>2</auto_scale_opts>
+			<t_auto_scale_log></t_auto_scale_log>
+			<auto_scale_log></auto_scale_log>
+			<t_scale_log_units></t_scale_log_units>
+			<scale_log_units></scale_log_units>
+			<t_auto_scale_rigid></t_auto_scale_rigid>
+			<auto_scale_rigid></auto_scale_rigid>
+			<t_upper_limit></t_upper_limit>
+			<upper_limit>0</upper_limit>
+			<t_lower_limit></t_lower_limit>
+			<lower_limit>0</lower_limit>
+			<t_unit_value></t_unit_value>
+			<unit_value></unit_value>
+			<t_unit_exponent_value></t_unit_exponent_value>
+			<unit_exponent_value></unit_exponent_value>
+			<t_unit_length></t_unit_length>
+			<unit_length></unit_length>
+			<t_no_gridfit></t_no_gridfit>
+			<no_gridfit></no_gridfit>
+			<t_alt_y_grid></t_alt_y_grid>
+			<alt_y_grid></alt_y_grid>
+			<t_right_axis></t_right_axis>
+			<right_axis></right_axis>
+			<t_right_axis_label></t_right_axis_label>
+			<right_axis_label></right_axis_label>
+			<t_right_axis_format></t_right_axis_format>
+			<right_axis_format>0</right_axis_format>
+			<t_right_axis_formatter></t_right_axis_formatter>
+			<right_axis_formatter>0</right_axis_formatter>
+			<t_left_axis_formatter></t_left_axis_formatter>
+			<left_axis_formatter>0</left_axis_formatter>
+			<t_auto_padding></t_auto_padding>
+			<auto_padding>on</auto_padding>
+			<t_dynamic_labels></t_dynamic_labels>
+			<dynamic_labels></dynamic_labels>
+			<t_force_rules_legend></t_force_rules_legend>
+			<force_rules_legend></force_rules_legend>
+			<t_tab_width></t_tab_width>
+			<tab_width></tab_width>
+			<t_legend_position></t_legend_position>
+			<legend_position>0</legend_position>
+			<t_legend_direction></t_legend_direction>
+			<legend_direction>0</legend_direction>
+		</graph>
+		<items>
+			<hash_1001034dbf96ada28133710d9ce1078a19090c>
+				<graph_type_id>4</graph_type_id>
+				<task_item_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</task_item_id>
+				<color_id>0072C6</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Single-bit errors</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>1</sequence>
+			</hash_1001034dbf96ada28133710d9ce1078a19090c>
+			<hash_100103d49d2a851f27c33178f55c68f49c5f62>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>4</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Current:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>2</sequence>
+			</hash_100103d49d2a851f27c33178f55c68f49c5f62>
+			<hash_100103c36c45df896aa444a2d19d61479104c6>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Average:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>3</sequence>
+			</hash_100103c36c45df896aa444a2d19d61479104c6>
+			<hash_1001030eb80680e82d0f04c6b416819aaec19e>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>3</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Maximum:</text_format>
+				<hard_return>on</hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>4</sequence>
+			</hash_1001030eb80680e82d0f04c6b416819aaec19e>
+			<hash_100103047232c42e699e73e9bc6b8ee5c148f8>
+				<graph_type_id>5</graph_type_id>
+				<task_item_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</task_item_id>
+				<color_id>B00020</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Double-bit error</text_format>
+				<hard_return></hard_return>
+				<line_width>2.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>5</sequence>
+			</hash_100103047232c42e699e73e9bc6b8ee5c148f8>
+			<hash_100103cefd141dddd304d40376cc512bb5f53e>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>4</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Current:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>6</sequence>
+			</hash_100103cefd141dddd304d40376cc512bb5f53e>
+			<hash_1001037b12d3ce249a2df6b77964181b42ccd7>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>1</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Average:</text_format>
+				<hard_return></hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>7</sequence>
+			</hash_1001037b12d3ce249a2df6b77964181b42ccd7>
+			<hash_10010351eb073acb90a08214ed3083a7211d13>
+				<graph_type_id>9</graph_type_id>
+				<task_item_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</task_item_id>
+				<color_id>0</color_id>
+				<alpha>FF</alpha>
+				<consolidation_function_id>3</consolidation_function_id>
+				<cdef_id>0</cdef_id>
+				<vdef_id>0</vdef_id>
+				<shift></shift>
+				<value></value>
+				<gprint_id>hash_060103e9c43831e54eca8069317a2ce8c6f751</gprint_id>
+				<textalign></textalign>
+				<text_format>Maximum:</text_format>
+				<hard_return>on</hard_return>
+				<line_width>1.00</line_width>
+				<dashes></dashes>
+				<dash_offset>0</dash_offset>
+				<sequence>8</sequence>
+			</hash_10010351eb073acb90a08214ed3083a7211d13>
+		</items>
+		<inputs>
+			<hash_09010344115bf05ae0c43ec785eb7dd41a8657>
+				<name>Data Source [retired_sbe]</name>
+				<description></description>
+				<column_name>task_item_id</column_name>
+				<items>hash_0001034dbf96ada28133710d9ce1078a19090c|hash_000103d49d2a851f27c33178f55c68f49c5f62|hash_000103c36c45df896aa444a2d19d61479104c6|hash_0001030eb80680e82d0f04c6b416819aaec19e</items>
+			</hash_09010344115bf05ae0c43ec785eb7dd41a8657>
+			<hash_090103f8d60f1f703afa2ed835af78e2b6b286>
+				<name>Data Source [retired_dbe]</name>
+				<description></description>
+				<column_name>task_item_id</column_name>
+				<items>hash_000103047232c42e699e73e9bc6b8ee5c148f8|hash_000103cefd141dddd304d40376cc512bb5f53e|hash_0001037b12d3ce249a2df6b77964181b42ccd7|hash_00010351eb073acb90a08214ed3083a7211d13</items>
+			</hash_090103f8d60f1f703afa2ed835af78e2b6b286>
+		</inputs>
+	</hash_000103847b4bc7d3af133d9c40ac28658b3a18>
 	<hash_0001039f12a36681425f2d9faa64323165254c>
 		<name>GPU - Sample Age</name>
 		<multiple></multiple>
@@ -2218,6 +2688,34 @@
 				<t_data_input_field_id></t_data_input_field_id>
 				<data_input_field_id>0</data_input_field_id>
 			</hash_0801031ad88ffa3dd274846760a8d68f2a0a60>
+			<hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a>
+				<t_data_source_name></t_data_source_name>
+				<data_source_name>ecc_corr_new</data_source_name>
+				<t_rrd_minimum></t_rrd_minimum>
+				<rrd_minimum>0</rrd_minimum>
+				<t_rrd_maximum></t_rrd_maximum>
+				<rrd_maximum>U</rrd_maximum>
+				<t_data_source_type_id></t_data_source_type_id>
+				<data_source_type_id>1</data_source_type_id>
+				<t_rrd_heartbeat></t_rrd_heartbeat>
+				<rrd_heartbeat>600</rrd_heartbeat>
+				<t_data_input_field_id></t_data_input_field_id>
+				<data_input_field_id>0</data_input_field_id>
+			</hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a>
+			<hash_080103c46dce5c285e4686088f1b510da6e966>
+				<t_data_source_name></t_data_source_name>
+				<data_source_name>ecc_uncorr_new</data_source_name>
+				<t_rrd_minimum></t_rrd_minimum>
+				<rrd_minimum>0</rrd_minimum>
+				<t_rrd_maximum></t_rrd_maximum>
+				<rrd_maximum>U</rrd_maximum>
+				<t_data_source_type_id></t_data_source_type_id>
+				<data_source_type_id>1</data_source_type_id>
+				<t_rrd_heartbeat></t_rrd_heartbeat>
+				<rrd_heartbeat>600</rrd_heartbeat>
+				<t_data_input_field_id></t_data_input_field_id>
+				<data_input_field_id>0</data_input_field_id>
+			</hash_080103c46dce5c285e4686088f1b510da6e966>
 			<hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0>
 				<t_data_source_name></t_data_source_name>
 				<data_source_name>retired_pending</data_source_name>
@@ -2232,6 +2730,34 @@
 				<t_data_input_field_id></t_data_input_field_id>
 				<data_input_field_id>0</data_input_field_id>
 			</hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0>
+			<hash_080103c2afb6ee87f53f498a736738e5bd0113>
+				<t_data_source_name></t_data_source_name>
+				<data_source_name>retired_sbe</data_source_name>
+				<t_rrd_minimum></t_rrd_minimum>
+				<rrd_minimum>0</rrd_minimum>
+				<t_rrd_maximum></t_rrd_maximum>
+				<rrd_maximum>U</rrd_maximum>
+				<t_data_source_type_id></t_data_source_type_id>
+				<data_source_type_id>1</data_source_type_id>
+				<t_rrd_heartbeat></t_rrd_heartbeat>
+				<rrd_heartbeat>600</rrd_heartbeat>
+				<t_data_input_field_id></t_data_input_field_id>
+				<data_input_field_id>0</data_input_field_id>
+			</hash_080103c2afb6ee87f53f498a736738e5bd0113>
+			<hash_08010378bed9f1d5da131bc2e3939e967fb9df>
+				<t_data_source_name></t_data_source_name>
+				<data_source_name>retired_dbe</data_source_name>
+				<t_rrd_minimum></t_rrd_minimum>
+				<rrd_minimum>0</rrd_minimum>
+				<t_rrd_maximum></t_rrd_maximum>
+				<rrd_maximum>U</rrd_maximum>
+				<t_data_source_type_id></t_data_source_type_id>
+				<data_source_type_id>1</data_source_type_id>
+				<t_rrd_heartbeat></t_rrd_heartbeat>
+				<rrd_heartbeat>600</rrd_heartbeat>
+				<t_data_input_field_id></t_data_input_field_id>
+				<data_input_field_id>0</data_input_field_id>
+			</hash_08010378bed9f1d5da131bc2e3939e967fb9df>
 			<hash_080103e2d56f87cdaca55a819207fe6a19cd9d>
 				<t_data_source_name></t_data_source_name>
 				<data_source_name>thr_sw_power_cap</data_source_name>
@@ -2401,40 +2927,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_120103c817647b9b7f6e91a465ba2b3e67fc3c>
@@ -2512,40 +3058,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_1201038a39c8000ebf808e42eeeb3285299729>
@@ -2623,40 +3189,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_1201032827ee9f977d6c61d7a9b9cc7ac1f28a>
@@ -2734,40 +3320,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_120103cf92e16336f9421963000bd2c70d85db>
@@ -2845,40 +3451,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_1201039719fd6dc6a998b1ba9d22c5c88cf6c0>
@@ -2956,40 +3582,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_120103d0e89275d1204f8bb7098c7059fa242b>
@@ -3067,40 +3713,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_12010358830c31788b36940a620119235a20a4>
@@ -3118,6 +3784,268 @@
 					</hash_1301032170445be8a9b4e586a3bf44a6cc4f23>
 				</sv_data_source>
 			</hash_1101036a3f75223eacc5b51ed4abdea05080ae>
+			<hash_110103fc364906d664e602f3db8873e7d1932e>
+				<graph_template_id>hash_00010377a7e64e0140f9f50eda31b194c57dbe</graph_template_id>
+				<name>GPU - New ECC Errors</name>
+				<rrd>
+					<item_000>
+						<snmp_field_name>util_gpu</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103386498e2ba28dc691ae80400fd9f81cb</data_template_rrd_id>
+					</item_000>
+					<item_001>
+						<snmp_field_name>util_mem</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103fcfd3c9bc04ccdce72e777c017bd52ec</data_template_rrd_id>
+					</item_001>
+					<item_002>
+						<snmp_field_name>mem_used</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103fe69c23cfa14f29431c620ef604c30f3</data_template_rrd_id>
+					</item_002>
+					<item_003>
+						<snmp_field_name>mem_total</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ef6a201b4c8317435dd4f8f03c97c3e</data_template_rrd_id>
+					</item_003>
+					<item_004>
+						<snmp_field_name>temp_gpu</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103a269082db3ee8d772f5f44f27b3f7a23</data_template_rrd_id>
+					</item_004>
+					<item_005>
+						<snmp_field_name>power</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801038cbec3da5106f36e5d6c2394eb3ec1a2</data_template_rrd_id>
+					</item_005>
+					<item_006>
+						<snmp_field_name>power_limit</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010315673384900d4c1c618661df74458d3a</data_template_rrd_id>
+					</item_006>
+					<item_007>
+						<snmp_field_name>clock_sm</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031fcd3d5df2d1a8ec6eb2e7943e3aeda3</data_template_rrd_id>
+					</item_007>
+					<item_008>
+						<snmp_field_name>clock_mem</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103a8fa9aab83a40aa7739c39ef9c8ea184</data_template_rrd_id>
+					</item_008>
+					<item_009>
+						<snmp_field_name>ecc_corr</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103a6324b601765f3fba880c82483cab1a4</data_template_rrd_id>
+					</item_009>
+					<item_010>
+						<snmp_field_name>ecc_uncorr</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
+					</item_010>
+					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
+						<snmp_field_name>retired_pending</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
+						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
+					</item_016>
+					<item_017>
+						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
+					</item_017>
+					<item_018>
+						<snmp_field_name>thr_sw_thermal</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
+					</item_018>
+					<item_019>
+						<snmp_field_name>thr_hw_thermal</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
+					</item_019>
+					<item_020>
+						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
+					</item_020>
+					<item_021>
+						<snmp_field_name>age</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
+					</item_021>
+				</rrd>
+				<sv_graph>
+					<hash_120103a2ce126360b5d76e3977a3dbd6e3297c>
+						<field_name>title</field_name>
+						<sequence>1</sequence>
+						<text>|host_description| - GPU |query_gpuIndex| |query_gpuName| - New ECC Errors</text>
+					</hash_120103a2ce126360b5d76e3977a3dbd6e3297c>
+				</sv_graph>
+				<sv_data_source>
+					<hash_1301031848cf4e609c7aa51a9124e4f928d3c9>
+						<field_name>name</field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<sequence>1</sequence>
+						<text>|host_description| - GPU |query_gpuIndex| |query_gpuName|</text>
+					</hash_1301031848cf4e609c7aa51a9124e4f928d3c9>
+				</sv_data_source>
+			</hash_110103fc364906d664e602f3db8873e7d1932e>
+			<hash_110103560e3ae21ee605e92935ba2392feb214>
+				<graph_template_id>hash_000103847b4bc7d3af133d9c40ac28658b3a18</graph_template_id>
+				<name>GPU - Retired Pages</name>
+				<rrd>
+					<item_000>
+						<snmp_field_name>util_gpu</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103386498e2ba28dc691ae80400fd9f81cb</data_template_rrd_id>
+					</item_000>
+					<item_001>
+						<snmp_field_name>util_mem</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103fcfd3c9bc04ccdce72e777c017bd52ec</data_template_rrd_id>
+					</item_001>
+					<item_002>
+						<snmp_field_name>mem_used</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103fe69c23cfa14f29431c620ef604c30f3</data_template_rrd_id>
+					</item_002>
+					<item_003>
+						<snmp_field_name>mem_total</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ef6a201b4c8317435dd4f8f03c97c3e</data_template_rrd_id>
+					</item_003>
+					<item_004>
+						<snmp_field_name>temp_gpu</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103a269082db3ee8d772f5f44f27b3f7a23</data_template_rrd_id>
+					</item_004>
+					<item_005>
+						<snmp_field_name>power</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801038cbec3da5106f36e5d6c2394eb3ec1a2</data_template_rrd_id>
+					</item_005>
+					<item_006>
+						<snmp_field_name>power_limit</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010315673384900d4c1c618661df74458d3a</data_template_rrd_id>
+					</item_006>
+					<item_007>
+						<snmp_field_name>clock_sm</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031fcd3d5df2d1a8ec6eb2e7943e3aeda3</data_template_rrd_id>
+					</item_007>
+					<item_008>
+						<snmp_field_name>clock_mem</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103a8fa9aab83a40aa7739c39ef9c8ea184</data_template_rrd_id>
+					</item_008>
+					<item_009>
+						<snmp_field_name>ecc_corr</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103a6324b601765f3fba880c82483cab1a4</data_template_rrd_id>
+					</item_009>
+					<item_010>
+						<snmp_field_name>ecc_uncorr</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
+					</item_010>
+					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
+						<snmp_field_name>retired_pending</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
+						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
+					</item_016>
+					<item_017>
+						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
+					</item_017>
+					<item_018>
+						<snmp_field_name>thr_sw_thermal</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
+					</item_018>
+					<item_019>
+						<snmp_field_name>thr_hw_thermal</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
+					</item_019>
+					<item_020>
+						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
+					</item_020>
+					<item_021>
+						<snmp_field_name>age</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
+					</item_021>
+				</rrd>
+				<sv_graph>
+					<hash_12010374ae4cdce936b37247bca4ba04376f29>
+						<field_name>title</field_name>
+						<sequence>1</sequence>
+						<text>|host_description| - GPU |query_gpuIndex| |query_gpuName| - Retired Pages</text>
+					</hash_12010374ae4cdce936b37247bca4ba04376f29>
+				</sv_graph>
+				<sv_data_source>
+					<hash_130103240272585acbb1d5af60511ee7c44252>
+						<field_name>name</field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<sequence>1</sequence>
+						<text>|host_description| - GPU |query_gpuIndex| |query_gpuName|</text>
+					</hash_130103240272585acbb1d5af60511ee7c44252>
+				</sv_data_source>
+			</hash_110103560e3ae21ee605e92935ba2392feb214>
 			<hash_110103b80166d90b9e3fe3ad8eb96a68342b47>
 				<graph_template_id>hash_0001039f12a36681425f2d9faa64323165254c</graph_template_id>
 				<name>GPU - Sample Age</name>
@@ -3178,40 +4106,60 @@
 						<data_template_rrd_id>hash_0801031ad88ffa3dd274846760a8d68f2a0a60</data_template_rrd_id>
 					</item_010>
 					<item_011>
+						<snmp_field_name>ecc_corr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_0801031ba5b836a0ff7ecfa9feba3d334fbc0a</data_template_rrd_id>
+					</item_011>
+					<item_012>
+						<snmp_field_name>ecc_uncorr_new</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c46dce5c285e4686088f1b510da6e966</data_template_rrd_id>
+					</item_012>
+					<item_013>
 						<snmp_field_name>retired_pending</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103db6f1d51fd093d2d28b0cab3c1bd19a0</data_template_rrd_id>
-					</item_011>
-					<item_012>
+					</item_013>
+					<item_014>
+						<snmp_field_name>retired_sbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_080103c2afb6ee87f53f498a736738e5bd0113</data_template_rrd_id>
+					</item_014>
+					<item_015>
+						<snmp_field_name>retired_dbe</snmp_field_name>
+						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+						<data_template_rrd_id>hash_08010378bed9f1d5da131bc2e3939e967fb9df</data_template_rrd_id>
+					</item_015>
+					<item_016>
 						<snmp_field_name>thr_sw_power_cap</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103e2d56f87cdaca55a819207fe6a19cd9d</data_template_rrd_id>
-					</item_012>
-					<item_013>
+					</item_016>
+					<item_017>
 						<snmp_field_name>thr_hw_slowdown</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010315564beb5b304bad49dbca0cb469bb2f</data_template_rrd_id>
-					</item_013>
-					<item_014>
+					</item_017>
+					<item_018>
 						<snmp_field_name>thr_sw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_080103684afab926b998321a7a6fac6f5a393b</data_template_rrd_id>
-					</item_014>
-					<item_015>
+					</item_018>
+					<item_019>
 						<snmp_field_name>thr_hw_thermal</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_0801035f35b5a45efe842fa4a8dec1cdac348e</data_template_rrd_id>
-					</item_015>
-					<item_016>
+					</item_019>
+					<item_020>
 						<snmp_field_name>thr_hw_power_brake</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010340894c404284f5ad11902bd285da8568</data_template_rrd_id>
-					</item_016>
-					<item_017>
+					</item_020>
+					<item_021>
 						<snmp_field_name>age</snmp_field_name>
 						<data_template_id>hash_0101037f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 						<data_template_rrd_id>hash_08010391f7fdb74f0d794e1fbe5e362a45dd1f</data_template_rrd_id>
-					</item_017>
+					</item_021>
 				</rrd>
 				<sv_graph>
 					<hash_120103a2f4afc3c816ee505a2f3cbf5aec8a3f>
