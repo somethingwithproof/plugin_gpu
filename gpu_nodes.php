@@ -51,7 +51,12 @@ switch ($gpu_action) {
 			exit;
 		}
 
-		if (!$gpu_nodes->deviceExists($gpu_host)) {
+		// Keeping the recorded device is always allowed, even once it was
+		// deleted, so a node can still be disabled; a change must name a
+		// device that exists.
+		$gpu_same_host = $gpu_node !== null && $gpu_host === $gpu_node->hostId;
+
+		if (!$gpu_same_host && !$gpu_nodes->deviceExists($gpu_host)) {
 			$gpu_errors['host_id'] = __('Device: choose an existing Cacti device.', 'gpu');
 		} elseif ($gpu_nodes->hostTaken($gpu_host, $gpu_id)) {
 			$gpu_errors['host_id'] = __('Device: this device is already a GPU node.', 'gpu');

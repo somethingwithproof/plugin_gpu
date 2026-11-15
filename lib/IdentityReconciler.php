@@ -80,7 +80,13 @@ final class IdentityReconciler {
 			}
 		}
 
-		return new Reconciliation($created, $updated);
+		$read = [];
+
+		foreach ($known as $record) {
+			$read[$record->id] = $record;
+		}
+
+		return new Reconciliation($created, $updated, $read);
 	}
 
 	/**

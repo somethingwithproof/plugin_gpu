@@ -25,12 +25,16 @@ namespace Somethingwithproof\Gpu;
  */
 final readonly class Reconciliation {
 	/**
-	 * @param list<GpuRecord> $created new identities, with id 0
-	 * @param list<GpuRecord> $updated existing records in their new state
+	 * @param list<GpuRecord>        $created new identities, with id 0
+	 * @param list<GpuRecord>        $updated existing records in their new state
+	 * @param array<int, GpuRecord> $read    each updated record as it was read,
+	 *                                        by id, so a write can check that
+	 *                                        nothing changed it since
 	 */
 	public function __construct(
 		public array $created = [],
 		public array $updated = [],
+		public array $read = [],
 	) {
 	}
 

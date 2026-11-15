@@ -45,6 +45,9 @@ final class InventoryExport {
 			'gpus'        => array_map(static fn (GpuRecord $gpu): array => ['id' => $gpu->id] + $gpu->toRow(), $gpus),
 		];
 
-		return json_encode($document, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR) . "\n";
+		// JSON_HEX_TAG: csrf-magic's output handler treats any response holding
+		// "<html" as a page and appends a script to it, so no stored text may
+		// put that sequence into the download.
+		return json_encode($document, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR) . "\n";
 	}
 }

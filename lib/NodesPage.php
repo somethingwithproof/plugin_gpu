@@ -126,6 +126,13 @@ final class NodesPage {
 
 		print '<tr><td><label for="host_id">' . html_escape(__('Device', 'gpu')) . '</label></td><td><select id="host_id" name="host_id">';
 
+		// A node whose device was deleted keeps showing that device, so saving
+		// only the Enabled box never moves the node to whichever device the
+		// browser would otherwise select first.
+		if ($current > 0 && !isset($devices[$current])) {
+			print '<option value="' . $current . '" selected>' . html_escape(__('Deleted device (ID %d)', $current, 'gpu')) . '</option>';
+		}
+
 		foreach ($devices as $id => $description) {
 			print '<option value="' . $id . '"' . ($id === $current ? ' selected' : '') . '>' . html_escape($description) . '</option>';
 		}

@@ -24,6 +24,7 @@ use Somethingwithproof\Gpu\GpuRepository;
 use Somethingwithproof\Gpu\InventoryPage;
 use Somethingwithproof\Gpu\Node;
 use Somethingwithproof\Gpu\NodeRepository;
+use Somethingwithproof\Gpu\NodesPage;
 use Somethingwithproof\Gpu\Presence;
 use Somethingwithproof\Gpu\Vendor;
 
@@ -45,4 +46,20 @@ it('names a pending destination only to a viewer allowed to see it', function ()
 		->and($seen[7])->toBe('Present; possible replacement of GPU record 9; seen at node2, move not confirmed')
 		->and($seen[8])->toBe('60 seconds ago')
 		->and($hidden[7])->toBe('Present; possible replacement of GPU record 9; seen at another node, move not confirmed');
+});
+
+it('keeps a deleted device selected when a node is edited, instead of the first device listed', function () {
+	$GLOBALS['__gpu_db_rows'] = ['FROM host AS h LEFT JOIN' => [['id' => '5', 'description' => 'other device']]];
+
+	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false));
+	$node = new Node(1, 101, AdminState::Enabled, '', false, 0, 0);
+
+	ob_start();
+	$page->renderEdit($node);
+	$html = (string) ob_get_clean();
+
+	$GLOBALS['__gpu_db_rows'] = [];
+
+	expect($html)->toContain('<option value="101" selected>Deleted device (ID 101)</option>')
+		->and($html)->toContain('<option value="5">other device</option>');
 });

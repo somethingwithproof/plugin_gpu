@@ -33,7 +33,15 @@ final class Inventory {
 	}
 
 	public function record(Node $node, GpuSnapshot $snapshot, int $absentAfter): Reconciliation {
-		$changes = $this->reconciler->reconcile($node, $this->gpus->forReconcile($node, $snapshot), $snapshot, $absentAfter, $this->clock->now());
+		$known = $this->gpus->forReconcile($node, $snapshot);
+
+		if ($known === null) {
+			Log::warning(sprintf('The GPU records for node %d could not be read, so this collection was not recorded', $node->id));
+
+			return new Reconciliation();
+		}
+
+		$changes = $this->reconciler->reconcile($node, $known, $snapshot, $absentAfter, $this->clock->now());
 
 		if ($changes->isEmpty()) {
 			return $changes;

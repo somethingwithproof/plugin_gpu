@@ -151,6 +151,23 @@ if (!function_exists('db_fetch_insert_id')) {
 	}
 }
 
+// Enough of Cacti's HTML helpers for a page class to render into a buffer.
+if (!function_exists('html_escape')) {
+	function html_escape($string) {
+		return htmlspecialchars((string) $string, ENT_QUOTES, 'UTF-8');
+	}
+}
+
+if (!function_exists('html_start_box')) {
+	function html_start_box($title, $width, $div, $cell_padding, $align, $add_text) {
+		print '<table>';
+	}
+
+	function html_end_box($trailing_br = true) {
+		print '</table>';
+	}
+}
+
 // What the last write changed; a test sets it before a guarded update.
 $GLOBALS['__gpu_affected_rows'] = 1;
 

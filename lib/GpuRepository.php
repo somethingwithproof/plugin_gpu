@@ -32,9 +32,12 @@ final class GpuRepository {
 	 * The records IdentityReconciler needs for one snapshot: everything at the
 	 * node, and any record elsewhere that the snapshot reports.
 	 *
-	 * @return list<GpuRecord>
+	 * Null when the read fails: an empty list would make every reported GPU
+	 * look new and lose the replacement link a stored record provides.
+	 *
+	 * @return list<GpuRecord>|null
 	 */
-	public function forReconcile(Node $node, GpuSnapshot $snapshot): array {
+	public function forReconcile(Node $node, GpuSnapshot $snapshot): ?array {
 		$uuids = $snapshot->uuids();
 		$sql   = 'SELECT * FROM plugin_gpu_gpu WHERE node_id = ?';
 
@@ -42,7 +45,9 @@ final class GpuRepository {
 			$sql .= ' OR uuid IN (' . implode(', ', array_fill(0, count($uuids), '?')) . ')';
 		}
 
-		return $this->records(db_fetch_assoc_prepared($sql . ' ORDER BY id', array_merge([$node->id], $uuids), true, $this->connection));
+		$rows = db_fetch_assoc_prepared($sql . ' ORDER BY id', array_merge([$node->id], $uuids), true, $this->connection);
+
+		return is_array($rows) ? $this->records($rows) : null;
 	}
 
 	/**
@@ -63,6 +68,12 @@ final class GpuRepository {
 	 * Write a reconciliation. Each statement stands alone and the next
 	 * collection recomputes from what was stored, so a run stopped part way
 	 * leaves records that the next run completes rather than corrupts.
+	 *
+	 * An update is written only while the record still has the node and
+	 * pending node it was read with. An operator who confirms or rejects a
+	 * move between the read and the write changes one of them, and the stale
+	 * update then matches no row instead of undoing the operator's choice;
+	 * the next collection recomputes from the stored state.
 	 */
 	public function apply(Reconciliation $changes): bool {
 		$ok = true;
@@ -73,13 +84,29 @@ final class GpuRepository {
 		}
 
 		foreach ($changes->updated as $record) {
+			$read = $changes->read[$record->id] ?? null;
+
+			// Without the state it was computed from, an update cannot be
+			// checked, so it is not written.
+			if ($read === null) {
+				$ok = false;
+
+				continue;
+			}
+
 			$row = $record->toRow();
 
 			// Vendor and UUID are the key; an update never rewrites them.
 			unset($row['vendor'], $row['uuid']);
 
-			$set = implode(', ', array_map(static fn (string $column): string => "$column = ?", array_keys($row)));
-			$ok  = db_execute_prepared("UPDATE plugin_gpu_gpu SET $set WHERE id = ?", array_merge(array_values($row), [$record->id]), true, $this->connection) && $ok;
+			$set     = implode(', ', array_map(static fn (string $column): string => "$column = ?", array_keys($row)));
+			$written = db_execute_prepared("UPDATE plugin_gpu_gpu SET $set WHERE id = ? AND node_id = ? AND pending_node_id = ?", array_merge(array_values($row), [$record->id, $read->nodeId, $read->pendingNodeId]), true, $this->connection);
+
+			if (!$written) {
+				$ok = false;
+			} elseif (db_affected_rows($this->connection) === 0) {
+				Log::debug(sprintf('GPU record %d changed after it was read, so this collection left it alone', $record->id));
+			}
 		}
 
 		return $ok;

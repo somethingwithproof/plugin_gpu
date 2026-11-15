@@ -56,8 +56,9 @@ it('inserts new records with every column and updates others without touching th
 	$snapshot = repo_snapshot('GPU-00000000-0000-4000-8000-0000000000a1');
 	$created  = GpuRecord::discovered($snapshot->reports[0], $snapshot, 1, 0, 50);
 	$updated  = new GpuRecord(7, Vendor::Nvidia, 'GPU-00000000-0000-4000-8000-0000000000b2', 1, null, '00000000:3C:00.0', 'n', 'd', 't', 'v', Presence::Absent, 3, 0, 0, 0, 10, 20);
+	$read     = new GpuRecord(7, Vendor::Nvidia, $updated->uuid, 1, null, '00000000:3C:00.0', 'n', 'd', 't', 'v', Presence::Present, 2, 0, 4, 15, 10, 20);
 
-	expect((new GpuRepository(false))->apply(new \Somethingwithproof\Gpu\Reconciliation([$created], [$updated])))->toBeTrue();
+	expect((new GpuRepository(false))->apply(new \Somethingwithproof\Gpu\Reconciliation([$created], [$updated], [7 => $read])))->toBeTrue();
 
 	[$insert, $update] = $GLOBALS['__gpu_db_exec'];
 
@@ -66,9 +67,47 @@ it('inserts new records with every column and updates others without touching th
 		->and($update['sql'])->toStartWith('UPDATE plugin_gpu_gpu SET node_id = ?')
 		->and($update['sql'])->not->toContain('uuid')
 		->and($update['sql'])->not->toContain('vendor')
-		->and($update['sql'])->toEndWith('WHERE id = ?')
+		->and($update['sql'])->toEndWith('WHERE id = ? AND node_id = ? AND pending_node_id = ?')
 		->and($update['params'][1])->toBeNull()
-		->and(end($update['params']))->toBe(7);
+		->and(array_slice($update['params'], -3))->toBe([7, 1, 4]);
+});
+
+it('leaves a record an operator changed after the read, and refuses an update with no read state', function () {
+	$updated = new GpuRecord(7, Vendor::Nvidia, 'GPU-00000000-0000-4000-8000-0000000000b2', 1, null, '00000000:3C:00.0', 'n', 'd', 't', 'v', Presence::Present, 1, 0, 0, 0, 10, 20);
+
+	// The guarded update matched no row: a confirm or reject got there first.
+	$GLOBALS['__gpu_affected_rows'] = 0;
+
+	expect((new GpuRepository(false))->apply(new \Somethingwithproof\Gpu\Reconciliation([], [$updated], [7 => $updated])))->toBeTrue()
+		->and($GLOBALS['__gpu_log'][0]['message'])->toBe('DEBUG: GPU record 7 changed after it was read, so this collection left it alone');
+
+	$GLOBALS['__gpu_db_exec'] = [];
+
+	expect((new GpuRepository(false))->apply(new \Somethingwithproof\Gpu\Reconciliation([], [$updated])))->toBeFalse()
+		->and($GLOBALS['__gpu_db_exec'])->toBe([]);
+});
+
+it('keeps each record as it was read, so the write can be checked against it', function () {
+	$snapshot = repo_snapshot('GPU-00000000-0000-4000-8000-0000000000a1');
+	$stored   = GpuRecord::discovered($snapshot->reports[0], $snapshot, 1, 0, 10);
+	$stored   = new GpuRecord(3, $stored->vendor, $stored->uuid, 1, 0, $stored->pciBusId, $stored->name, $stored->driverVersion, $stored->tool, $stored->toolVersion, Presence::Present, 0, 0, 2, 5, 10, 10);
+
+	$changes = (new IdentityReconciler())->reconcile(repo_node(1), [$stored], $snapshot, 3, 20);
+
+	expect($changes->updated[0]->pendingNodeId)->toBe(0)
+		->and($changes->read[3])->toBe($stored);
+});
+
+it('records nothing when the stored records cannot be read', function () {
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu WHERE node_id'] = false;
+
+	$gpus      = new GpuRepository(false);
+	$inventory = new Inventory($gpus, new IdentityReconciler(), new FixedClock(500));
+
+	expect($gpus->forReconcile(repo_node(2), repo_snapshot('GPU-00000000-0000-4000-8000-0000000000a1')))->toBeNull()
+		->and($inventory->record(repo_node(2), repo_snapshot('GPU-00000000-0000-4000-8000-0000000000a1'), 3)->isEmpty())->toBeTrue()
+		->and($GLOBALS['__gpu_db_exec'])->toBe([])
+		->and($GLOBALS['__gpu_log'][0]['message'])->toBe('WARNING: The GPU records for node 2 could not be read, so this collection was not recorded');
 });
 
 it('reads stored records back, skipping rows of a vendor this code does not know', function () {
@@ -139,4 +178,13 @@ it('exports every node and GPU record, without serial numbers', function () {
 		->and($document['gpus'][0]['uuid'])->toBe('GPU-00000000-0000-4000-8000-0000000000a1')
 		->and($document['gpus'][0]['tool_version'])->toBe('580.95.05')
 		->and($json)->not->toContain('serial');
+});
+
+it('keeps HTML delimiters out of the export, which csrf-magic would otherwise rewrite', function () {
+	$node     = new Node(1, 101, AdminState::Enabled, '<html> rack 4', true, 0, 0);
+	$json     = InventoryExport::json([$node], [], '0.1.0-dev', 0);
+	$document = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+	expect(stripos($json, '<html'))->toBeFalse()
+		->and($document['nodes'][0]['description'])->toBe('<html> rack 4');
 });

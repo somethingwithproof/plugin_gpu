@@ -221,6 +221,11 @@ msgid "New GPU Node"
 msgstr ""
 
 #: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr ""
+
+#: lib/NodesPage.php
 msgid "Save"
 msgstr ""
 
