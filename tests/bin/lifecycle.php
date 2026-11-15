@@ -249,4 +249,14 @@ print json_encode(array(
 	'admin'   => (int) db_fetch_cell("SELECT COUNT(*) FROM user_auth_realm AS uar INNER JOIN plugin_realms AS pr ON pr.id + 100 = uar.realm_id WHERE pr.plugin = 'gpu' AND uar.user_id = 1"),
 	'tracked' => array_column(db_fetch_assoc("SELECT `table` FROM plugin_db_changes WHERE plugin = 'gpu' AND method = 'create' ORDER BY `table`"), 'table'),
 	'tables'  => $tables,
+	// The shipped Cacti objects, by kind, so a test sees duplicates.
+	'objects' => array(
+		'data_query'      => (int) db_fetch_cell("SELECT COUNT(*) FROM snmp_query WHERE name = 'GPU - Devices'"),
+		'data_template'   => (int) db_fetch_cell("SELECT COUNT(*) FROM data_template WHERE name = 'GPU - Metrics'"),
+		'graph_templates' => (int) db_fetch_cell("SELECT COUNT(*) FROM graph_templates WHERE name LIKE 'GPU - %'"),
+		'graph_items'     => (int) db_fetch_cell("SELECT COUNT(*) FROM graph_templates_item AS i INNER JOIN graph_templates AS t ON t.id = i.graph_template_id WHERE t.name LIKE 'GPU - %' AND i.local_graph_id = 0"),
+		'device_template' => (int) db_fetch_cell("SELECT COUNT(*) FROM host_template WHERE name = 'GPU Node'"),
+		'dq_graphs'       => (int) db_fetch_cell("SELECT COUNT(*) FROM snmp_query_graph AS g INNER JOIN snmp_query AS q ON q.id = g.snmp_query_id WHERE q.name = 'GPU - Devices'"),
+		'dq_file'         => is_file($config['base_path'] . '/resource/script_server/plugin_gpu.xml'),
+	),
 ), JSON_PRETTY_PRINT) . PHP_EOL;

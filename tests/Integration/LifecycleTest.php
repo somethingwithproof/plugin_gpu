@@ -85,6 +85,18 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 	expect($first['tables'])->toBe(GPU_SEEDED);
 });
 
+it('imports the shipped templates once, and a forced re-import updates them in place', function () {
+	$objects = ['data_query' => 1, 'data_template' => 1, 'graph_templates' => 5, 'graph_items' => 36, 'device_template' => 1, 'dq_graphs' => 5, 'dq_file' => true];
+
+	expect(lifecycle('install')['objects'])->toBe($objects);
+
+	lifecycle('set_setting', 'gpu_templates_sha256=');
+	lifecycle('set_version', '0.0');
+
+	expect(lifecycle('upgrade')['objects'])->toBe($objects)
+		->and(lifecycle('upgrade')['objects'])->toBe($objects);
+});
+
 it('re-registers hooks and realms that went missing', function () {
 	lifecycle('install');
 

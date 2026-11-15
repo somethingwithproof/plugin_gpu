@@ -171,8 +171,24 @@ function gpu_poller(): \Somethingwithproof\Gpu\Poller {
 	return new \Somethingwithproof\Gpu\Poller(gpu_nodes(), $collections, $collector, $clock);
 }
 
+function gpu_templates(): \Somethingwithproof\Gpu\TemplateInstaller {
+	global $config;
+
+	// What core's cli/import_template.php loads for an import: the import
+	// itself replicates and repairs through poller.php and utility.php.
+	include_once($config['library_path'] . '/import.php');
+	include_once($config['library_path'] . '/poller.php');
+	include_once($config['library_path'] . '/utility.php');
+
+	return new \Somethingwithproof\Gpu\TemplateInstaller(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\LockRepository(false), __DIR__, rtrim((string) $config['base_path'], '/'));
+}
+
+function gpu_script_server(): \Somethingwithproof\Gpu\ScriptServer {
+	return new \Somethingwithproof\Gpu\ScriptServer(new \Somethingwithproof\Gpu\CacheRepository(false), new \Somethingwithproof\Gpu\SystemClock(), gpu_settings()->staleAfter);
+}
+
 /**
- * Bring the schema, hooks, and realms up to the code's version.
+ * Bring the schema, hooks, realms, and shipped templates up to the code's version.
  *
  * Cacti 1.2.31 never calls this itself; check_config and the config_arrays
  * hook do. Fresh installs take the same path as upgrades. The version stored
@@ -192,7 +208,7 @@ function plugin_gpu_upgrade(bool $grant = false): bool {
 	$info   = plugin_gpu_version();
 	$schema = new \Somethingwithproof\Gpu\Schema(false);
 
-	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered()) {
+	if ($schema->isCurrent() && $schema->recordedPluginVersion() === $info['version'] && $schema->hooksRegistered() && gpu_templates()->installed()) {
 		return true;
 	}
 
@@ -203,6 +219,12 @@ function plugin_gpu_upgrade(bool $grant = false): bool {
 	$schema->trackTables();
 
 	gpu_setup_hooks($grant);
+
+	// The version is recorded only once the templates are in place, so a
+	// failed import is retried by the next repair.
+	if (!gpu_templates()->install()) {
+		return false;
+	}
 
 	$schema->recordPluginVersion($info['version'], $info['author'], $info['homepage']);
 
