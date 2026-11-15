@@ -26,6 +26,9 @@
  *   viewer     Console and GPU View: inventory loads, nodes is denied, and
  *              GPUs of a device the viewer may not see are left out
  *   norealm    Console only: both pages are denied
+ *   scoped     Console and GPU Admin, granted only the first device: every
+ *              node and GPU action on the second device is refused and
+ *              writes nothing, and its records are not listed or exported
  *
  * Then shows that tool-reported strings and device descriptions are escaped,
  * that a delete or move confirmation sent as GET, or as POST without the
@@ -50,7 +53,8 @@ $root     = rtrim($argv[1], '/') . '/';
 $password = 'Gpu-' . bin2hex(random_bytes(8));
 $failures = 0;
 
-$view = (int) db_fetch_cell("SELECT id + 100 FROM plugin_realms WHERE plugin = 'gpu' AND file = 'gpu_inventory.php'");
+$view  = (int) db_fetch_cell("SELECT id + 100 FROM plugin_realms WHERE plugin = 'gpu' AND file = 'gpu_inventory.php'");
+$admin = (int) db_fetch_cell("SELECT id + 100 FROM plugin_realms WHERE plugin = 'gpu' AND file = 'gpu_nodes.php'");
 
 db_execute_prepared("UPDATE user_auth SET password = ?, must_change_password = '', password_change = '', enabled = 'on', locked = '', failed_attempts = 0 WHERE id = 1", array(password_hash($password, PASSWORD_DEFAULT)));
 
@@ -60,8 +64,8 @@ $users = array();
 // only the devices granted to it below are visible, as Cacti's permissive
 // model evaluates them; an allow policy with no tree exception is treated by
 // core as access to every device.
-foreach (array('viewer' => array(8, $view), 'norealm' => array(8)) as $name => $realms) {
-	$policy = $name === 'viewer' ? 2 : 1;
+foreach (array('viewer' => array(8, $view), 'norealm' => array(8), 'scoped' => array(8, $admin)) as $name => $realms) {
+	$policy = $name === 'norealm' ? 1 : 2;
 
 	db_execute_prepared('DELETE FROM user_auth WHERE username = ?', array($name));
 	db_execute_prepared("INSERT INTO user_auth (username, password, realm, full_name, must_change_password, password_change, policy_graphs, policy_trees, policy_hosts, policy_graph_templates, enabled) VALUES (?, ?, 0, ?, '', '', ?, 1, ?, ?, 'on')", array($name, password_hash($password, PASSWORD_DEFAULT), $name, $policy, $policy, $policy));
@@ -85,6 +89,7 @@ foreach (array('open' => '<b id="gpuprobe">Open node</b>', 'hidden' => 'Hidden n
 }
 
 db_execute_prepared('INSERT INTO user_auth_perms (user_id, item_id, type) VALUES (?, ?, 3)', array($users['viewer'], $devices['open']));
+db_execute_prepared('INSERT INTO user_auth_perms (user_id, item_id, type) VALUES (?, ?, 3)', array($users['scoped'], $devices['open']));
 
 $open   = 'GPU-00000000-0000-4000-8000-0000000000a1';
 $hidden = 'GPU-00000000-0000-4000-8000-0000000000b2';
@@ -225,6 +230,96 @@ perm_expect(strpos($again, 'already a GPU node') !== false && (int) db_fetch_cel
 list($code, $export) = perm_http($base . 'gpu_nodes.php?action=export', $jar);
 $document = json_decode($export, true);
 perm_expect($code === 200 && is_array($document) && count($document['gpus']) === 2 && count($document['nodes']) === 3, 'GPU Admin downloads every node and GPU record');
+
+unlink($jar);
+
+// A GPU Admin restricted to the first device acts on the second one. Each
+// attempt must be refused and leave every plugin table and the device's
+// data query attachment as they were.
+db_execute_prepared("INSERT INTO plugin_gpu_gpu (vendor, uuid, node_id, pci_bus_id, name, presence) VALUES ('nvidia', 'GPU-00000000-0000-4000-8000-0000000000c3', ?, '00000000:3D:00.0', 'Absent hidden GPU', 'absent')", array($nodes['hidden']));
+$absentHidden = (int) db_fetch_insert_id();
+db_execute_prepared("INSERT INTO plugin_gpu_gpu (vendor, uuid, node_id, pci_bus_id, name, pending_node_id, pending_since) VALUES ('nvidia', 'GPU-00000000-0000-4000-8000-0000000000d4', ?, '00000000:3E:00.0', 'Hidden to open', ?, 1)", array($nodes['hidden'], $nodes['open']));
+$intoOpen = (int) db_fetch_insert_id();
+db_execute_prepared("INSERT INTO plugin_gpu_gpu (vendor, uuid, node_id, pci_bus_id, name, pending_node_id, pending_since) VALUES ('nvidia', 'GPU-00000000-0000-4000-8000-0000000000e5', ?, '00000000:3F:00.0', 'Open to hidden', ?, 1)", array($nodes['open'], $nodes['hidden']));
+$intoHidden = (int) db_fetch_insert_id();
+db_execute_prepared("INSERT INTO host (description, hostname) VALUES ('Hidden empty node', 'hidden-empty.invalid')");
+$hiddenEmptyDevice = (int) db_fetch_insert_id();
+db_execute_prepared("INSERT INTO plugin_gpu_node (host_id, admin_state) VALUES (?, 'enabled')", array($hiddenEmptyDevice));
+$hiddenEmpty = (int) db_fetch_insert_id();
+db_execute_prepared("INSERT INTO host (description, hostname) VALUES ('Unregistered hidden', 'unregistered.invalid')");
+$unregistered = (int) db_fetch_insert_id();
+
+$state = function () {
+	$tables = array();
+
+	foreach (array('plugin_gpu_node', 'plugin_gpu_gpu', 'plugin_gpu_retired', 'plugin_gpu_reindex', 'host_snmp_query', 'host') as $table) {
+		$tables[$table] = db_fetch_assoc('SELECT * FROM `' . $table . '` ORDER BY 1, 2');
+	}
+
+	return md5(serialize($tables));
+};
+
+$before = $state();
+$jar    = perm_login('scoped');
+
+list(, $list) = perm_http($base . 'gpu_nodes.php', $jar);
+$token        = perm_token($list);
+
+perm_expect(strpos($list, 'Export Records') !== false && strpos($list, 'Hidden node') === false && strpos($list, 'Hidden empty node') === false, 'scoped GPU Admin lists only the nodes of devices it may see');
+perm_expect(strpos($list, '0000000000d4') === false && strpos($list, '0000000000e5') === false, 'scoped GPU Admin is not offered moves that involve a device it may not see');
+
+list(, $edit) = perm_http($base . 'gpu_nodes.php?action=edit&id=' . $nodes['hidden'], $jar);
+perm_expect(strpos($edit, 'do not have access') !== false && strpos($edit, 'Absent hidden GPU') === false, 'scoped GPU Admin cannot open a node on a device it may not see');
+
+list(, $edit) = perm_http($base . 'gpu_nodes.php?action=edit', $jar);
+perm_expect(strpos($edit, 'Unregistered hidden') === false && strpos($edit, 'Hidden empty node') === false, 'scoped GPU Admin is offered only devices it may see');
+
+$attempts = array(
+	'disable a hidden node, keeping its device' => array('action' => 'save', 'id' => $nodes['hidden'], 'host_id' => $devices['hidden']),
+	'enable a hidden node, keeping its device'  => array('action' => 'save', 'id' => $nodes['hidden'], 'host_id' => $devices['hidden'], 'enabled' => 'on'),
+	'move its own node to a hidden device'      => array('action' => 'save', 'id' => $nodes['open'], 'host_id' => $unregistered, 'enabled' => 'on'),
+	'register a hidden device as a node'        => array('action' => 'save', 'id' => 0, 'host_id' => $unregistered, 'enabled' => 'on'),
+	'delete a hidden node'                      => array('action' => 'delete', 'id' => $hiddenEmpty),
+	'retire a hidden absent GPU'                => array('action' => 'retire', 'id' => $absentHidden),
+	'confirm a move from a hidden node'         => array('action' => 'confirm_move', 'id' => $intoOpen),
+	'reject a move from a hidden node'          => array('action' => 'reject_move', 'id' => $intoOpen),
+	'confirm a move to a hidden node'           => array('action' => 'confirm_move', 'id' => $intoHidden),
+	'reject a move to a hidden node'            => array('action' => 'reject_move', 'id' => $intoHidden),
+	'create a device without device management' => array('action' => 'create_device', 'description' => 'Created', 'hostname' => 'created.invalid'),
+);
+
+foreach ($attempts as $what => $post) {
+	perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token) + $post);
+	perm_expect($state() === $before, "scoped GPU Admin cannot $what: nothing is written");
+}
+
+list(, $export) = perm_http($base . 'gpu_nodes.php?action=export', $jar);
+$document = json_decode($export, true);
+$exportedGpus = is_array($document) ? array_column($document['gpus'], 'node_id') : array(-1);
+perm_expect(is_array($document) && array_column($document['nodes'], 'id') === array($nodes['open']) && array_unique($exportedGpus) === array($nodes['open']) && strpos($export, '0000000000c3') === false && strpos($export, '0000000000d4') === false, 'scoped GPU Admin exports only the records of devices it may see');
+
+// The controls: the same user can act on its own device, and may disable,
+// but not re-enable, a node whose device was deleted.
+perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'save', 'id' => $nodes['open'], 'host_id' => $devices['open']));
+perm_expect(db_fetch_cell_prepared('SELECT admin_state FROM plugin_gpu_node WHERE id = ?', array($nodes['open'])) === 'disabled', 'scoped GPU Admin can disable the node of a device it may see');
+
+db_execute_prepared("INSERT INTO plugin_gpu_node (host_id, admin_state) VALUES (999999, 'enabled')");
+$orphan      = (int) db_fetch_insert_id();
+$orphanState = function () use ($orphan) {
+	return db_fetch_cell_prepared('SELECT admin_state FROM plugin_gpu_node WHERE id = ?', array($orphan));
+};
+
+perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'save', 'id' => $orphan, 'host_id' => $devices['open'], 'enabled' => 'on'));
+perm_expect($orphanState() === 'enabled' && (int) db_fetch_cell_prepared('SELECT host_id FROM plugin_gpu_node WHERE id = ?', array($orphan)) === 999999, 'a node whose device was deleted cannot be moved to another device');
+
+perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'save', 'id' => $orphan, 'host_id' => 999999));
+perm_expect($orphanState() === 'disabled', 'a node whose device was deleted can be disabled');
+
+perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'save', 'id' => $orphan, 'host_id' => 999999, 'enabled' => 'on'));
+perm_expect($orphanState() === 'disabled', 'a node whose device was deleted cannot be enabled again');
+
+perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'delete', 'id' => $orphan));
+perm_expect($orphanState() === 'disabled', 'a node whose device was deleted is not deleted by a scoped GPU Admin');
 
 unlink($jar);
 

@@ -26,29 +26,27 @@ namespace Somethingwithproof\Gpu;
  * changes state is a POST form, and csrf-magic adds its token to each
  * (REQ-UI-004). Nothing here takes a command, path, or URL.
  *
- * Only devices the acting user may see are offered (REQ-DEV-002).
+ * Only nodes, GPUs, and devices the acting user may see are shown or
+ * offered (NodeAccess, REQ-DEV-002).
  */
 final class NodesPage {
 	public const FILE = 'gpu_nodes.php';
 
-	/**
-	 * @param \Closure(int): bool $deviceAllowed Cacti's device permission check for the acting user
-	 */
 	public function __construct(
 		private readonly NodeRepository $nodes,
 		private readonly GpuRepository $gpus,
-		private readonly \Closure $deviceAllowed,
+		private readonly NodeAccess $access,
 		private readonly ?CollectionRepository $collections = null,
 		private readonly ?Clock $clock = null,
 	) {
 	}
 
 	public function renderList(): void {
-		$nodes    = $this->nodes->all();
+		$nodes    = $this->access->visibleNodes($this->nodes->all());
 		$statuses = $this->collections?->all() ?? [];
 		$counts   = [];
 
-		foreach ($this->gpus->all() as $gpu) {
+		foreach ($this->access->visibleGpus($this->gpus->all(), $nodes) as $gpu) {
 			$counts[$gpu->nodeId][$gpu->presence->value] = ($counts[$gpu->nodeId][$gpu->presence->value] ?? 0) + 1;
 		}
 
@@ -71,7 +69,7 @@ final class NodesPage {
 				. '<td>' . html_escape($this->collection($statuses[$node->id] ?? null)) . '</td>'
 				. '<td>' . ($counts[$node->id][Presence::Present->value] ?? 0) . '</td>'
 				. '<td>' . ($counts[$node->id][Presence::Absent->value] ?? 0) . '</td>'
-				. '<td>' . $this->actionForm($node->id, 'delete', __('Delete', 'gpu')) . '</td>'
+				. '<td>' . ($this->access->canManage($node) ? $this->actionForm($node->id, 'delete', __('Delete', 'gpu')) : '') . '</td>'
 				. '</tr>';
 		}
 
@@ -80,7 +78,7 @@ final class NodesPage {
 		$this->renderPendingMoves($nodes);
 
 		html_start_box(__('Export', 'gpu'), '100%', '', '3', 'center', '');
-		print '<tr><td>' . html_escape(__('Download every node and GPU record as JSON. Take an export before an uninstall that drops the plugin tables.', 'gpu'))
+		print '<tr><td>' . html_escape(__('Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables.', 'gpu'))
 			. ' <a class="linkEditMain" href="' . html_escape(self::FILE . '?action=export') . '">' . html_escape(__('Export Records', 'gpu')) . '</a></td></tr>';
 		html_end_box();
 	}
@@ -118,10 +116,10 @@ final class NodesPage {
 	}
 
 	/**
-	 * @param list<Node> $nodes
+	 * @param array<int, Node> $nodes the visible nodes, by id
 	 */
 	private function renderPendingMoves(array $nodes): void {
-		$moves = $this->gpus->pendingMoves();
+		$moves = array_values(array_filter($this->gpus->pendingMoves(), fn (GpuRecord $gpu): bool => $this->access->canManageGpu($gpu, $nodes)));
 
 		if ($moves === []) {
 			return;
@@ -156,7 +154,7 @@ final class NodesPage {
 	 * @param array<string, string> $errors field => message
 	 */
 	public function renderEdit(?Node $node, int $hostId = 0, ?bool $enabled = null, array $errors = [], bool $canCreateDevice = false): void {
-		$devices = array_filter($this->nodes->devicesFor($node->id ?? 0), fn (int $id): bool => $id === ($node->hostId ?? 0) || ($this->deviceAllowed)($id), ARRAY_FILTER_USE_KEY);
+		$devices = array_filter($this->nodes->devicesFor($node->id ?? 0), fn (int $id): bool => $this->access->deviceAllowed($id), ARRAY_FILTER_USE_KEY);
 		$current = $hostId > 0 ? $hostId : ($node->hostId ?? 0);
 		$enabled ??= $node?->enabled() ?? true;
 
@@ -191,7 +189,7 @@ final class NodesPage {
 			. '<input type="submit" class="ui-button" value="' . html_escape(__('Save', 'gpu')) . '">'
 			. '</form>';
 
-		if ($node !== null) {
+		if ($node !== null && $this->access->canManage($node)) {
 			$this->renderRetire($node);
 		} elseif ($canCreateDevice) {
 			$this->renderCreateDevice();

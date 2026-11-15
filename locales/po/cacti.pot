@@ -17,7 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr ""
+
+#: gpu_nodes.php
 msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
 msgstr ""
 
 #: gpu_nodes.php
@@ -276,7 +284,7 @@ msgid "Export"
 msgstr ""
 
 #: lib/NodesPage.php
-msgid "Download every node and GPU record as JSON. Take an export before an uninstall that drops the plugin tables."
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
 msgstr ""
 
 #: lib/NodesPage.php

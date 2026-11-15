@@ -25,6 +25,7 @@ use Somethingwithproof\Gpu\FixedClock;
 use Somethingwithproof\Gpu\GpuRepository;
 use Somethingwithproof\Gpu\Node;
 use Somethingwithproof\Gpu\NodeDevice;
+use Somethingwithproof\Gpu\NodeAccess;
 use Somethingwithproof\Gpu\NodeRepository;
 use Somethingwithproof\Gpu\NodesPage;
 use Somethingwithproof\Gpu\Provisioner;
@@ -169,7 +170,7 @@ it('disables the nodes of deleted devices and keeps their records', function () 
 });
 
 it('describes the latest collection without tool output', function () {
-	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), fn (int $id): bool => true, null, new FixedClock(1100));
+	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), new NodeAccess(fn (int $id): bool => true), null, new FixedClock(1100));
 
 	$ok     = CollectionStatus::fromRow(['node_id' => 3, 'state' => 'ok', 'finished_at' => 1000, 'gpus' => 8, 'new_gpus' => 1]);
 	$failed = CollectionStatus::fromRow(['node_id' => 3, 'state' => 'timed_out', 'detail' => 'The GPU metrics command exited with status 124', 'finished_at' => 1000, 'skipped' => 2]);
@@ -182,7 +183,7 @@ it('describes the latest collection without tool output', function () {
 it('offers only devices the acting user may see', function () {
 	$GLOBALS['__gpu_db_rows'] = ['FROM host AS h LEFT JOIN' => [['id' => '5', 'description' => 'visible'], ['id' => '6', 'description' => 'hidden']]];
 
-	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), fn (int $id): bool => $id === 5);
+	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), new NodeAccess(fn (int $id): bool => $id === 5));
 
 	ob_start();
 	$page->renderEdit(null);
