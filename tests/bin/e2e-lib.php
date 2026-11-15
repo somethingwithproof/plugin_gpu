@@ -45,7 +45,11 @@ $e2e_failures = 0;
 $e2e_fixtures = rtrim((string) getenv('GPU_E2E_FIXTURES'), '/');
 $e2e_secrets  = file((string) getenv('GPU_E2E_SECRETS'), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $e2e_agent    = explode(':', (string) getenv('GPU_E2E_AGENT')) + array(1 => '161');
-$e2e_changed  = 0;
+
+// Each flow runs in the same database as the ones before it, and a GPU
+// already recorded at another node waits for a confirmed move, so every
+// flow gives its fixture GPUs UUIDs of its own (e2e_space()).
+$e2e_space = 0;
 
 if (!is_dir($e2e_fixtures) || !is_array($e2e_secrets) || count($e2e_secrets) < 2 || $e2e_agent[0] === '') {
 	fwrite(STDERR, "Set GPU_E2E_AGENT, GPU_E2E_SECRETS, and GPU_E2E_FIXTURES\n");
@@ -68,7 +72,20 @@ function e2e_check(bool $ok, string $what): void {
  * @return list<string>
  */
 function e2e_fixture(string $name, string $part): array {
-	return explode("\n", rtrim((string) file_get_contents(dirname(__DIR__) . '/fixtures/nvidia-smi/' . $name . '.' . $part), "\n"));
+	global $e2e_space;
+
+	$text = rtrim((string) file_get_contents(dirname(__DIR__) . '/fixtures/nvidia-smi/' . $name . '.' . $part), "\n");
+
+	return explode("\n", str_replace('GPU-00000000-', sprintf('GPU-%08x-', $e2e_space), $text));
+}
+
+/**
+ * Use UUID space $space (1 or more) for this flow's fixture GPUs.
+ */
+function e2e_space(int $space): void {
+	global $e2e_space;
+
+	$e2e_space = $space;
 }
 
 /**
@@ -78,19 +95,17 @@ function e2e_fixture(string $name, string $part): array {
  * @param list<string> $names
  */
 function e2e_tool(array $metrics, array $names, int $status = 0): void {
-	global $e2e_fixtures, $e2e_changed;
+	global $e2e_fixtures;
 
 	file_put_contents($e2e_fixtures . '/expected-query', implode(',', \Somethingwithproof\Gpu\MetricModel::nvidiaFields()));
 	file_put_contents($e2e_fixtures . '/current.metrics', $metrics === array() ? '' : implode("\n", $metrics) . "\n");
 	file_put_contents($e2e_fixtures . '/current.names', $names === array() ? '' : implode("\n", $names) . "\n");
 	file_put_contents($e2e_fixtures . '/current.status', $status === 0 ? '' : (string) $status);
 
-	if ($e2e_changed > 0) {
-		print 'wait ' . E2E_CACHE_WAIT . " s for snmpd's extend cache" . PHP_EOL;
-		sleep(E2E_CACHE_WAIT);
-	}
-
-	$e2e_changed++;
+	// Always wait, the first change of a run too: each flow runs after
+	// another, and snmpd may still hold the output the last one left.
+	print 'wait ' . E2E_CACHE_WAIT . " s for snmpd's extend cache" . PHP_EOL;
+	sleep(E2E_CACHE_WAIT);
 }
 
 function e2e_wait_collector(): void {
@@ -128,7 +143,9 @@ function e2e_poll(): void {
 }
 
 function e2e_key(int $n): string {
-	return sprintf('nvidia/GPU-00000000-0000-4000-8000-%012x', $n);
+	global $e2e_space;
+
+	return sprintf('nvidia/GPU-%08x-0000-4000-8000-%012x', $e2e_space, $n);
 }
 
 function e2e_ss(int $host, string $command, string $field = '', string $index = ''): string {

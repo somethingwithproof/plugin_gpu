@@ -126,6 +126,7 @@ function restore_cycle(array $tool): void {
 $dump_old  = $config['base_path'] . '/log/gpu-restore-old.sql';
 $dump_same = $config['base_path'] . '/log/gpu-restore-same.sql';
 
+e2e_space(3);
 list($e2e_host, $e2e_node_id) = e2e_node('gpu-node-restore');
 
 /* Four GPUs, then the older backup. */

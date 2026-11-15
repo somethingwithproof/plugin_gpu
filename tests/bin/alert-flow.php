@@ -49,6 +49,8 @@ if (!api_plugin_is_enabled('thold') || !api_plugin_is_enabled('maint')) {
 	exit(2);
 }
 
+// Thold's import parses with core's xml2array(), which its own page loads.
+require_once($config['library_path'] . '/xml.php');
 require_once($config['base_path'] . '/plugins/thold/thold_functions.php');
 require_once($config['base_path'] . '/plugins/maint/functions.php');
 
@@ -241,6 +243,7 @@ foreach (TholdTemplateXml::templates() as $alert_name => $spec) {
 
 db_execute("REPLACE INTO settings (name, value) VALUES ('thold_autocreate', 'on')");
 
+e2e_space(1);
 list($e2e_host, $e2e_node_id) = e2e_node('gpu-node-alert');
 
 e2e_tool(alert_metrics(array()), e2e_fixture('r580-8gpu', 'names'));

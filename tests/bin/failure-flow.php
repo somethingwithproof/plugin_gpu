@@ -49,6 +49,7 @@ use Somethingwithproof\Gpu\NodeDevice;
 
 db_execute("REPLACE INTO settings (name, value) VALUES ('gpu_absent_after', '1')");
 
+e2e_space(2);
 list($e2e_host, $e2e_node_id) = e2e_node('gpu-node-fail');
 
 $fail_metrics = e2e_fixture('r580-8gpu', 'metrics');
@@ -189,8 +190,12 @@ fail_recover('agent down');
 
 $fail_secret = (string) db_fetch_cell_prepared('SELECT snmp_password FROM host WHERE id = ?', array($e2e_host));
 
+// net-snmp keeps an SNMPv3 user's keys for the life of a process, so this
+// process would still authenticate with the old passphrase. The collector
+// runs as a new process each poller cycle; so does this collection.
 db_execute_prepared('UPDATE host SET snmp_password = ? WHERE id = ?', array('wrong-' . bin2hex(random_bytes(6)), $e2e_host));
-e2e_collect();
+e2e_wait_collector();
+passthru(escapeshellarg(PHP_BINARY) . ' plugins/gpu/poller_gpu.php');
 fail_check('wrong credentials', 'unreachable', 'Tool error: SNMP agent unreachable', $kept, $values);
 db_execute_prepared('UPDATE host SET snmp_password = ? WHERE id = ?', array($fail_secret, $e2e_host));
 fail_recover('wrong credentials');
@@ -222,9 +227,13 @@ fail_check('cut output', 'invalid_output', 'Tool error: Output rejected', $kept,
 e2e_tool($fail_metrics, $fail_names);
 fail_recover('cut output');
 
-/* More lines than snmpd keeps: the plugin refuses output that may be cut. */
+/*
+ * More lines than snmpd keeps: the plugin refuses output that may be cut.
+ * The extra lines are short, so the output stays under snmpd's 100 KiB
+ * buffer and only the line limit is exercised.
+ */
 
-e2e_tool(array_merge($fail_metrics, array_fill(0, 1100, $fail_metrics[0])), $fail_names);
+e2e_tool(array_merge($fail_metrics, array_fill(0, 1100, 'x')), $fail_names);
 e2e_collect();
 fail_check('agent limit', 'truncated', 'Tool error: Output truncated', $kept, $values);
 e2e_tool($fail_metrics, $fail_names);
