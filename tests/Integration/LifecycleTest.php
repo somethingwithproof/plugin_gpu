@@ -95,6 +95,21 @@ it('re-registers hooks and realms that went missing', function () {
 		->and($state['realms'])->toHaveCount(2);
 });
 
+it('makes a hook repaired while the plugin is enabled active, and one repaired while disabled not', function () {
+	lifecycle('install');
+	lifecycle('enable');
+	lifecycle('drop_hook', 'draw_navigation_text');
+
+	$enabled = lifecycle('upgrade');
+	expect($enabled['hooks'])->toEqual(array_fill_keys(GPU_HOOKS, '1'));
+
+	lifecycle('disable');
+	lifecycle('drop_hook', 'draw_navigation_text');
+
+	$disabled = lifecycle('upgrade');
+	expect($disabled['hooks']['draw_navigation_text'])->toEqual('0');
+});
+
 it('finishes an upgrade that was interrupted after creating only some tables', function () {
 	lifecycle('install');
 	lifecycle('seed');

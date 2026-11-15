@@ -101,7 +101,14 @@ final class Schema {
 		db_execute_prepared('UPDATE plugin_config SET version = ?, author = ?, webpage = ? WHERE directory = ?', [$version, $author, $homepage, self::PLUGIN], true, $this->connection);
 	}
 
-	public function hooksRegistered(): bool {
+	/**
+	 * Whether core has the plugin enabled (plugin_config status 1).
+	 */
+	public function pluginEnabled(): bool {
+		return (int) db_fetch_cell_prepared('SELECT status FROM plugin_config WHERE directory = ?', [self::PLUGIN], '', true, $this->connection) === 1;
+	}
+
+		public function hooksRegistered(): bool {
 		$placeholders = implode(', ', array_fill(0, count(self::HOOKS), '?'));
 
 		$hooks  = (int) db_fetch_cell_prepared("SELECT COUNT(DISTINCT hook) FROM plugin_hooks WHERE name = ? AND hook IN ($placeholders)", array_merge([self::PLUGIN], array_keys(self::HOOKS)), '', true, $this->connection);
@@ -112,10 +119,13 @@ final class Schema {
 
 	/**
 	 * Stop Cacti from dropping the plugin tables on uninstall, and keep the
-	 * schema version so a reinstall reuses them.
+	 * schema version so a reinstall reuses them. True only when no table is
+	 * still tracked afterwards, because core drops every tracked table.
 	 */
-	public function untrackTables(): void {
-		db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", [self::PLUGIN], true, $this->connection);
+	public function untrackTables(): bool {
+		$ok = db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", [self::PLUGIN], true, $this->connection);
+
+		return $ok !== false && (int) db_fetch_cell_prepared("SELECT COUNT(*) FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", [self::PLUGIN], '', true, $this->connection) === 0;
 	}
 
 	public function forgetVersion(): void {

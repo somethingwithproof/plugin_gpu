@@ -102,6 +102,10 @@ switch ($action) {
 		db_execute("DELETE FROM plugin_realms WHERE plugin = 'gpu'");
 
 		break;
+	case 'drop_hook':
+		db_execute_prepared("DELETE FROM plugin_hooks WHERE name = 'gpu' AND hook = ?", array($argument));
+
+		break;
 	case 'drop_table':
 		db_execute('DROP TABLE IF EXISTS `' . preg_replace('/[^a-z_]/', '', $argument) . '`');
 

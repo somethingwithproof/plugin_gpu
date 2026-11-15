@@ -121,3 +121,26 @@ it('defines plugin tables with the plugin prefix, a primary key, and no serial o
 it('keys GPU records by vendor and UUID only', function () {
 	expect(Schema::tables()['plugin_gpu_gpu']['unique_keys'])->toBe([['name' => 'vendor_uuid', 'columns' => ['vendor', 'uuid']]]);
 });
+
+it('stops an uninstall that keeps the tables when they stay tracked, before core can drop them', function () {
+	$GLOBALS['__gpu_db_exec'] = [];
+	$GLOBALS['__gpu_log']     = [];
+	$GLOBALS['__gpu_db_rows'] = ['FROM plugin_db_changes' => [['n' => '2']]];
+
+	try {
+		expect(fn () => plugin_gpu_uninstall())->toThrow(RuntimeException::class, 'The GPU plugin uninstall was stopped to keep its tables.');
+		expect($GLOBALS['__gpu_log'][0]['message'])->toStartWith('ERROR: Uninstall stopped')
+			->and(array_column($GLOBALS['__gpu_db_exec'], 'sql'))->not->toContain('DELETE FROM settings WHERE name = ?');
+
+		// The same failure on a refused runtime, in the PHP 8.0 fallback.
+		include_once dirname(__DIR__, 2) . '/include/unbooted-uninstall.php';
+		expect(fn () => gpu_uninstall_unbooted())->toThrow(RuntimeException::class);
+
+		$GLOBALS['__gpu_db_rows'] = [];
+
+		plugin_gpu_uninstall();
+		gpu_uninstall_unbooted();
+	} finally {
+		$GLOBALS['__gpu_db_rows'] = [];
+	}
+});

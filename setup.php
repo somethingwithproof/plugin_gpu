@@ -203,13 +203,30 @@ function gpu_setup_hooks(bool $grant = false): void {
 		include_once($config['library_path'] . '/poller.php');
 	}
 
+	// A hook repaired while the plugin is enabled must be active, or core
+	// never calls it; on install and while disabled, core decides.
+	$enabled = (new \Somethingwithproof\Gpu\Schema(false))->pluginEnabled();
+
 	foreach (\Somethingwithproof\Gpu\Schema::HOOKS as $hook => $function) {
-		api_plugin_register_hook('gpu', $hook, $function, 'setup.php');
+		api_plugin_register_hook('gpu', $hook, $function, 'setup.php', $enabled);
 	}
 
 	foreach (\Somethingwithproof\Gpu\Pages::realms() as $realm) {
 		api_plugin_register_realm('gpu', implode(',', $realm['files']), $realm['name'], $grant);
 	}
+}
+
+/**
+ * Abort an uninstall that was told to keep the tables but could not untrack
+ * them. Core drops every tracked table once plugin_gpu_uninstall() returns
+ * and ignores its result, so only stopping the request keeps the tables; the
+ * plugin then stays installed and the uninstall can be retried. PHP 8.0
+ * syntax, because the unbooted path uses it too.
+ */
+function gpu_uninstall_stop(): void {
+	cacti_log('ERROR: Uninstall stopped: the plugin tables could not be untracked, so Cacti would have dropped the tables it was told to keep', false, 'GPU');
+
+	throw new RuntimeException('The GPU plugin uninstall was stopped to keep its tables. See the Cacti log.');
 }
 
 /**
@@ -229,7 +246,9 @@ function plugin_gpu_uninstall(): void {
 	$schema = new \Somethingwithproof\Gpu\Schema(false);
 
 	if (gpu_settings()->keepTablesOnUninstall) {
-		$schema->untrackTables();
+		if (!$schema->untrackTables()) {
+			gpu_uninstall_stop();
+		}
 
 		\Somethingwithproof\Gpu\Log::info('Uninstall kept the plugin tables as configured');
 	} else {

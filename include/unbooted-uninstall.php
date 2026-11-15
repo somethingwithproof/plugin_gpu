@@ -22,7 +22,8 @@
  * under lib/ may load. Cacti goes on to drop every tracked plugin table after
  * plugin_gpu_uninstall() returns, so the keep tables setting must be honoured
  * here too, in PHP 8.0 syntax. It mirrors Settings::fromRow() and
- * Schema::untrackTables() / forgetVersion(); the lifecycle integration tests
+ * Schema::untrackTables() / forgetVersion(), and stops through
+ * gpu_uninstall_stop() as the booted path does; the lifecycle integration tests
  * run both paths.
  */
 
@@ -31,7 +32,12 @@ function gpu_uninstall_unbooted(): void {
 	$keep = !is_array($row) || $row === array() || (isset($row['value']) && $row['value'] === 'on');
 
 	if ($keep) {
-		db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", array('gpu'));
+		$ok = db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", array('gpu'));
+
+		if ($ok === false || (int) db_fetch_cell_prepared("SELECT COUNT(*) FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", array('gpu')) !== 0) {
+			gpu_uninstall_stop();
+		}
+
 		cacti_log('NOTE: Uninstall kept the plugin tables as configured', false, 'GPU');
 	} else {
 		db_execute_prepared('DELETE FROM settings WHERE name = ?', array('gpu_schema_version'));
