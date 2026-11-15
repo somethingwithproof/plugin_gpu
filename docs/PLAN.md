@@ -1,6 +1,6 @@
 # Cacti 1.2 GPU Plugin Plan
 
-Status: proposal, revision 2 (2026-11-15). Revision 2 folds in the milestone 1 documentation and source research in [`docs/research/`](research/); items that need hardware are marked *live* and listed in each research page's Live checks table. Nothing described here as a plugin capability exists yet. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
+Status: proposal, revision 2 (2026-11-15). Revision 2 folds in the milestone 1 documentation and source research in [`docs/research/`](research/); items that need hardware are marked *live* and listed in each research page's Live checks table. Milestone 2 (foundation) is implemented: the PHP guard, lifecycle, realms and pages, node registry, GPU identity records, and the test harness. Where it differs from the text below, the difference is stated in place. Nothing that collects from a GPU exists yet. Statements about vendor tools, Cacti core, Thold, and net-snmp describe upstream behavior and cite the source that was checked, with the version or commit where one was available. Statements that could not be verified are listed as assumptions with the research issue that confirms them; they are not facts. Owner and estimates are not assigned; milestone 1 produces the estimates.
 
 `plugin_gpu` brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and clock throttling reasons from NVIDIA and AMD tools into Cacti 1.2. Each GPU becomes an index of a data query on its node's Cacti device, so operators see GPU graphs next to the node's other graphs, under Cacti's own permissions, and alert on them with Thold and Maint.
 
@@ -68,7 +68,7 @@ Code loaded after the check may use PHP features through 8.2 where they make the
 
 **Vendor tools.** The supported driver, DCGM, and ROCm lines are not chosen yet. [research/compatibility-matrix.md](research/compatibility-matrix.md) lists the vendor-supported lines (NVIDIA R580, R595, R620; ROCm 10.1.0 as the current release) and proposes a support set for the owner to confirm; fixture and pilot hardware are *live*. The DCGM field IDs the plan uses were compared at two tags: `v3.3.9` and `v4.7.0`.
 
-**Plugin metadata.** `INFO` will declare `compat = 1.2.31`. The capability set is set in M2 and M6. For phase 3 it includes `remote_collect:1` (for `poller_output` and the script server input) and `remote_poller:1`, because `poller_bottom`, where the collector runs, is gated by `remote_poller` on a remote collector. The author, copyright holder, and contact in `INFO` and file headers are Thomas Vincent, and the homepage is this repository.
+**Plugin metadata.** `INFO` declares `compat = 1.2.31`. The capability set is set in M2 and M6; M2 declares only `online_view:1, online_mgmt:1`, because nothing is collected yet. For phase 3 it includes `remote_collect:1` (for `poller_output` and the script server input) and `remote_poller:1`, because `poller_bottom`, where the collector runs, is gated by `remote_poller` on a remote collector. The author, copyright holder, and contact in `INFO` and file headers are Thomas Vincent, and the homepage is this repository.
 
 ## Upstream behavior the design depends on
 
@@ -227,10 +227,11 @@ Cacti keeps history by data query index. An index that changes meaning attaches 
 
 Rules, tested by fixtures (REQ-ID-001 to 006):
 
-- A new UUID at a known node, index, and bus ID creates a new GPU record flagged as a possible replacement. It never inherits history.
+- A new UUID at a known node, index, and bus ID creates a new GPU record flagged as a possible replacement. It never inherits history. As built in M2, the flag is raised when the bus ID of an unreported record at the same node matches, whatever the index, because the index can change at any boot; this flags every case the rule names and some it does not.
 - A UUID seen at a different node is recorded as moved only when an operator confirms.
 - A GPU missing from collection is marked absent after N consecutive successful collections, never deleted automatically, and keeps its index, data sources, and RRD files.
 - A failed collection, a tool error, or an empty result never marks GPUs absent.
+- As built in M2: a collection whose rows fail validation, or that reports one UUID or one PCI bus ID twice, is refused whole and treated as failed. MIG instance UUIDs (`MIG-...`) are refused as identity keys until decision #13, because a recreated instance's UUID reuse is unresolved ([research/mig.md](research/mig.md)). Only NVIDIA identities are accepted until #19 settles AMD UUID stability. A GPU seen at another node keeps its record and node, with the other node stored as a pending move that GPU Admin confirms or rejects. A node that owns GPU records cannot be deleted, only disabled.
 
 ## Cacti objects
 
@@ -288,7 +289,7 @@ ECC and retired-page values are numbers the GPU reports. XID is different: the k
 |---|---|---|
 | Freshness | Current, delayed, stale, never observed | Observation time against the expected interval |
 | Execution | Completed, tool error, permission denied, timed out, unknown | Exit status, timeout, and output validation |
-| GPU presence | Present, absent, possible replacement | Inventory records |
+| GPU presence | Present, absent; possible replacement is a separate flag, since a replacement card is itself present (M2) | Inventory records |
 | Maintenance | In maintenance, not in maintenance | Maint's `plugin_maint_check_cacti_host()` for the node's device (guarded call; the `is_device_in_maintenance` hook has no caller in core) |
 
 Each cached observation carries observation time, ingestion time, expected interval, backend, and tool version. A recent page refresh never counts as a recent measurement.
@@ -337,28 +338,28 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. Cacti
 
 **Layout.**
 
-- Classes live in `lib/*.php` under the `Cacti\Gpu` namespace, one class per file, loaded by a small `spl_autoload_register()` loader registered only after the PHP version check. No Composer runtime dependency. Files stay at depth 2 or less because the gettext build and the POT check scan with `find . -maxdepth 2`.
+- Classes live in `lib/*.php` under the `Somethingwithproof\Gpu` namespace (provisional until the repository home and name are decided in #11; `Cacti\Gpu` if the plugin moves to the Cacti organization), one class per file, loaded by a small `spl_autoload_register()` loader registered only after the PHP version check. No Composer runtime dependency. Files stay at depth 2 or less because the gettext build and the POT check scan with `find . -maxdepth 2`.
 - Settings use the `config_settings` hook. Logging uses `cacti_log()` with a `GPU` tag. Forms rely on csrf-magic.
 - Strings use the `gpu` text domain with a `locales/` directory and a POT file.
 - Realms: "GPU View" and "GPU Admin", each a list of page files.
 
-**Planned classes.** Names are illustrative; milestone 2 settles the set.
+**Classes.** Milestone 2 settled the first set; the rest of the table is planned.
 
 | Kind | Examples | Notes |
 |---|---|---|
-| Value objects | `Node`, `Gpu`, `GpuIdentity`, `Observation` | `readonly` classes built by named constructors |
-| Enums | `Freshness`, `ExecutionState`, `Presence`, `Vendor` | String-backed; stored as `varchar` |
-| Repositories | `NodeRepository`, `GpuRepository`, `ObservationRepository` | Only classes that issue SQL, always prepared, with an explicit connection |
+| Value objects | `Node`, `GpuReport`, `GpuSnapshot`, `GpuRecord`, `Reconciliation` (M2); `Observation` (planned) | `readonly` classes built by named constructors |
+| Enums | `Presence`, `Vendor`, `AdminState` (M2); `Freshness`, `ExecutionState` (planned) | String-backed; stored as `varchar` |
+| Repositories | `NodeRepository`, `GpuRepository`, `SettingsRepository`, `Schema` (M2); `ObservationRepository` (planned) | Only classes that issue SQL, always prepared, with an explicit connection |
 | Backends | `NvidiaSmiBackend`, `DcgmBackend`, `AmdSmiBackend` | Behind one interface; tested against captured output fixtures |
 | Process | `CommandRunner` | Fixed argument vectors, timeout, output cap, no shell |
-| Services | `InventoryService`, `FreshnessEvaluator`, `ThrottleDecoder` | Return decisions as objects; a runner applies side effects |
+| Services | `IdentityReconciler` and `Inventory` (M2); `FreshnessEvaluator`, `ThrottleDecoder` (planned) | Return decisions as objects; a runner applies side effects |
 | Infrastructure | `Clock` with system and fixed implementations | Injected wherever time matters |
 
 ## Storage, jobs, upgrades, and recovery
 
 Plugin tables hold node mappings, GPU records, the observation cache, and health. They are created and upgraded with Cacti's tracked plugin table API, and the stored plugin version changes only after a migration succeeds. The collector runs from `poller_bottom` through `exec_background()` as one `register_process_start()` process per poller, with a time budget. Runs are idempotent.
 
-Disabling the plugin stops jobs and leaves devices, graphs, and RRD files untouched. Uninstalling offers an export, then asks separately whether to drop plugin tables and whether to remove plugin-created Cacti objects. The plugin never changes anything on a GPU node. Backup documentation covers the Cacti database and the RRD directory. A restore must not attach an RRD file to a different UUID, which is a release test.
+Disabling the plugin stops jobs and leaves devices, graphs, and RRD files untouched. Uninstalling offers an export, then asks separately whether to drop plugin tables and whether to remove plugin-created Cacti objects. Cacti 1.2 gives a plugin no prompt during uninstall, so as built in M2 the questions are settings answered before uninstalling: *Keep Plugin Tables on Uninstall* (default on), with the export on the GPU Nodes page. M2 creates no Cacti objects, so the second question arrives with the milestone that creates them. The plugin never changes anything on a GPU node. Backup documentation covers the Cacti database and the RRD directory. A restore must not attach an RRD file to a different UUID, which is a release test.
 
 ## Performance
 
@@ -407,7 +408,7 @@ Phase 2 needs a security review of the DCGM and amd-smi invocation paths and any
 - **Alerting.** Thold fires and recovers on fixture throttle, ECC, and staleness; Maint suppresses it.
 - **Remote.** Collector offline, recovery mode, replication after reconnect.
 - **Failure scenarios before each phase release:** tool missing, timeout, permission denied, driver unloaded, GPU lost mid-collection, node unreachable, clock skew, full disk, interrupted collector, duplicate collector start, interrupted upgrade.
-- **Harness.** Use the harness maintained Cacti plugins use, and confirm with maintainers before adding test or CI infrastructure (#12).
+- **Harness.** Use the harness maintained Cacti plugins use, and confirm with maintainers before adding test or CI infrastructure (#12). M2 adopts it provisionally: Pest from the locked plugin harness in Cacti's `tests/tools/plugin-harness`, as maintained plugins run it, until #12 is decided. Identity fixtures in M2 are synthetic sequences, not captured tool output; captured fixtures arrive with the first backend.
 
 ## Milestones
 
