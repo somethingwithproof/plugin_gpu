@@ -66,6 +66,9 @@ final class TemplateXml {
 	public const DATA_QUERY      = 'GPU - Devices';
 	public const DEVICE_TEMPLATE = 'GPU Node';
 
+	// The data query's sort field: the identity key (ADR 0003).
+	public const SORT_FIELD = 'gpuKey';
+
 	// Identity fields the data query lists for each GPU.
 	public const INPUT_FIELDS = [
 		'gpuKey'   => ['index', 'Identity key'],
@@ -140,8 +143,11 @@ final class TemplateXml {
 			'arg_get'            => 'get',
 			// The index is vendor/UUID, which never contains this character.
 			'output_delimiter'   => '!',
-			'index_order'        => 'gpuIndex:gpuKey',
-			'index_order_type'   => 'numeric',
+			// Cacti re-maps data sources to indexes by the sort field's value
+			// at each reindex, so it must be the identity key alone: sorting
+			// by the GPU index would follow a slot, not a card.
+			'index_order'        => self::SORT_FIELD,
+			'index_order_type'   => 'alphabetic',
 			'index_title_format' => '|chosen_order_field|',
 		], 1) . "\t<fields>\n" . implode('', $fields) . "\t</fields>\n</interface>\n";
 	}

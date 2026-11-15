@@ -39,7 +39,10 @@ it('defines a script server data query keyed by GPU identity, with every call th
 		->and((string) $query->arg_num_indexes)->toBe('num_indexes')
 		->and((string) $query->arg_query)->toBe('query')
 		->and((string) $query->arg_get)->toBe('get')
-		->and((string) $query->fields->gpuKey->query_name)->toBe('index');
+		->and((string) $query->fields->gpuKey->query_name)->toBe('index')
+		// Cacti re-maps data sources by the sort field at every reindex, so
+		// a positional field there would move history between cards.
+		->and((string) $query->index_order)->toBe('gpuKey');
 
 	// Cacti splits each query line at the first delimiter, so the index
 	// (vendor/UUID) must never contain it.
