@@ -70,7 +70,7 @@ jobs:
   integration-test:
     name: PHP ${{ matrix.php }} on Cacti ${{ matrix.cacti }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 75
 
     strategy:
       fail-fast: false
@@ -277,6 +277,69 @@ jobs:
           echo "== AppArmor messages"
           sudo dmesg | grep -i apparmor || true
         fi
+        exit "$rc"
+
+    # Thold and Maint at the tagged releases the plugin is tested against,
+    # unchanged. The plugin never loads them; the alert test drives them as an
+    # operator would (docs/alerting.md).
+    - name: Checkout Thold v1.8.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: Cacti/plugin_thold
+        ref: 1eb406bd0f81f3204358cce7bd43c8bb5adc8e4a
+        path: cacti/plugins/thold
+        persist-credentials: false
+
+    - name: Checkout Maint v1.3
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: Cacti/plugin_maint
+        ref: cd62de9cc323a4f5a8ac80a8d9dda3c7fa16c470
+        path: cacti/plugins/maint
+        persist-credentials: false
+
+    # Each test runs in the same database as the end-to-end test, after it.
+    # The failure and restore tests provoke collection, database, and RRD
+    # errors on purpose, so their logs are printed but not checked; each
+    # test checks the state those errors leave. The alert and scale logs must
+    # hold nothing but expected collection failures, and no TypeError.
+    - name: Run the alerting, failure, restore, and scale tests
+      working-directory: cacti
+      env:
+        GPU_TEST_DATABASE: disposable
+        GPU_E2E_AGENT: 127.0.0.1:1161
+        GPU_E2E_FIXTURES: /var/lib/gpu-e2e
+      run: |
+        set -uo pipefail
+        export GPU_E2E_SECRETS="$RUNNER_TEMP/snmp-secrets"
+        mv log/cacti.log log/main.log
+        rc=0
+        php cli/plugin_manage.php --plugin=thold --plugin=maint --install --enable || rc=1
+        php plugins/gpu/tests/bin/alert-flow.php || rc=$?
+        mv log/cacti.log log/alert.log
+        echo "== alert log"
+        cat log/alert.log
+        if grep -E "FATAL:|ERROR:|WARNING:|TypeError" log/alert.log | grep -v "GPU WARNING: Node [0-9]*: collection failed"; then
+          rc=1
+        fi
+        for flow in failure restore; do
+          php "plugins/gpu/tests/bin/$flow-flow.php" || rc=$?
+          echo "== $flow log, not checked"
+          if [ -f log/cacti.log ]; then
+            mv log/cacti.log "log/$flow.log"
+            cat "log/$flow.log"
+          fi
+        done
+        php -d memory_limit=2G plugins/gpu/tests/bin/scale-flow.php 100 provision || rc=$?
+        if [ -f log/cacti.log ]; then
+          mv log/cacti.log log/scale.log
+          echo "== scale log"
+          cat log/scale.log
+          if grep -E "FATAL:|ERROR:|WARNING:" log/scale.log; then
+            rc=1
+          fi
+        fi
+        mv log/main.log log/cacti.log
         exit "$rc"
 
     - name: Check Cacti log for errors
