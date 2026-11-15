@@ -82,6 +82,11 @@ final class TemplateXml {
 	 * none uses a vendor-only field (REQ-GRAPH-004). Unknown values are
 	 * drawn as gaps because no item applies a CDEF (REQ-GRAPH-002).
 	 *
+	 * Every model field must be drawn by some graph: Cacti's
+	 * rrdtool_function_create() puts only data source items that a graph
+	 * item uses into the RRD file, so an undrawn field (a throttle
+	 * indicator, an ECC count, the sample age) would never be stored.
+	 *
 	 * @return array<string, array{label: string, base: int, upper: string, items: list<array{0: string, 1: int, 2: string, 3: string}>}>
 	 */
 	public static function graphs(): array {
@@ -104,6 +109,21 @@ final class TemplateXml {
 			'GPU - Clocks' => ['label' => 'MHz', 'base' => 1000, 'upper' => '0', 'items' => [
 				['clock_sm', self::LINE2, '76B900', 'SM'],
 				['clock_mem', self::LINE1, '7A3E9D', 'Memory'],
+			]],
+			'GPU - Throttle' => ['label' => 'active (0 or 1)', 'base' => 1000, 'upper' => '1', 'items' => [
+				['thr_sw_power_cap', self::LINE1, 'F2B705', 'Software power cap'],
+				['thr_hw_slowdown', self::LINE1, '7A3E9D', 'Hardware slowdown'],
+				['thr_sw_thermal', self::LINE1, 'D9541E', 'Software thermal'],
+				['thr_hw_thermal', self::LINE1, 'B00020', 'Hardware thermal'],
+				['thr_hw_power_brake', self::LINE1, '0072C6', 'Hardware power brake'],
+				['retired_pending', self::LINE1, '555555', 'Page retirement pending'],
+			]],
+			'GPU - ECC Errors' => ['label' => 'errors since driver load', 'base' => 1000, 'upper' => '0', 'items' => [
+				['ecc_corr', self::LINE1, '0072C6', 'Corrected'],
+				['ecc_uncorr', self::LINE2, 'B00020', 'Uncorrected'],
+			]],
+			'GPU - Sample Age' => ['label' => 'seconds', 'base' => 1000, 'upper' => '0', 'items' => [
+				['age', self::LINE1, '555555', 'Age of the latest sample'],
 			]],
 		];
 	}

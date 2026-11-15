@@ -126,7 +126,8 @@ it('draws only model fields, with no CDEF that could turn unknown into zero', fu
 
 	$covered = array_merge(...array_map(fn ($g) => array_column($g['items'], 0), array_values(TemplateXml::graphs())));
 
-	expect($covered)->toEqualCanonicalizing(['util_gpu', 'util_mem', 'mem_used', 'mem_total', 'temp_gpu', 'power', 'power_limit', 'clock_sm', 'clock_mem']);
+	// Cacti stores only the fields some graph draws, so all must be drawn.
+	expect($covered)->toEqualCanonicalizing(MetricModel::names());
 });
 
 it('defines one gauge per model field in the data template, with the model\'s range', function () {
