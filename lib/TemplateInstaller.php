@@ -135,9 +135,20 @@ final class TemplateInstaller {
 	}
 
 	/**
-	 * Whether every top-level object the template file defines exists.
+	 * Whether every top-level object the template file defines exists, and
+	 * Cacti's copy of the data query XML matches the plugin's: a Cacti
+	 * redeployment can remove the copy while the database objects stay, and
+	 * Cacti cannot run the query without it.
 	 */
 	public function installed(): bool {
+		$source = (string) @file_get_contents($this->pluginPath . '/resource/script_server/' . TemplateXml::DATA_QUERY_FILE);
+
+		$target = $this->dataQueryTarget();
+
+		if ($source === '' || !is_file($target) || @file_get_contents($target) !== $source) {
+			return false;
+		}
+
 		if ($this->cacti->idByHash('snmp_query', TemplateXml::hash('04', TemplateXml::DATA_QUERY)) === 0
 			|| $this->cacti->idByHash('host_template', TemplateXml::hash('02', TemplateXml::DEVICE_TEMPLATE)) === 0
 			|| $this->cacti->idByHash('data_template', TemplateXml::hash('01', TemplateXml::DATA_TEMPLATE)) === 0) {

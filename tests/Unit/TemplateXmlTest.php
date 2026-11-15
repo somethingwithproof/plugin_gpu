@@ -150,3 +150,31 @@ it('defines one gauge per model field in the data template, with the model\'s ra
 	expect((string) $host->data_queries)->toBe(TemplateXml::hash('04', TemplateXml::DATA_QUERY))
 		->and((string) $host->class)->toBe('hpc');
 });
+
+it('does not count the templates as installed while Cacti\'s copy of the data query XML is missing or stale', function () {
+	$cacti = sys_get_temp_dir() . '/gpu-tpl-' . bin2hex(random_bytes(4));
+	mkdir($cacti . '/resource/script_server', 0o700, true);
+
+	// Every database object exists.
+	$GLOBALS['__gpu_db_rows']['SELECT id FROM'] = [['id' => 7]];
+
+	$installer = new \Somethingwithproof\Gpu\TemplateInstaller(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\LockRepository(false), tpl_root(), $cacti);
+	$target    = $installer->dataQueryTarget();
+	$missing   = $installer->installed();
+
+	file_put_contents($target, 'stale');
+	$stale = $installer->installed();
+
+	file_put_contents($target, (string) file_get_contents(tpl_root() . '/resource/script_server/' . TemplateXml::DATA_QUERY_FILE));
+	$current = $installer->installed();
+
+	unlink($target);
+	rmdir($cacti . '/resource/script_server');
+	rmdir($cacti . '/resource');
+	rmdir($cacti);
+	unset($GLOBALS['__gpu_db_rows']['SELECT id FROM']);
+
+	expect($missing)->toBeFalse()
+		->and($stale)->toBeFalse()
+		->and($current)->toBeTrue();
+});
