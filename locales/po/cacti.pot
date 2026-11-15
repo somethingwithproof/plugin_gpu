@@ -17,6 +17,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr ""
+
+#: gpu_nodes.php
 msgid "Device: choose an existing Cacti device."
 msgstr ""
 
@@ -46,6 +50,38 @@ msgstr ""
 
 #: gpu_nodes.php
 msgid "The GPU stays with its recorded node."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr ""
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
 msgstr ""
 
 #: lib/ExecutionState.php
@@ -108,7 +144,7 @@ msgstr ""
 msgid "Index"
 msgstr ""
 
-#: lib/InventoryPage.php
+#: lib/InventoryPage.php lib/NodesPage.php
 msgid "Last Seen"
 msgstr ""
 
@@ -141,7 +177,7 @@ msgid "GPU Inventory"
 msgstr ""
 
 #: lib/InventoryPage.php
-msgid "No GPUs recorded yet. GPUs appear here once collection, which arrives in a later release, reports them."
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
 msgstr ""
 
 #: lib/InventoryPage.php
@@ -211,6 +247,10 @@ msgid "GPUs Present"
 msgstr ""
 
 #: lib/NodesPage.php
+msgid "Last Collection"
+msgstr ""
+
+#: lib/NodesPage.php
 msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
 msgstr ""
 
@@ -241,6 +281,30 @@ msgstr ""
 
 #: lib/NodesPage.php
 msgid "Export Records"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr ""
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr ""
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr ""
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr ""
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
 msgstr ""
 
 #: lib/NodesPage.php
@@ -278,7 +342,47 @@ msgid "Deleted device (ID %d)"
 msgstr ""
 
 #: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr ""
+
+#: lib/NodesPage.php
 msgid "Save"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr ""
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
 msgstr ""
 
 #: lib/Pages.php

@@ -129,6 +129,30 @@ final class GpuRepository {
 	}
 
 	/**
+	 * Remove an absent GPU from its node's data query, on an operator's
+	 * request (REQ-INDEX-005). A present GPU is refused: the next collection
+	 * would only return it.
+	 */
+	public function retire(int $id, int $userId, int $now): bool {
+		$ok = db_execute_prepared("INSERT IGNORE INTO plugin_gpu_retired (gpu_id, retired_at, retired_by) SELECT id, ?, ? FROM plugin_gpu_gpu WHERE id = ? AND presence = 'absent'", [$now, $userId, $id], true, $this->connection);
+
+		return $ok && db_affected_rows($this->connection) === 1;
+	}
+
+	/**
+	 * @return list<int>
+	 */
+	public function retiredIds(): array {
+		return array_map(static fn (array $row): int => Row::int($row, 'gpu_id'), Row::rows(db_fetch_assoc_prepared('SELECT gpu_id FROM plugin_gpu_retired ORDER BY gpu_id', [], true, $this->connection)));
+	}
+
+	public function find(int $id): ?GpuRecord {
+		$row = db_fetch_row_prepared('SELECT * FROM plugin_gpu_gpu WHERE id = ?', [$id], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? GpuRecord::fromRow($row) : null;
+	}
+
+	/**
 	 * Return GPUs an operator removed from the data query to it, because a
 	 * collection reported them again (REQ-INDEX-005).
 	 *

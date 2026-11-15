@@ -51,7 +51,7 @@ it('names a pending destination only to a viewer allowed to see it', function ()
 it('keeps a deleted device selected when a node is edited, instead of the first device listed', function () {
 	$GLOBALS['__gpu_db_rows'] = ['FROM host AS h LEFT JOIN' => [['id' => '5', 'description' => 'other device']]];
 
-	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false));
+	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), fn (int $id): bool => true);
 	$node = new Node(1, 101, AdminState::Enabled, '', false, 0, 0);
 
 	ob_start();

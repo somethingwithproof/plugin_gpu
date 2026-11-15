@@ -211,3 +211,30 @@ $GLOBALS['config'] = [
 
 require_once dirname(__DIR__) . '/setup.php';
 require_once dirname(__DIR__) . '/include/autoload.php';
+
+// Cacti's device, data query, and graph APIs. Each call is recorded in
+// $GLOBALS['__gpu_cacti']; a test sets what they return.
+$GLOBALS['__gpu_cacti']       = [];
+$GLOBALS['__gpu_cacti_graph'] = ['local_graph_id' => 1, 'local_data_id' => [1]];
+
+if (!function_exists('api_device_dq_add')) {
+	function api_device_dq_add($device_id, $data_query_id, $reindex_method) {
+		$GLOBALS['__gpu_cacti'][] = ['api_device_dq_add', $device_id, $data_query_id, $reindex_method];
+	}
+
+	function run_data_query($host_id, $snmp_query_id, $automation = false, $force = false) {
+		$GLOBALS['__gpu_cacti'][] = ['run_data_query', $host_id, $snmp_query_id, $force];
+
+		return true;
+	}
+
+	function create_complete_graph_from_template($graph_template_id, $host_id, $snmp_query_array, &$suggested_vals) {
+		$GLOBALS['__gpu_cacti'][] = ['create_complete_graph_from_template', $graph_template_id, $host_id, $snmp_query_array];
+
+		return $GLOBALS['__gpu_cacti_graph'];
+	}
+
+	function push_out_host($host_id, $local_data_id = 0, $data_template_id = 0) {
+		$GLOBALS['__gpu_cacti'][] = ['push_out_host', $host_id, $local_data_id];
+	}
+}

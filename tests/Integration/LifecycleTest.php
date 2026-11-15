@@ -25,7 +25,7 @@ const GPU_TABLES = ['plugin_gpu_collection', 'plugin_gpu_gpu', 'plugin_gpu_node'
 // Row counts after the seed action: one node and one GPU record.
 const GPU_SEEDED = ['plugin_gpu_collection' => 0, 'plugin_gpu_gpu' => 1, 'plugin_gpu_node' => 1, 'plugin_gpu_observation' => 0, 'plugin_gpu_reindex' => 0, 'plugin_gpu_retired' => 0];
 
-const GPU_HOOKS = ['config_arrays', 'config_settings', 'draw_navigation_text', 'poller_bottom'];
+const GPU_HOOKS = ['api_device_new', 'config_arrays', 'config_settings', 'device_remove', 'draw_navigation_text', 'poller_bottom'];
 
 beforeEach(function () {
 	lifecycle('reset');

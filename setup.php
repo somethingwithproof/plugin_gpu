@@ -168,7 +168,20 @@ function gpu_poller(): \Somethingwithproof\Gpu\Poller {
 		$clock,
 	);
 
-	return new \Somethingwithproof\Gpu\Poller(gpu_nodes(), $collections, $collector, $clock);
+	return new \Somethingwithproof\Gpu\Poller(gpu_nodes(), $collections, $collector, gpu_provisioner(), new \Somethingwithproof\Gpu\ReindexRepository(false), $clock);
+}
+
+/**
+ * The provisioner, with the core libraries its API calls need loaded.
+ */
+function gpu_provisioner(): \Somethingwithproof\Gpu\Provisioner {
+	global $config;
+
+	foreach (array('api_device', 'data_query', 'template', 'api_graph', 'api_data_source', 'utility', 'poller', 'variables', 'functions') as $library) {
+		include_once($config['library_path'] . '/' . $library . '.php');
+	}
+
+	return new \Somethingwithproof\Gpu\Provisioner(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\CacheRepository(false), new \Somethingwithproof\Gpu\ReindexRepository(false), new \Somethingwithproof\Gpu\SystemClock());
 }
 
 function gpu_templates(): \Somethingwithproof\Gpu\TemplateInstaller {
@@ -300,6 +313,32 @@ function plugin_gpu_uninstall(): void {
 }
 
 /**
+ * Create a Cacti device for a node that has none, through Cacti's own
+ * api_device_save() with the site's device defaults (ADR 0010). Returns the
+ * new device id, or 0.
+ */
+function gpu_create_device(string $description, string $hostname, int $template): int {
+	global $config;
+
+	include_once($config['library_path'] . '/api_device.php');
+
+	$availability = (int) read_config_option('availability_method');
+	$max_oids     = (int) read_config_option('max_get_size');
+	$threads      = (int) read_config_option('device_threads');
+
+	$id = api_device_save(0, $template, $description, $hostname,
+		read_config_option('snmp_community'), read_config_option('snmp_version'),
+		read_config_option('snmp_username'), read_config_option('snmp_password'),
+		read_config_option('snmp_port'), read_config_option('snmp_timeout'), '',
+		$availability > 0 ? $availability : 1, read_config_option('ping_method'), read_config_option('ping_port'),
+		read_config_option('ping_timeout'), read_config_option('ping_retries'), '',
+		read_config_option('snmp_auth_protocol'), read_config_option('snmp_priv_passphrase'), read_config_option('snmp_priv_protocol'), '', '',
+		$max_oids > 0 ? $max_oids : 10, $threads > 0 ? $threads : 1, 1, max(0, (int) read_config_option('default_site')));
+
+	return is_numeric($id) ? (int) $id : 0;
+}
+
+/**
  * poller_bottom hook: start the collector in the background once the
  * poller cycle has finished. The collector reads the GPU nodes; the poller
  * itself and the script server input never do (REQ-SS-001).
@@ -334,6 +373,57 @@ function gpu_poller_bottom(): void {
 	$args = '-q ' . cacti_escapeshellarg(__DIR__ . '/poller_gpu.php');
 
 	exec_background($php, $args);
+}
+
+/**
+ * device_remove hook: Cacti is deleting these devices. Their nodes are
+ * disabled and keep their GPU records (ADR 0010).
+ *
+ * @param mixed $device_ids
+ * @return mixed
+ */
+function gpu_device_remove($device_ids) {
+	if (!gpu_boot() || !is_array($device_ids)) {
+		return $device_ids;
+	}
+
+	$ids = array();
+
+	foreach ($device_ids as $id) {
+		if (is_numeric($id) && (int) $id > 0) {
+			$ids[] = (int) $id;
+		}
+	}
+
+	$disabled = gpu_nodes()->disableForHosts($ids);
+
+	if ($disabled > 0) {
+		\Somethingwithproof\Gpu\Log::info(sprintf('%d GPU nodes disabled because their Cacti devices were deleted', $disabled));
+	}
+
+	return $device_ids;
+}
+
+/**
+ * api_device_new hook: a device was saved. If it is a GPU node, make sure
+ * a device template change did not detach the GPU data query or change its
+ * reindex method (ADR 0010).
+ *
+ * @param mixed $save
+ * @return mixed
+ */
+function gpu_api_device_new($save) {
+	if (!gpu_boot() || !is_array($save) || !isset($save['id']) || !is_numeric($save['id'])) {
+		return $save;
+	}
+
+	$node = gpu_nodes()->findByHost((int) $save['id']);
+
+	if ($node !== null) {
+		gpu_provisioner()->attach($node);
+	}
+
+	return $save;
 }
 
 function gpu_config_arrays(): void {

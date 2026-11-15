@@ -42,6 +42,8 @@ final class Schema {
 		'config_settings'      => 'gpu_config_settings',
 		'draw_navigation_text' => 'gpu_draw_navigation_text',
 		'poller_bottom'        => 'gpu_poller_bottom',
+		'device_remove'        => 'gpu_device_remove',
+		'api_device_new'       => 'gpu_api_device_new',
 	];
 
 	// The metric columns of plugin_gpu_observation, as migration 2 created

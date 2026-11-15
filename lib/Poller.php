@@ -23,7 +23,9 @@ namespace Somethingwithproof\Gpu;
  * One collector run, started from Cacti's poller_bottom hook by
  * poller_gpu.php. Nodes are collected one at a time, least recently
  * finished first, so a run that hits its time budget leaves the nodes it
- * did not reach first in line for the next one.
+ * did not reach first in line for the next one. After a node is collected,
+ * its device is provisioned: data query attached, reindex run, graphs
+ * created.
  *
  * Only nodes whose device the main poller polls are collected. Remote data
  * collectors are phase 3; their nodes are counted and left alone.
@@ -35,15 +37,17 @@ final class Poller {
 		private readonly NodeRepository $nodes,
 		private readonly CollectionRepository $collections,
 		private readonly Collector $collector,
+		private readonly Provisioner $provisioner,
+		private readonly ReindexRepository $reindex,
 		private readonly Clock $clock,
 	) {
 	}
 
 	/**
-	 * @return array{nodes: int, ok: int, failed: int, skipped: int, remote: int, stopped_early: bool}
+	 * @return array{nodes: int, ok: int, failed: int, skipped: int, remote: int, reindexed: int, deferred: int, graphs: int, stopped_early: bool}
 	 */
 	public function run(Settings $settings, int $budget): array {
-		$stats    = ['nodes' => 0, 'ok' => 0, 'failed' => 0, 'skipped' => 0, 'remote' => 0, 'stopped_early' => false];
+		$stats    = ['nodes' => 0, 'ok' => 0, 'failed' => 0, 'skipped' => 0, 'remote' => 0, 'reindexed' => 0, 'deferred' => 0, 'graphs' => 0, 'stopped_early' => false];
 		$started  = $this->clock->now();
 		$statuses = $this->collections->all();
 		$nodes    = array_values(array_filter($this->nodes->all(), static fn (Node $node): bool => $node->enabled() && $node->deviceExists));
@@ -79,11 +83,19 @@ final class Poller {
 
 			if ($state === ExecutionState::Skipped) {
 				$stats['skipped']++;
-			} elseif ($state->succeeded()) {
-				$stats['ok']++;
-			} else {
-				$stats['failed']++;
+
+				continue;
 			}
+
+			$stats[$state->succeeded() ? 'ok' : 'failed']++;
+
+			// Read after the collection, which may have asked for one.
+			$request = $this->reindex->pending()[$node->id] ?? null;
+			$done    = $this->provisioner->provision($node, $device, $request);
+
+			$stats['reindexed'] += $done['reindexed'] ? 1 : 0;
+			$stats['deferred']  += $done['deferred'] ? 1 : 0;
+			$stats['graphs']    += $done['graphs'];
 		}
 
 		return $stats;

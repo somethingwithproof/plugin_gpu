@@ -84,6 +84,6 @@ try {
 	unregister_process('gpu', 'collector', 0);
 }
 
-cacti_log(sprintf('STATS: Time:%.2f Nodes:%d Ok:%d Failed:%d Skipped:%d Remote:%d StoppedEarly:%s', microtime(true) - $gpu_start, $gpu_stats['nodes'], $gpu_stats['ok'], $gpu_stats['failed'], $gpu_stats['skipped'], $gpu_stats['remote'], $gpu_stats['stopped_early'] ? 'yes' : 'no'), false, 'GPU', POLLER_VERBOSITY_MEDIUM);
+cacti_log(sprintf('STATS: Time:%.2f Nodes:%d Ok:%d Failed:%d Skipped:%d Remote:%d Reindexed:%d Deferred:%d Graphs:%d StoppedEarly:%s', microtime(true) - $gpu_start, $gpu_stats['nodes'], $gpu_stats['ok'], $gpu_stats['failed'], $gpu_stats['skipped'], $gpu_stats['remote'], $gpu_stats['reindexed'], $gpu_stats['deferred'], $gpu_stats['graphs'], $gpu_stats['stopped_early'] ? 'yes' : 'no'), false, 'GPU', POLLER_VERBOSITY_MEDIUM);
 
 exit(0);

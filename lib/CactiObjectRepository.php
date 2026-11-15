@@ -46,6 +46,65 @@ final class CactiObjectRepository {
 		return (int) db_fetch_cell_prepared("SELECT id FROM `$table` WHERE hash = ?", [substr($hash, -32)], '', true, $this->connection);
 	}
 
+	/**
+	 * The device's reindex method for a data query, or null when the data
+	 * query is not attached to the device.
+	 */
+	public function reindexMethod(int $hostId, int $dataQueryId): ?int {
+		$row = db_fetch_row_prepared('SELECT reindex_method FROM host_snmp_query WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
+
+		return is_array($row) && $row !== [] ? Row::int($row, 'reindex_method') : null;
+	}
+
+	/**
+	 * The indexes Cacti has cached for the device's data query, which is
+	 * what its last reindex found.
+	 *
+	 * @return list<string>|null null when the read failed
+	 */
+	public function cachedIndexes(int $hostId, int $dataQueryId): ?array {
+		$rows = db_fetch_assoc_prepared('SELECT DISTINCT snmp_index FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ? ORDER BY snmp_index', [$hostId, $dataQueryId], true, $this->connection);
+
+		return is_array($rows) ? array_map(static fn (array $row): string => Row::string($row, 'snmp_index'), Row::rows($rows)) : null;
+	}
+
+	/**
+	 * The data query's graph types: snmp_query_graph id => graph template id.
+	 *
+	 * @return array<int, int>
+	 */
+	public function queryGraphs(int $dataQueryId): array {
+		$out = [];
+
+		foreach (Row::rows(db_fetch_assoc_prepared('SELECT id, graph_template_id FROM snmp_query_graph WHERE snmp_query_id = ? ORDER BY id', [$dataQueryId], true, $this->connection)) as $row) {
+			$out[Row::int($row, 'id')] = Row::int($row, 'graph_template_id');
+		}
+
+		return $out;
+	}
+
+	/**
+	 * The graphs the device already has for the data query, as
+	 * "graph type id:index" keys.
+	 *
+	 * @return array<string, true>|null
+	 */
+	public function graphed(int $hostId, int $dataQueryId): ?array {
+		$rows = db_fetch_assoc_prepared('SELECT snmp_query_graph_id, snmp_index FROM graph_local WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
+
+		if (!is_array($rows)) {
+			return null;
+		}
+
+		$out = [];
+
+		foreach (Row::rows($rows) as $row) {
+			$out[Row::int($row, 'snmp_query_graph_id') . ':' . Row::string($row, 'snmp_index')] = true;
+		}
+
+		return $out;
+	}
+
 	public function setting(string $name): string {
 		return (string) db_fetch_cell_prepared('SELECT value FROM settings WHERE name = ?', [$name], '', true, $this->connection);
 	}
