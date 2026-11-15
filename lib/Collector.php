@@ -74,14 +74,38 @@ final class Collector {
 	}
 
 	/**
+	 * The metrics entry, or, when its driver refuses the current clock event
+	 * reasons field name, the entry with the earlier name (REQ-NVSMI-005).
+	 * Without that entry the refusal stands.
+	 */
+	private function metrics(Node $node, NodeDevice $device): ExtendOutput {
+		$metrics = $this->reader->read($device, SnmpdConfig::METRICS);
+
+		if ($metrics->result !== SnmpdConfig::INVALID_ARGUMENT) {
+			return $metrics;
+		}
+
+		try {
+			$legacy = $this->reader->read($device, SnmpdConfig::METRICS_LEGACY);
+		} catch (CollectionError $e) {
+			if ($e->state === ExecutionState::NotConfigured) {
+				return $metrics;
+			}
+
+			throw $e;
+		}
+
+		Log::debug(sprintf('Node %d: read the metrics entry with the earlier clock event reasons field name', $node->id));
+
+		return $legacy;
+	}
+
+	/**
 	 * @return array{ExecutionState, string} the state and its detail
 	 */
 	private function run(Node $node, NodeDevice $device, Settings $settings): array {
 		try {
-			$collection = $this->parser->parse(
-				$this->reader->read($device, SnmpdConfig::METRICS),
-				$this->reader->read($device, SnmpdConfig::NAMES),
-			);
+			$collection = $this->parser->parse($this->metrics($node, $device), $this->reader->read($device, SnmpdConfig::NAMES));
 		} catch (CollectionError $e) {
 			$this->collections->finish($node->id, $e->state, $e->getMessage(), $this->clock->now(), rejectedLines: $e->rejectedLines);
 

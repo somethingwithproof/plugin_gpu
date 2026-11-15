@@ -94,10 +94,12 @@ function e2e_space(int $space): void {
  * @param list<string> $metrics
  * @param list<string> $names
  */
-function e2e_tool(array $metrics, array $names, int $status = 0): void {
+function e2e_tool(array $metrics, array $names, int $status = 0, bool $legacy = false): void {
 	global $e2e_fixtures;
 
 	file_put_contents($e2e_fixtures . '/expected-query', implode(',', \Somethingwithproof\Gpu\MetricModel::nvidiaFields()));
+	file_put_contents($e2e_fixtures . '/expected-query-legacy', implode(',', \Somethingwithproof\Gpu\MetricModel::nvidiaFields(true)));
+	file_put_contents($e2e_fixtures . '/current.legacy', $legacy ? '1' : '');
 	file_put_contents($e2e_fixtures . '/current.metrics', $metrics === array() ? '' : implode("\n", $metrics) . "\n");
 	file_put_contents($e2e_fixtures . '/current.names', $names === array() ? '' : implode("\n", $names) . "\n");
 	file_put_contents($e2e_fixtures . '/current.status', $status === 0 ? '' : (string) $status);

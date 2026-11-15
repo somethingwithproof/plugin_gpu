@@ -260,6 +260,19 @@ fail_check('clock skew', 'invalid_output', 'Tool error: Output rejected: The sam
 e2e_tool($fail_metrics, $fail_names);
 fail_recover('clock skew');
 
+/*
+ * An older nvidia-smi that knows only clocks_throttle_reasons.* refuses the
+ * metrics entry's field name with status 2; the collector reads the legacy
+ * entry instead and decodes the same bits (REQ-NVSMI-005).
+ */
+
+$fail_masks = db_fetch_assoc_prepared('SELECT gpu_id, thr_mask FROM plugin_gpu_observation WHERE node_id = ? ORDER BY gpu_id', array($e2e_node_id));
+e2e_tool($fail_metrics, $fail_names, 0, true);
+e2e_collect();
+e2e_check(db_fetch_cell_prepared('SELECT state FROM plugin_gpu_collection WHERE node_id = ?', array($e2e_node_id)) === 'ok' && strpos(fail_health(), 'Completed') === 0, "older nvidia-smi: the legacy entry is read and the collection completes ('" . fail_health() . "')");
+e2e_check(db_fetch_assoc_prepared('SELECT gpu_id, thr_mask FROM plugin_gpu_observation WHERE node_id = ? ORDER BY gpu_id', array($e2e_node_id)) === $fail_masks && count($fail_masks) === 8, 'older nvidia-smi: every GPU keeps the same decoded mask');
+e2e_tool($fail_metrics, $fail_names);
+
 /* A second collector start while another run holds the node. */
 
 $fail_other = db_connect_real($database_hostname, $database_username, $database_password, $database_default, 'mysql', $database_port, 1);

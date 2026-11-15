@@ -33,12 +33,14 @@ namespace Somethingwithproof\Gpu;
 final class MetricModel {
 	public const MIB = 1048576.0;
 
-	// The field that carries the clock event reasons bitmask. The old name is
-	// the one confirmed on every supported driver line: nvidia-smi renamed the
-	// reasons in its v530 changelog and added the old query names back in
-	// v535 (research/clock-event-reasons.md). Both names print the same
-	// bitmask in the same position, so the parser accepts either.
-	public const MASK_FIELD = 'clocks_throttle_reasons.active';
+	// The field that carries the clock event reasons bitmask (REQ-NVSMI-005).
+	// nvidia-smi renamed the reasons in its v530 changelog and added the old
+	// query names back in v535 (research/clock-event-reasons.md), so an
+	// older nvidia-smi can know only the old name. The metrics entry asks for the current name; a second entry asks for the
+	// old one in the same position and is read only when the first is
+	// refused. Both print the same bitmask, decoded by the same code.
+	public const MASK_FIELD        = 'clocks_event_reasons.active';
+	public const LEGACY_MASK_FIELD = 'clocks_throttle_reasons.active';
 
 	// Whether ECC is on, so the health page can say why an ECC value is
 	// unknown (REQ-ERR-002). Not a model field: it is stored as text.
@@ -122,9 +124,12 @@ final class MetricModel {
 	 * GPU name is free text that may contain the separator, so it is read by
 	 * its own query (namesFields()) and never shifts these fields.
 	 *
+	 * With $legacy, the clock event reasons field has its earlier name, in
+	 * the same position.
+	 *
 	 * @return list<string>
 	 */
-	public static function nvidiaFields(): array {
+	public static function nvidiaFields(bool $legacy = false): array {
 		$fields = ['timestamp', 'uuid', 'index', 'pci.bus_id', 'driver_version', self::ECC_MODE_FIELD];
 
 		foreach (self::all() as $metric) {
@@ -133,7 +138,7 @@ final class MetricModel {
 			}
 		}
 
-		$fields[] = self::MASK_FIELD;
+		$fields[] = $legacy ? self::LEGACY_MASK_FIELD : self::MASK_FIELD;
 
 		return $fields;
 	}

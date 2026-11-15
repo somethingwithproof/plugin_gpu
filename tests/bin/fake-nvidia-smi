@@ -21,6 +21,10 @@
 # /var/lib/gpu-e2e, which tests/bin/e2e.php writes:
 #
 #   expected-query  the metrics --query-gpu value the plugin's model asks for
+#   expected-query-legacy
+#                   the same with the earlier clock event reasons field name
+#   current.legacy  optional: refuse the current field name with nvidia-smi's
+#                   invalid-argument status, as a driver before 530 does
 #   current.metrics fixture lines, with @NOW@ for the sample time
 #   current.names   fixture lines for the names entry
 #   current.status  optional: the metrics query exits with this status and
@@ -40,7 +44,12 @@ set -eu
 
 dir=/var/lib/gpu-e2e
 
-if [ "$#" -eq 2 ] && [ "$1" = "--query-gpu=$(cat "$dir/expected-query")" ] && [ "$2" = '--format=csv,noheader,nounits' ]; then
+if [ "$#" -eq 2 ] && [ -s "$dir/current.legacy" ] && [ "$1" = "--query-gpu=$(cat "$dir/expected-query")" ]; then
+	echo 'Field "clocks_event_reasons.active" is not a valid field to query.' >&2
+	exit 2
+fi
+
+if [ "$#" -eq 2 ] && { [ "$1" = "--query-gpu=$(cat "$dir/expected-query")" ] || [ "$1" = "--query-gpu=$(cat "$dir/expected-query-legacy")" ]; } && [ "$2" = '--format=csv,noheader,nounits' ]; then
 	if [ -s "$dir/current.delay" ]; then
 		sleep "$(cat "$dir/current.delay")"
 	fi

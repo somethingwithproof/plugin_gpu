@@ -1,6 +1,6 @@
 # Setting up a GPU node
 
-The plugin reads each GPU node's `nvidia-smi` output through the node's SNMP agent, using NET-SNMP-EXTEND-MIB ([ADR 0008](decisions/0008-collect-through-snmp-extend.md)). The node's administrator adds two `extend` entries to `snmpd.conf`; the plugin sends the agent nothing but read requests, through the SNMP settings of the node's Cacti device. Nothing is installed on the node besides `snmpd` (net-snmp).
+The plugin reads each GPU node's `nvidia-smi` output through the node's SNMP agent, using NET-SNMP-EXTEND-MIB ([ADR 0008](decisions/0008-collect-through-snmp-extend.md)). The node's administrator adds three `extend` entries to `snmpd.conf`; the plugin sends the agent nothing but read requests, through the SNMP settings of the node's Cacti device. Nothing is installed on the node besides `snmpd` (net-snmp).
 
 ## snmpd.conf
 
@@ -8,7 +8,8 @@ Add these lines exactly as shown. The entry names, the field list, and its order
 
 <!-- extend-lines:start -->
 ```
-extend -cacheTime 30 cacti_gpu /usr/bin/env -i TZ=UTC /usr/bin/timeout -k 2 10 /usr/bin/nvidia-smi --query-gpu=timestamp,uuid,index,pci.bus_id,driver_version,ecc.mode.current,utilization.gpu,utilization.memory,memory.used,memory.total,temperature.gpu,power.draw,power.limit,clocks.sm,clocks.mem,ecc.errors.corrected.volatile.total,ecc.errors.uncorrected.volatile.total,retired_pages.pending,retired_pages.sbe,retired_pages.dbe,clocks_throttle_reasons.active --format=csv,noheader,nounits
+extend -cacheTime 30 cacti_gpu /usr/bin/env -i TZ=UTC /usr/bin/timeout -k 2 10 /usr/bin/nvidia-smi --query-gpu=timestamp,uuid,index,pci.bus_id,driver_version,ecc.mode.current,utilization.gpu,utilization.memory,memory.used,memory.total,temperature.gpu,power.draw,power.limit,clocks.sm,clocks.mem,ecc.errors.corrected.volatile.total,ecc.errors.uncorrected.volatile.total,retired_pages.pending,retired_pages.sbe,retired_pages.dbe,clocks_event_reasons.active --format=csv,noheader,nounits
+extend -cacheTime 30 cacti_gpu_legacy /usr/bin/env -i TZ=UTC /usr/bin/timeout -k 2 10 /usr/bin/nvidia-smi --query-gpu=timestamp,uuid,index,pci.bus_id,driver_version,ecc.mode.current,utilization.gpu,utilization.memory,memory.used,memory.total,temperature.gpu,power.draw,power.limit,clocks.sm,clocks.mem,ecc.errors.corrected.volatile.total,ecc.errors.uncorrected.volatile.total,retired_pages.pending,retired_pages.sbe,retired_pages.dbe,clocks_throttle_reasons.active --format=csv,noheader,nounits
 extend -cacheTime 300 cacti_gpu_names /usr/bin/env -i /usr/bin/timeout -k 2 10 /usr/bin/nvidia-smi --query-gpu=uuid,name --format=csv,noheader
 ```
 <!-- extend-lines:end -->
@@ -20,11 +21,11 @@ What each part does:
 - `/usr/bin/timeout -k 2 10` stops the tool after 10 seconds and kills it 2 seconds later. snmpd waits for its child with no timeout of its own, so without this a hung `nvidia-smi` can block the agent.
 - `-cacheTime 30` keeps one sample for 30 seconds, and the timeout is below that window, so a run always ends before the next can start. Every Cacti poll inside the window sees the same sample, and the plugin reports the sample's own age.
 - The GPU names come from a separate entry because a product name is free text that can contain the CSV separator. Names change rarely, so that entry is cached for 5 minutes.
-- Both commands are well under extend's 510-byte limit for a command and its arguments.
+- Every command is under extend's 510-byte limit for a command and its arguments.
 
 The plugin treats each of these as a failed collection with unknown values, not as data: a nonzero exit status (including the timeout), output cut at snmpd's 100 KiB or 1024-line limit, a line with more or fewer fields than requested, and any other text in the output, such as an error message that snmpd merged in from stderr.
 
-The metrics entry reads the clock event reasons as `clocks_throttle_reasons.active`, the name confirmed on every supported driver line; nvidia-smi renamed the reasons and then added the old query names back. `clocks_event_reasons.active` prints the same bitmask in the same position and may be used instead once #17 confirms it on your driver.
+The clock event reasons have two query names (REQ-NVSMI-005). nvidia-smi's changelog renamed them from `clocks_throttle_reasons.*` to `clocks_event_reasons.*` in v530 and added the old query names back in v535 ([research](research/clock-event-reasons.md)), so an older nvidia-smi can know only the old name; which driver releases those versions map to is not confirmed. `cacti_gpu` asks for the new name, `clocks_event_reasons.active`. `cacti_gpu_legacy` is the same query with the old name, `clocks_throttle_reasons.active`, in the same position; the plugin reads it only when `cacti_gpu` exits with status 2, nvidia-smi's status for an invalid argument such as an unknown field, so on a current driver it never runs. Both names print the same bitmask, and the plugin decodes it the same way. A node set up from an earlier version of this page, with `cacti_gpu` asking for the old name, keeps working unchanged.
 
 ## Run snmpd as an unprivileged user
 

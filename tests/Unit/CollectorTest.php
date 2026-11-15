@@ -55,12 +55,16 @@ beforeEach(function () {
 
 /**
  * An extend reader that answers from nvidia-smi fixture files, or fails.
+ * With $refuseCurrent it plays a driver that knows only the earlier clock
+ * event reasons field name: the metrics entry exits with nvidia-smi's
+ * invalid-argument status, and the legacy entry, if the node has it, prints
+ * the fixture.
  */
 final class FixtureReader implements ExtendReader {
 	/** @var list<string> */
 	public array $reads = [];
 
-	public function __construct(private readonly string $fixture, private readonly ?CollectionError $error = null, private readonly int $status = 0, private readonly string $sampled = '2027/01/15 08:00:00.250') {
+	public function __construct(private readonly string $fixture, private readonly ?CollectionError $error = null, private readonly int $status = 0, private readonly string $sampled = '2027/01/15 08:00:00.250', private readonly bool $refuseCurrent = false, private readonly bool $hasLegacy = true) {
 	}
 
 	public function read(NodeDevice $device, string $token): ExtendOutput {
@@ -70,11 +74,20 @@ final class FixtureReader implements ExtendReader {
 			throw $this->error;
 		}
 
-		$file  = dirname(__DIR__) . '/fixtures/nvidia-smi/' . $this->fixture . ($token === SnmpdConfig::METRICS ? '.metrics' : '.names');
-		$text  = $this->fixture === '' ? '' : str_replace('@NOW@', $this->sampled, (string) file_get_contents($file));
-		$lines = $text === '' ? [] : explode("\n", rtrim($text, "\n"));
+		if ($this->refuseCurrent && $token === SnmpdConfig::METRICS) {
+			return new ExtendOutput(SnmpdConfig::INVALID_ARGUMENT, 1, ['Field "clocks_event_reasons.active" is not a valid field to query.']);
+		}
 
-		return new ExtendOutput($token === SnmpdConfig::METRICS ? $this->status : 0, count($lines), $lines);
+		if ($token === SnmpdConfig::METRICS_LEGACY && !$this->hasLegacy) {
+			throw new CollectionError(ExecutionState::NotConfigured, 'The SNMP agent has no extend entry named ' . $token);
+		}
+
+		$metrics = $token === SnmpdConfig::METRICS || $token === SnmpdConfig::METRICS_LEGACY;
+		$file    = dirname(__DIR__) . '/fixtures/nvidia-smi/' . $this->fixture . ($metrics ? '.metrics' : '.names');
+		$text    = $this->fixture === '' ? '' : str_replace('@NOW@', $this->sampled, (string) file_get_contents($file));
+		$lines   = $text === '' ? [] : explode("\n", rtrim($text, "\n"));
+
+		return new ExtendOutput($metrics ? $this->status : 0, count($lines), $lines);
 	}
 }
 
@@ -150,6 +163,51 @@ it('refuses a sample stamped further ahead of Cacti than clock skew explains, an
 	$GLOBALS['__gpu_db_exec'] = [];
 
 	expect(collector(new FixtureReader('r595-1gpu', sampled: '2027/01/15 08:03:40.000'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::Ok);
+});
+
+/**
+ * The observation rows one collection of $reader stores.
+ *
+ * @return list<list<mixed>>
+ */
+function collect_observations(FixtureReader $reader): array {
+	$GLOBALS['__gpu_db_exec'] = [];
+
+	expect(collector($reader)->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::Ok);
+
+	return array_values(array_map(fn ($e) => $e['params'], array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'INSERT INTO plugin_gpu_observation'))));
+}
+
+it('reads the earlier clock event reasons field name when the driver refuses the current one, decoding the same bits', function (string $fixture) {
+	// A stored record for each GPU of the fixture, at node 3.
+	$records = [];
+
+	foreach (file(dirname(__DIR__) . '/fixtures/nvidia-smi/' . $fixture . '.metrics', FILE_IGNORE_NEW_LINES) as $i => $line) {
+		[, $uuid, $index, $bus, $driver] = explode(', ', $line);
+
+		$records[] = ['id' => 10 + $i, 'vendor' => 'nvidia', 'uuid' => $uuid, 'node_id' => 3, 'gpu_index' => (int) $index, 'pci_bus_id' => $bus,
+			'name' => 'x', 'driver_version' => $driver, 'tool' => 'nvidia-smi', 'tool_version' => $driver, 'presence' => 'present', 'first_seen' => 1, 'last_seen' => 1];
+	}
+
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = $records;
+
+	$current = new FixtureReader($fixture);
+	$legacy  = new FixtureReader($fixture, refuseCurrent: true);
+	$stored  = collect_observations($current);
+
+	expect($stored)->not->toBe([])
+		->and(collect_observations($legacy))->toBe($stored)
+		->and($current->reads)->toBe([SnmpdConfig::METRICS, SnmpdConfig::NAMES])
+		->and($legacy->reads)->toBe([SnmpdConfig::METRICS, SnmpdConfig::METRICS_LEGACY, SnmpdConfig::NAMES]);
+})->with(['r580-8gpu', 'r595-1gpu', 'r620-16gpu']);
+
+it('keeps the refusal of the current field name as the outcome when the node has no legacy entry', function () {
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = collect_known();
+
+	$reader = new FixtureReader('r595-1gpu', refuseCurrent: true, hasLegacy: false);
+
+	expect(collector($reader)->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::ToolError)
+		->and(collect_writes('plugin_gpu_observation'))->toBe([]);
 });
 
 it('records an empty collection as successful without marking any GPU absent', function () {

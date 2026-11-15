@@ -68,7 +68,7 @@ Schema versions, recorded in the `gpu_schema_version` setting:
 2. Clear *Keep Plugin Tables on Uninstall* only if the records should be dropped.
 3. Check *Remove the plugin's Cacti objects on uninstall* only if the plugin's templates and data query XML should go too.
 4. Uninstall **GPU** in **Configuration > Plugins**.
-5. Remove the two `extend` lines from each node's `snmpd.conf` and restart snmpd.
+5. Remove the plugin's `extend` lines (`cacti_gpu`, `cacti_gpu_legacy`, `cacti_gpu_names`) from each node's `snmpd.conf` and restart snmpd.
 
 Uninstall never deletes RRD files, devices, graphs, or data sources, whatever the settings.
 

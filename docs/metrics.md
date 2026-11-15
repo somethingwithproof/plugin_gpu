@@ -23,11 +23,11 @@ Milestone 3 implements the nvidia-smi column. The DCGM and AMD columns record th
 | `retired_pending` | Page retirement pending | 0 or 1 | indicator | 0 to 1 | `retired_pages.pending` | 392 | #18 |
 | `retired_sbe` | Pages retired after single-bit ECC errors | pages | gauge | 0 to U | `retired_pages.sbe` | 390 (`DCGM_FI_DEV_RETIRED_SBE`, unconfirmed, #15) | #18 |
 | `retired_dbe` | Pages retired after a double-bit ECC error | pages | gauge | 0 to U | `retired_pages.dbe` | 391 (`DCGM_FI_DEV_RETIRED_DBE`, unconfirmed, #15) | #18 |
-| `thr_sw_power_cap` | Clocks held by the software power cap | 0 or 1 | indicator | 0 to 1 | `clocks_throttle_reasons.active`, bit 0x4 | field 112, bit 0x4 | `metric --violation` (MI300 or newer, #18) |
-| `thr_hw_slowdown` | Hardware slowdown | 0 or 1 | indicator | 0 to 1 | `clocks_throttle_reasons.active`, bit 0x8 | field 112, bit 0x8 | not applicable |
-| `thr_sw_thermal` | Software thermal slowdown | 0 or 1 | indicator | 0 to 1 | `clocks_throttle_reasons.active`, bit 0x20 | field 112, bit 0x20 | `metric --violation` (MI300 or newer, #18) |
-| `thr_hw_thermal` | Hardware thermal slowdown | 0 or 1 | indicator | 0 to 1 | `clocks_throttle_reasons.active`, bit 0x40 | field 112, bit 0x40 | `metric --violation` (MI300 or newer, #18) |
-| `thr_hw_power_brake` | Hardware power brake | 0 or 1 | indicator | 0 to 1 | `clocks_throttle_reasons.active`, bit 0x80 | field 112, bit 0x80 | not applicable |
+| `thr_sw_power_cap` | Clocks held by the software power cap | 0 or 1 | indicator | 0 to 1 | `clocks_event_reasons.active`, bit 0x4 | field 112, bit 0x4 | `metric --violation` (MI300 or newer, #18) |
+| `thr_hw_slowdown` | Hardware slowdown | 0 or 1 | indicator | 0 to 1 | `clocks_event_reasons.active`, bit 0x8 | field 112, bit 0x8 | not applicable |
+| `thr_sw_thermal` | Software thermal slowdown | 0 or 1 | indicator | 0 to 1 | `clocks_event_reasons.active`, bit 0x20 | field 112, bit 0x20 | `metric --violation` (MI300 or newer, #18) |
+| `thr_hw_thermal` | Hardware thermal slowdown | 0 or 1 | indicator | 0 to 1 | `clocks_event_reasons.active`, bit 0x40 | field 112, bit 0x40 | `metric --violation` (MI300 or newer, #18) |
+| `thr_hw_power_brake` | Hardware power brake | 0 or 1 | indicator | 0 to 1 | `clocks_event_reasons.active`, bit 0x80 | field 112, bit 0x80 | not applicable |
 | `age` | Seconds since the tool took the sample | seconds | gauge | 0 to U | computed from `timestamp` | computed from the sample timestamp | computed from the sample timestamp |
 <!-- metric-table:end -->
 

@@ -32,8 +32,13 @@ namespace Somethingwithproof\Gpu;
  * nothing but read requests.
  */
 final class SnmpdConfig {
-	public const METRICS = 'cacti_gpu';
-	public const NAMES   = 'cacti_gpu_names';
+	public const METRICS        = 'cacti_gpu';
+	public const METRICS_LEGACY = 'cacti_gpu_legacy';
+	public const NAMES          = 'cacti_gpu_names';
+
+	// nvidia-smi's documented return value for an invalid argument, which is
+	// what it gives for a query field the driver does not know.
+	public const INVALID_ARGUMENT = 2;
 
 	// Seconds snmpd keeps a result. Every Cacti poll inside the window sees
 	// the same sample, so the window bounds how fresh a value can be.
@@ -56,6 +61,7 @@ final class SnmpdConfig {
 	public static function extendLines(): array {
 		return [
 			self::line(self::METRICS, self::METRICS_CACHE, ['TZ=UTC'], MetricModel::nvidiaFields(), 'csv,noheader,nounits'),
+			self::line(self::METRICS_LEGACY, self::METRICS_CACHE, ['TZ=UTC'], MetricModel::nvidiaFields(true), 'csv,noheader,nounits'),
 			self::line(self::NAMES, self::NAMES_CACHE, [], MetricModel::namesFields(), 'csv,noheader'),
 		];
 	}

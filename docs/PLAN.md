@@ -270,7 +270,7 @@ One set of fields describes every GPU, so a single set of templates and Thold te
 | `xid_last` | XID number | per #8 | field 230 | not applicable |
 | `age` | seconds | computed | computed | computed |
 
-Milestone 3 names the throttle indicators `thr_*` (for example `thr_sw_power_cap`, `thr_hw_slowdown`) so every data source name fits Cacti's 19-character limit, and reads the mask as hex or decimal. The NVIDIA backend reads the mask through the old query name `clocks_throttle_reasons.active`, because the new `clocks_event_reasons.*` names are not confirmed per driver line (#17); REQ-NVSMI-005 is therefore only partly met. GPU names come from a second extend entry, because a product name is free text that can contain the CSV separator. [docs/metrics.md](metrics.md) is generated from the model and is the field reference.
+Milestone 3 names the throttle indicators `thr_*` (for example `thr_sw_power_cap`, `thr_hw_slowdown`) so every data source name fits Cacti's 19-character limit, and reads the mask as hex or decimal. The NVIDIA backend reads the mask through the new query name `clocks_event_reasons.active` and, when nvidia-smi refuses it with status 2, through a second entry asking for the old name `clocks_throttle_reasons.active` in the same position; both decode the same way (REQ-NVSMI-005, #36). Which driver releases know which name is still not confirmed (#17). GPU names come from a second extend entry, because a product name is free text that can contain the CSV separator. [docs/metrics.md](metrics.md) is generated from the model and is the field reference.
 
 Rules:
 
