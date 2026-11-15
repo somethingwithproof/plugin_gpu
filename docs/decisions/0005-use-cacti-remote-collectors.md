@@ -21,3 +21,7 @@ Distributed collection uses Cacti remote data collectors. The collector runs the
 
 - **A plugin agent on each GPU node.** A new daemon, credential store, and protocol, duplicating Cacti's collectors.
 - **SSH from the main server.** Needs key management and a remote command path.
+
+## Revision note (2026-11-15)
+
+Milestone 1 research ([cacti-core](../research/cacti-core.md)) adds: `poller_bottom` runs on a remote collector only for plugins declaring `remote_poller:1`, so the collector needs that capability as well as `remote_collect:1`; and the address check in `remote_agent.php` uses `get_client_addr()` at `release/1.2.31` (which reads proxy headers only when the site sets `proxy_headers`) and `REMOTE_ADDR` at `1.2.x`.
