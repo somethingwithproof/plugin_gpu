@@ -1,8 +1,8 @@
 # plugin_gpu
 
-A proposed Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and throttling reasons from NVIDIA and AMD tools into Cacti. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
+A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and throttling reasons from NVIDIA and AMD tools into Cacti. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
 
-> **Status: milestone 2 (foundation).** The plugin installs, registers GPU nodes, and keeps GPU identity records, but it collects nothing: no vendor tool is run and no graph is created until milestone 3. Do not run it in production. Everything below the milestone 2 section describes the plan, not shipped behavior.
+> **Status: in development, no release yet.** Milestone 2 (foundation) is merged on `main`: the plugin installs, registers GPU nodes, and keeps GPU identity records, but it collects nothing. No vendor tool is run and no graph is created until milestone 3, which is not on `main`. Milestone 1 research is written up from documentation and source; checks that need GPU hardware are still open. Do not run the plugin in production. Everything below the milestone 2 section describes the plan, not shipped behavior.
 
 ## Why
 
@@ -38,9 +38,9 @@ These steps install the milestone 2 code to try it. They require Cacti 1.2.31 or
 3. Give users the *GPU View* or *GPU Admin* realm under **Configuration > Users**. The installing user gets both.
 4. Optionally adjust **Configuration > Settings > GPU**: *Mark Absent After* (default 3 successful collections, from 1 to 100) and *Keep Plugin Tables on Uninstall* (default on).
 
-## Open question: how metrics reach Cacti
+## Collection path
 
-The largest undecided choice is the collection path: a Cacti poller on the GPU node, SNMP `extend`, scraping `dcgm-exporter`, or something else. Each puts the trust boundary in a different place. It is tracked as decision [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) and gated on measurements in milestone 1. The plan describes the options under [Collection paths](docs/PLAN.md#collection-paths).
+Decision [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) chose SNMP `extend` on the GPU node: the node's administrator configures `snmpd` to run the vendor tool with a fixed argument list, and the plugin reads the output through Cacti's SNMP polling of that device. The reasons and rejected alternatives are in [ADR 0008](docs/decisions/0008-collect-through-snmp-extend.md). The collector is not implemented yet. A poller on the node and a `dcgm-exporter` scrape remain possible later backends; see [Collection paths](docs/PLAN.md#collection-paths).
 
 ## Compatibility targets
 
@@ -60,7 +60,7 @@ The largest undecided choice is the collection path: a Cacti poller on the GPU n
 
 ```mermaid
 flowchart LR
-    NODE[GPU node: nvidia-smi, DCGM, amd-smi] -->|collection path, undecided| C[Collector]
+    NODE[GPU node: nvidia-smi, DCGM, amd-smi] -->|SNMP extend| C[Collector]
     C --> CACHE[(Plugin cache keyed by GPU UUID)]
     CACHE --> SS[Script server data query input]
     SS --> RRD[(Cacti RRD files, one data source per GPU)]
