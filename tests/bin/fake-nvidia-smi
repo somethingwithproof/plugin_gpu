@@ -25,6 +25,8 @@
 #   current.names   fixture lines for the names entry
 #   current.status  optional: exit with this status and an NVML error on
 #                   stderr, as a broken driver does
+#   current.delay   optional: sleep this many seconds first, as a hung
+#                   driver does
 #
 # It accepts only the two documented argument vectors, so a drift between
 # the documentation and the plugin's field list fails the test.
@@ -32,6 +34,10 @@
 set -eu
 
 dir=/var/lib/gpu-e2e
+
+if [ -s "$dir/current.delay" ]; then
+	sleep "$(cat "$dir/current.delay")"
+fi
 
 if [ -s "$dir/current.status" ]; then
 	echo 'Failed to initialize NVML: Driver/library version mismatch' >&2

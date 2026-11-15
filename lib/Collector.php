@@ -88,6 +88,19 @@ final class Collector {
 			return [$e->state, $e->getMessage()];
 		}
 
+		// A sample stamped ahead of Cacti's clock is refused before anything
+		// is recorded: stored samples only move forward, so keeping it would
+		// hold back every real sample until Cacti's clock caught up.
+		$ahead = $collection->newestSample() - $this->clock->now();
+
+		if ($ahead > Freshness::SKEW_ALLOWANCE) {
+			$detail = sprintf('The sample time is %d seconds ahead of the Cacti server\'s clock', $ahead);
+
+			$this->collections->finish($node->id, ExecutionState::InvalidOutput, $detail, $this->clock->now());
+
+			return [ExecutionState::InvalidOutput, $detail];
+		}
+
 		$changes = $this->inventory->record($node, $collection->snapshot, $settings->absentAfter);
 		$records = $this->gpus->forReconcile($node, $collection->snapshot);
 

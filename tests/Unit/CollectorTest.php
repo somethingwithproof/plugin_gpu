@@ -60,7 +60,7 @@ final class FixtureReader implements ExtendReader {
 	/** @var list<string> */
 	public array $reads = [];
 
-	public function __construct(private readonly string $fixture, private readonly ?CollectionError $error = null, private readonly int $status = 0) {
+	public function __construct(private readonly string $fixture, private readonly ?CollectionError $error = null, private readonly int $status = 0, private readonly string $sampled = '2027/01/15 08:00:00.250') {
 	}
 
 	public function read(NodeDevice $device, string $token): ExtendOutput {
@@ -71,7 +71,7 @@ final class FixtureReader implements ExtendReader {
 		}
 
 		$file  = dirname(__DIR__) . '/fixtures/nvidia-smi/' . $this->fixture . ($token === SnmpdConfig::METRICS ? '.metrics' : '.names');
-		$text  = $this->fixture === '' ? '' : str_replace('@NOW@', '2027/01/15 08:00:00.250', (string) file_get_contents($file));
+		$text  = $this->fixture === '' ? '' : str_replace('@NOW@', $this->sampled, (string) file_get_contents($file));
 		$lines = $text === '' ? [] : explode("\n", rtrim($text, "\n"));
 
 		return new ExtendOutput($token === SnmpdConfig::METRICS ? $this->status : 0, count($lines), $lines);
@@ -134,6 +134,23 @@ it('stores nothing and changes no GPU record when the collection fails', functio
 	'tool timed out'   => [124, ExecutionState::TimedOut],
 	'driver not ready' => [9, ExecutionState::DriverNotLoaded],
 ]);
+
+it('refuses a sample stamped further ahead of Cacti than clock skew explains, and records nothing', function () {
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = collect_known();
+
+	// COLLECT_NOW is 08:01:40; 120 seconds ahead is allowed, 121 is not.
+	expect(collector(new FixtureReader('r595-1gpu', sampled: '2027/01/15 08:03:41.000'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::InvalidOutput)
+		->and(collect_writes('plugin_gpu_gpu'))->toBe([])
+		->and(collect_writes('plugin_gpu_observation'))->toBe([]);
+
+	$finish = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'last_ok_at')));
+
+	expect($finish[0]['params'][2])->toBe("The sample time is 121 seconds ahead of the Cacti server's clock");
+
+	$GLOBALS['__gpu_db_exec'] = [];
+
+	expect(collector(new FixtureReader('r595-1gpu', sampled: '2027/01/15 08:03:40.000'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::Ok);
+});
 
 it('records an empty collection as successful without marking any GPU absent', function () {
 	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = collect_known();
