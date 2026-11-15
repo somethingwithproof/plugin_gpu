@@ -11,5 +11,6 @@ Each record captures one architecture decision: its context, the decision, its c
 | [0005](0005-use-cacti-remote-collectors.md) | Reach remote GPU nodes through Cacti remote data collectors, not a custom agent | Accepted |
 | [0006](0006-php-82-floor-with-80-parse-guard.md) | Require PHP 8.2, keep entry points parseable on PHP 8.0 | Accepted |
 | [0007](0007-run-vendor-tools-with-fixed-argument-lists.md) | Run vendor tools with fixed argument lists, no shell, and no elevated privilege | Accepted |
+| [0008](0008-collect-through-snmp-extend.md) | Collect through SNMP `extend` on the GPU node | Accepted |
 
-Open decisions are tracked as issues labelled `type: decision`. The collection path (#7) is the largest one and is not decided.
+Open decisions are tracked as issues labelled `type: decision`. The collection path (#7) was decided on 2026-11-15 in record 0008.
