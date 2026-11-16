@@ -164,12 +164,11 @@ function alert_round(string $round, array $change, int $status = 0, int $extraWa
 	sleep(1);
 	e2e_poll();
 
-	// poller_bottom starts poller_thold.php in the background. Wait for it,
-	// then run it in the foreground: a run that finds nothing new to check
-	// changes nothing.
-	for ($i = 0; $i < 60 && (int) db_fetch_cell("SELECT COUNT(*) FROM processes WHERE tasktype = 'thold'") > 0; $i++) {
-		sleep(1);
-	}
+	// poller_bottom starts poller_thold.php in the background. Wait for its
+	// check, then run it in the foreground: a run that finds nothing new to
+	// check changes nothing, and one that finds the background run still
+	// registered exits at once, so the wait is what orders the evidence.
+	e2e_wait_thold();
 
 	$output = $config['base_path'] . '/log/gpu-alert-thold.txt';
 	$rc     = alert_run(array(PHP_BINARY, $config['base_path'] . '/plugins/thold/poller_thold.php'), $output);

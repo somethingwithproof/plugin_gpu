@@ -25,7 +25,9 @@
  * The extend lines are taken from docs/node-setup.md as written, so the test
  * exercises what an administrator installs. The rest follows the same page:
  * an unprivileged agentuser, and an SNMPv3 authPriv user limited to the
- * system group and the extend tables. The createUser line goes in this file
+ * system group and the extend tables, plus, for this test only, the snmp
+ * group, whose snmpInPkts the scale test reads to show a page sent the
+ * agent nothing. The createUser line goes in this file
  * rather than the persistent one, which net-snmp also accepts, because the
  * test agent starts from nothing each run. The secrets file holds the
  * authentication and privacy passphrases, one per line; they never appear on
@@ -51,6 +53,7 @@ print 'agentaddress ' . ($argv[2] ?? 'udp:161') . "\n"
 	. "dontLogTCPWrappersConnects yes\n"
 	. "view   cactigpu included .1.3.6.1.2.1.1\n"
 	. "view   cactigpu included .1.3.6.1.4.1.8072.1.3.2\n"
+	. "view   cactigpu included .1.3.6.1.2.1.11\n"
 	. "rouser -s usm cactigpu priv -V cactigpu\n"
 	. "createUser cactigpu SHA-256 {$secrets[0]} AES {$secrets[1]}\n"
 	. $match[1] . "\n";

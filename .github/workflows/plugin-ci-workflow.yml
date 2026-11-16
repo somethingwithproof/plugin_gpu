@@ -319,7 +319,9 @@ jobs:
         mv log/cacti.log log/alert.log
         echo "== alert log"
         cat log/alert.log
-        if grep -E "FATAL:|ERROR:|WARNING:|TypeError" log/alert.log | grep -v "GPU WARNING: Node [0-9]*: collection failed"; then
+        # The test polls off the cron schedule, so Cacti may warn that the
+        # poll is out of sync and that it cannot mail the admin about it.
+        if grep -E "FATAL:|ERROR:|WARNING:|TypeError" log/alert.log | grep -v -e "GPU WARNING: Node [0-9]*: collection failed" -e "Cactid/Cron is out of sync" -e "Primary Admin account notifications disabled"; then
           rc=1
         fi
         for flow in failure restore; do
@@ -335,7 +337,11 @@ jobs:
           mv log/cacti.log log/scale.log
           echo "== scale log"
           cat log/scale.log
-          if grep -E "FATAL:|ERROR:|WARNING:" log/scale.log; then
+          # The test polls off the cron schedule, so Cacti may warn that the
+          # poll is out of sync and that it cannot mail the admin about it,
+          # and the devices the failure and permission tests left down fail
+          # their polls with no notification receiver configured.
+          if grep -E "FATAL:|ERROR:|WARNING:" log/scale.log | grep -v -e "Cactid/Cron is out of sync" -e "Primary Admin account notifications disabled" -e "No notification receivers configured for event: cactiNotifyDeviceFailedPoll"; then
             rc=1
           fi
         fi

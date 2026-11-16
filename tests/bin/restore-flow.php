@@ -49,6 +49,10 @@ db_execute("REPLACE INTO settings (name, value) VALUES ('gpu_absent_after', '1')
  * Run mysqldump or mysql on Cacti's database, with a file as input or output.
  */
 function restore_db(string $tool, string $file): bool {
+	// A background Thold run truncates its tables, which stops a dump with
+	// "Table definition has changed".
+	e2e_wait_thold();
+
 	global $database_hostname, $database_username, $database_password, $database_default, $database_port;
 
 	$defaults = tempnam(sys_get_temp_dir(), 'gpu-restore');

@@ -275,16 +275,19 @@ e2e_tool($fail_metrics, $fail_names);
 
 /* A second collector start while another run holds the node. */
 
-$fail_other = db_connect_real($database_hostname, $database_username, $database_password, $database_default, 'mysql', $database_port, 1);
-$fail_lock  = is_object($fail_other) ? (int) db_fetch_cell_prepared("SELECT GET_LOCK(SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256), 0)", array('node_' . $e2e_node_id), '', true, $fail_other) : 0;
+// A connection of its own: db_connect_real() returns Cacti's cached session
+// for the same database, and GET_LOCK is reentrant on one connection.
+$fail_other = new PDO('mysql:host=' . $database_hostname . ';port=' . $database_port . ';dbname=' . $database_default, $database_username, $database_password);
+$fail_hold  = $fail_other->prepare("SELECT GET_LOCK(SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256), 0)");
+$fail_lock  = $fail_hold->execute(array('node_' . $e2e_node_id)) ? (int) $fail_hold->fetchColumn() : 0;
 $fail_stats = e2e_collect();
 
 e2e_check($fail_lock === 1 && $fail_stats['skipped'] === 1 && $fail_stats['ok'] === 0, 'duplicate start: a run that finds the node held skips it and counts the skip (' . json_encode($fail_stats) . ')');
 e2e_check(fail_kept() === $kept && strpos(fail_health(), '1 later runs skipped') !== false, "duplicate start: nothing is changed, and the health page shows the skip ('" . fail_health() . "')");
 
-if (is_object($fail_other)) {
-	db_close($fail_other);
-}
+// Closing the connection releases the lock.
+$fail_hold  = null;
+$fail_other = null;
 
 fail_recover('duplicate start');
 

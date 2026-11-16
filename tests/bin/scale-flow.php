@@ -237,6 +237,7 @@ if ($scale_provision) {
 
 	// A one-second budget stops a run before it reaches every node; the
 	// nodes it did not reach go first next time (REQ-PERF-003).
+	e2e_wait_collector();
 	$stats = gpu_poller()->run($scale_settings, 1);
 
 	e2e_check($scale_nodes < 10 || ($stats['stopped_early'] && $stats['nodes'] < $scale_nodes), 'budget: a run that hits its time budget stops and leaves the rest (' . json_encode($stats) . ')');
@@ -257,6 +258,13 @@ $scale_reader = new \Somethingwithproof\Gpu\SnmpExtendReader(0);
 $scale_pkts   = function () use ($scale_reader, $scale_device) {
 	return (int) $scale_reader->value($scale_device, '.1.3.6.1.2.1.11.1.0', 1000);
 };
+
+// Nothing else may talk to the agent while the page renders: a collector
+// that poller_bottom started may still be on its last nodes.
+e2e_wait_collector();
+e2e_wait_thold();
+sleep(2);
+e2e_wait_collector();
 
 // Two reads with nothing between them give the cost of the reads alone.
 $a = $scale_pkts();

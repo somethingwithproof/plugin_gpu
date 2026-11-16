@@ -110,6 +110,29 @@ function e2e_tool(array $metrics, array $names, int $status = 0, bool $legacy = 
 	sleep(E2E_CACHE_WAIT);
 }
 
+/**
+ * Wait for Thold's check of the last poll to finish. poller_bottom starts
+ * poller_thold.php in the background, and it may not have registered when
+ * this is called, so the poll's own mark is waited on too: Thold's
+ * poller_output hook sets tcheck on each threshold it fed, synchronously in
+ * the poller, and the check clears it.
+ */
+function e2e_wait_thold(int $limit = 120): void {
+	$marked = db_table_exists('thold_data');
+
+	for ($i = 0; $i < $limit; $i++) {
+		$running = (int) db_fetch_cell("SELECT COUNT(*) FROM processes WHERE tasktype = 'thold'") > 0;
+
+		if (!$running && (!$marked || (int) db_fetch_cell('SELECT COUNT(*) FROM thold_data WHERE tcheck = 1') === 0)) {
+			return;
+		}
+
+		sleep(1);
+	}
+
+	print "NOTE: Thold's check had not finished after $limit s" . PHP_EOL;
+}
+
 function e2e_wait_collector(): void {
 	for ($i = 0; $i < 90 && (int) db_fetch_cell("SELECT COUNT(*) FROM processes WHERE tasktype = 'gpu' AND taskname = 'collector'") > 0; $i++) {
 		sleep(1);
