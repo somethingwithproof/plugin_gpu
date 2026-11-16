@@ -41,6 +41,7 @@ beforeEach(function () {
 	$GLOBALS['__gpu_affected_rows'] = 1;
 	$GLOBALS['__gpu_db_fail']       = [];
 	$GLOBALS['__gpu_db_rows']       = [
+		'FROM data_template_data AS d' => [['active' => 'on', 'fields' => 22, 'missing' => 0]],
 		'FROM data_local AS dl INNER JOIN settings' => [],
 		'FROM `snmp_query`'         => [['id' => 78]],
 		'FROM host_snmp_query'      => [['reindex_method' => 0]],
@@ -321,6 +322,49 @@ it('does nothing when the templates are not installed', function () {
 
 	expect(prov()->provision(prov_node(), prov_device(), prov_request()))->toBe(['reindexed' => false, 'deferred' => false, 'graphs' => 0])
 		->and($GLOBALS['__gpu_cacti'])->toBe([]);
+});
+
+it('retains the renamed phase until enable and every poller field are confirmed', function () {
+	$dir = sys_get_temp_dir() . '/gpu-enable-retry-' . bin2hex(random_bytes(4));
+	$path = $dir . '/history.rrd';
+	mkdir($dir);
+	file_put_contents($path, 'inherited history');
+	$GLOBALS['__gpu_rrd_paths'] = [1 => $path];
+	$GLOBALS['__gpu_db_rows']['FROM data_template_data AS d'] = [['active' => '', 'fields' => 22, 'missing' => 22]];
+	$deletes = static fn () => array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'DELETE FROM settings')));
+
+	try {
+		prov()->provision(prov_node(), prov_device(), null);
+		$markers = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'REPLACE INTO settings')));
+		expect(end($markers)['params'])->toBe(['gpu_inherited_rrd_1', '40:ready'])
+			->and($deletes())->toBe([])
+			->and(prov_calls('push_out_host'))->toBe([]);
+
+		// Resume after an enable that wrote a new file but did not finish
+		// its poller cache. The inherited archive must never move again.
+		file_put_contents($path, 'new GPU history');
+		$GLOBALS['__gpu_db_rows']['FROM data_local AS dl INNER JOIN settings'] = [['id' => 1, 'value' => '40:ready']];
+		$GLOBALS['__gpu_db_rows']['FROM graph_local'] = [['snmp_query_graph_id' => 11, 'snmp_index' => PROV_KEY_A], ['snmp_query_graph_id' => 12, 'snmp_index' => PROV_KEY_A]];
+		$GLOBALS['__gpu_db_rows']['FROM data_template_data AS d'] = [['active' => 'on', 'fields' => 22, 'missing' => 1]];
+		$GLOBALS['__gpu_cacti'] = [];
+		prov()->provision(prov_node(), prov_device(), null);
+		expect(file_get_contents($path))->toBe('new GPU history')
+			->and(file_get_contents($path . '.gpu-orphan-1000'))->toBe('inherited history')
+			->and(prov_calls('api_data_source_disable'))->toBe([])
+			->and($deletes())->toBe([]);
+
+		$GLOBALS['__gpu_db_rows']['FROM data_template_data AS d'] = [['active' => 'on', 'fields' => 22, 'missing' => 0]];
+		prov()->provision(prov_node(), prov_device(), null);
+		expect($deletes())->toHaveCount(1)
+			->and(prov_calls('push_out_host'))->toBe([['push_out_host', 40, 1]])
+			->and(file_get_contents($path))->toBe('new GPU history');
+	} finally {
+		foreach (glob($dir . '/*') as $file) {
+			unlink($file);
+		}
+		rmdir($dir);
+		$GLOBALS['__gpu_rrd_paths'] = [];
+	}
 });
 
 it('disables the nodes of deleted devices and keeps their records', function () {

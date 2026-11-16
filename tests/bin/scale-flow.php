@@ -299,7 +299,9 @@ if ($scale_provision) {
 	$scale_budget  = new \Somethingwithproof\Gpu\Poller(gpu_nodes(), new \Somethingwithproof\Gpu\CollectionRepository(false), $scale_collector, gpu_provisioner(), new \Somethingwithproof\Gpu\ReindexRepository(false), new ScaleClock(time()));
 	$stats         = $scale_budget->run($scale_settings, 3);
 
-	e2e_check($stats['stopped_early'] && $stats['nodes'] + $stats['skipped'] + $stats['remote'] === 2 && $stats['left'] === $scale_enabled - 2, 'budget: a run that hits its time budget stops after two nodes and counts the other ' . ($scale_enabled - 2) . ' as left (' . json_encode($stats) . ')');
+	$scale_processed = min(2, $scale_enabled);
+	$scale_left = $scale_enabled - $scale_processed;
+	e2e_check($stats['stopped_early'] === ($scale_left > 0) && $stats['nodes'] + $stats['skipped'] + $stats['remote'] === $scale_processed && $stats['left'] === $scale_left, 'budget: processed ' . $scale_processed . ' nodes and left ' . $scale_left . ' (' . json_encode($stats) . ')');
 
 	$rows = array();
 

@@ -236,8 +236,8 @@ final class Provisioner {
 		}
 
 		$blocked = [];
-		foreach ($pending as $id) {
-			if (!$this->setAsideInherited($node, $id, true)) {
+		foreach ($pending as $id => $renamed) {
+			if (!($renamed ? $this->enableRecovered($node, $id) : $this->setAsideInherited($node, $id, true))) {
 				$blocked[$id] = true;
 			}
 		}
@@ -348,11 +348,22 @@ final class Provisioner {
 			Log::warning(sprintf('Node %d: new data source %d found an RRD file already at its path; the file was renamed with the suffix %s so its history attaches to no other GPU', $node->id, $dataSource, $suffix));
 		}
 
-		if (!$this->cacti->forgetInheritedRrd($dataSource)) {
+		// Persist the phase before enabling: retries must never rename a new
+		// file written by the poller after a successful but interrupted enable.
+		if (!$this->cacti->saveSetting('gpu_inherited_rrd_' . $dataSource, $node->hostId . ':ready')) {
 			return false;
 		}
-		api_data_source_enable($dataSource);
 
-		return true;
+		return $this->enableRecovered($node, $dataSource);
+	}
+
+	private function enableRecovered(Node $node, int $dataSource): bool {
+		api_data_source_enable($dataSource);
+		if (!$this->cacti->dataSourceReady($dataSource)) {
+			return false;
+		}
+		push_out_host($node->hostId, $dataSource);
+
+		return $this->cacti->forgetInheritedRrd($dataSource);
 	}
 }
