@@ -35,7 +35,7 @@ extend -cacheTime 30 cacti_gpu_legacy /usr/bin/env -i TZ=UTC /usr/bin/timeout -k
 ```
 <!-- extend-legacy:end -->
 
-`cacti_gpu_legacy` is the metrics query with the old name, `clocks_throttle_reasons.active`, in the same position. The plugin reads it only when `cacti_gpu` exits with status 2, so on a current driver it never runs. Both names print the same bitmask, and the plugin decodes it the same way. A node set up from an earlier version of this page, with `cacti_gpu` asking for the old name, keeps working unchanged.
+`cacti_gpu_legacy` is the metrics query with the old name, `clocks_throttle_reasons.active`, in the same position. The plugin reads it only when `cacti_gpu` exits with status 2, so on a current driver it never runs. Both names print the same bitmask, and the plugin decodes it the same way. A node set up from an earlier version of this page needs its `cacti_gpu` line replaced with the one above: this release adds `ecc.mode.current`, `retired_pages.sbe`, and `retired_pages.dbe` to the field list, and until the line is replaced the node's collection fails with *Output rejected*, because the line count of fields no longer matches. The status 2 fallback does not cover that case, since the old line runs successfully. Only the clock event reasons name may differ: a `cacti_gpu` line with the current field list and `clocks_throttle_reasons.active` in the last position also works, because both names print the same bitmask there.
 
 ## Run snmpd as an unprivileged user
 

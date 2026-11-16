@@ -351,12 +351,14 @@ function gpu_create_device(string $description, string $hostname, int $template)
  * Remove a device through Cacti's API, which also calls the device_remove
  * hooks.
  */
-function gpu_remove_device(int $id): void {
+function gpu_remove_device(int $id): bool {
 	global $config;
 
 	include_once($config['library_path'] . '/api_device.php');
 
 	api_device_remove($id);
+
+	return (new \Somethingwithproof\Gpu\CactiObjectRepository(false))->deviceRemoved($id);
 }
 
 /**

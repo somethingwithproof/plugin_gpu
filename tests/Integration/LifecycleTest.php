@@ -35,6 +35,11 @@ beforeEach(function () {
 	lifecycle('reset');
 });
 
+it('starts a fresh ECC baseline after failed collection or an omitted GPU', function () {
+	lifecycle('install');
+	expect(lifecycle('ecc_gap')['result'])->toBe([null, 2, null, 3, null, 2]);
+});
+
 afterAll(function () {
 	lifecycle('reset');
 });

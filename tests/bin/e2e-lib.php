@@ -158,10 +158,11 @@ function e2e_collect(): array {
 function e2e_poll(): void {
 	global $config;
 
-	$process = proc_open(array(PHP_BINARY, $config['base_path'] . '/poller.php', '--force'), array(1 => array('file', '/dev/null', 'w'), 2 => array('file', '/dev/null', 'w')), $pipes, $config['base_path']);
+	$log = $config['base_path'] . '/log/gpu-e2e-poller.log';
+	$process = proc_open(array(PHP_BINARY, $config['base_path'] . '/poller.php', '--force'), array(1 => array('file', $log, 'a'), 2 => array('file', $log, 'a')), $pipes, $config['base_path']);
 
-	if (is_resource($process)) {
-		proc_close($process);
+	if (!is_resource($process) || proc_close($process) !== 0) {
+		throw new RuntimeException('Cacti poller failed; see log/gpu-e2e-poller.log');
 	}
 
 	e2e_wait_collector();

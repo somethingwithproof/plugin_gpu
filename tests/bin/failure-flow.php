@@ -68,13 +68,22 @@ function fail_sources(): array {
  * @return array<string, mixed>
  */
 function fail_kept(): array {
-	global $e2e_host, $e2e_node_id;
+	global $e2e_host, $e2e_node_id, $fail_history_end;
 
 	$rrd = array();
+	$history = array();
 
 	foreach (fail_sources() as $id) {
 		$path       = get_data_source_path((int) $id, true);
 		$rrd[$id]   = is_file($path) ? filesize($path) : -1;
+		$lines = array();
+		exec('rrdtool fetch ' . escapeshellarg($path) . ' AVERAGE --resolution 10 --start ' . ($fail_history_end - 10) . ' --end ' . $fail_history_end, $lines, $status);
+		if ($status !== 0) {
+			throw new RuntimeException('Could not read the historical RRD window');
+		}
+		$history[$id] = array_values(array_filter($lines, function ($line) use ($fail_history_end) {
+			return preg_match('/^(\d+):/', $line, $match) === 1 && (int) $match[1] <= $fail_history_end;
+		}));
 	}
 
 	return array(
@@ -82,6 +91,7 @@ function fail_kept(): array {
 		'graphs'  => (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM graph_local WHERE host_id = ?', array($e2e_host)),
 		'sources' => fail_sources(),
 		'rrd'     => $rrd,
+		'history' => $history,
 	);
 }
 
@@ -145,7 +155,7 @@ function fail_check(string $scenario, string $state, string $outcome, array $kep
 
 	$rrd = e2e_rrd((int) $kept['sources'][e2e_key(1)]);
 
-	e2e_check(($rrd['util_gpu'] ?? '') !== '0' && ($rrd['temp_gpu'] ?? '') !== '0', "$scenario: Cacti wrote no zero to the RRD file (util_gpu " . ($rrd['util_gpu'] ?? '?') . ')');
+	e2e_check(isset($rrd['time'], $rrd['util_gpu'], $rrd['temp_gpu']) && $rrd['util_gpu'] !== '0' && $rrd['temp_gpu'] !== '0', "$scenario: Cacti wrote no zero to the RRD file (util_gpu " . ($rrd['util_gpu'] ?? '?') . ')');
 
 	$health = fail_health();
 
@@ -167,14 +177,30 @@ function fail_recover(string $scenario): void {
 
 e2e_tool($fail_metrics, $fail_names);
 e2e_collect();
+// Ten-second buckets make a real, completed historical window available
+// before fault injection, without waiting for a five-minute RRA bucket.
+db_execute_prepared('UPDATE data_template_data AS dtd INNER JOIN data_local AS dl ON dl.id = dtd.local_data_id SET dtd.rrd_step = 10 WHERE dl.host_id = ?', array($e2e_host));
+foreach (fail_sources() as $source) {
+	update_poller_cache((int) $source, true);
+}
 e2e_poll();
-sleep(1);
+sleep(11);
+e2e_poll();
+sleep(11);
 e2e_poll();
 
+$fail_history_end = (int) (floor(time() / 10) * 10) - 10;
 $kept   = fail_kept();
 $values = fail_values();
 
 e2e_check(count($kept['gpus']) === 8 && count($kept['sources']) === 8 && min($kept['rrd']) > 0, 'setup: eight GPUs with data sources and RRD files');
+foreach ($kept['history'] as $source => $rows) {
+	$numeric = 0;
+	foreach ($rows as $row) {
+		$numeric += count(array_filter(preg_split('/\s+/', trim(substr($row, strpos($row, ':') + 1))), 'is_numeric'));
+	}
+	e2e_check($numeric > 0, "setup: data source $source has measured values in the fixed historical window");
+}
 
 /* The agent is down: nothing listens on the device's port. */
 

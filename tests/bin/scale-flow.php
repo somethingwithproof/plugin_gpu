@@ -92,6 +92,54 @@ final class ScaleReader implements ExtendReader {
 	}
 }
 
+/**
+ * A clock that moves one second forward on every read, so the budget check
+ * stops after a known number of nodes on any machine.
+ */
+final class ScaleClock implements \Somethingwithproof\Gpu\Clock {
+	/** @var int */
+	private $time;
+
+	public function __construct(int $time) {
+		$this->time = $time;
+	}
+
+	public function now(): int {
+		return $this->time++;
+	}
+}
+
+/**
+ * Hold every node's collection lock on a connection of the test's own, so
+ * a collector that Cacti's poller_bottom starts, which reads the agent
+ * without the test's UUID rewriting, skips the synthetic nodes instead of
+ * changing their inventory. Dropping the connection releases the locks.
+ *
+ * @param list<\Somethingwithproof\Gpu\Node> $nodes
+ */
+function scale_hold(array $nodes): PDO {
+	global $database_hostname, $database_username, $database_password, $database_default, $database_port;
+
+	$pdo  = new PDO('mysql:host=' . $database_hostname . ';port=' . $database_port . ';dbname=' . $database_default, $database_username, $database_password);
+	$lock = $pdo->prepare("SELECT GET_LOCK(SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256), 0)");
+	$held = 0;
+
+	foreach ($nodes as $node) {
+		$held += $lock->execute(array('node_' . $node->id)) && (int) $lock->fetchColumn() === 1 ? 1 : 0;
+	}
+
+	e2e_check($held === count($nodes), "hold: every synthetic node is held while Cacti polls ($held of " . count($nodes) . ')');
+
+	return $pdo;
+}
+
+/**
+ * The synthetic GPU population: every GPU of the scale nodes, present.
+ */
+function scale_present(array $hosts): int {
+	return (int) db_fetch_cell("SELECT COUNT(*) FROM plugin_gpu_gpu AS g INNER JOIN plugin_gpu_node AS n ON n.id = g.node_id WHERE g.presence = 'present' AND n.host_id IN (" . implode(', ', array_map('intval', $hosts)) . ')');
+}
+
 function scale_report(string $what, array $values): void {
 	$parts = array();
 
@@ -172,7 +220,7 @@ foreach (array('first', 'steady') as $round) {
 	scale_report('collect', array('round' => $round, 'gpus' => $scale_gpus, 'nodes' => $scale_nodes, 'seconds' => $seconds, 'ms_per_node' => 1000 * $seconds / $scale_nodes, 'peak_mb' => memory_get_peak_usage(true) / 1048576));
 }
 
-e2e_check((int) db_fetch_cell_prepared("SELECT COUNT(*) FROM plugin_gpu_gpu AS g INNER JOIN plugin_gpu_node AS n ON n.id = g.node_id WHERE g.presence = 'present' AND n.host_id IN (" . implode(', ', $scale_hosts) . ')') === $scale_gpus, "collect: $scale_gpus GPU records, all present");
+e2e_check(scale_present($scale_hosts) === $scale_gpus, "collect: $scale_gpus GPU records, all present");
 
 /* Script server input: what Cacti's poller asks of it each cycle. */
 
@@ -224,23 +272,34 @@ if ($scale_provision) {
 	scale_report('provision', array('gpus' => $scale_gpus, 'graphs' => $graphs, 'seconds' => $seconds));
 
 	// Cacti creates the RRD files in the first cycle and writes values from
-	// the second; the second cycle is the steady cost.
+	// the second; the second cycle is the steady cost. The collector the
+	// poller starts finds every synthetic node held and leaves it alone.
+	e2e_wait_collector();
+	$scale_held = scale_hold($scale_all);
 	e2e_poll();
 	sleep(1);
 	db_execute("DELETE FROM settings WHERE name = 'stats_poller'");
 	e2e_poll();
+	sleep(2);
+	e2e_wait_collector();
+	$scale_held = null;
 
 	$stats = (string) db_fetch_cell("SELECT value FROM settings WHERE name = 'stats_poller'");
 
 	e2e_check($stats !== '', 'poller: Cacti recorded the cycle');
 	scale_report('poller', array('gpus' => $scale_gpus, 'stats' => str_replace(' ', ',', $stats)));
 
-	// A one-second budget stops a run before it reaches every node; the
-	// nodes it did not reach go first next time (REQ-PERF-003).
-	e2e_wait_collector();
-	$stats = gpu_poller()->run($scale_settings, 1);
+	// A run that hits its budget stops and leaves the rest, which go first
+	// next time (REQ-PERF-003). The clock moves a second per node, so a
+	// 3-second budget reaches exactly two nodes on any machine; the run uses
+	// the test's reader, like the collection rounds.
+	$scale_enabled = count(array_filter(gpu_nodes()->all(), function ($node) {
+		return $node->enabled() && $node->deviceExists;
+	}));
+	$scale_budget  = new \Somethingwithproof\Gpu\Poller(gpu_nodes(), new \Somethingwithproof\Gpu\CollectionRepository(false), $scale_collector, gpu_provisioner(), new \Somethingwithproof\Gpu\ReindexRepository(false), new ScaleClock(time()));
+	$stats         = $scale_budget->run($scale_settings, 3);
 
-	e2e_check($scale_nodes < 10 || ($stats['stopped_early'] && $stats['nodes'] < $scale_nodes), 'budget: a run that hits its time budget stops and leaves the rest (' . json_encode($stats) . ')');
+	e2e_check($stats['stopped_early'] && $stats['nodes'] + $stats['skipped'] + $stats['remote'] === 2 && $stats['left'] === $scale_enabled - 2, 'budget: a run that hits its time budget stops after two nodes and counts the other ' . ($scale_enabled - 2) . ' as left (' . json_encode($stats) . ')');
 
 	$rows = array();
 
@@ -250,6 +309,10 @@ if ($scale_provision) {
 
 	scale_report('rows', $rows);
 }
+
+// The poller cycles and the budget run must not have changed the synthetic
+// inventory that the numbers below describe.
+e2e_check(scale_present($scale_hosts) === $scale_gpus, "population: still $scale_gpus GPU records, all present, after the poller cycles");
 
 /* The health page reads the database only: the agent sees no request. */
 

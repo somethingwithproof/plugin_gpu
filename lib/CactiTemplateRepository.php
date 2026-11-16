@@ -40,6 +40,16 @@ final class CactiTemplateRepository {
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
+	/**
+	 * Null means the lookup failed; zero means the template is absent.
+	 * @param 'snmp_query'|'host_template'|'data_template'|'graph_templates' $table
+	 */
+	public function idByHash(string $table, string $hash): ?int {
+		$row = db_fetch_row_prepared("SELECT id FROM `$table` WHERE hash = ?", [substr($hash, -32)], true, $this->connection);
+
+		return is_array($row) ? Row::int($row, 'id') : null;
+	}
+
 	public function graphTemplateInUse(int $graphTemplate, int $dataQuery, int $hostTemplate): bool {
 		return $this->any('SELECT COUNT(*) FROM graph_local WHERE graph_template_id = ?', [$graphTemplate])
 			|| $this->any('SELECT COUNT(*) FROM host_template_graph WHERE graph_template_id = ? AND host_template_id != ?', [$graphTemplate, $hostTemplate])
@@ -137,6 +147,8 @@ final class CactiTemplateRepository {
 	}
 
 	private function table(string $name): bool {
-		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?', [$name], '', true, $this->connection) > 0;
+		$count = db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?', [$name], '', true, $this->connection);
+
+		return $count === false || (int) $count > 0;
 	}
 }

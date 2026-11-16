@@ -40,7 +40,7 @@ The template list is generated from `lib/TholdTemplateXml.php`, and a unit test 
 ## Rules for GPU thresholds
 
 - **Durations.** Set each fail trigger to at least one collection interval (REQ-ALERT-004). A trigger counts Cacti polls, and the plugin collects each node once per poller cycle, so one poll is one interval. Cacti's poll and the collection are not aligned: a value can be read twice or skipped, so a single-poll trigger can fire on one sample, and a fault shorter than the interval is not seen.
-- **Unknown values.** `U` never breaches a threshold (REQ-ALERT-002): a GPU without ECC, a failed collection, or a stale sample reads `U` and Thold neither alerts nor restores on it. A stopped collection is caught by `age`, which stays numeric whenever a sample exists and keeps growing.
+- **Unknown values.** `U` never breaches a threshold (REQ-ALERT-002): a GPU without ECC, a failed collection, or a stale sample reads `U`, and Thold does not alert on it. It does not hold an alert either: Thold 1.8.2 takes a value that is not a number as not breached, so a threshold in alert restores, and sends its restoration notice, when its value turns `U`. A restoration while the GPU's values are unknown therefore means the plugin lost the value, not that the fault cleared; `age` shows which, because it stays numeric whenever a sample exists and keeps growing, and the *GPU - Sample Too Old* threshold alerts on it.
 - **Gauges only.** Every data source item is a GAUGE. Thold 1.8.2 throws a PHP `TypeError` when a thresholded DERIVE or COUNTER data source reads `U`, and Cacti then disables Thold for everyone. So the plugin computes the new ECC errors itself, from two consecutive samples of the same GPU, and stores the result as a gauge: unknown for a first sample, after a missed read, and after a reset. Do not change a GPU data source item to COUNTER or DERIVE.
 - **Maintenance.** A Maint schedule on the node's device suppresses its GPU thresholds (REQ-ALERT-003): Thold neither counts nor notifies a breach while the device is in maintenance, and the RRD files still record the values. The GPU Health page shows whether Maint holds each node.
 
@@ -50,5 +50,5 @@ The template list is generated from `lib/TholdTemplateXml.php`, and a unit test 
 
 - a hot, hardware-throttled GPU with new uncorrected errors and a pending page retirement fires each threshold, the temperature only on its second poll, and each restores when the value returns;
 - a driver reload drops the ECC total to 0: the new-error value reads `U`, nothing breaches, and Thold stays enabled; two new errors after the reset fire the threshold again, and it restores;
-- a failing tool makes every other value `U`, which breaches nothing, while `age` alerts and restores once samples return;
+- a failing tool makes every other value `U`, which breaches nothing and restores a hardware slowdown threshold that was in alert, while `age` alerts and restores once samples return;
 - under a Maint schedule a breach is neither counted nor notified while the RRD file records it; after the schedule ends it counts and notifies again.

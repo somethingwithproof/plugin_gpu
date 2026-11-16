@@ -89,7 +89,7 @@ A value the plugin cannot vouch for is stored and printed as `U`, never as 0, so
 | ECC is off or not supported | Every ECC and retired-page value | Gap; GPU Health shows *ECC is disabled on this GPU* or *This GPU does not report ECC* |
 | The latest collection failed | Every value of the node's GPUs except `age` | Gaps; GPU Health names the failure; `age` keeps growing |
 | The sample is older than *Stale After* | Every value except `age` | Gaps; GPU Health shows *Stale* |
-| The GPU is absent | Every value | Gap until it returns; GPU Health and Inventory show *Absent* |
+| The GPU is absent | Every value except `age` | Gaps until it returns; `age` keeps growing; GPU Health and Inventory show *Absent* |
 | First sample, a missed read, or a driver reload | `ecc_corr_new`, `ecc_uncorr_new` | Gap for one sample |
 | The node's clock is more than 120 seconds ahead of Cacti's | Every value except `age` | The collection is refused, so this is a failed collection; GPU Health names the clock |
 | A GPU never sampled | Every value, including `age` | Gaps; GPU Health shows *Never observed* |
@@ -121,4 +121,4 @@ Other symptoms:
 - **A node on Cacti 1.2.x with an SNMP port other than 161 is Down in Cacti**: see [node-setup.md](node-setup.md#an-snmp-port-other-than-161-on-cacti-12x).
 - **Graphs stop or show gaps while GPU Health shows the collection completed**: Cacti could not write the RRD files, for example a full disk or wrong ownership of `rra/`. Cacti writes the RRD files itself, after the plugin has stored the sample, so in phase 1 GPU Health does not show this error; only Cacti's log does, as an `RRD` or `ERROR` line from the poller. Fix the disk or the permissions; the next poll writes again.
 - **No graphs for a new GPU**: the plugin reindexes only while Cacti has the device Up; it retries once the device is Up again.
-- **An RRD file renamed with `.gpu-orphan-` in its name**: a new GPU's data source found an RRD file already at its path, usually after a database restore older than the RRD directory. The file was set aside so the new GPU starts its own history ([backup.md](backup.md)).
+- **An RRD file renamed with `.gpu-orphan-` in its name**: a new GPU's data source found an RRD file already at its path, usually after a database restore older than the RRD directory. The file was set aside so the new GPU starts its own history ([backup.md](backup.md)). If the rename fails, the data source stays disabled and the plugin retries each cycle; correct the directory permissions or move the old file aside before enabling it.

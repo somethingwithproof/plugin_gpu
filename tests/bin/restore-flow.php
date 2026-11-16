@@ -183,6 +183,12 @@ e2e_check((int) db_fetch_cell_prepared("SELECT COUNT(*) FROM plugin_gpu_gpu WHER
 
 /* Older dump: four GPUs' RRD files outlive their records. */
 
+$archiveEnds = array();
+
+foreach ($eight as $source) {
+	$archiveEnds[$source[1]] = e2e_rrd_file($source[1]);
+}
+
 e2e_check(restore_db('mysql', $dump_old), 'older dump: the dump was restored');
 
 $restored = restore_sources($e2e_host);
@@ -225,7 +231,8 @@ foreach ($new as $key => $source) {
 	// The new file holds the new GPU's values; the old file, moved aside,
 	// still ends with the old GPU's last values.
 	$oldEnd = is_array($moved) && count($moved) === 1 ? e2e_rrd_file($moved[0]) : array();
-	$clean += ($rrd['util_gpu'] ?? '') === (string) (29 + $number - 0x10) && ($oldEnd === array() || ($oldEnd['util_gpu'] ?? '') !== '') ? 1 : 0;
+	$historyKept = !isset($archiveEnds[$source[1]]) || ($oldEnd !== array() && $oldEnd === $archiveEnds[$source[1]]);
+	$clean += ($rrd['util_gpu'] ?? '') === (string) (29 + $number - 0x10) && $historyKept ? 1 : 0;
 }
 
 e2e_check($clean === 4, "older dump: each new GPU's RRD file holds only its own values ($clean of 4)");

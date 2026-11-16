@@ -135,6 +135,23 @@ switch ($action) {
 		db_execute_prepared("INSERT INTO plugin_gpu_gpu (vendor, uuid, node_id, pci_bus_id) VALUES ('nvidia', 'GPU-00000000-0000-4000-8000-0000000000a1', ?, '00000000:3B:00.0')", array(db_fetch_insert_id()));
 
 		break;
+	case 'ecc_gap':
+		include_once($config['base_path'] . '/plugins/gpu/setup.php');
+		gpu_boot();
+		$report = \Somethingwithproof\Gpu\GpuReport::create(\Somethingwithproof\Gpu\Vendor::Nvidia, 'GPU-00000000-0000-4000-8000-0000000000a1', 0, '00000000:3B:00.0', 'Test GPU', '580.95.05');
+		$observations = new \Somethingwithproof\Gpu\ObservationRepository(false);
+		$result = array();
+		// Consecutive success, a failed read, recovery, then a missing GPU
+		// in a successful read: neither gap may become a multi-poll delta.
+		foreach (array(array(1000, 10, 0), array(1060, 12, 1000), array(1180, 20, 0), array(1240, 23, 1180), array(1360, 30, 1300), array(1420, 32, 1360)) as $sample) {
+			$reading = new \Somethingwithproof\Gpu\Reading($report, $sample[0], array('ecc_uncorr' => (float) $sample[1]), null);
+			if (!$observations->store(99, 1, $reading, 'nvidia-smi', '580.95.05', $sample[0], $sample[2])) {
+				throw new RuntimeException('ECC observation write failed');
+			}
+			$row = db_fetch_row('SELECT ecc_uncorr_new FROM plugin_gpu_observation WHERE gpu_id = 99');
+			$result[] = $row['ecc_uncorr_new'] === null ? null : (float) $row['ecc_uncorr_new'];
+		}
+		break;
 	case 'identity_flow':
 		// The identity rules against MariaDB through the real repositories:
 		// a replacement, a pending move, its confirmation, the unique key,

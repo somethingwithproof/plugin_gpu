@@ -179,17 +179,23 @@ final class TemplateInstaller {
 	 */
 	public function remove(CactiTemplateRepository $templates): array {
 		$report = ['removed' => [], 'kept' => []];
-		$host   = $this->cacti->idByHash('host_template', TemplateXml::hash('02', TemplateXml::DEVICE_TEMPLATE));
-		$query  = $this->cacti->idByHash('snmp_query', TemplateXml::hash('04', TemplateXml::DATA_QUERY));
-		$data   = $this->cacti->idByHash('data_template', TemplateXml::hash('01', TemplateXml::DATA_TEMPLATE));
+		$host   = $templates->idByHash('host_template', TemplateXml::hash('02', TemplateXml::DEVICE_TEMPLATE));
+		$query  = $templates->idByHash('snmp_query', TemplateXml::hash('04', TemplateXml::DATA_QUERY));
+		$data   = $templates->idByHash('data_template', TemplateXml::hash('01', TemplateXml::DATA_TEMPLATE));
 		$graphs = [];
+		$unknown = false;
 
 		foreach (array_keys(TemplateXml::graphs()) as $name) {
-			$id = $this->cacti->idByHash('graph_templates', TemplateXml::hash('00', $name));
+			$id = $templates->idByHash('graph_templates', TemplateXml::hash('00', $name));
+			$unknown = $unknown || $id === null;
 
 			if ($id > 0) {
 				$graphs[$name] = $id;
 			}
+		}
+
+		if ($unknown || $host === null || $query === null || $data === null) {
+			return ['removed' => [], 'kept' => array_merge([TemplateXml::DEVICE_TEMPLATE, TemplateXml::DATA_QUERY, TemplateXml::DATA_TEMPLATE, TemplateXml::DATA_QUERY_FILE], array_keys(TemplateXml::graphs()))];
 		}
 
 		$hostGone = $host === 0 || self::step($report, TemplateXml::DEVICE_TEMPLATE, !$templates->hostTemplateInUse($host), static fn (): bool => $templates->removeHostTemplate($host));

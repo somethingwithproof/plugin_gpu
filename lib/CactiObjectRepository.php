@@ -183,4 +183,19 @@ final class CactiObjectRepository {
 	public function saveSetting(string $name, string $value): bool {
 		return (bool) db_execute_prepared('REPLACE INTO settings (name, value) VALUES (?, ?)', [$name, $value], true, $this->connection);
 	}
+
+	/** @return list<int>|null */
+	public function inheritedRrds(int $hostId, int $query): ?array {
+		$rows = db_fetch_assoc_prepared("SELECT dl.id FROM data_local AS dl INNER JOIN settings AS s ON s.name = CONCAT('gpu_inherited_rrd_', dl.id) AND s.value = CAST(dl.host_id AS CHAR) WHERE dl.host_id = ? AND dl.snmp_query_id = ?", [$hostId, $query], true, $this->connection);
+
+		return is_array($rows) ? array_values(array_map(static fn (array $row): int => Row::int($row, 'id'), $rows)) : null;
+	}
+
+	public function forgetInheritedRrd(int $id): bool {
+		return db_execute_prepared('DELETE FROM settings WHERE name = ?', ['gpu_inherited_rrd_' . $id], true, $this->connection);
+	}
+
+	public function deviceRemoved(int $hostId): bool {
+		return db_fetch_row_prepared('SELECT id FROM host WHERE id = ?', [$hostId], true, $this->connection) === [];
+	}
 }

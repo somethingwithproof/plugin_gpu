@@ -63,7 +63,7 @@ final class Collector {
 
 			$this->collections->start($node->id, $this->clock->now());
 
-			[$state, $detail] = $this->run($node, $device, $settings);
+			[$state, $detail] = $this->run($node, $device, $settings, $previous);
 		} finally {
 			$this->locks->release($lock);
 		}
@@ -103,7 +103,7 @@ final class Collector {
 	/**
 	 * @return array{ExecutionState, string} the state and its detail
 	 */
-	private function run(Node $node, NodeDevice $device, Settings $settings): array {
+	private function run(Node $node, NodeDevice $device, Settings $settings, ?CollectionStatus $previous): array {
 		try {
 			$collection = $this->parser->parse($this->metrics($node, $device), $this->reader->read($device, SnmpdConfig::NAMES));
 		} catch (CollectionError $e) {
@@ -146,6 +146,8 @@ final class Collector {
 		$stored   = 0;
 		$reported = [];
 		$missing  = 0;
+		$previousRead = $previous !== null && $previous->succeeded() && $previous->startedAt <= $previous->finishedAt
+			? $previous->startedAt : 0;
 
 		// Ask for the reindex as soon as the records changed, so a failure
 		// to store the samples below does not lose it.
@@ -176,7 +178,7 @@ final class Collector {
 
 			$reported[] = $record->id;
 
-			if ($this->observations->store($record->id, $node->id, $reading, $collection->backend, $collection->snapshot->toolVersion, $now)) {
+			if ($this->observations->store($record->id, $node->id, $reading, $collection->backend, $collection->snapshot->toolVersion, $now, $previousRead)) {
 				$stored++;
 			}
 		}

@@ -220,9 +220,11 @@ switch ($gpu_action) {
 			// request, so the user does not leave behind a device they cannot
 			// see or manage (owner decision for milestone 4).
 			if ($gpu_host > 0 && !$gpu_access->deviceAllowed($gpu_host)) {
-				gpu_remove_device($gpu_host);
-
-				raise_message('gpu_device', __('The device was not kept: your account may not see devices it creates. Ask an administrator to create it.', 'gpu'), MESSAGE_LEVEL_ERROR);
+				if (gpu_remove_device($gpu_host)) {
+					raise_message('gpu_device', __('The device was not kept: your account may not see devices it creates. Ask an administrator to create it.', 'gpu'), MESSAGE_LEVEL_ERROR);
+				} else {
+					raise_message('gpu_device', __('The device could not be removed after access was refused. Ask an administrator to remove it.', 'gpu'), MESSAGE_LEVEL_ERROR);
+				}
 
 				header('Location: gpu_nodes.php');
 				exit;

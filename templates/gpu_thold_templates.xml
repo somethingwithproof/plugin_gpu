@@ -14,6 +14,7 @@
 	<thold_fail_trigger>2</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template1>
@@ -30,8 +31,9 @@
 	<thold_hi>100</thold_hi>
 	<thold_low></thold_low>
 	<thold_fail_trigger>2</thold_fail_trigger>
-	<data_type>2</data_type>
-	<percent_ds>power_limit</percent_ds>
+	<data_type>3</data_type>
+	<percent_ds></percent_ds>
+	<expression>POWER,UN,POWER_LIMIT,UN,OR,POWER_LIMIT,UN,1,POWER_LIMIT,IF,0,LE,OR,UNKN,POWER,UN,0,POWER,IF,POWER_LIMIT,UN,1,POWER_LIMIT,IF,0,LE,1,POWER_LIMIT,UN,1,POWER_LIMIT,IF,IF,/,100,*,IF</expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template2>
@@ -50,6 +52,7 @@
 	<thold_fail_trigger>1</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template3>
@@ -68,6 +71,7 @@
 	<thold_fail_trigger>1</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template4>
@@ -86,6 +90,7 @@
 	<thold_fail_trigger>1</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template5>
@@ -104,6 +109,7 @@
 	<thold_fail_trigger>1</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template6>
@@ -122,6 +128,7 @@
 	<thold_fail_trigger>1</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template7>
@@ -140,6 +147,7 @@
 	<thold_fail_trigger>1</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template8>
@@ -158,6 +166,7 @@
 	<thold_fail_trigger>1</thold_fail_trigger>
 	<data_type>0</data_type>
 	<percent_ds></percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template9>

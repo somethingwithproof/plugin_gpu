@@ -31,7 +31,7 @@ Each pilot runs on a Cacti 1.2.31 or 1.2.x test instance with the plugin, Thold 
 | Values | Compare the graphs with `nvidia-smi` on the node at the same minute | Within one sample of each other, in the documented units |
 | Throttle mask | Load a GPU until it throttles, if safe on that hardware | The indicator and Thold alert fire, and the raw mask on GPU Health matches the tool |
 | ECC | Read the totals before and after a driver reload | The totals fall to 0, the new-error values read `U` once, and nothing alerts |
-| Staleness | Stop snmpd for two intervals | The *Sample Too Old* threshold fires and restores |
+| Staleness | Stop snmpd until sample age exceeds 900 seconds, then allow a poll to check the threshold | The *Sample Too Old* threshold fires and restores after collection resumes |
 | Maint | Schedule a window and repeat a breach | No notification while the window is on |
 | Reboot or swap (pilot B) | Reboot so the index order changes, or replace a card | Each graph keeps its card's history; a new card is flagged as a possible replacement and gets its own graphs |
 | Cost | Time a collection of the node, and watch the node's load | Recorded for #25 |

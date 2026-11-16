@@ -92,7 +92,7 @@ function alert_metrics(array $change): array {
 function alert_thold(string $item): array {
 	global $e2e_host;
 
-	$row = db_fetch_row_prepared('SELECT td.id, td.thold_alert, td.thold_fail_count, td.lastread, td.thold_hi, td.thold_enabled, td.data_type, td.percent_ds
+	$row = db_fetch_row_prepared('SELECT td.id, td.thold_alert, td.thold_fail_count, td.lastread, td.thold_hi, td.thold_enabled, td.data_type, td.percent_ds, td.expression
 		FROM thold_data AS td
 		INNER JOIN data_local AS dl ON dl.id = td.local_data_id
 		WHERE td.host_id = ? AND dl.snmp_index = ? AND td.data_source_name = ?', array($e2e_host, e2e_key(1), $item));
@@ -230,6 +230,15 @@ $hot    = array('temperature.gpu' => '95', $mask => '0x0000000000000048', $uncor
 
 $alert_result = thold_template_import((string) file_get_contents($config['base_path'] . '/plugins/gpu/templates/' . TholdTemplateXml::FILE));
 
+// Exercise Thold's real evaluator: it must preserve unknown power/limits
+// and avoid division by zero even though RPN evaluates both IF branches.
+foreach (array(array(250, 200, 125), array(0, 200, 0), array('U', 200, 'U'), array(250, 'U', 'U'), array(250, 0, 'U'), array(250, -1, 'U'), array('U', 'U', 'U')) as $case) {
+	$rrds = array(1 => array('POWER' => $case[0], 'POWER_LIMIT' => $case[1]));
+	$times = array();
+	$value = thold_calculate_expression(array('name' => 'GPU power', 'local_data_id' => 1, 'expression' => TholdTemplateXml::POWER_EXPRESSION), $case[0], $rrds, $times);
+	e2e_check($value == $case[2] && empty($GLOBALS['rpn_error']), 'power expression preserves the expected value for ' . json_encode(array($case[0], $case[1])));
+}
+
 e2e_check(count($alert_result['success'] ?? array()) === count(TholdTemplateXml::templates()) && empty($alert_result['errors']) && empty($alert_result['failure']), 'setup: Thold imported every shipped template (' . json_encode($alert_result) . ')');
 
 $alert_host_template = (new \Somethingwithproof\Gpu\CactiObjectRepository(false))->idByHash('host_template', TemplateXml::hash('02', TemplateXml::DEVICE_TEMPLATE));
@@ -255,7 +264,7 @@ e2e_check($alert_count === 8 * count(TholdTemplateXml::templates()), "setup: Tho
 foreach (TholdTemplateXml::templates() as $alert_name => $spec) {
 	$t = alert_thold($spec[0]);
 
-	e2e_check(($t['thold_hi'] ?? '') === $spec[1] && ($t['thold_enabled'] ?? '') === 'on' && (int) ($t['data_type'] ?? -1) === ($spec[3] === '' ? 0 : 2) && ($t['percent_ds'] ?? '') === $spec[3], "setup: '$alert_name' is on GPU 0 above " . $spec[1]);
+	e2e_check(($t['thold_hi'] ?? '') === $spec[1] && ($t['thold_enabled'] ?? '') === 'on' && (int) ($t['data_type'] ?? -1) === ($spec[3] === '' ? 0 : 3) && ($t['expression'] ?? '') === ($spec[3] === '' ? '' : TholdTemplateXml::POWER_EXPRESSION), "setup: '$alert_name' is on GPU 0 above " . $spec[1]);
 }
 
 // A low staleness threshold for this test only (the template's is 900 s).
@@ -318,10 +327,19 @@ $logged = alert_round('recovered', array($uncorr => '2'));
 alert_expect('recovered', $logged, array('ecc_uncorr_new' => array(false, array(ALERT_RESTORE))) + $quiet);
 alert_thold_enabled('recovered');
 
-/* The tool fails: every value is unknown and breaches nothing; age alerts. */
+/* A threshold in alert when the values turn unknown. */
+
+$logged = alert_round('throttled', array($mask => '0x0000000000000040'));
+alert_expect('throttled', $logged, array('thr_hw_thermal' => array(true, array(ALERT_NOTIFY))) + $quiet);
+
+/*
+ * The tool fails: every value is unknown and breaches nothing; age alerts.
+ * Thold 1.8.2 takes a value that is not a number as not breached, so the
+ * threshold that was in alert restores.
+ */
 
 $logged = alert_round('silent', array(), 9, 15);
-alert_expect('silent', $logged, array('age' => array(true, array(ALERT_NOTIFY))) + $quiet);
+alert_expect('silent', $logged, array('age' => array(true, array(ALERT_NOTIFY)), 'thr_hw_thermal' => array(false, array(ALERT_RESTORE))) + $quiet);
 e2e_check(is_numeric(alert_thold('age')['lastread'] ?? '') && !is_numeric(alert_thold('temp_gpu')['lastread'] ?? '0'), 'silent: age stays numeric while every other value is unknown (REQ-ALERT-002)');
 
 $logged = alert_round('answering', array());

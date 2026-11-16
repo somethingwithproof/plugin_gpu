@@ -229,6 +229,19 @@ final class Provisioner {
 	 * GPUs get no new graphs; the graphs they have stay.
 	 */
 	private function createGraphs(Node $node, int $query): int {
+		$pending = $this->cacti->inheritedRrds($node->hostId, $query);
+
+		if ($pending === null) {
+			return 0;
+		}
+
+		$blocked = [];
+		foreach ($pending as $id) {
+			if (!$this->setAsideInherited($node, $id, true)) {
+				$blocked[$id] = true;
+			}
+		}
+
 		$graphed = $this->cacti->graphed($node->hostId, $query);
 		$cached  = $this->cacti->cachedIndexes($node->hostId, $query);
 		$listed  = $this->cache->listed($node->hostId);
@@ -276,11 +289,15 @@ final class Provisioner {
 					}
 
 					if (!isset($sources[(int) $dataSource])) {
-						$this->setAsideInherited($node, (int) $dataSource);
+						if (!$this->setAsideInherited($node, (int) $dataSource)) {
+							$blocked[(int) $dataSource] = true;
+						}
 						$sources[(int) $dataSource] = true;
 					}
 
-					push_out_host($node->hostId, (int) $dataSource);
+					if (!isset($blocked[(int) $dataSource])) {
+						push_out_host($node->hostId, (int) $dataSource);
+					}
 				}
 
 				$graphed[$queryGraph . ':' . $index] = true;
@@ -305,19 +322,37 @@ final class Provisioner {
 	 * operator, and a warning names the data source but not the path,
 	 * which contains the device description (REQ-BACKUP-003).
 	 */
-	private function setAsideInherited(Node $node, int $dataSource): void {
+	private function setAsideInherited(Node $node, int $dataSource, bool $pending = false): bool {
 		$path = (string) get_data_source_path($dataSource, true);
 
-		if ($path === '' || !is_file($path)) {
-			return;
+		if (!$pending && ($path === '' || !is_file($path))) {
+			return true;
+		}
+
+		// A failed rename must survive this process and graph creation.
+		// Keep the source disabled until the old file is safely set aside.
+		api_data_source_disable($dataSource);
+		if (!$this->cacti->saveSetting('gpu_inherited_rrd_' . $dataSource, (string) $node->hostId)) {
+			Log::error(sprintf('Node %d: data source %d is disabled; its inherited RRD retry could not be recorded', $node->id, $dataSource));
+			return false;
 		}
 
 		$suffix = '.gpu-orphan-' . $this->clock->now();
 
-		if (@rename($path, $path . $suffix)) {
-			Log::warning(sprintf('Node %d: new data source %d found an RRD file already at its path; the file was renamed with the suffix %s so its history attaches to no other GPU', $node->id, $dataSource, $suffix));
-		} else {
-			Log::warning(sprintf('Node %d: new data source %d found an RRD file already at its path, and the file could not be renamed; move it aside before Cacti writes to it', $node->id, $dataSource));
+		if ($path === '' || (is_file($path) && (file_exists($path . $suffix) || !@rename($path, $path . $suffix)))) {
+			Log::warning(sprintf('Node %d: data source %d remains disabled because its inherited RRD could not be renamed; retried next cycle', $node->id, $dataSource));
+			return false;
 		}
+
+		if (is_file($path . $suffix)) {
+			Log::warning(sprintf('Node %d: new data source %d found an RRD file already at its path; the file was renamed with the suffix %s so its history attaches to no other GPU', $node->id, $dataSource, $suffix));
+		}
+
+		if (!$this->cacti->forgetInheritedRrd($dataSource)) {
+			return false;
+		}
+		api_data_source_enable($dataSource);
+
+		return true;
 	}
 }

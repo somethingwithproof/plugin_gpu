@@ -41,6 +41,7 @@ beforeEach(function () {
 	$GLOBALS['__gpu_affected_rows'] = 1;
 	$GLOBALS['__gpu_db_fail']       = [];
 	$GLOBALS['__gpu_db_rows']       = [
+		'FROM data_local AS dl INNER JOIN settings' => [],
 		'FROM `snmp_query`'         => [['id' => 78]],
 		'FROM host_snmp_query'      => [['reindex_method' => 0]],
 		'FROM snmp_query_graph'     => [['id' => 11, 'graph_template_id' => 343], ['id' => 12, 'graph_template_id' => 344]],
@@ -277,6 +278,42 @@ it('leaves the RRD file of a data source that already existed alone', function (
 	unlink($path);
 	rmdir($dir);
 	$GLOBALS['__gpu_rrd_paths'] = [];
+});
+
+it('disables a new source after a failed RRD rename and retries after its graphs exist', function () {
+	$dir = sys_get_temp_dir() . '/gpu-retry-' . bin2hex(random_bytes(4));
+	$path = $dir . '/old.rrd';
+	mkdir($dir);
+	file_put_contents($path, 'old history');
+	mkdir($path . '.gpu-orphan-1000');
+	$GLOBALS['__gpu_rrd_paths'] = [1 => $path];
+
+	try {
+		prov()->provision(prov_node(), prov_device(), null);
+		expect(file_get_contents($path))->toBe('old history')
+			->and(prov_calls('api_data_source_disable'))->toBe([['api_data_source_disable', 1]])
+			->and(prov_calls('api_data_source_enable'))->toBe([])
+			->and(prov_calls('push_out_host'))->toBe([]);
+		$markers = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_starts_with($e['sql'], 'REPLACE INTO settings')));
+		expect($markers[0]['params'])->toBe(['gpu_inherited_rrd_1', '40']);
+
+		// A fresh process sees both graphs and the persisted retry marker.
+		$GLOBALS['__gpu_db_rows']['FROM data_local AS dl INNER JOIN settings'] = [['id' => 1]];
+		$GLOBALS['__gpu_db_rows']['FROM graph_local'] = [['snmp_query_graph_id' => 11, 'snmp_index' => PROV_KEY_A], ['snmp_query_graph_id' => 12, 'snmp_index' => PROV_KEY_A]];
+		$GLOBALS['__gpu_cacti'] = [];
+		rmdir($path . '.gpu-orphan-1000');
+		prov()->provision(prov_node(), prov_device(), null);
+		expect(is_file($path))->toBeFalse()
+			->and(file_get_contents($path . '.gpu-orphan-1000'))->toBe('old history')
+			->and(prov_calls('api_data_source_enable'))->toBe([['api_data_source_enable', 1]])
+			->and(prov_calls('create_complete_graph_from_template'))->toBe([]);
+	} finally {
+		foreach (glob($dir . '/*') as $file) {
+			is_dir($file) ? rmdir($file) : unlink($file);
+		}
+		rmdir($dir);
+		$GLOBALS['__gpu_rrd_paths'] = [];
+	}
 });
 
 it('does nothing when the templates are not installed', function () {

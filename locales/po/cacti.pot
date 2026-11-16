@@ -89,6 +89,10 @@ msgid "The device was not kept: your account may not see devices it creates. Ask
 msgstr ""
 
 #: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr ""
+
+#: gpu_nodes.php
 msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
 msgstr ""
 

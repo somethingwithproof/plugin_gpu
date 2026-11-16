@@ -179,9 +179,9 @@ jobs:
         GPU_TEST_DATABASE: disposable
       run: '"$CACTI_PEST_BIN" --configuration=phpunit-integration.xml'
 
-    # The integration tests provoke refusals that the plugin logs as errors,
-    # such as a schema downgrade. Keep their log apart so the error check
-    # below covers the install and the poller run.
+    # The integration tests provoke refusals that the plugin logs, such as
+    # a schema downgrade. Keep their log apart; the check below allows only
+    # those refusals in it and nothing at all in the install and poller run.
     - name: Set the integration tests' log aside
       if: always()
       run: |
@@ -351,17 +351,24 @@ jobs:
     - name: Check Cacti log for errors
       if: always()
       run: |
+        rc=0
         if [ -f cacti/log/integration.log ]; then
-          echo "== integration tests (not checked)"
+          echo "== integration tests"
           cat cacti/log/integration.log
+          # Two refusals are provoked on purpose: a schema newer than the
+          # code, and a second record for a stored GPU UUID.
+          if grep -E "FATAL:|ERROR:|WARNING:" cacti/log/integration.log | grep -v -e "GPU ERROR: Schema version 99 is newer than this code" -e "GPU WARNING: Node [0-9]*: a new GPU record was not stored because GPU record [0-9]* already has its UUID"; then
+            rc=1
+          fi
         fi
         if [ -f cacti/log/cacti.log ]; then
           echo "== install and poller run"
           cat cacti/log/cacti.log
           if grep -E "FATAL:|ERROR:|WARNING:" cacti/log/cacti.log; then
-            exit 1
+            rc=1
           fi
         fi
+        exit "$rc"
 
   # A 1.2.31 site may still run PHP 8.1. Enabling the plugin there must be
   # refused with a message and leave Cacti working, both on a fresh install

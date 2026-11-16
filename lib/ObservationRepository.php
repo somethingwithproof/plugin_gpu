@@ -57,7 +57,7 @@ final class ObservationRepository {
 	 * which is a reset at driver load (REQ-ERR-003), so a reset is never
 	 * read as a negative count or as zero.
 	 */
-	public function store(int $gpuId, int $nodeId, Reading $reading, string $backend, string $toolVersion, int $now): bool {
+	public function store(int $gpuId, int $nodeId, Reading $reading, string $backend, string $toolVersion, int $now, int $previousRead = 0): bool {
 		$columns = array_values(array_diff(Schema::observationMetrics(), array_keys(MetricModel::DELTAS)));
 		$values  = [];
 
@@ -68,13 +68,17 @@ final class ObservationRepository {
 		$all    = array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']);
 		$newer  = 'VALUES(observed_at) > observed_at';
 		$update = ['node_id = VALUES(node_id)'];
+		// A failed/interrupted collection, or a successful one which omitted
+		// this GPU, breaks the delta baseline. Keep the old observation time
+		// and totals for age and diagnostics, but never bridge that gap.
+		$continuous = $previousRead > 0 ? 'reported_at >= ' . $previousRead : '0';
 
 		// MySQL applies the assignments in order, and a later one sees the
 		// columns earlier ones set. The deltas are assigned before the totals
 		// change, and observed_at last, so every other column still compares
 		// against the stored sample.
 		foreach (MetricModel::DELTAS as $delta => $total) {
-			$update[] = "$delta = IF($newer, IF(VALUES($total) >= $total, VALUES($total) - $total, NULL), $delta)";
+			$update[] = "$delta = IF($continuous, IF($newer, IF(VALUES($total) >= $total, VALUES($total) - $total, NULL), $delta), NULL)";
 		}
 
 		foreach (array_merge(['ingested_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']) as $column) {

@@ -349,8 +349,8 @@ it('computes new ECC errors from the stored total, as unknown across a reset or 
 	$sql = $GLOBALS['__gpu_db_exec'][0]['sql'];
 
 	// Before the totals are replaced, and only for a newer sample.
-	expect($sql)->toContain('ecc_corr_new = IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_corr) >= ecc_corr, VALUES(ecc_corr) - ecc_corr, NULL), ecc_corr_new)')
-		->and($sql)->toContain('ecc_uncorr_new = IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_uncorr) >= ecc_uncorr, VALUES(ecc_uncorr) - ecc_uncorr, NULL), ecc_uncorr_new)')
+	expect($sql)->toContain('IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_corr) >= ecc_corr, VALUES(ecc_corr) - ecc_corr, NULL), ecc_corr_new)')
+		->and($sql)->toContain('IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_uncorr) >= ecc_uncorr, VALUES(ecc_uncorr) - ecc_uncorr, NULL), ecc_uncorr_new)')
 		->and(strpos($sql, 'ecc_corr_new = IF('))->toBeLessThan(strpos($sql, 'ecc_corr = IF('))
 		->and(strpos($sql, 'ecc_uncorr_new = IF('))->toBeLessThan(strpos($sql, 'ecc_uncorr = IF('));
 });

@@ -43,10 +43,15 @@ final class TholdTemplateXml {
 	public const FILE = 'gpu_thold_templates.xml';
 
 	// Thold's thold_type 0 is High / Low; data_type 0 is the exact value
-	// and 2 is a percentage of another data source item.
+	// and 3 is an RPN expression. The percentage helper maps an unknown
+	// power limit to zero, so power uses an explicit unknown-preserving RPN.
 	private const HIGH_LOW   = 0;
 	private const EXACT      = 0;
-	private const PERCENTAGE = 2;
+	private const EXPRESSION = 3;
+
+	public const POWER_EXPRESSION = 'POWER,UN,POWER_LIMIT,UN,OR,POWER_LIMIT,UN,1,POWER_LIMIT,IF,0,LE,OR,UNKN,'
+		. 'POWER,UN,0,POWER,IF,POWER_LIMIT,UN,1,POWER_LIMIT,IF,0,LE,1,'
+		. 'POWER_LIMIT,UN,1,POWER_LIMIT,IF,IF,/,100,*,IF';
 
 	/**
 	 * name => [data source item, high threshold, fail trigger in polls,
@@ -108,8 +113,9 @@ final class TholdTemplateXml {
 				'thold_hi'             => $high,
 				'thold_low'            => '',
 				'thold_fail_trigger'   => (string) $trigger,
-				'data_type'            => (string) ($percentOf === '' ? self::EXACT : self::PERCENTAGE),
-				'percent_ds'           => $percentOf,
+				'data_type'            => (string) ($percentOf === '' ? self::EXACT : self::EXPRESSION),
+				'percent_ds'           => '',
+				'expression'           => $percentOf === '' ? '' : self::POWER_EXPRESSION,
 				'repeat_alert'         => '0',
 				'restored_alert'       => '',
 			];
