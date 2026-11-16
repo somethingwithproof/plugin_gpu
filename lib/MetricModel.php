@@ -33,12 +33,24 @@ namespace Somethingwithproof\Gpu;
 final class MetricModel {
 	public const MIB = 1048576.0;
 
-	// The field that carries the clock event reasons bitmask. The old name is
-	// the one confirmed on every supported driver line: nvidia-smi renamed the
-	// reasons in its v530 changelog and added the old query names back in
-	// v535 (research/clock-event-reasons.md). Both names print the same
-	// bitmask in the same position, so the parser accepts either.
-	public const MASK_FIELD = 'clocks_throttle_reasons.active';
+	// The field that carries the clock event reasons bitmask (REQ-NVSMI-005).
+	// nvidia-smi renamed the reasons in its v530 changelog and added the old
+	// query names back in v535 (research/clock-event-reasons.md), so an
+	// older nvidia-smi can know only the old name. The metrics entry asks for the current name; a second entry asks for the
+	// old one in the same position and is read only when the first is
+	// refused. Both print the same bitmask, decoded by the same code.
+	public const MASK_FIELD        = 'clocks_event_reasons.active';
+	public const LEGACY_MASK_FIELD = 'clocks_throttle_reasons.active';
+
+	// Whether ECC is on, so the health page can say why an ECC value is
+	// unknown (REQ-ERR-002). Not a model field: it is stored as text.
+	public const ECC_MODE_FIELD = 'ecc.mode.current';
+
+	/**
+	 * Fields the plugin computes from two consecutive samples of a total:
+	 * delta => total. They are stored as gauges (see all()).
+	 */
+	public const DELTAS = ['ecc_corr_new' => 'ecc_corr', 'ecc_uncorr_new' => 'ecc_uncorr'];
 
 	// Bits of the mask that get an indicator. The rest (idle, application
 	// clocks, sync boost, display, board limit, reliability, and any bit a
@@ -70,7 +82,15 @@ final class MetricModel {
 			new Metric('clock_mem', 'Memory clock', 'MHz', $gauge, 0.0, null, 'clocks.mem', 1.0, null, '1604 (hertz, divided by 1,000,000), or 101 (unit not stated)', 1.0e-6, '`metric --clock` (#18)'),
 			new Metric('ecc_corr', 'Corrected ECC errors since driver load', 'count', $gauge, 0.0, null, 'ecc.errors.corrected.volatile.total', 1.0, null, '310', 1.0, '`metric --ecc` `total_correctable_count`'),
 			new Metric('ecc_uncorr', 'Uncorrected ECC errors since driver load', 'count', $gauge, 0.0, null, 'ecc.errors.uncorrected.volatile.total', 1.0, null, '311', 1.0, '`metric --ecc` `total_uncorrectable_count`'),
+			// Each alertable value is a gauge (ADR 0002): Thold 1.8.2 fails on
+			// a DERIVE or COUNTER data source that reads U, so the plugin
+			// computes the new errors itself from consecutive samples, and a
+			// reset at driver load, or a missing value, is unknown.
+			new Metric('ecc_corr_new', 'Corrected ECC errors since the previous sample', 'count', $gauge, 0.0, null, null, 1.0, null, 'computed from consecutive `ecc_corr` samples', 1.0, 'computed from consecutive `ecc_corr` samples'),
+			new Metric('ecc_uncorr_new', 'Uncorrected ECC errors since the previous sample', 'count', $gauge, 0.0, null, null, 1.0, null, 'computed from consecutive `ecc_uncorr` samples', 1.0, 'computed from consecutive `ecc_uncorr` samples'),
 			new Metric('retired_pending', 'Page retirement pending', '0 or 1', $flag, 0.0, 1.0, 'retired_pages.pending', 1.0, null, '392', 1.0, '#18'),
+			new Metric('retired_sbe', 'Pages retired after single-bit ECC errors', 'pages', $gauge, 0.0, null, 'retired_pages.sbe', 1.0, null, '390 (`DCGM_FI_DEV_RETIRED_SBE`, unconfirmed, #15)', 1.0, '#18'),
+			new Metric('retired_dbe', 'Pages retired after a double-bit ECC error', 'pages', $gauge, 0.0, null, 'retired_pages.dbe', 1.0, null, '391 (`DCGM_FI_DEV_RETIRED_DBE`, unconfirmed, #15)', 1.0, '#18'),
 			new Metric('thr_sw_power_cap', 'Clocks held by the software power cap', '0 or 1', $flag, 0.0, 1.0, null, 1.0, self::BITS['thr_sw_power_cap'], 'field 112, bit 0x4', 1.0, '`metric --violation` (MI300 or newer, #18)'),
 			new Metric('thr_hw_slowdown', 'Hardware slowdown', '0 or 1', $flag, 0.0, 1.0, null, 1.0, self::BITS['thr_hw_slowdown'], 'field 112, bit 0x8', 1.0, 'not applicable'),
 			new Metric('thr_sw_thermal', 'Software thermal slowdown', '0 or 1', $flag, 0.0, 1.0, null, 1.0, self::BITS['thr_sw_thermal'], 'field 112, bit 0x20', 1.0, '`metric --violation` (MI300 or newer, #18)'),
@@ -104,10 +124,13 @@ final class MetricModel {
 	 * GPU name is free text that may contain the separator, so it is read by
 	 * its own query (namesFields()) and never shifts these fields.
 	 *
+	 * With $legacy, the clock event reasons field has its earlier name, in
+	 * the same position.
+	 *
 	 * @return list<string>
 	 */
-	public static function nvidiaFields(): array {
-		$fields = ['timestamp', 'uuid', 'index', 'pci.bus_id', 'driver_version'];
+	public static function nvidiaFields(bool $legacy = false): array {
+		$fields = ['timestamp', 'uuid', 'index', 'pci.bus_id', 'driver_version', self::ECC_MODE_FIELD];
 
 		foreach (self::all() as $metric) {
 			if ($metric->nvidiaField !== null) {
@@ -115,7 +138,7 @@ final class MetricModel {
 			}
 		}
 
-		$fields[] = self::MASK_FIELD;
+		$fields[] = $legacy ? self::LEGACY_MASK_FIELD : self::MASK_FIELD;
 
 		return $fields;
 	}
@@ -138,6 +161,7 @@ final class MetricModel {
 				$metric->nvidiaField !== null && $metric->nvidiaScale !== 1.0 => sprintf('`%s` (MiB, times 1,048,576)', $metric->nvidiaField),
 				$metric->nvidiaField !== null => sprintf('`%s`', $metric->nvidiaField),
 				$metric->maskBit !== null => sprintf('`%s`, bit 0x%X', self::MASK_FIELD, $metric->maskBit),
+				isset(self::DELTAS[$metric->name]) => sprintf('computed from consecutive `%s` samples', self::DELTAS[$metric->name]),
 				default => 'computed from `timestamp`',
 			};
 

@@ -144,6 +144,17 @@ final class CactiObjectRepository {
 	}
 
 	/**
+	 * The ids of the data sources the device already has for the data query.
+	 *
+	 * @return list<int>|null
+	 */
+	public function dataSources(int $hostId, int $dataQueryId): ?array {
+		$rows = db_fetch_assoc_prepared('SELECT id FROM data_local WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
+
+		return is_array($rows) ? array_map(static fn (array $row): int => Row::int($row, 'id'), Row::rows($rows)) : null;
+	}
+
+	/**
 	 * The graphs the device already has for the data query, as
 	 * "graph type id:index" keys.
 	 *
@@ -171,5 +182,40 @@ final class CactiObjectRepository {
 
 	public function saveSetting(string $name, string $value): bool {
 		return (bool) db_execute_prepared('REPLACE INTO settings (name, value) VALUES (?, ?)', [$name, $value], true, $this->connection);
+	}
+
+	/** @return array<int, bool>|null data source id => already renamed */
+	public function inheritedRrds(int $hostId, int $query): ?array {
+		$rows = db_fetch_assoc_prepared("SELECT dl.id, s.value FROM data_local AS dl INNER JOIN settings AS s ON s.name = CONCAT('gpu_inherited_rrd_', dl.id) AND s.value IN (CAST(dl.host_id AS CHAR), CONCAT(dl.host_id, ':ready')) WHERE dl.host_id = ? AND dl.snmp_query_id = ?", [$hostId, $query], true, $this->connection);
+
+		if (!is_array($rows)) {
+			return null;
+		}
+		$pending = [];
+		foreach (Row::rows($rows) as $row) {
+			$pending[Row::int($row, 'id')] = Row::string($row, 'value') === $hostId . ':ready';
+		}
+
+		return $pending;
+	}
+
+	/** Core's enable API returns void; verify the active flag and every cached RRD field. */
+	public function dataSourceReady(int $id): bool {
+		$row = db_fetch_row_prepared("SELECT d.active,
+			(SELECT COUNT(*) FROM data_template_rrd WHERE local_data_id = d.local_data_id) AS fields,
+			(SELECT COUNT(*) FROM data_template_rrd AS r WHERE r.local_data_id = d.local_data_id
+			 AND NOT EXISTS (SELECT 1 FROM poller_item AS p WHERE p.local_data_id = r.local_data_id AND p.rrd_name = r.data_source_name)) AS missing
+			FROM data_template_data AS d WHERE d.local_data_id = ?", [$id], true, $this->connection);
+
+		return is_array($row) && Row::string($row, 'active') === 'on'
+			&& Row::int($row, 'fields') > 0 && Row::int($row, 'missing', -1) === 0;
+	}
+
+	public function forgetInheritedRrd(int $id): bool {
+		return db_execute_prepared('DELETE FROM settings WHERE name = ?', ['gpu_inherited_rrd_' . $id], true, $this->connection);
+	}
+
+	public function deviceRemoved(int $hostId): bool {
+		return db_fetch_row_prepared('SELECT id FROM host WHERE id = ?', [$hostId], true, $this->connection) === [];
 	}
 }

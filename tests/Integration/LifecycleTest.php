@@ -20,6 +20,10 @@
 // The version INFO declares, which Cacti records as the installed version.
 define('GPU_VERSION', (string) (parse_ini_file(dirname(__DIR__, 2) . '/INFO', true)['info']['version'] ?? ''));
 
+// The schema version the code migrates to (Schema::VERSION); nothing from
+// the plugin is loaded in this process.
+define('GPU_SCHEMA', preg_match('/const VERSION\s*=\s*(\d+);/', (string) file_get_contents(dirname(__DIR__, 2) . '/lib/Schema.php'), $gpu_schema) === 1 ? $gpu_schema[1] : '');
+
 const GPU_TABLES = ['plugin_gpu_collection', 'plugin_gpu_gpu', 'plugin_gpu_node', 'plugin_gpu_observation', 'plugin_gpu_reindex', 'plugin_gpu_retired'];
 
 // Row counts after the seed action: one node and one GPU record.
@@ -31,6 +35,11 @@ beforeEach(function () {
 	lifecycle('reset');
 });
 
+it('starts a fresh ECC baseline after failed collection or an omitted GPU', function () {
+	lifecycle('install');
+	expect(lifecycle('ecc_gap')['result'])->toBe([null, 2, null, 3, null, 2]);
+});
+
 afterAll(function () {
 	lifecycle('reset');
 });
@@ -40,12 +49,12 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 
 	expect($state['plugin']['status'])->toEqual('4')
 		->and($state['plugin']['version'])->toEqual(GPU_VERSION)
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tracked'])->toBe(GPU_TABLES)
 		->and(array_keys($state['hooks']))->toBe(GPU_HOOKS)
 		->and($state['realms'])->toEqual([
-			'gpu_inventory.php' => 'GPU View',
+			'gpu_inventory.php,gpu_health.php' => 'GPU View',
 			'gpu_nodes.php'     => 'GPU Admin',
 		])
 		->and($state['admin'])->toBe(2);
@@ -86,7 +95,7 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 });
 
 it('imports the shipped templates once, and a forced re-import updates them in place', function () {
-	$objects = ['data_query' => 1, 'data_template' => 1, 'graph_templates' => 8, 'graph_items' => 72, 'device_template' => 1, 'dq_graphs' => 8, 'dq_file' => true];
+	$objects = ['data_query' => 1, 'data_template' => 1, 'graph_templates' => 10, 'graph_items' => 88, 'device_template' => 1, 'dq_graphs' => 10, 'dq_file' => true];
 
 	expect(lifecycle('install')['objects'])->toBe($objects);
 
@@ -137,7 +146,7 @@ it('finishes an upgrade that was interrupted after creating only some tables', f
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tables']['plugin_gpu_node'])->toBe(1)
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
 		->and($state['plugin']['version'])->toEqual(GPU_VERSION);
 });
 
@@ -150,7 +159,7 @@ it('does not advance past a migration that did not run', function () {
 		->and($stopped['schema'])->toEqual('0');
 
 	$finished = lifecycle('upgrade');
-	expect($finished['schema'])->toEqual('2');
+	expect($finished['schema'])->toEqual(GPU_SCHEMA);
 });
 
 it('upgrades a version 1 schema by adding the collection tables and keeping the records', function () {
@@ -166,10 +175,28 @@ it('upgrades a version 1 schema by adding the collection tables and keeping the 
 	$state = lifecycle('upgrade');
 
 	expect($state['result'])->toBeTrue()
-		->and($state['schema'])->toEqual('2')
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
 		->and(array_keys($state['tables']))->toBe(GPU_TABLES)
 		->and($state['tracked'])->toBe(GPU_TABLES)
 		->and($state['tables']['plugin_gpu_node'])->toBe(1);
+});
+
+it('upgrades a version 2 schema by adding the ECC columns and keeping the stored sample', function () {
+	lifecycle('install');
+	lifecycle('seed');
+	lifecycle('drop_columns');
+	lifecycle('set_schema', '2');
+
+	$state = lifecycle('upgrade');
+
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
+		->and($state['observation_columns'])->toContain('ecc_corr_new')
+		->and($state['observation_columns'])->toContain('ecc_uncorr_new')
+		->and($state['observation_columns'])->toContain('retired_sbe')
+		->and($state['observation_columns'])->toContain('retired_dbe')
+		->and($state['observation_columns'])->toContain('ecc_mode')
+		->and($state['tables']['plugin_gpu_observation'])->toBe(1);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {
@@ -207,6 +234,58 @@ it('keeps tables on uninstall by default, and drops them only when the box was c
 	expect($dropped['plugin'])->toBeEmpty()
 		->and($dropped['tables'])->toBe([])
 		->and($dropped['schema'])->toBeEmpty();
+});
+
+it('leaves the plugin\'s templates and data query XML on uninstall unless asked to remove them', function () {
+	$installed = lifecycle('install');
+	$after     = lifecycle('uninstall');
+
+	expect($after['objects'])->toBe($installed['objects'])
+		->and($after['objects']['dq_file'])->toBeTrue()
+		->and($after['cacti'])->toBe($installed['cacti']);
+});
+
+it('removes the plugin\'s unused templates and its unchanged data query XML on uninstall when asked, and nothing else', function () {
+	$installed = lifecycle('install');
+
+	lifecycle('set_setting', 'gpu_uninstall_remove_objects=on');
+
+	$after = lifecycle('uninstall');
+
+	expect($after['objects'])->toBe(['data_query' => 0, 'data_template' => 0, 'graph_templates' => 0, 'graph_items' => 0, 'device_template' => 0, 'dq_graphs' => 0, 'dq_file' => false])
+		->and($after['cacti'])->toBe($installed['cacti']);
+
+	// A reinstall imports them again.
+	expect(lifecycle('install')['objects'])->toBe($installed['objects']);
+});
+
+it('keeps a changed data query XML and every template something outside the plugin uses', function () {
+	$installed = lifecycle('install');
+
+	lifecycle('set_setting', 'gpu_uninstall_remove_objects=on');
+	lifecycle('link_graph_template');
+	lifecycle('edit_data_query_file');
+
+	$after = lifecycle('uninstall');
+
+	// The linked graph template stays, and with it the data template it
+	// draws; the device template and data query that only the plugin used
+	// go. The edited file is kept.
+	expect($after['objects'])->toBe(['data_query' => 0, 'data_template' => 1, 'graph_templates' => 1, 'graph_items' => $after['objects']['graph_items'], 'device_template' => 0, 'dq_graphs' => 0, 'dq_file' => true])
+		->and($after['objects']['graph_items'])->toBeGreaterThan(0)
+		->and($after['cacti'])->toBe($installed['cacti']);
+});
+
+it('keeps every template while a device uses the GPU Node template', function () {
+	lifecycle('install');
+	lifecycle('set_setting', 'gpu_uninstall_remove_objects=on');
+
+	$used  = lifecycle('use_device_template');
+	$after = lifecycle('uninstall');
+
+	expect($after['objects'])->toBe($used['objects'])
+		->and($after['objects']['device_template'])->toBe(1)
+		->and($after['cacti'])->toBe($used['cacti']);
 });
 
 it('honours keep tables on uninstall when the runtime is refused', function () {

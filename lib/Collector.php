@@ -63,7 +63,7 @@ final class Collector {
 
 			$this->collections->start($node->id, $this->clock->now());
 
-			[$state, $detail] = $this->run($node, $device, $settings);
+			[$state, $detail] = $this->run($node, $device, $settings, $previous);
 		} finally {
 			$this->locks->release($lock);
 		}
@@ -74,18 +74,55 @@ final class Collector {
 	}
 
 	/**
+	 * The metrics entry, or, when its driver refuses the current clock event
+	 * reasons field name, the entry with the earlier name (REQ-NVSMI-005).
+	 * Without that entry the refusal stands.
+	 */
+	private function metrics(Node $node, NodeDevice $device): ExtendOutput {
+		$metrics = $this->reader->read($device, SnmpdConfig::METRICS);
+
+		if ($metrics->result !== SnmpdConfig::INVALID_ARGUMENT) {
+			return $metrics;
+		}
+
+		try {
+			$legacy = $this->reader->read($device, SnmpdConfig::METRICS_LEGACY);
+		} catch (CollectionError $e) {
+			if ($e->state === ExecutionState::NotConfigured) {
+				return $metrics;
+			}
+
+			throw $e;
+		}
+
+		Log::debug(sprintf('Node %d: read the metrics entry with the earlier clock event reasons field name', $node->id));
+
+		return $legacy;
+	}
+
+	/**
 	 * @return array{ExecutionState, string} the state and its detail
 	 */
-	private function run(Node $node, NodeDevice $device, Settings $settings): array {
+	private function run(Node $node, NodeDevice $device, Settings $settings, ?CollectionStatus $previous): array {
 		try {
-			$collection = $this->parser->parse(
-				$this->reader->read($device, SnmpdConfig::METRICS),
-				$this->reader->read($device, SnmpdConfig::NAMES),
-			);
+			$collection = $this->parser->parse($this->metrics($node, $device), $this->reader->read($device, SnmpdConfig::NAMES));
 		} catch (CollectionError $e) {
 			$this->collections->finish($node->id, $e->state, $e->getMessage(), $this->clock->now(), rejectedLines: $e->rejectedLines);
 
 			return [$e->state, $e->getMessage()];
+		}
+
+		// A sample stamped ahead of Cacti's clock is refused before anything
+		// is recorded: stored samples only move forward, so keeping it would
+		// hold back every real sample until Cacti's clock caught up.
+		$ahead = $collection->newestSample() - $this->clock->now();
+
+		if ($ahead > Freshness::SKEW_ALLOWANCE) {
+			$detail = sprintf('The sample time is %d seconds ahead of the Cacti server\'s clock', $ahead);
+
+			$this->collections->finish($node->id, ExecutionState::InvalidOutput, $detail, $this->clock->now());
+
+			return [ExecutionState::InvalidOutput, $detail];
 		}
 
 		$changes = $this->inventory->record($node, $collection->snapshot, $settings->absentAfter);
@@ -109,6 +146,8 @@ final class Collector {
 		$stored   = 0;
 		$reported = [];
 		$missing  = 0;
+		$previousRead = $previous !== null && $previous->succeeded() && $previous->startedAt <= $previous->finishedAt
+			? $previous->startedAt : 0;
 
 		// Ask for the reindex as soon as the records changed, so a failure
 		// to store the samples below does not lose it.
@@ -139,7 +178,7 @@ final class Collector {
 
 			$reported[] = $record->id;
 
-			if ($this->observations->store($record->id, $node->id, $reading, $collection->backend, $collection->snapshot->toolVersion, $now)) {
+			if ($this->observations->store($record->id, $node->id, $reading, $collection->backend, $collection->snapshot->toolVersion, $now, $previousRead)) {
 				$stored++;
 			}
 		}

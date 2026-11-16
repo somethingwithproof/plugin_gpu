@@ -44,10 +44,14 @@ final class Poller {
 	}
 
 	/**
-	 * @return array{nodes: int, ok: int, failed: int, skipped: int, remote: int, reindexed: int, deferred: int, graphs: int, stopped_early: bool}
+	 * skipped counts nodes passed over (a disabled device, or another run
+	 * holding the node); left counts the nodes a run stopped by its budget
+	 * never reached, so stopped_early is true exactly when left is above 0.
+	 *
+	 * @return array{nodes: int, ok: int, failed: int, skipped: int, remote: int, reindexed: int, deferred: int, graphs: int, left: int, stopped_early: bool}
 	 */
 	public function run(Settings $settings, int $budget): array {
-		$stats    = ['nodes' => 0, 'ok' => 0, 'failed' => 0, 'skipped' => 0, 'remote' => 0, 'reindexed' => 0, 'deferred' => 0, 'graphs' => 0, 'stopped_early' => false];
+		$stats    = ['nodes' => 0, 'ok' => 0, 'failed' => 0, 'skipped' => 0, 'remote' => 0, 'reindexed' => 0, 'deferred' => 0, 'graphs' => 0, 'left' => 0, 'stopped_early' => false];
 		$started  = $this->clock->now();
 		$statuses = $this->collections->all();
 		$nodes    = array_values(array_filter($this->nodes->all(), static fn (Node $node): bool => $node->enabled() && $node->deviceExists));
@@ -56,8 +60,9 @@ final class Poller {
 
 		usort($nodes, static fn (Node $a, Node $b): int => [$last($a), $a->id] <=> [$last($b), $b->id]);
 
-		foreach ($nodes as $node) {
+		foreach ($nodes as $position => $node) {
 			if ($this->clock->now() - $started >= $budget) {
+				$stats['left']          = count($nodes) - $position;
 				$stats['stopped_early'] = true;
 
 				break;

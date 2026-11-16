@@ -113,7 +113,7 @@ if (!function_exists('db_fetch_row_prepared')) {
 	function db_fetch_row_prepared($sql, $params = [], $log = true, $db_conn = false, $log_function = null) {
 		$rows = gpu_test_rows($sql, $params);
 
-		return is_array($rows) && isset($rows[0]) ? $rows[0] : [];
+		return $rows === false ? false : (is_array($rows) && isset($rows[0]) ? $rows[0] : []);
 	}
 }
 
@@ -150,7 +150,7 @@ if (!function_exists('db_fetch_cell_prepared')) {
 
 		$rows = gpu_test_rows($sql, $params);
 
-		return is_array($rows) && isset($rows[0]) ? reset($rows[0]) : 0;
+		return $rows === false ? false : (is_array($rows) && isset($rows[0]) ? reset($rows[0]) : 0);
 	}
 }
 
@@ -276,5 +276,18 @@ if (!function_exists('api_device_dq_add')) {
 
 	function push_out_host($host_id, $local_data_id = 0, $data_template_id = 0) {
 		$GLOBALS['__gpu_cacti'][] = ['push_out_host', $host_id, $local_data_id];
+	}
+
+	function api_data_source_disable($local_data_id) {
+		$GLOBALS['__gpu_cacti'][] = ['api_data_source_disable', $local_data_id];
+	}
+
+	function api_data_source_enable($local_data_id) {
+		$GLOBALS['__gpu_cacti'][] = ['api_data_source_enable', $local_data_id];
+	}
+
+	// A test sets the RRD path of a data source id in __gpu_rrd_paths.
+	function get_data_source_path($local_data_id, $expand_paths) {
+		return $GLOBALS['__gpu_rrd_paths'][(int) $local_data_id] ?? '';
 	}
 }

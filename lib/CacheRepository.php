@@ -77,7 +77,7 @@ final class CacheRepository {
 	}
 
 	private static function sampleSelect(): string {
-		return 'SELECT ' . self::COLUMNS . ', o.observed_at, o.reported_at, o.' . implode(', o.', Schema::OBSERVATION_METRICS) . ',
+		return 'SELECT ' . self::COLUMNS . ', o.observed_at, o.reported_at, o.' . implode(', o.', Schema::observationMetrics()) . ',
 				c.state AS collection_state, c.finished_at AS collection_finished_at
 			FROM plugin_gpu_gpu AS g
 			INNER JOIN plugin_gpu_node AS n ON n.id = g.node_id

@@ -122,6 +122,14 @@ final class TemplateXml {
 				['ecc_corr', self::LINE1, '0072C6', 'Corrected'],
 				['ecc_uncorr', self::LINE2, 'B00020', 'Uncorrected'],
 			]],
+			'GPU - New ECC Errors' => ['label' => 'errors since the previous sample', 'base' => 1000, 'upper' => '0', 'items' => [
+				['ecc_corr_new', self::LINE1, '0072C6', 'Corrected'],
+				['ecc_uncorr_new', self::LINE2, 'B00020', 'Uncorrected'],
+			]],
+			'GPU - Retired Pages' => ['label' => 'pages', 'base' => 1000, 'upper' => '0', 'items' => [
+				['retired_sbe', self::LINE1, '0072C6', 'Single-bit errors'],
+				['retired_dbe', self::LINE2, 'B00020', 'Double-bit error'],
+			]],
 			'GPU - Sample Age' => ['label' => 'seconds', 'base' => 1000, 'upper' => '0', 'items' => [
 				['age', self::LINE1, '555555', 'Age of the latest sample'],
 			]],

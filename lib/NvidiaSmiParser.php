@@ -102,7 +102,7 @@ final class NvidiaSmiParser {
 
 			$version    = $version === '' ? $report->driverVersion : $version;
 			$reports[]  = $report;
-			$readings[] = new Reading($report, $observed, $read, $mask);
+			$readings[] = new Reading($report, $observed, $read, $mask, EccMode::fromNvidia($values[$position[MetricModel::ECC_MODE_FIELD]])->value);
 		}
 
 		try {

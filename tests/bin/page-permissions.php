@@ -53,8 +53,8 @@ $root     = rtrim($argv[1], '/') . '/';
 $password = 'Gpu-' . bin2hex(random_bytes(8));
 $failures = 0;
 
-$view  = (int) db_fetch_cell("SELECT id + 100 FROM plugin_realms WHERE plugin = 'gpu' AND file = 'gpu_inventory.php'");
-$admin = (int) db_fetch_cell("SELECT id + 100 FROM plugin_realms WHERE plugin = 'gpu' AND file = 'gpu_nodes.php'");
+$view  = (int) db_fetch_cell("SELECT id + 100 FROM plugin_realms WHERE plugin = 'gpu' AND FIND_IN_SET('gpu_inventory.php', file) > 0");
+$admin = (int) db_fetch_cell("SELECT id + 100 FROM plugin_realms WHERE plugin = 'gpu' AND FIND_IN_SET('gpu_nodes.php', file) > 0");
 
 db_execute_prepared("UPDATE user_auth SET password = ?, must_change_password = '', password_change = '', enabled = 'on', locked = '', failed_attempts = 0 WHERE id = 1", array(password_hash($password, PASSWORD_DEFAULT)));
 
@@ -140,12 +140,15 @@ function perm_login($user) {
 }
 
 // Markers that only the rendered plugin page contains.
-$pages = array('gpu_nodes.php' => 'Export Records', 'gpu_inventory.php' => '<th>PCI Bus ID</th>');
+$pages = array('gpu_nodes.php' => 'Export Records', 'gpu_inventory.php' => '<th>PCI Bus ID</th>', 'gpu_health.php' => '<th>Clock Event Reasons</th>');
 $plans = array(
-	'anonymous' => array('gpu_nodes.php' => false, 'gpu_inventory.php' => false),
-	'admin'     => array('gpu_nodes.php' => true, 'gpu_inventory.php' => true),
-	'viewer'    => array('gpu_nodes.php' => false, 'gpu_inventory.php' => true),
-	'norealm'   => array('gpu_nodes.php' => false, 'gpu_inventory.php' => false),
+	'anonymous' => array('gpu_nodes.php' => false, 'gpu_inventory.php' => false, 'gpu_health.php' => false),
+	'admin'     => array('gpu_nodes.php' => true, 'gpu_inventory.php' => true, 'gpu_health.php' => true),
+	'viewer'    => array('gpu_nodes.php' => false, 'gpu_inventory.php' => true, 'gpu_health.php' => true),
+	'norealm'   => array('gpu_nodes.php' => false, 'gpu_inventory.php' => false, 'gpu_health.php' => false),
+	// GPU Admin alone does not include the GPU View pages: each page file
+	// is checked against its own realm (REQ-PERM-004).
+	'scoped'    => array('gpu_nodes.php' => true, 'gpu_inventory.php' => false, 'gpu_health.php' => false),
 );
 
 foreach ($plans as $user => $expect) {
@@ -161,18 +164,48 @@ foreach ($plans as $user => $expect) {
 			perm_expect(strpos($body, 'login_username') !== false, "anonymous is sent to the login form from $page");
 		}
 
-		if ($page === 'gpu_inventory.php' && $allowed) {
+		if ($page !== 'gpu_nodes.php' && $allowed) {
 			$sees = strpos($body, $hidden) !== false;
 			perm_expect(strpos($body, $open) !== false && $sees === ($user === 'admin'), "$user " . ($user === 'admin' ? 'sees' : 'does not see') . ' the GPU of a device it ' . ($user === 'admin' ? 'may' : 'may not') . ' view');
 
 			// Tool-reported names and device descriptions are text.
-			perm_expect(strpos($body, '<img src=x id="gpuname">') === false && strpos($body, '&lt;img src=x id=&quot;gpuname&quot;&gt;') !== false, "$user's inventory escapes the GPU name");
-			perm_expect(strpos($body, '<b id="gpuprobe">') === false && strpos($body, '&lt;b id=&quot;gpuprobe&quot;&gt;') !== false, "$user's inventory escapes the device description");
+			perm_expect(strpos($body, '<img src=x id="gpuname">') === false && strpos($body, '&lt;img src=x id=&quot;gpuname&quot;&gt;') !== false, "$user's $page escapes the GPU name");
+			perm_expect(strpos($body, '<b id="gpuprobe">') === false && strpos($body, '&lt;b id=&quot;gpuprobe&quot;&gt;') !== false, "$user's $page escapes the device description");
 		}
 	}
 
 	unlink($jar);
 }
+
+// Revocation takes effect on the viewer's next request, in the same session
+// (REQ-PERM-002): first the device permission, then the GPU View realm,
+// which Cacti caches per session until user_auth.reset_perms changes, as
+// it does when an administrator saves the user.
+$jar = perm_login('viewer');
+
+foreach (array('gpu_inventory.php', 'gpu_health.php') as $page) {
+	list(, $body) = perm_http($base . $page, $jar);
+	perm_expect(strpos($body, $open) !== false, "viewer sees the open GPU on $page before revocation");
+}
+
+db_execute_prepared('DELETE FROM user_auth_perms WHERE user_id = ? AND item_id = ? AND type = 3', array($users['viewer'], $devices['open']));
+
+foreach (array('gpu_inventory.php', 'gpu_health.php') as $page) {
+	list(, $body) = perm_http($base . $page, $jar);
+	perm_expect(strpos($body, $pages[$page]) !== false && strpos($body, $open) === false && strpos($body, 'Open node') === false, "viewer no longer sees the GPU or node on $page on the request after its device permission is revoked");
+}
+
+db_execute_prepared('INSERT INTO user_auth_perms (user_id, item_id, type) VALUES (?, ?, 3)', array($users['viewer'], $devices['open']));
+db_execute_prepared('DELETE FROM user_auth_realm WHERE user_id = ? AND realm_id = ?', array($users['viewer'], $view));
+db_execute_prepared('UPDATE user_auth SET reset_perms = ? WHERE id = ?', array(mt_rand(), $users['viewer']));
+
+foreach (array('gpu_inventory.php', 'gpu_health.php') as $page) {
+	list(, $body) = perm_http($base . $page, $jar);
+	perm_expect(strpos($body, $pages[$page]) === false && strpos($body, $open) === false, "viewer is denied $page on the request after GPU View is revoked");
+}
+
+db_execute_prepared('INSERT INTO user_auth_realm (realm_id, user_id) VALUES (?, ?)', array($view, $users['viewer']));
+unlink($jar);
 
 $jar = perm_login('admin');
 
@@ -270,6 +303,7 @@ perm_expect(strpos($list, '0000000000d4') === false && strpos($list, '0000000000
 
 list(, $edit) = perm_http($base . 'gpu_nodes.php?action=edit&id=' . $nodes['hidden'], $jar);
 perm_expect(strpos($edit, 'do not have access') !== false && strpos($edit, 'Absent hidden GPU') === false, 'scoped GPU Admin cannot open a node on a device it may not see');
+perm_expect(strpos($edit, 'hidden.invalid') === false && strpos($edit, 'Hidden node') === false && strpos($edit, $hidden) === false && strpos($edit, '0000000000c3') === false && strpos($edit, 'plugins/gpu/lib/') === false && strpos($edit, 'plugins/gpu/setup.php') === false && preg_match('#\.php(:| on line )\d#', $edit) !== 1, 'the refusal names no hostname, device, UUID, or path of the hidden node (REQ-PERM-005)');
 
 list(, $edit) = perm_http($base . 'gpu_nodes.php?action=edit', $jar);
 perm_expect(strpos($edit, 'Unregistered hidden') === false && strpos($edit, 'Hidden empty node') === false, 'scoped GPU Admin is offered only devices it may see');
@@ -318,8 +352,31 @@ perm_expect($orphanState() === 'disabled', 'a node whose device was deleted can 
 perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'save', 'id' => $orphan, 'host_id' => 999999, 'enabled' => 'on'));
 perm_expect($orphanState() === 'disabled', 'a node whose device was deleted cannot be enabled again');
 
+list(, $export) = perm_http($base . 'gpu_nodes.php?action=export', $jar);
+$document = json_decode($export, true);
+perm_expect(is_array($document) && !in_array($orphan, array_column($document['nodes'], 'id'), true), 'a node whose device was deleted is left out of the export');
+
+// One with GPU records stays, as any node with records does; an empty one
+// may be deleted by any GPU Admin, since no device permission applies.
+db_execute_prepared("INSERT INTO plugin_gpu_node (host_id, admin_state) VALUES (999998, 'disabled')");
+$orphanWithGpu = (int) db_fetch_insert_id();
+db_execute_prepared("INSERT INTO plugin_gpu_gpu (vendor, uuid, node_id, pci_bus_id, name, presence) VALUES ('nvidia', 'GPU-00000000-0000-4000-8000-0000000000f6', ?, '00000000:40:00.0', 'Orphaned GPU', 'absent')", array($orphanWithGpu));
+
+perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'delete', 'id' => $orphanWithGpu));
+perm_expect((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_gpu_node WHERE id = ?', array($orphanWithGpu)) === 1, 'a node whose device was deleted is kept while GPU records belong to it');
+
 perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => $token, 'action' => 'delete', 'id' => $orphan));
-perm_expect($orphanState() === 'disabled', 'a node whose device was deleted is not deleted by a scoped GPU Admin');
+perm_expect((int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_gpu_node WHERE id = ?', array($orphan)) === 0, 'an empty node whose device was deleted is deleted by a scoped GPU Admin');
+
+// With Cacti's device management, a device this user would not be allowed
+// to see is removed again in the same request, and no node is made for it.
+db_execute_prepared('INSERT INTO user_auth_realm (realm_id, user_id) VALUES (3, ?)', array($users['scoped']));
+// A new session loads the added realm with a token of its own.
+$jar = perm_login('scoped');
+list(, $form)   = perm_http($base . 'gpu_nodes.php?action=edit', $jar);
+list(, $result) = perm_http($base . 'gpu_nodes.php', $jar, array('__csrf_magic' => perm_token($form), 'action' => 'create_device', 'description' => 'Invisible created', 'hostname' => 'invisible.invalid'));
+perm_expect((int) db_fetch_cell("SELECT COUNT(*) FROM host WHERE hostname = 'invisible.invalid'") === 0 && (int) db_fetch_cell('SELECT COUNT(*) FROM plugin_gpu_node WHERE host_id NOT IN (SELECT id FROM host) AND host_id NOT IN (999998)') === 0 && strpos($result, 'was not kept') !== false, 'a created device the creator may not see is removed again, with an error (' . (int) db_fetch_cell("SELECT COUNT(*) FROM host WHERE hostname = 'invisible.invalid'") . ' devices kept, message ' . (($perm_at = strpos($result, '"message":')) !== false ? substr($result, $perm_at, 300) : 'none') . ')');
+db_execute_prepared('DELETE FROM user_auth_realm WHERE realm_id = 3 AND user_id = ?', array($users['scoped']));
 
 unlink($jar);
 

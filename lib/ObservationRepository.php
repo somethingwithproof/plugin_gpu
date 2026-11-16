@@ -27,27 +27,61 @@ final class ObservationRepository {
 	}
 
 	/**
+	 * What the health page shows of each GPU's latest sample, by GPU record
+	 * id: when it was taken, by which backend and tool version, the raw
+	 * clock event mask, and the ECC mode. One query for every GPU.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function summaries(): array {
+		$rows = db_fetch_assoc_prepared('SELECT gpu_id, observed_at, backend, tool_version, thr_mask, ecc_mode FROM plugin_gpu_observation', [], true, $this->connection);
+		$out  = [];
+
+		foreach (is_array($rows) ? Row::rows($rows) : [] as $row) {
+			$out[Row::int($row, 'gpu_id')] = $row;
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Store one GPU's reading. The values replace the stored ones only when
 	 * the tool took this sample later than the stored one, so snmpd handing
 	 * back a cached sample, or a slow run finishing after a faster one, never
 	 * moves a value back in time. reported_at always moves, because the GPU
 	 * was reported either way.
+	 *
+	 * The new ECC errors are computed here, against the stored sample, in
+	 * the same statement: the new total minus the stored one. The result is
+	 * unknown when either total is unknown, and when the new total is lower,
+	 * which is a reset at driver load (REQ-ERR-003), so a reset is never
+	 * read as a negative count or as zero.
 	 */
-	public function store(int $gpuId, int $nodeId, Reading $reading, string $backend, string $toolVersion, int $now): bool {
-		$columns = Schema::OBSERVATION_METRICS;
+	public function store(int $gpuId, int $nodeId, Reading $reading, string $backend, string $toolVersion, int $now, int $previousRead = 0): bool {
+		$columns = array_values(array_diff(Schema::observationMetrics(), array_keys(MetricModel::DELTAS)));
 		$values  = [];
 
 		foreach ($columns as $column) {
 			$values[] = $reading->values[$column] ?? null;
 		}
 
-		$all    = array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], $columns, ['thr_mask']);
+		$all    = array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']);
 		$newer  = 'VALUES(observed_at) > observed_at';
 		$update = ['node_id = VALUES(node_id)'];
+		// A failed/interrupted collection, or a successful one which omitted
+		// this GPU, breaks the delta baseline. Keep the old observation time
+		// and totals for age and diagnostics, but never bridge that gap.
+		$continuous = $previousRead > 0 ? 'reported_at >= ' . $previousRead : '0';
 
-		// observed_at is assigned last: MySQL applies the assignments in
-		// order, so every other column still compares against the old time.
-		foreach (array_merge(['ingested_at', 'backend', 'tool_version'], $columns, ['thr_mask']) as $column) {
+		// MySQL applies the assignments in order, and a later one sees the
+		// columns earlier ones set. The deltas are assigned before the totals
+		// change, and observed_at last, so every other column still compares
+		// against the stored sample.
+		foreach (MetricModel::DELTAS as $delta => $total) {
+			$update[] = "$delta = IF($continuous, IF($newer, IF(VALUES($total) >= $total, VALUES($total) - $total, NULL), $delta), NULL)";
+		}
+
+		foreach (array_merge(['ingested_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']) as $column) {
 			$update[] = "$column = IF($newer, VALUES($column), $column)";
 		}
 
@@ -56,6 +90,6 @@ final class ObservationRepository {
 
 		$sql = 'INSERT INTO plugin_gpu_observation (' . implode(', ', $all) . ') VALUES (' . implode(', ', array_fill(0, count($all), '?')) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', $update);
 
-		return (bool) db_execute_prepared($sql, array_merge([$gpuId, $nodeId, $reading->observedAt, $now, $now, $backend, $toolVersion], $values, [$reading->mask]), true, $this->connection);
+		return (bool) db_execute_prepared($sql, array_merge([$gpuId, $nodeId, $reading->observedAt, $now, $now, $backend, $toolVersion], $values, [$reading->mask, $reading->eccMode]), true, $this->connection);
 	}
 }

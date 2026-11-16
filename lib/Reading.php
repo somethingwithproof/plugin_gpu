@@ -33,6 +33,8 @@ final readonly class Reading {
 		public int $observedAt,
 		public array $values,
 		public ?int $mask,
+		// EccMode value, or '' when the backend does not report it.
+		public string $eccMode = '',
 	) {
 	}
 }

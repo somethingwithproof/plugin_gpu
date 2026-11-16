@@ -32,8 +32,13 @@ namespace Somethingwithproof\Gpu;
  * nothing but read requests.
  */
 final class SnmpdConfig {
-	public const METRICS = 'cacti_gpu';
-	public const NAMES   = 'cacti_gpu_names';
+	public const METRICS        = 'cacti_gpu';
+	public const METRICS_LEGACY = 'cacti_gpu_legacy';
+	public const NAMES          = 'cacti_gpu_names';
+
+	// nvidia-smi's documented return value for an invalid argument, which is
+	// what it gives for a query field the driver does not know.
+	public const INVALID_ARGUMENT = 2;
 
 	// Seconds snmpd keeps a result. Every Cacti poll inside the window sees
 	// the same sample, so the window bounds how fresh a value can be.
@@ -51,6 +56,8 @@ final class SnmpdConfig {
 	public const MAX_COMMAND = 510;
 
 	/**
+	 * The entries every node needs.
+	 *
 	 * @return list<string>
 	 */
 	public static function extendLines(): array {
@@ -61,6 +68,16 @@ final class SnmpdConfig {
 	}
 
 	/**
+	 * The optional entry for an nvidia-smi older than the clocks_event_reasons
+	 * rename, which refuses the metrics entry's field name (REQ-NVSMI-005).
+	 *
+	 * @return list<string>
+	 */
+	public static function legacyLines(): array {
+		return [self::line(self::METRICS_LEGACY, self::METRICS_CACHE, ['TZ=UTC'], MetricModel::nvidiaFields(true), 'csv,noheader,nounits')];
+	}
+
+	/**
 	 * The command and arguments of each entry, as extend.c formats them.
 	 *
 	 * @return array<string, string> entry name => command line
@@ -68,7 +85,7 @@ final class SnmpdConfig {
 	public static function commands(): array {
 		$out = [];
 
-		foreach (self::extendLines() as $line) {
+		foreach ([...self::extendLines(), ...self::legacyLines()] as $line) {
 			$parts = explode(' ', $line, 5);
 
 			$out[$parts[3]] = $parts[4];

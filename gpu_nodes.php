@@ -146,7 +146,9 @@ switch ($gpu_action) {
 	case 'delete':
 		$gpu_node = $gpu_nodes->find((int) get_filter_request_var('id'));
 
-		if (!$gpu_access->canManage($gpu_node)) {
+		// A node whose device was deleted may be deleted too, by any GPU
+		// Admin; see NodeAccess.
+		if (!$gpu_access->canRemove($gpu_node)) {
 			gpu_nodes_refuse();
 		}
 
@@ -211,9 +213,24 @@ switch ($gpu_action) {
 			raise_message('gpu_device', __('The GPU Node device template is not installed.', 'gpu'), MESSAGE_LEVEL_ERROR);
 		} else {
 			$gpu_host = gpu_create_device($gpu_description, $gpu_hostname, $gpu_template);
+
 			// The new device is checked like any other: under a restrictive
 			// device policy the user may not see a device they just created.
-			$gpu_id   = $gpu_host > 0 && $gpu_access->deviceAllowed($gpu_host) && !$gpu_nodes->hostTaken($gpu_host, 0) ? $gpu_nodes->save(0, $gpu_host, \Somethingwithproof\Gpu\AdminState::Enabled) : 0;
+			// Such a device is removed again through Cacti's API in the same
+			// request, so the user does not leave behind a device they cannot
+			// see or manage (owner decision for milestone 4).
+			if ($gpu_host > 0 && !$gpu_access->deviceAllowed($gpu_host)) {
+				if (gpu_remove_device($gpu_host)) {
+					raise_message('gpu_device', __('The device was not kept: your account may not see devices it creates. Ask an administrator to create it.', 'gpu'), MESSAGE_LEVEL_ERROR);
+				} else {
+					raise_message('gpu_device', __('The device could not be removed after access was refused. Ask an administrator to remove it.', 'gpu'), MESSAGE_LEVEL_ERROR);
+				}
+
+				header('Location: gpu_nodes.php');
+				exit;
+			}
+
+			$gpu_id   = $gpu_host > 0 && !$gpu_nodes->hostTaken($gpu_host, 0) ? $gpu_nodes->save(0, $gpu_host, \Somethingwithproof\Gpu\AdminState::Enabled) : 0;
 			$gpu_node = $gpu_id > 0 ? $gpu_nodes->find($gpu_id) : null;
 
 			if ($gpu_node !== null && $gpu_access->canManage($gpu_node)) {

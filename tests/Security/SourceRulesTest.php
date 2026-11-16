@@ -291,9 +291,10 @@ it('runs no command on a GPU node, and starts one process: the collector', funct
 
 it('names no state-changing vendor command anywhere', function () {
 	// REQ-LIFE-005: clocks, power limits, persistence mode, resets, MIG
-	// layout, and amd-smi set or reset are never invoked. A string that
+	// layout, ECC counter clears, drains, and amd-smi set or reset are never
+	// invoked, whatever an error value reads (REQ-ERR-006). A string that
 	// pairs a vendor tool with one of these is refused wherever it appears.
-	$mutating = '/\b(nvidia-smi|dcgmi|amd-smi|rocm-smi)\b.*(\s-(pm|pl|ac|rac|lgc|rgc|lmc|rmc|r|e|c|mig|cgi|cci|dgi|dci)\b|--(persistence-mode|power-limit|applications-clocks|reset-applications-clocks|lock-gpu-clocks|reset-gpu-clocks|lock-memory-clocks|reset-memory-clocks|gpu-reset|ecc-config|compute-mode|multi-instance-gpu)\b|\s(mig|set|reset|config)\s)/i';
+	$mutating = '/\b(nvidia-smi|dcgmi|amd-smi|rocm-smi)\b.*(\s-(pm|pl|ac|rac|lgc|rgc|lmc|rmc|r|e|p|c|mig|cgi|cci|dgi|dci)\b|--(persistence-mode|power-limit|applications-clocks|reset-applications-clocks|lock-gpu-clocks|reset-gpu-clocks|lock-memory-clocks|reset-memory-clocks|gpu-reset|reset-ecc-errors|ecc-config|compute-mode|multi-instance-gpu)\b|\s(mig|set|reset|config|drain)\s)/i';
 
 	foreach (gpu_sources() as $file) {
 		foreach (PhpToken::tokenize((string) file_get_contents(gpu_root() . '/' . $file)) as $token) {
@@ -306,5 +307,40 @@ it('names no state-changing vendor command anywhere', function () {
 	expect(preg_match($mutating, "'nvidia-smi -pl 200'"))->toBe(1)
 		->and(preg_match($mutating, "'nvidia-smi --gpu-reset -i 0'"))->toBe(1)
 		->and(preg_match($mutating, "'amd-smi set --power-cap 100'"))->toBe(1)
+		->and(preg_match($mutating, "'nvidia-smi -p 0 -i 0'"))->toBe(1)
+		->and(preg_match($mutating, "'nvidia-smi --reset-ecc-errors=1'"))->toBe(1)
+		->and(preg_match($mutating, "'nvidia-smi drain -p 0000:01:00.0 -m 1'"))->toBe(1)
 		->and(preg_match($mutating, "'nvidia-smi --query-gpu=uuid,index --format=csv'"))->toBe(0);
+});
+
+it('renders the health and inventory pages from stored records, never from a node', function () {
+	// REQ-HEALTH-003 and REQ-PERF-002: no page reads the agent, runs the
+	// collector, or waits. The page classes and entry files name no SNMP
+	// function, reader, collector, or sleep.
+	$banned = '/\b(snmp\w*|cacti_snmp\w*|SnmpExtendReader|ExtendReader|Collector|Poller|gpu_poller|sleep|usleep|fsockopen|stream_socket_client|curl_\w+)\b/i';
+
+	foreach (['lib/HealthPage.php', 'lib/InventoryPage.php', 'gpu_health.php', 'gpu_inventory.php'] as $file) {
+		foreach (PhpToken::tokenize((string) file_get_contents(gpu_root() . '/' . $file)) as $token) {
+			if ($token->is([T_STRING, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED])) {
+				expect($token->text)->not->toMatch($banned, "$file:{$token->line}");
+			}
+		}
+	}
+});
+
+it('sends no notification of its own: no mail, webhook, or outbound request', function () {
+	// REQ-ALERT-005: Thold and Maint own alerting (ADR 0002).
+	$banned = ['mail', 'mb_send_mail', 'send_mail', 'mailer', 'curl_init', 'curl_exec', 'fsockopen', 'stream_socket_client', 'file_get_contents_url', 'thold_mail', 'syslog', 'openlog'];
+
+	foreach (gpu_sources() as $file) {
+		$tokens = array_values(array_filter(PhpToken::tokenize((string) file_get_contents(gpu_root() . '/' . $file)), fn ($t) => !$t->is([T_WHITESPACE, T_COMMENT, T_DOC_COMMENT])));
+
+		foreach ($tokens as $i => $token) {
+			if ($token->is(T_STRING) && in_array(strtolower($token->text), $banned, true) && ($tokens[$i + 1]->text ?? '') === '(') {
+				expect(false)->toBeTrue("$file:{$token->line} calls " . $token->text . '()');
+			}
+		}
+
+		expect((string) file_get_contents(gpu_root() . '/' . $file))->not->toMatch('#[\'"]https?://#i', "$file names a URL");
+	}
 });

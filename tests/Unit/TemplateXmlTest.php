@@ -178,3 +178,22 @@ it('does not count the templates as installed while Cacti\'s copy of the data qu
 		->and($stale)->toBeFalse()
 		->and($current)->toBeTrue();
 });
+
+it('keeps templates and their query file when template lookups or optional-table checks fail', function () {
+	$repository = new \Somethingwithproof\Gpu\CactiTemplateRepository(false);
+	$installer = new \Somethingwithproof\Gpu\TemplateInstaller(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\LockRepository(false), tpl_root(), '/unused');
+	$GLOBALS['__gpu_db_exec'] = [];
+	try {
+		$GLOBALS['__gpu_db_rows'] = ['SELECT id FROM' => false];
+		$report = $installer->remove($repository);
+		expect($report['removed'])->toBe([])
+			->and($report['kept'])->toContain(TemplateXml::DATA_QUERY_FILE)
+			->and($GLOBALS['__gpu_db_exec'])->toBe([]);
+		$GLOBALS['__gpu_db_rows'] = ['information_schema.TABLES' => false, 'FROM aggregate_graph_templates' => false, 'FROM thold_template' => false];
+		expect($repository->graphTemplateInUse(1, 2, 3))->toBeTrue()
+			->and($repository->dataTemplateInUse(1, 2, []))->toBeTrue();
+	} finally {
+		$GLOBALS['__gpu_db_rows'] = [];
+		$GLOBALS['__gpu_db_exec'] = [];
+	}
+});

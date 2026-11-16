@@ -229,13 +229,29 @@ final class Provisioner {
 	 * GPUs get no new graphs; the graphs they have stay.
 	 */
 	private function createGraphs(Node $node, int $query): int {
+		$pending = $this->cacti->inheritedRrds($node->hostId, $query);
+
+		if ($pending === null) {
+			return 0;
+		}
+
+		$blocked = [];
+		foreach ($pending as $id => $renamed) {
+			if (!($renamed ? $this->enableRecovered($node, $id) : $this->setAsideInherited($node, $id, true))) {
+				$blocked[$id] = true;
+			}
+		}
+
 		$graphed = $this->cacti->graphed($node->hostId, $query);
 		$cached  = $this->cacti->cachedIndexes($node->hostId, $query);
 		$listed  = $this->cache->listed($node->hostId);
+		$sources = $this->cacti->dataSources($node->hostId, $query);
 
-		if ($graphed === null || $cached === null || $listed === null) {
+		if ($graphed === null || $cached === null || $listed === null || $sources === null) {
 			return 0;
 		}
+
+		$sources = array_flip($sources);
 
 		$cachedSet = array_flip($cached);
 		$created   = 0;
@@ -268,7 +284,18 @@ final class Provisioner {
 				}
 
 				foreach ((array) ($graph['local_data_id'] ?? []) as $dataSource) {
-					if (is_numeric($dataSource)) {
+					if (!is_numeric($dataSource)) {
+						continue;
+					}
+
+					if (!isset($sources[(int) $dataSource])) {
+						if (!$this->setAsideInherited($node, (int) $dataSource)) {
+							$blocked[(int) $dataSource] = true;
+						}
+						$sources[(int) $dataSource] = true;
+					}
+
+					if (!isset($blocked[(int) $dataSource])) {
 						push_out_host($node->hostId, (int) $dataSource);
 					}
 				}
@@ -283,5 +310,60 @@ final class Provisioner {
 		}
 
 		return $created;
+	}
+
+	/**
+	 * A data source this run created has no history, so an RRD file already
+	 * at its path belongs to something else: typically a GPU whose records
+	 * were lost when the database was restored from a backup older than the
+	 * RRD directory, after which Cacti hands out the same data source ids,
+	 * and so the same file names, again. Cacti would write the new GPU's
+	 * values into that file. The file is renamed instead, kept for the
+	 * operator, and a warning names the data source but not the path,
+	 * which contains the device description (REQ-BACKUP-003).
+	 */
+	private function setAsideInherited(Node $node, int $dataSource, bool $pending = false): bool {
+		$path = (string) get_data_source_path($dataSource, true);
+
+		if (!$pending && ($path === '' || !is_file($path))) {
+			return true;
+		}
+
+		// A failed rename must survive this process and graph creation.
+		// Keep the source disabled until the old file is safely set aside.
+		api_data_source_disable($dataSource);
+		if (!$this->cacti->saveSetting('gpu_inherited_rrd_' . $dataSource, (string) $node->hostId)) {
+			Log::error(sprintf('Node %d: data source %d is disabled; its inherited RRD retry could not be recorded', $node->id, $dataSource));
+			return false;
+		}
+
+		$suffix = '.gpu-orphan-' . $this->clock->now();
+
+		if ($path === '' || (is_file($path) && (file_exists($path . $suffix) || !@rename($path, $path . $suffix)))) {
+			Log::warning(sprintf('Node %d: data source %d remains disabled because its inherited RRD could not be renamed; retried next cycle', $node->id, $dataSource));
+			return false;
+		}
+
+		if (is_file($path . $suffix)) {
+			Log::warning(sprintf('Node %d: new data source %d found an RRD file already at its path; the file was renamed with the suffix %s so its history attaches to no other GPU', $node->id, $dataSource, $suffix));
+		}
+
+		// Persist the phase before enabling: retries must never rename a new
+		// file written by the poller after a successful but interrupted enable.
+		if (!$this->cacti->saveSetting('gpu_inherited_rrd_' . $dataSource, $node->hostId . ':ready')) {
+			return false;
+		}
+
+		return $this->enableRecovered($node, $dataSource);
+	}
+
+	private function enableRecovered(Node $node, int $dataSource): bool {
+		api_data_source_enable($dataSource);
+		if (!$this->cacti->dataSourceReady($dataSource)) {
+			return false;
+		}
+		push_out_host($node->hostId, $dataSource);
+
+		return $this->cacti->forgetInheritedRrd($dataSource);
 	}
 }

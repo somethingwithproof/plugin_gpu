@@ -77,7 +77,7 @@ final class Freshness {
 			return null;
 		}
 
-		return in_array($field, Schema::OBSERVATION_METRICS, true) ? Row::float($row, $field) : null;
+		return in_array($field, Schema::observationMetrics(), true) ? Row::float($row, $field) : null;
 	}
 
 	/**

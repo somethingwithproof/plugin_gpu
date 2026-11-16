@@ -91,7 +91,8 @@ it('queries identity and the sample time in the same nvidia-smi query as the met
 	$fields = MetricModel::nvidiaFields();
 
 	expect(array_slice($fields, 0, 5))->toBe(['timestamp', 'uuid', 'index', 'pci.bus_id', 'driver_version'])
-		->and(end($fields))->toBe('clocks_throttle_reasons.active')
+		->and(end($fields))->toBe('clocks_event_reasons.active')
+		->and(MetricModel::nvidiaFields(true))->toBe([...array_slice($fields, 0, -1), 'clocks_throttle_reasons.active'])
 		->and($fields)->not->toContain('name')
 		->and($fields)->not->toContain('serial')
 		->and($fields)->toBe(array_values(array_unique($fields)))

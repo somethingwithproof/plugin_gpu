@@ -29,6 +29,7 @@ use Somethingwithproof\Gpu\GpuRecord;
 use Somethingwithproof\Gpu\GpuRepository;
 use Somethingwithproof\Gpu\IdentityReconciler;
 use Somethingwithproof\Gpu\Inventory;
+use Somethingwithproof\Gpu\MetricModel;
 use Somethingwithproof\Gpu\LockRepository;
 use Somethingwithproof\Gpu\Node;
 use Somethingwithproof\Gpu\NodeDevice;
@@ -54,12 +55,16 @@ beforeEach(function () {
 
 /**
  * An extend reader that answers from nvidia-smi fixture files, or fails.
+ * With $refuseCurrent it plays a driver that knows only the earlier clock
+ * event reasons field name: the metrics entry exits with nvidia-smi's
+ * invalid-argument status, and the legacy entry, if the node has it, prints
+ * the fixture.
  */
 final class FixtureReader implements ExtendReader {
 	/** @var list<string> */
 	public array $reads = [];
 
-	public function __construct(private readonly string $fixture, private readonly ?CollectionError $error = null, private readonly int $status = 0) {
+	public function __construct(private readonly string $fixture, private readonly ?CollectionError $error = null, private readonly int $status = 0, private readonly string $sampled = '2027/01/15 08:00:00.250', private readonly bool $refuseCurrent = false, private readonly bool $hasLegacy = true) {
 	}
 
 	public function read(NodeDevice $device, string $token): ExtendOutput {
@@ -69,11 +74,20 @@ final class FixtureReader implements ExtendReader {
 			throw $this->error;
 		}
 
-		$file  = dirname(__DIR__) . '/fixtures/nvidia-smi/' . $this->fixture . ($token === SnmpdConfig::METRICS ? '.metrics' : '.names');
-		$text  = $this->fixture === '' ? '' : str_replace('@NOW@', '2027/01/15 08:00:00.250', (string) file_get_contents($file));
-		$lines = $text === '' ? [] : explode("\n", rtrim($text, "\n"));
+		if ($this->refuseCurrent && $token === SnmpdConfig::METRICS) {
+			return new ExtendOutput(SnmpdConfig::INVALID_ARGUMENT, 1, ['Field "clocks_event_reasons.active" is not a valid field to query.']);
+		}
 
-		return new ExtendOutput($token === SnmpdConfig::METRICS ? $this->status : 0, count($lines), $lines);
+		if ($token === SnmpdConfig::METRICS_LEGACY && !$this->hasLegacy) {
+			throw new CollectionError(ExecutionState::NotConfigured, 'The SNMP agent has no extend entry named ' . $token);
+		}
+
+		$metrics = $token === SnmpdConfig::METRICS || $token === SnmpdConfig::METRICS_LEGACY;
+		$file    = dirname(__DIR__) . '/fixtures/nvidia-smi/' . $this->fixture . ($metrics ? '.metrics' : '.names');
+		$text    = $this->fixture === '' ? '' : str_replace('@NOW@', $this->sampled, (string) file_get_contents($file));
+		$lines   = $text === '' ? [] : explode("\n", rtrim($text, "\n"));
+
+		return new ExtendOutput($metrics ? $this->status : 0, count($lines), $lines);
 	}
 }
 
@@ -134,6 +148,68 @@ it('stores nothing and changes no GPU record when the collection fails', functio
 	'driver not ready' => [9, ExecutionState::DriverNotLoaded],
 ]);
 
+it('refuses a sample stamped further ahead of Cacti than clock skew explains, and records nothing', function () {
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = collect_known();
+
+	// COLLECT_NOW is 08:01:40; 120 seconds ahead is allowed, 121 is not.
+	expect(collector(new FixtureReader('r595-1gpu', sampled: '2027/01/15 08:03:41.000'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::InvalidOutput)
+		->and(collect_writes('plugin_gpu_gpu'))->toBe([])
+		->and(collect_writes('plugin_gpu_observation'))->toBe([]);
+
+	$finish = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'last_ok_at')));
+
+	expect($finish[0]['params'][2])->toBe("The sample time is 121 seconds ahead of the Cacti server's clock");
+
+	$GLOBALS['__gpu_db_exec'] = [];
+
+	expect(collector(new FixtureReader('r595-1gpu', sampled: '2027/01/15 08:03:40.000'))->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::Ok);
+});
+
+/**
+ * The observation rows one collection of $reader stores.
+ *
+ * @return list<list<mixed>>
+ */
+function collect_observations(FixtureReader $reader): array {
+	$GLOBALS['__gpu_db_exec'] = [];
+
+	expect(collector($reader)->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::Ok);
+
+	return array_values(array_map(fn ($e) => $e['params'], array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'INSERT INTO plugin_gpu_observation'))));
+}
+
+it('reads the earlier clock event reasons field name when the driver refuses the current one, decoding the same bits', function (string $fixture) {
+	// A stored record for each GPU of the fixture, at node 3.
+	$records = [];
+
+	foreach (file(dirname(__DIR__) . '/fixtures/nvidia-smi/' . $fixture . '.metrics', FILE_IGNORE_NEW_LINES) as $i => $line) {
+		[, $uuid, $index, $bus, $driver] = explode(', ', $line);
+
+		$records[] = ['id' => 10 + $i, 'vendor' => 'nvidia', 'uuid' => $uuid, 'node_id' => 3, 'gpu_index' => (int) $index, 'pci_bus_id' => $bus,
+			'name' => 'x', 'driver_version' => $driver, 'tool' => 'nvidia-smi', 'tool_version' => $driver, 'presence' => 'present', 'first_seen' => 1, 'last_seen' => 1];
+	}
+
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = $records;
+
+	$current = new FixtureReader($fixture);
+	$legacy  = new FixtureReader($fixture, refuseCurrent: true);
+	$stored  = collect_observations($current);
+
+	expect($stored)->not->toBe([])
+		->and(collect_observations($legacy))->toBe($stored)
+		->and($current->reads)->toBe([SnmpdConfig::METRICS, SnmpdConfig::NAMES])
+		->and($legacy->reads)->toBe([SnmpdConfig::METRICS, SnmpdConfig::METRICS_LEGACY, SnmpdConfig::NAMES]);
+})->with(['r580-8gpu', 'r595-1gpu', 'r620-16gpu']);
+
+it('keeps the refusal of the current field name as the outcome when the node has no legacy entry', function () {
+	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = collect_known();
+
+	$reader = new FixtureReader('r595-1gpu', refuseCurrent: true, hasLegacy: false);
+
+	expect(collector($reader)->collect(collect_node(), collect_device(), Settings::fromRow([])))->toBe(ExecutionState::ToolError)
+		->and(collect_writes('plugin_gpu_observation'))->toBe([]);
+});
+
 it('records an empty collection as successful without marking any GPU absent', function () {
 	$GLOBALS['__gpu_db_rows']['FROM plugin_gpu_gpu'] = collect_known();
 
@@ -155,7 +231,7 @@ it('stores each reported GPU\'s values against its record and asks for a reindex
 		->and(collect_writes('plugin_gpu_reindex'))->toHaveCount(1);
 
 	$store = array_values(array_filter($GLOBALS['__gpu_db_exec'], fn ($e) => str_contains($e['sql'], 'INSERT INTO plugin_gpu_observation')))[0];
-	$named = array_combine(array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], Schema::OBSERVATION_METRICS, ['thr_mask']), $store['params']);
+	$named = array_combine(array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], array_values(array_diff(Schema::observationMetrics(), array_keys(MetricModel::DELTAS))), ['thr_mask', 'ecc_mode']), $store['params']);
 
 	expect($named['gpu_id'])->toBe(9)
 		->and($named['node_id'])->toBe(3)
@@ -165,6 +241,8 @@ it('stores each reported GPU\'s values against its record and asks for a reindex
 		->and($named['util_gpu'])->toBe(30.0)
 		->and($named['power'])->toBeNull()
 		->and($named['thr_mask'])->toBe(0)
+		->and($named['ecc_mode'])->toBe('unavailable')
+		->and($named)->not->toHaveKey('ecc_corr_new')
 		->and($store['sql'])->toContain('observed_at = IF(VALUES(observed_at) > observed_at, VALUES(observed_at), observed_at)')
 		->and(strrpos($store['sql'], 'observed_at = IF('))->toBeGreaterThan(strrpos($store['sql'], 'thr_mask = IF('));
 
@@ -262,5 +340,17 @@ it('reads the staleness limit within its bounds', function (mixed $stored, int $
 ]);
 
 it('keeps one observation column per stored model field', function () {
-	expect(Schema::OBSERVATION_METRICS)->toBe(array_values(array_diff(\Somethingwithproof\Gpu\MetricModel::names(), ['age'])));
+	expect(Schema::observationMetrics())->toEqualCanonicalizing(array_values(array_diff(\Somethingwithproof\Gpu\MetricModel::names(), ['age'])));
+});
+
+it('computes new ECC errors from the stored total, as unknown across a reset or a missing total', function () {
+	(new \Somethingwithproof\Gpu\ObservationRepository(false))->store(9, 3, smi_parse('r580-8gpu')->readings[0], 'nvidia-smi', '580.95.05', COLLECT_NOW);
+
+	$sql = $GLOBALS['__gpu_db_exec'][0]['sql'];
+
+	// Before the totals are replaced, and only for a newer sample.
+	expect($sql)->toContain('IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_corr) >= ecc_corr, VALUES(ecc_corr) - ecc_corr, NULL), ecc_corr_new)')
+		->and($sql)->toContain('IF(VALUES(observed_at) > observed_at, IF(VALUES(ecc_uncorr) >= ecc_uncorr, VALUES(ecc_uncorr) - ecc_uncorr, NULL), ecc_uncorr_new)')
+		->and(strpos($sql, 'ecc_corr_new = IF('))->toBeLessThan(strpos($sql, 'ecc_corr = IF('))
+		->and(strpos($sql, 'ecc_uncorr_new = IF('))->toBeLessThan(strpos($sql, 'ecc_uncorr = IF('));
 });

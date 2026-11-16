@@ -65,6 +65,22 @@ enum ExecutionState: string {
 		};
 	}
 
+	/**
+	 * The outcome the health page names (REQ-HEALTH-002): completed, tool
+	 * error, permission denied, timed out, or unknown. Every failure that is
+	 * not a permission or a timeout is a tool error, with label() saying
+	 * which; a skipped run says nothing about the node, so it is unknown.
+	 */
+	public function outcome(): string {
+		return match ($this) {
+			self::Ok, self::Empty  => __('Completed', 'gpu'),
+			self::PermissionDenied => __('Permission denied', 'gpu'),
+			self::TimedOut         => __('Timed out', 'gpu'),
+			self::Skipped          => __('Unknown', 'gpu'),
+			default                => __('Tool error', 'gpu'),
+		};
+	}
+
 	public function label(): string {
 		return match ($this) {
 			self::Ok               => __('Collected', 'gpu'),

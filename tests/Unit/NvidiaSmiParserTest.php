@@ -77,7 +77,7 @@ it('parses each driver line\'s fixture into one reading per GPU, in model units'
 		->and($first->values['mem_used'])->toBe(2048 * 1048576.0)
 		->and($first->values['mem_total'])->toBe(81559 * 1048576.0)
 		->and($first->values['clock_sm'])->toBe(1410.0)
-		->and(array_keys($first->values))->toEqualCanonicalizing(array_values(array_diff(MetricModel::names(), ['age'])));
+		->and(array_keys($first->values))->toEqualCanonicalizing(array_values(array_diff(MetricModel::names(), ['age'], array_keys(MetricModel::DELTAS))));
 })->with([
 	['r580-8gpu', 8, '580.95.05'],
 	['r595-1gpu', 1, '595.45.04'],
@@ -143,9 +143,9 @@ it('rejects a line with fewer or more fields than requested', function () {
 	$extra = smi_error(smi_out([$line . ', 42']));
 
 	expect($short->state)->toBe(ExecutionState::InvalidOutput)
-		->and($short->getMessage())->toBe('GPU metrics line 1 has 17 fields where 18 were requested')
+		->and($short->getMessage())->toBe('GPU metrics line 1 has 20 fields where 21 were requested')
 		->and($short->rejectedLines)->toBe(1)
-		->and($extra->getMessage())->toBe('GPU metrics line 1 has 19 fields where 18 were requested');
+		->and($extra->getMessage())->toBe('GPU metrics line 1 has 22 fields where 21 were requested');
 });
 
 it('rejects stderr text that snmpd merged into the output', function () {
@@ -155,7 +155,7 @@ it('rejects stderr text that snmpd merged into the output', function () {
 	$error = smi_error(smi_out($lines));
 
 	expect($error->state)->toBe(ExecutionState::InvalidOutput)
-		->and($error->getMessage())->toBe('GPU metrics line 3 has 1 fields where 18 were requested')
+		->and($error->getMessage())->toBe('GPU metrics line 3 has 1 fields where 21 were requested')
 		->and($error->getMessage())->not->toContain('NVML');
 
 	expect(smi_error(smi_out(smi_lines('r595-1gpu.metrics')), smi_out(['WARNING: infoROM is corrupted at gpu 0000:18:00.0']))->getMessage())
@@ -212,8 +212,11 @@ it('documents the exact extend lines it parses, within extend\'s command limit',
 	$doc = (string) file_get_contents(dirname(__DIR__, 2) . '/docs/node-setup.md');
 
 	preg_match('/<!-- extend-lines:start -->\n```\n(.*)\n```\n<!-- extend-lines:end -->/s', $doc, $match);
+	preg_match('/<!-- extend-legacy:start -->\n```\n(.*)\n```\n<!-- extend-legacy:end -->/s', $doc, $legacy);
 
 	expect($match[1] ?? '')->toBe(implode("\n", SnmpdConfig::extendLines()))
+		->and($legacy[1] ?? '')->toBe(implode("\n", SnmpdConfig::legacyLines()))
+		->and(strpos($doc, '<!-- extend-lines:start -->'))->toBeLessThan(strpos($doc, '<!-- extend-legacy:start -->'))
 		->and(SnmpdConfig::TIMEOUT + SnmpdConfig::KILL_AFTER)->toBeLessThan(SnmpdConfig::METRICS_CACHE);
 
 	foreach (SnmpdConfig::commands() as $name => $command) {
@@ -254,6 +257,24 @@ it('reads an extend entry\'s status, line count, and lines in line order', funct
 		->and($output->declaredLines)->toBe(2)
 		->and($output->lines)->toBe(['first', 'second'])
 		->and($output->truncated())->toBeFalse();
+});
+
+it('reports an agent that answers the status but gives none of the lines as unreachable, not as cut output', function () {
+	$index = SnmpExtendReader::index('cacti_gpu');
+
+	$GLOBALS['__gpu_snmp'] = ["1.3.6.1.4.1.8072.1.3.2.3.1.4.$index" => '0', "1.3.6.1.4.1.8072.1.3.2.3.1.3.$index" => '8'];
+
+	try {
+		(new SnmpExtendReader(0))->read(smi_device(), 'cacti_gpu');
+		$error = null;
+	} catch (\Somethingwithproof\Gpu\CollectionError $e) {
+		$error = $e;
+	}
+
+	$GLOBALS['__gpu_snmp'] = [];
+
+	expect($error?->state)->toBe(\Somethingwithproof\Gpu\ExecutionState::Unreachable)
+		->and($error?->getMessage())->toBe('The SNMP agent gave none of the 8 output lines of cacti_gpu');
 });
 
 it('gives the first read of an entry time for snmpd to run the command, whatever the device timeout', function () {
@@ -356,4 +377,30 @@ it('falls back to cacti_snmp_get() when Cacti cannot make an SNMP session', func
 	'no session'                 => [false],
 	'PHP\'s SNMP class missing'  => [new \Error('Class "SNMP" not found')],
 	'an SNMPv3 protocol refused' => [new \ValueError('Authentication protocol must be "SHA" or "MD5"')],
+]);
+
+it('reads retired pages and the ECC mode, and a GPU without ECC as unknown', function () {
+	$with    = smi_parse('r580-8gpu')->readings[0];
+	$without = smi_parse('r595-1gpu')->readings[0];
+
+	expect($with->values['retired_sbe'])->toBe(0.0)
+		->and($with->values['retired_dbe'])->toBe(0.0)
+		->and($with->eccMode)->toBe('enabled')
+		->and($without->values['ecc_corr'])->toBeNull()
+		->and($without->values['retired_sbe'])->toBeNull()
+		->and($without->values['retired_dbe'])->toBeNull()
+		->and($without->eccMode)->toBe('unavailable');
+});
+
+it('names the reason an ECC value is unknown', function (string $raw, \Somethingwithproof\Gpu\EccMode $mode, bool $reason) {
+	$parsed = \Somethingwithproof\Gpu\EccMode::fromNvidia($raw);
+
+	expect($parsed)->toBe($mode)
+		->and($parsed->reason() !== '')->toBe($reason);
+})->with([
+	['Enabled', \Somethingwithproof\Gpu\EccMode::Enabled, false],
+	['Disabled', \Somethingwithproof\Gpu\EccMode::Disabled, true],
+	['[N/A]', \Somethingwithproof\Gpu\EccMode::Unavailable, true],
+	['[Not Supported]', \Somethingwithproof\Gpu\EccMode::Unavailable, true],
+	['Pending', \Somethingwithproof\Gpu\EccMode::Unknown, true],
 ]);

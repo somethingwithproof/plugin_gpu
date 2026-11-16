@@ -1,0 +1,173 @@
+<templates>
+<template1>
+	<hash>c7ba1c5a38424906e68e301d84752ae3</hash>
+	<name>GPU - Temperature High</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>a269082db3ee8d772f5f44f27b3f7a23</data_source_id>
+	<data_source_name>temp_gpu</data_source_name>
+	<data_source_friendly>GPU temperature</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>85</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>2</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template1>
+<template2>
+	<hash>317eaf729f39a855be0301d2c7e656c7</hash>
+	<name>GPU - Power Above Limit</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>8cbec3da5106f36e5d6c2394eb3ec1a2</data_source_id>
+	<data_source_name>power</data_source_name>
+	<data_source_friendly>Board power draw</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>100</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>2</thold_fail_trigger>
+	<data_type>3</data_type>
+	<percent_ds></percent_ds>
+	<expression>POWER,UN,POWER_LIMIT,UN,OR,POWER_LIMIT,UN,1,POWER_LIMIT,IF,0,LE,OR,UNKN,POWER,UN,0,POWER,IF,POWER_LIMIT,UN,1,POWER_LIMIT,IF,0,LE,1,POWER_LIMIT,UN,1,POWER_LIMIT,IF,IF,/,100,*,IF</expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template2>
+<template3>
+	<hash>c1cff81c23bcd50f2a2c931dcdcb1bdd</hash>
+	<name>GPU - Software Thermal Slowdown</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>684afab926b998321a7a6fac6f5a393b</data_source_id>
+	<data_source_name>thr_sw_thermal</data_source_name>
+	<data_source_friendly>Software thermal slowdown</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>0.5</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>1</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template3>
+<template4>
+	<hash>44590c3b6d62306a7561417f3d656a21</hash>
+	<name>GPU - Hardware Thermal Slowdown</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>5f35b5a45efe842fa4a8dec1cdac348e</data_source_id>
+	<data_source_name>thr_hw_thermal</data_source_name>
+	<data_source_friendly>Hardware thermal slowdown</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>0.5</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>1</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template4>
+<template5>
+	<hash>62c8674a7772d1f52ce82bd993de9ecb</hash>
+	<name>GPU - Hardware Power Brake</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>40894c404284f5ad11902bd285da8568</data_source_id>
+	<data_source_name>thr_hw_power_brake</data_source_name>
+	<data_source_friendly>Hardware power brake</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>0.5</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>1</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template5>
+<template6>
+	<hash>7646a917fad9fe450b54354877d31411</hash>
+	<name>GPU - Hardware Slowdown</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>15564beb5b304bad49dbca0cb469bb2f</data_source_id>
+	<data_source_name>thr_hw_slowdown</data_source_name>
+	<data_source_friendly>Hardware slowdown</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>0.5</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>1</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template6>
+<template7>
+	<hash>70f540176d91463cd62f1ac8d287f405</hash>
+	<name>GPU - New Uncorrected ECC Errors</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>c46dce5c285e4686088f1b510da6e966</data_source_id>
+	<data_source_name>ecc_uncorr_new</data_source_name>
+	<data_source_friendly>Uncorrected ECC errors since the previous sample</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>0.5</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>1</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template7>
+<template8>
+	<hash>f7d369b0ca08b1d3ac976d91d46b2753</hash>
+	<name>GPU - Page Retirement Pending</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>db6f1d51fd093d2d28b0cab3c1bd19a0</data_source_id>
+	<data_source_name>retired_pending</data_source_name>
+	<data_source_friendly>Page retirement pending</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>0.5</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>1</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template8>
+<template9>
+	<hash>88216ef9fd56a46ad04b86e95a7e8b8c</hash>
+	<name>GPU - Sample Too Old</name>
+	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
+	<data_template_name>GPU - Metrics</data_template_name>
+	<data_source_id>91f7fdb74f0d794e1fbe5e362a45dd1f</data_source_id>
+	<data_source_name>age</data_source_name>
+	<data_source_friendly>Seconds since the tool took the sample</data_source_friendly>
+	<thold_enabled>on</thold_enabled>
+	<thold_type>0</thold_type>
+	<thold_hi>900</thold_hi>
+	<thold_low></thold_low>
+	<thold_fail_trigger>1</thold_fail_trigger>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
+	<expression></expression>
+	<repeat_alert>0</repeat_alert>
+	<restored_alert></restored_alert>
+</template9>
+</templates>

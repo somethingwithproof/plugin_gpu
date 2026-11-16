@@ -80,6 +80,14 @@ final class SnmpExtendReader implements ExtendReader {
 
 		ksort($lines);
 
+		// An agent that gives the status and count but none of the lines
+		// stopped answering between the requests, or refused the walk (an
+		// SNMPv3 user it no longer accepts, for one); that is not output cut
+		// short by snmpd.
+		if ($lines === [] && is_numeric($declared) && (int) $declared > 0) {
+			throw new CollectionError(ExecutionState::Unreachable, sprintf('The SNMP agent gave none of the %d output lines of %s', (int) $declared, $token));
+		}
+
 		// The result, the line count, and the lines are separate requests,
 		// and snmpd may run the command again between them when its cache
 		// expires. Reading the result and count again after the lines shows

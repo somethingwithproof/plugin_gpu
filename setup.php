@@ -310,6 +310,15 @@ function plugin_gpu_uninstall(): void {
 	} else {
 		$schema->forgetVersion();
 	}
+
+	// REQ-LIFE-004: removing the plugin's own templates and data query XML
+	// is a separate choice, off by default. It never removes a device, data
+	// source, graph, or RRD file.
+	if (gpu_settings()->removeObjectsOnUninstall) {
+		$report = gpu_templates()->remove(new \Somethingwithproof\Gpu\CactiTemplateRepository(false));
+
+		\Somethingwithproof\Gpu\Log::info(sprintf('Uninstall removed %d of the plugin\'s Cacti objects; kept because still in use or changed: %s', count($report['removed']), $report['kept'] === [] ? 'none' : implode(', ', $report['kept'])));
+	}
 }
 
 /**
@@ -336,6 +345,37 @@ function gpu_create_device(string $description, string $hostname, int $template)
 		$max_oids > 0 ? $max_oids : 10, $threads > 0 ? $threads : 1, 1, max(0, (int) read_config_option('default_site')));
 
 	return is_numeric($id) ? (int) $id : 0;
+}
+
+/**
+ * Remove a device through Cacti's API, which also calls the device_remove
+ * hooks.
+ */
+function gpu_remove_device(int $id): bool {
+	global $config;
+
+	include_once($config['library_path'] . '/api_device.php');
+
+	api_device_remove($id);
+
+	return (new \Somethingwithproof\Gpu\CactiObjectRepository(false))->deviceRemoved($id);
+}
+
+/**
+ * Whether Maint holds a device in maintenance, or null when Maint is not
+ * enabled. It asks Maint's own check, guarded, because core has no caller
+ * of the is_device_in_maintenance hook (PLAN, Measurement state).
+ */
+function gpu_in_maintenance(int $host_id): ?bool {
+	global $config;
+
+	if (!api_plugin_is_enabled('maint') || !is_file($config['base_path'] . '/plugins/maint/functions.php')) {
+		return null;
+	}
+
+	include_once($config['base_path'] . '/plugins/maint/functions.php');
+
+	return function_exists('plugin_maint_check_cacti_host') ? (bool) plugin_maint_check_cacti_host($host_id) : null;
 }
 
 /**

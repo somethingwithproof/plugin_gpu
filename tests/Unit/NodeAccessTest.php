@@ -50,6 +50,13 @@ it('shows a node whose device was deleted, but never lets it be managed', functi
 		->and(access()->canSee(access_node(2, 20)))->toBeFalse();
 });
 
+it('lets a node be deleted on a device the user may see, or whose device was deleted', function () {
+	expect(access()->canRemove(access_node(1, 10)))->toBeTrue()
+		->and(access()->canRemove(access_node(3, 20, false)))->toBeTrue()
+		->and(access()->canRemove(access_node(2, 20)))->toBeFalse()
+		->and(access()->canRemove(null))->toBeFalse();
+});
+
 it('requires both nodes of a GPU move', function () {
 	$nodes = [1 => access_node(1, 10), 2 => access_node(2, 20), 4 => access_node(4, 10)];
 

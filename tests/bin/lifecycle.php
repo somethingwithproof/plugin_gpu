@@ -52,6 +52,11 @@ switch ($action) {
 		}
 
 		db_execute("DELETE FROM settings WHERE name LIKE 'gpu\\_%'");
+
+		// What the template removal tests add outside the plugin.
+		db_execute("DELETE FROM host_template_graph WHERE host_template_id IN (SELECT id FROM host_template WHERE name = 'gpu-lifecycle-other')");
+		db_execute("DELETE FROM host_template WHERE name = 'gpu-lifecycle-other'");
+		db_execute("DELETE FROM host WHERE description = 'gpu-lifecycle-device'");
 		db_execute("DELETE FROM plugin_db_changes WHERE plugin = 'gpu'");
 
 		break;
@@ -112,11 +117,40 @@ switch ($action) {
 		db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = 'gpu' AND `table` = ?", array($argument));
 
 		break;
+	case 'drop_columns':
+		// As a version 2 schema had it: the observation table without the
+		// columns migration 3 adds, and one stored sample.
+		gpu_boot();
+
+		foreach (\Somethingwithproof\Gpu\Schema::OBSERVATION_METRICS_3 + array(99 => 'ecc_mode') as $column) {
+			db_execute('ALTER TABLE plugin_gpu_observation DROP COLUMN `' . $column . '`');
+		}
+
+		db_execute_prepared("INSERT INTO plugin_gpu_observation (gpu_id, node_id, observed_at, ingested_at, reported_at, backend, tool_version, temp_gpu) SELECT id, node_id, 1, 1, 1, 'nvidia-smi', '580.95.05', 40 FROM plugin_gpu_gpu LIMIT 1");
+
+		break;
 	case 'seed':
 		// A node and a GPU record, so table drops and keeps are visible.
 		db_execute("INSERT INTO plugin_gpu_node (host_id, admin_state) VALUES (9001, 'enabled')");
 		db_execute_prepared("INSERT INTO plugin_gpu_gpu (vendor, uuid, node_id, pci_bus_id) VALUES ('nvidia', 'GPU-00000000-0000-4000-8000-0000000000a1', ?, '00000000:3B:00.0')", array(db_fetch_insert_id()));
 
+		break;
+	case 'ecc_gap':
+		include_once($config['base_path'] . '/plugins/gpu/setup.php');
+		gpu_boot();
+		$report = \Somethingwithproof\Gpu\GpuReport::create(\Somethingwithproof\Gpu\Vendor::Nvidia, 'GPU-00000000-0000-4000-8000-0000000000a1', 0, '00000000:3B:00.0', 'Test GPU', '580.95.05');
+		$observations = new \Somethingwithproof\Gpu\ObservationRepository(false);
+		$result = array();
+		// Consecutive success, a failed read, recovery, then a missing GPU
+		// in a successful read: neither gap may become a multi-poll delta.
+		foreach (array(array(1000, 10, 0), array(1060, 12, 1000), array(1180, 20, 0), array(1240, 23, 1180), array(1360, 30, 1300), array(1420, 32, 1360)) as $sample) {
+			$reading = new \Somethingwithproof\Gpu\Reading($report, $sample[0], array('ecc_uncorr' => (float) $sample[1]), null);
+			if (!$observations->store(99, 1, $reading, 'nvidia-smi', '580.95.05', $sample[0], $sample[2])) {
+				throw new RuntimeException('ECC observation write failed');
+			}
+			$row = db_fetch_row('SELECT ecc_uncorr_new FROM plugin_gpu_observation WHERE gpu_id = 99');
+			$result[] = $row['ecc_uncorr_new'] === null ? null : (float) $row['ecc_uncorr_new'];
+		}
 		break;
 	case 'identity_flow':
 		// The identity rules against MariaDB through the real repositories:
@@ -224,6 +258,21 @@ switch ($action) {
 		db_execute("REPLACE INTO settings (name, value) VALUES ('admin_user', '1')");
 
 		break;
+	case 'link_graph_template':
+		// Another device template uses one GPU graph template.
+		db_execute("INSERT INTO host_template (hash, name) VALUES ('', 'gpu-lifecycle-other')");
+		db_execute_prepared("INSERT INTO host_template_graph (host_template_id, graph_template_id) SELECT ?, id FROM graph_templates WHERE name = 'GPU - Temperature'", array(db_fetch_insert_id()));
+
+		break;
+	case 'use_device_template':
+		// A device of the GPU Node template.
+		db_execute("INSERT INTO host (description, hostname, host_template_id) SELECT 'gpu-lifecycle-device', 'gpu-lifecycle.invalid', id FROM host_template WHERE name = 'GPU Node'");
+
+		break;
+	case 'edit_data_query_file':
+		file_put_contents($config['base_path'] . '/resource/script_server/plugin_gpu.xml', "<!-- changed by an operator -->\n", FILE_APPEND);
+
+		break;
 	case 'state':
 		break;
 	default:
@@ -249,6 +298,7 @@ print json_encode(array(
 	'admin'   => (int) db_fetch_cell("SELECT COUNT(*) FROM user_auth_realm AS uar INNER JOIN plugin_realms AS pr ON pr.id + 100 = uar.realm_id WHERE pr.plugin = 'gpu' AND uar.user_id = 1"),
 	'tracked' => array_column(db_fetch_assoc("SELECT `table` FROM plugin_db_changes WHERE plugin = 'gpu' AND method = 'create' ORDER BY `table`"), 'table'),
 	'tables'  => $tables,
+	'observation_columns' => array_column(db_fetch_assoc("SELECT COLUMN_NAME AS c FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plugin_gpu_observation' ORDER BY ORDINAL_POSITION"), 'c'),
 	// The shipped Cacti objects, by kind, so a test sees duplicates.
 	'objects' => array(
 		'data_query'      => (int) db_fetch_cell("SELECT COUNT(*) FROM snmp_query WHERE name = 'GPU - Devices'"),
@@ -258,5 +308,11 @@ print json_encode(array(
 		'device_template' => (int) db_fetch_cell("SELECT COUNT(*) FROM host_template WHERE name = 'GPU Node'"),
 		'dq_graphs'       => (int) db_fetch_cell("SELECT COUNT(*) FROM snmp_query_graph AS g INNER JOIN snmp_query AS q ON q.id = g.snmp_query_id WHERE q.name = 'GPU - Devices'"),
 		'dq_file'         => is_file($config['base_path'] . '/resource/script_server/plugin_gpu.xml'),
+	),
+	// What a template removal must never touch.
+	'cacti' => array(
+		'devices'      => (int) db_fetch_cell('SELECT COUNT(*) FROM host'),
+		'data_sources' => (int) db_fetch_cell('SELECT COUNT(*) FROM data_local'),
+		'graphs'       => (int) db_fetch_cell('SELECT COUNT(*) FROM graph_local'),
 	),
 ), JSON_PRETTY_PRINT) . PHP_EOL;

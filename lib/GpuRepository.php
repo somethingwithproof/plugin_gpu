@@ -58,6 +58,32 @@ final class GpuRepository {
 	}
 
 	/**
+	 * Insert a new GPU record. The unique key on vendor and UUID refuses a
+	 * second record for a GPU already stored, which only a record written
+	 * between this run's read and its write can cause; that refusal is
+	 * reported as such, and the next collection reconciles from what is
+	 * stored. Any other failure is an error.
+	 */
+	private function insert(GpuRecord $record): bool {
+		$row = $record->toRow();
+
+		if (db_execute_prepared('INSERT INTO plugin_gpu_gpu (' . implode(', ', array_keys($row)) . ') VALUES (' . implode(', ', array_fill(0, count($row), '?')) . ')', array_values($row), false, $this->connection)) {
+			return true;
+		}
+
+		$existing = db_fetch_row_prepared('SELECT id FROM plugin_gpu_gpu WHERE vendor = ? AND uuid = ?', [$row['vendor'], $row['uuid']], false, $this->connection);
+		$stored   = is_array($existing) ? Row::int($existing, 'id') : 0;
+
+		if ($stored > 0) {
+			Log::warning(sprintf('Node %d: a new GPU record was not stored because GPU record %d already has its UUID; the next collection reconciles them', $record->nodeId, (int) $stored));
+		} else {
+			Log::error(sprintf('Node %d: a new GPU record could not be stored', $record->nodeId));
+		}
+
+		return false;
+	}
+
+	/**
 	 * @return list<GpuRecord>
 	 */
 	public function pendingMoves(): array {
@@ -79,8 +105,7 @@ final class GpuRepository {
 		$ok = true;
 
 		foreach ($changes->created as $record) {
-			$row = $record->toRow();
-			$ok  = db_execute_prepared('INSERT INTO plugin_gpu_gpu (' . implode(', ', array_keys($row)) . ') VALUES (' . implode(', ', array_fill(0, count($row), '?')) . ')', array_values($row), true, $this->connection) && $ok;
+			$ok = $this->insert($record) && $ok;
 		}
 
 		foreach ($changes->updated as $record) {
