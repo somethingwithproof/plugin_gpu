@@ -212,8 +212,11 @@ it('documents the exact extend lines it parses, within extend\'s command limit',
 	$doc = (string) file_get_contents(dirname(__DIR__, 2) . '/docs/node-setup.md');
 
 	preg_match('/<!-- extend-lines:start -->\n```\n(.*)\n```\n<!-- extend-lines:end -->/s', $doc, $match);
+	preg_match('/<!-- extend-legacy:start -->\n```\n(.*)\n```\n<!-- extend-legacy:end -->/s', $doc, $legacy);
 
 	expect($match[1] ?? '')->toBe(implode("\n", SnmpdConfig::extendLines()))
+		->and($legacy[1] ?? '')->toBe(implode("\n", SnmpdConfig::legacyLines()))
+		->and(strpos($doc, '<!-- extend-lines:start -->'))->toBeLessThan(strpos($doc, '<!-- extend-legacy:start -->'))
 		->and(SnmpdConfig::TIMEOUT + SnmpdConfig::KILL_AFTER)->toBeLessThan(SnmpdConfig::METRICS_CACHE);
 
 	foreach (SnmpdConfig::commands() as $name => $command) {

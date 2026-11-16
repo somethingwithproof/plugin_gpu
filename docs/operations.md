@@ -68,7 +68,7 @@ Schema versions, recorded in the `gpu_schema_version` setting:
 2. Clear *Keep Plugin Tables on Uninstall* only if the records should be dropped.
 3. Check *Remove the plugin's Cacti objects on uninstall* only if the plugin's templates and data query XML should go too.
 4. Uninstall **GPU** in **Configuration > Plugins**.
-5. Remove the plugin's `extend` lines (`cacti_gpu`, `cacti_gpu_legacy`, `cacti_gpu_names`) from each node's `snmpd.conf` and restart snmpd.
+5. Remove the plugin's `extend` lines (`cacti_gpu`, `cacti_gpu_names`, and `cacti_gpu_legacy` if you added it) from each node's `snmpd.conf` and restart snmpd.
 
 Uninstall never deletes RRD files, devices, graphs, or data sources, whatever the settings.
 
@@ -105,11 +105,12 @@ Start at **Management > GPU Health**. It reads stored records only, so opening i
 | Tool error: SNMP agent unreachable | Agent down, wrong address or port, a firewall, or wrong SNMPv3 credentials | Check the device's SNMP settings; Cacti's own device page tests them |
 | Tool error: Extend entry missing | The `extend` lines are not in `snmpd.conf`, or have other names | Add them as [node-setup.md](node-setup.md) shows |
 | Timed out | `nvidia-smi` ran longer than `timeout(1)` allows (10 seconds) | Check the driver on the node; persistence mode shortens driver load |
-| Permission denied | The tool refused the account snmpd runs as | See [research/privileges.md](research/privileges.md) |
+| Permission denied | The tool refused the account snmpd runs as, or, on a node with more than the supported 128 GPUs, snmpd's own status for output above its 100 KiB limit | See [research/privileges.md](research/privileges.md); check the node's GPU count |
+| Tool error: The GPU metrics command exited with status 2 | An `nvidia-smi` older than the clock event reasons rename refuses `clocks_event_reasons.active` | Add the optional `cacti_gpu_legacy` line from [node-setup.md](node-setup.md#optional-an-nvidia-smi-older-than-the-clock-event-reasons-rename) |
 | Tool error: Driver not loaded | The NVIDIA driver is not loaded or does not match the library | Fix the driver on the node |
 | Tool error: Tool not found | `/usr/bin/nvidia-smi` is missing | Install the driver utilities, or fix the path in the `extend` line |
 | Tool error: Output rejected | A line has the wrong number of fields, usually an old `extend` line after an upgrade, or an error message mixed into the output | Copy the current line from [node-setup.md](node-setup.md) |
-| Tool error: Output truncated | More output than snmpd keeps (100 KiB or 1024 lines) | Not expected below several hundred GPUs per node; report it |
+| Tool error: Output truncated | More output than snmpd keeps (100 KiB or 1024 lines) | Not expected at or below the supported 128 GPUs per node ([node-setup.md](node-setup.md)); report it |
 | Tool error: Result not stored | The database refused the write | Check the database and Cacti's log |
 | Tool error: Output rejected: The sample time is N seconds ahead of the Cacti server's clock | The node's clock is ahead of Cacti's | Fix time synchronization on the node or the Cacti server; the next collection stores a sample again |
 | ...; N later runs skipped while another run held the node | A run was still collecting the node when the next started | Usually a slow node or agent; see [performance.md](performance.md) |
@@ -118,5 +119,6 @@ Other symptoms:
 
 - **Freshness Delayed or Stale while the last collection completed**: the collector is not running every cycle. Check that Cacti's poller runs and that its log shows no GPU errors.
 - **A node on Cacti 1.2.x with an SNMP port other than 161 is Down in Cacti**: see [node-setup.md](node-setup.md#an-snmp-port-other-than-161-on-cacti-12x).
+- **Graphs stop or show gaps while GPU Health shows the collection completed**: Cacti could not write the RRD files, for example a full disk or wrong ownership of `rra/`. Cacti writes the RRD files itself, after the plugin has stored the sample, so in phase 1 GPU Health does not show this error; only Cacti's log does, as an `RRD` or `ERROR` line from the poller. Fix the disk or the permissions; the next poll writes again.
 - **No graphs for a new GPU**: the plugin reindexes only while Cacti has the device Up; it retries once the device is Up again.
 - **An RRD file renamed with `.gpu-orphan-` in its name**: a new GPU's data source found an RRD file already at its path, usually after a database restore older than the RRD directory. The file was set aside so the new GPU starts its own history ([backup.md](backup.md)).

@@ -36,7 +36,10 @@
 
 $doc = (string) file_get_contents(dirname(__DIR__, 2) . '/docs/node-setup.md');
 
-if (preg_match('/<!-- extend-lines:start -->\n```\n(.*)\n```\n<!-- extend-lines:end -->/s', $doc, $match) !== 1) {
+// The test agent has the optional legacy entry too, so the end-to-end test
+// can play an nvidia-smi older than the clocks_event_reasons rename.
+if (preg_match('/<!-- extend-lines:start -->\n```\n(.*)\n```\n<!-- extend-lines:end -->/s', $doc, $match) !== 1
+	|| preg_match('/<!-- extend-legacy:start -->\n```\n(.*)\n```\n<!-- extend-legacy:end -->/s', $doc, $legacy) !== 1) {
 	fwrite(STDERR, "docs/node-setup.md has no extend lines block\n");
 	exit(1);
 }
@@ -56,4 +59,5 @@ print 'agentaddress ' . ($argv[2] ?? 'udp:161') . "\n"
 	. "view   cactigpu included .1.3.6.1.2.1.11\n"
 	. "rouser -s usm cactigpu priv -V cactigpu\n"
 	. "createUser cactigpu SHA-256 {$secrets[0]} AES {$secrets[1]}\n"
-	. $match[1] . "\n";
+	. $match[1] . "\n"
+	. $legacy[1] . "\n";

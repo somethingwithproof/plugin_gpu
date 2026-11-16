@@ -56,14 +56,25 @@ final class SnmpdConfig {
 	public const MAX_COMMAND = 510;
 
 	/**
+	 * The entries every node needs.
+	 *
 	 * @return list<string>
 	 */
 	public static function extendLines(): array {
 		return [
 			self::line(self::METRICS, self::METRICS_CACHE, ['TZ=UTC'], MetricModel::nvidiaFields(), 'csv,noheader,nounits'),
-			self::line(self::METRICS_LEGACY, self::METRICS_CACHE, ['TZ=UTC'], MetricModel::nvidiaFields(true), 'csv,noheader,nounits'),
 			self::line(self::NAMES, self::NAMES_CACHE, [], MetricModel::namesFields(), 'csv,noheader'),
 		];
+	}
+
+	/**
+	 * The optional entry for an nvidia-smi older than the clocks_event_reasons
+	 * rename, which refuses the metrics entry's field name (REQ-NVSMI-005).
+	 *
+	 * @return list<string>
+	 */
+	public static function legacyLines(): array {
+		return [self::line(self::METRICS_LEGACY, self::METRICS_CACHE, ['TZ=UTC'], MetricModel::nvidiaFields(true), 'csv,noheader,nounits')];
 	}
 
 	/**
@@ -74,7 +85,7 @@ final class SnmpdConfig {
 	public static function commands(): array {
 		$out = [];
 
-		foreach (self::extendLines() as $line) {
+		foreach ([...self::extendLines(), ...self::legacyLines()] as $line) {
 			$parts = explode(' ', $line, 5);
 
 			$out[$parts[3]] = $parts[4];

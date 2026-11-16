@@ -14,7 +14,8 @@ Phase 1 (NVIDIA through SNMP extend), first version 0.1.0. Not yet run on GPU ha
 - Collection of `nvidia-smi` through two fixed SNMP `extend` lines on each node ([docs/node-setup.md](docs/node-setup.md)), with strict parsing that turns any bad output into unknown values.
 - The *GPU - Devices* data query, the *GPU - Metrics* data template, and ten graphs per GPU: Utilization, Memory, Temperature, Power, Clocks, Throttle, ECC Errors, New ECC Errors, Retired Pages, and Sample Age.
 - Decoded clock event reasons as alertable 0 or 1 indicators, with the raw mask kept and shown on GPU Health.
-- The clock event reasons are read as `clocks_event_reasons.active`, falling back to `clocks_throttle_reasons.active` through a third extend entry, `cacti_gpu_legacy`, when nvidia-smi refuses the new name (#36).
+- The clock event reasons are read as `clocks_event_reasons.active`, falling back to `clocks_throttle_reasons.active` through an optional third extend entry, `cacti_gpu_legacy`, when nvidia-smi refuses the new name (#36).
+- At most 128 GPUs per node are supported, which keeps the metrics output well under snmpd's 100 KiB limit.
 - New corrected and uncorrected ECC errors since the previous sample, computed by the plugin as gauges; retired single-bit and double-bit page counts; the ECC mode, shown on GPU Health when ECC values are unknown.
 - Thold threshold templates for temperature, power against its limit, the hardware and thermal throttle indicators, new uncorrected ECC errors, pending page retirement, and sample age ([docs/alerting.md](docs/alerting.md)).
 - The GPU Health page: freshness, last collection outcome, Maint state, backend, tool and driver versions, GPU presence, ECC state, and the raw clock event mask. It never contacts a node.
@@ -26,7 +27,7 @@ Phase 1 (NVIDIA through SNMP extend), first version 0.1.0. Not yet run on GPU ha
 
 - Schema version 3 adds the observation columns `ecc_corr_new`, `ecc_uncorr_new`, `retired_sbe`, `retired_dbe`, and `ecc_mode`. The upgrade runs when the Plugins page or a GPU page is opened.
 - The metrics `extend` line now also asks for `ecc.mode.current`, `retired_pages.sbe`, and `retired_pages.dbe`. Update it on every node from [docs/node-setup.md](docs/node-setup.md); until then the node's collection fails with *Output rejected*.
-- Add the `cacti_gpu_legacy` extend line from the same page. A metrics line that still asks for `clocks_throttle_reasons.active` keeps working, because both names sit in the same position.
+- Only on a node whose `nvidia-smi` is older than the clock event reasons rename, add the optional `cacti_gpu_legacy` extend line from the same page. A metrics line that still asks for `clocks_throttle_reasons.active` keeps working, because both names sit in the same position.
 - Re-import `templates/gpu_thold_templates.xml` in Thold to pick up template changes.
 
 ### Not yet supported
