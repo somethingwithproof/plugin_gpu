@@ -78,6 +78,7 @@ final class MetricModel {
 			new Metric('temp_gpu', 'GPU temperature', 'degrees C', $gauge, null, null, 'temperature.gpu', 1.0, null, '150', 1.0, '`metric --temperature` `edge` (#18)'),
 			new Metric('power', 'Board power draw', 'watts', $gauge, 0.0, null, 'power.draw', 1.0, null, '155', 1.0, '`metric --power` `socket_power`'),
 			new Metric('power_limit', 'Board power limit', 'watts', $gauge, 0.0, null, 'power.limit', 1.0, null, '160', 1.0, '#18'),
+			new Metric('power_pct', 'Board power as a percentage of its limit', 'percent', $gauge, 0.0, null, null, 1.0, null, 'computed from `power` and `power_limit` in the current sample', 1.0, 'computed from `power` and `power_limit` in the current sample'),
 			new Metric('clock_sm', 'SM clock', 'MHz', $gauge, 0.0, null, 'clocks.sm', 1.0, null, '1603 (hertz, divided by 1,000,000), or 100 (unit not stated)', 1.0e-6, '`metric --clock` (#18)'),
 			new Metric('clock_mem', 'Memory clock', 'MHz', $gauge, 0.0, null, 'clocks.mem', 1.0, null, '1604 (hertz, divided by 1,000,000), or 101 (unit not stated)', 1.0e-6, '`metric --clock` (#18)'),
 			new Metric('ecc_corr', 'Corrected ECC errors since driver load', 'count', $gauge, 0.0, null, 'ecc.errors.corrected.volatile.total', 1.0, null, '310', 1.0, '`metric --ecc` `total_correctable_count`'),
@@ -162,6 +163,7 @@ final class MetricModel {
 				$metric->nvidiaField !== null => sprintf('`%s`', $metric->nvidiaField),
 				$metric->maskBit !== null => sprintf('`%s`, bit 0x%X', self::MASK_FIELD, $metric->maskBit),
 				isset(self::DELTAS[$metric->name]) => sprintf('computed from consecutive `%s` samples', self::DELTAS[$metric->name]),
+				$metric->name === 'power_pct' => 'computed from current `power` and `power_limit` samples',
 				default => 'computed from `timestamp`',
 			};
 

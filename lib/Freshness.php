@@ -77,6 +77,13 @@ final class Freshness {
 			return null;
 		}
 
+		if ($field === 'power_pct') {
+			$power = Row::float($row, 'power');
+			$limit = Row::float($row, 'power_limit');
+
+			return $power === null || $limit === null || $limit <= 0.0 ? null : $power / $limit * 100.0;
+		}
+
 		return in_array($field, Schema::observationMetrics(), true) ? Row::float($row, $field) : null;
 	}
 

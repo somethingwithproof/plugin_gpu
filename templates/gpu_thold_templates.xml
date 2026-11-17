@@ -23,16 +23,16 @@
 	<name>GPU - Power Above Limit</name>
 	<data_template_id>7f7ae72a8e79a16815acaea47b35ab66</data_template_id>
 	<data_template_name>GPU - Metrics</data_template_name>
-	<data_source_id>8cbec3da5106f36e5d6c2394eb3ec1a2</data_source_id>
-	<data_source_name>power</data_source_name>
-	<data_source_friendly>Board power draw</data_source_friendly>
+	<data_source_id>4e1ad5afa663c9cadbc98f31b5595627</data_source_id>
+	<data_source_name>power_pct</data_source_name>
+	<data_source_friendly>Board power as a percentage of its limit</data_source_friendly>
 	<thold_enabled>on</thold_enabled>
 	<thold_type>0</thold_type>
 	<thold_hi>100</thold_hi>
 	<thold_low></thold_low>
 	<thold_fail_trigger>2</thold_fail_trigger>
-	<data_type>2</data_type>
-	<percent_ds>power_limit</percent_ds>
+	<data_type>0</data_type>
+	<percent_ds></percent_ds>
 	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>

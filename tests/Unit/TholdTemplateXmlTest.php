@@ -57,7 +57,7 @@ it('thresholds only drawn gauges, never a counter, Idle, or the volatile ECC tot
 		}
 	}
 
-	foreach (TholdTemplateXml::templates() as $name => [$item, $high, $trigger, $percentOf]) {
+	foreach (TholdTemplateXml::templates() as $name => [$item, $high, $trigger]) {
 		$metric = MetricModel::find($item);
 
 		expect($metric)->not->toBeNull()
@@ -66,9 +66,6 @@ it('thresholds only drawn gauges, never a counter, Idle, or the volatile ECC tot
 			->and(is_numeric($high))->toBeTrue()
 			->and($trigger)->toBeGreaterThanOrEqual(1);
 
-		if ($percentOf !== '') {
-			expect($drawn)->toContain($percentOf);
-		}
 	}
 
 	$items = array_column(TholdTemplateXml::templates(), 0);
@@ -81,7 +78,7 @@ it('thresholds only drawn gauges, never a counter, Idle, or the volatile ECC tot
 		->and($items)->toContain('thr_hw_thermal');
 });
 
-it('uses Thold percent data type for power against the current limit data source', function () {
+it('uses an exact Thold threshold on the derived power percentage', function () {
 	$xml      = simplexml_load_string(TholdTemplateXml::xml());
 	$power    = null;
 
@@ -93,8 +90,9 @@ it('uses Thold percent data type for power against the current limit data source
 	}
 
 	expect($power)->not->toBeNull()
-		->and((string) $power->data_type)->toBe('2')
-		->and((string) $power->percent_ds)->toBe('power_limit')
+		->and((string) $power->data_source_name)->toBe('power_pct')
+		->and((string) $power->data_type)->toBe('0')
+		->and((string) $power->percent_ds)->toBe('')
 		->and((string) $power->expression)->toBe('');
 });
 

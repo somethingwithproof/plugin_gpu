@@ -254,7 +254,7 @@ e2e_check($alert_count === 8 * count(TholdTemplateXml::templates()), "setup: Tho
 
 foreach (TholdTemplateXml::templates() as $alert_name => $spec) {
 	$t = alert_thold($spec[0]);
-	$data_type = $spec[3] === '' ? 0 : 2;
+	$data_type = 0;
 
 	e2e_check(($t['thold_hi'] ?? '') === $spec[1] && ($t['thold_enabled'] ?? '') === 'on' && (int) ($t['data_type'] ?? -1) === $data_type && ($t['percent_ds'] ?? '') === $spec[3] && ($t['expression'] ?? '') === '', "setup: '$alert_name' is on GPU 0 above " . $spec[1]);
 }
@@ -273,28 +273,28 @@ e2e_check((int) db_fetch_cell_prepared('SELECT status FROM host WHERE id = ?', a
 $logged = alert_round('baseline', array());
 alert_expect('baseline', $logged, $quiet);
 e2e_check(is_numeric(alert_thold('temp_gpu')['lastread'] ?? '') && is_numeric(alert_thold('age')['lastread'] ?? '') && (alert_thold('ecc_uncorr_new')['lastread'] ?? '') === '0', 'baseline: Thold read temperature, age, and zero new ECC errors');
-$power = alert_thold('power')['lastread'] ?? '';
-e2e_check(is_numeric($power) && abs((float) $power - (100.5 / 700 * 100)) < 0.01, 'baseline: Thold evaluated the power threshold to the fixture percentage');
+$power = alert_thold('power_pct')['lastread'] ?? '';
+e2e_check(is_numeric($power) && abs((float) $power - (100.5 / 700 * 100)) < 0.01, 'baseline: Thold read the derived power percentage');
 
 /* The current power sample and limit determine the percentage. */
 
 $logged = alert_round('power unknown with a valid limit', array('power.draw' => 'N/A'));
-alert_expect('power unknown with a valid limit', $logged, array('power' => array(false, array())) + $quiet);
-e2e_check(!is_numeric(alert_thold('power')['lastread'] ?? ''), 'power unknown with a valid limit: the expression preserves the current power sample as unknown');
+alert_expect('power unknown with a valid limit', $logged, array('power_pct' => array(false, array())) + $quiet);
+e2e_check(!is_numeric(alert_thold('power_pct')['lastread'] ?? ''), 'power unknown with a valid limit: the derived value is unknown');
 
 $logged = alert_round('zero power limit', array('power.limit' => '0.00'));
-alert_expect('zero power limit', $logged, array('power' => array(false, array())) + $quiet);
-e2e_check((float) (alert_thold('power')['lastread'] ?? -1) === 0.0, 'zero power limit: Thold avoids division by zero and does not breach');
+alert_expect('zero power limit', $logged, array('power_pct' => array(false, array())) + $quiet);
+e2e_check(!is_numeric(alert_thold('power_pct')['lastread'] ?? ''), 'zero power limit: the derived value is unknown and does not breach');
 
 $logged = alert_round('power exceeds changed limit', array('power.draw' => '250.00', 'power.limit' => '200.00'));
-alert_expect('power exceeds changed limit', $logged, array('power' => array(true, array())) + $quiet);
-e2e_check(abs((float) (alert_thold('power')['lastread'] ?? 0) - 125) < 0.01, 'power exceeds changed limit: Thold used the current 200 W limit rather than the previous poll');
+alert_expect('power exceeds changed limit', $logged, array('power_pct' => array(true, array())) + $quiet);
+e2e_check(abs((float) (alert_thold('power_pct')['lastread'] ?? 0) - 125) < 0.01, 'power exceeds changed limit: Thold used the current 200 W limit rather than the previous poll');
 
 $logged = alert_round('power exceed persists', array('power.draw' => '250.00', 'power.limit' => '200.00'));
-alert_expect('power exceed persists', $logged, array('power' => array(true, array(ALERT_NOTIFY))) + $quiet);
+alert_expect('power exceed persists', $logged, array('power_pct' => array(true, array(ALERT_NOTIFY))) + $quiet);
 
 $logged = alert_round('power returns below limit', array('power.draw' => '100.50', 'power.limit' => '700.00'));
-alert_expect('power returns below limit', $logged, array('power' => array(false, array(ALERT_RESTORE))) + $quiet);
+alert_expect('power returns below limit', $logged, array('power_pct' => array(false, array(ALERT_RESTORE))) + $quiet);
 
 /* A fault: hot, throttled by hardware, new uncorrected errors, a page pending. */
 

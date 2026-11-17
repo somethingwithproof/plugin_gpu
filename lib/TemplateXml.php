@@ -106,6 +106,9 @@ final class TemplateXml {
 				['power', self::AREA, 'F2B705', 'Draw'],
 				['power_limit', self::LINE1, 'B00020', 'Limit'],
 			]],
+			'GPU - Power Percent' => ['label' => 'percent of limit', 'base' => 1000, 'upper' => '0', 'items' => [
+				['power_pct', self::LINE2, 'F2B705', 'Draw'],
+			]],
 			'GPU - Clocks' => ['label' => 'MHz', 'base' => 1000, 'upper' => '0', 'items' => [
 				['clock_sm', self::LINE2, '76B900', 'SM'],
 				['clock_mem', self::LINE1, '7A3E9D', 'Memory'],

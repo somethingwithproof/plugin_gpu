@@ -42,15 +42,12 @@ namespace Somethingwithproof\Gpu;
 final class TholdTemplateXml {
 	public const FILE = 'gpu_thold_templates.xml';
 
-	// Thold's data_type 0 is an exact value and 2 is a percentage of another
-	// data source from the current poll.
+	// Thold's data_type 0 compares the stored gauge value directly.
 	private const HIGH_LOW   = 0;
 	private const EXACT      = 0;
-	private const PERCENT    = 2;
 
 	/**
-	 * name => [data source item, high threshold, fail trigger in polls,
-	 * percentage of this item, or ''].
+	 * name => [data source item, high threshold, fail trigger in polls, ''].
 	 *
 	 * A fail trigger counts Cacti polls; the collector reads each node once
 	 * per poller cycle, so one poll is one collection interval
@@ -61,7 +58,7 @@ final class TholdTemplateXml {
 	public static function templates(): array {
 		return [
 			'GPU - Temperature High'           => ['temp_gpu', '85', 2, ''],
-			'GPU - Power Above Limit'          => ['power', '100', 2, 'power_limit'],
+			'GPU - Power Above Limit'          => ['power_pct', '100', 2, ''],
 			'GPU - Software Thermal Slowdown'  => ['thr_sw_thermal', '0.5', 1, ''],
 			'GPU - Hardware Thermal Slowdown'  => ['thr_hw_thermal', '0.5', 1, ''],
 			'GPU - Hardware Power Brake'       => ['thr_hw_power_brake', '0.5', 1, ''],
@@ -88,7 +85,7 @@ final class TholdTemplateXml {
 		$out      = "<templates>\n";
 		$sequence = 1;
 
-		foreach (self::templates() as $name => [$item, $high, $trigger, $percentOf]) {
+		foreach (self::templates() as $name => [$item, $high, $trigger]) {
 			$metric = MetricModel::find($item);
 
 			if ($metric === null) {
@@ -108,8 +105,8 @@ final class TholdTemplateXml {
 				'thold_hi'             => $high,
 				'thold_low'            => '',
 				'thold_fail_trigger'   => (string) $trigger,
-				'data_type'            => (string) ($percentOf === '' ? self::EXACT : self::PERCENT),
-				'percent_ds'           => $percentOf,
+				'data_type'            => (string) self::EXACT,
+				'percent_ds'           => '',
 				'expression'           => '',
 				'repeat_alert'         => '0',
 				'restored_alert'       => '',
