@@ -1,4 +1,4 @@
-<!-- Source: docs/operations.md; SHA256: b68dea054747892f72251ecd7e6a2aa6b57e82a56e8c7a1d8eba3f7c4468f15e -->
+<!-- Source: docs/operations.md; SHA256: 20a2068972e3b2402d8914653651a799ff7cec3b23723e33dfc57fb305f036d4 -->
 
 <a id="operator-guide"></a>
 # Guía del operador
@@ -41,7 +41,7 @@ El plugin no guarda credenciales propias. Los ajustes SNMP del nodo permanecen e
 1. Copie el repositorio a `plugins/gpu` bajo el directorio de Cacti. El directorio debe llamarse `gpu`.
 2. Permita al usuario del servidor web escribir en `<cacti>/resource/script_server/` durante la instalación.
 3. En **Configuración > Plugins**, instale y active **GPU**. Con PHP anterior a 8.2 se rechaza la instalación con un mensaje y el resto de Cacti sigue funcionando.
-4. Asigne los ámbitos en **Configuración > Usuarios**. *GPU View* abre **Inventario GPU** y **Estado de GPU**; *GPU Admin* abre **Nodos GPU**. El usuario que instala recibe ambos. Todas las páginas muestran solo nodos de dispositivos que el usuario puede ver en Cacti.
+4. Asigne los ámbitos en **Configuración > Usuarios**. *GPU View* abre **Inventario GPU** y **Estado de GPU**; *GPU Operator* añade **Operaciones GPU** y confirmaciones personales; *GPU Admin* abre **Nodos GPU** y hereda el acceso de Operator. El usuario que instala recibe View y Admin. Los operadores heredan el acceso de View. Todas las páginas muestran solo nodos de dispositivos que el usuario puede ver en Cacti.
 5. Configure el agente de cada nodo ([node-setup.md](node-setup.md)) y añádalo en **Administración > Nodos GPU**.
 6. Para las alertas, importe las plantillas de Thold ([alerting.md](alerting.md)).
 

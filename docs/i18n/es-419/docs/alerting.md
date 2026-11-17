@@ -1,4 +1,4 @@
-<!-- Source: docs/alerting.md; SHA256: a4efb73e2a0fe3cd52f61484aaafc468e8dbf216094686e7951c1ab6a4e051c6 -->
+<!-- Source: docs/alerting.md; SHA256: b677b227964a6c7b0e999eb33c07ccac9e4f1b6c72ba49e3f7c84617f21b5464 -->
 
 <a id="alerting-with-thold-and-maint"></a>
 # Alertas con Thold y Maint
@@ -24,7 +24,7 @@ Thold crea un umbral por plantilla para la fuente de datos de cada GPU. Las list
 | Plantilla | Elemento | Se supera cuando | Tras |
 |---|---|---|---|
 | GPU - Temperature High | `temp_gpu` | supera 85 °C | 2 sondeos |
-| GPU - Power Above Limit | `power` | supera el 100 por ciento de `power_limit` | 2 sondeos |
+| GPU - Power Above Limit | `power_pct` | supera el 100 por ciento del límite de potencia actual | 2 sondeos |
 | GPU - Software Thermal Slowdown | `thr_sw_thermal` | 1 | 1 sondeo |
 | GPU - Hardware Thermal Slowdown | `thr_hw_thermal` | 1 | 1 sondeo |
 | GPU - Hardware Power Brake | `thr_hw_power_brake` | 1 | 1 sondeo |
@@ -53,7 +53,7 @@ La lista de plantillas se genera desde `lib/TholdTemplateXml.php`; una prueba un
 <a id="what-the-end-to-end-test-proves"></a>
 ## Qué demuestra la prueba de extremo a extremo
 
-`tests/bin/alert-flow.php` importa las plantillas incluidas con el importador de Thold, las vincula a GPU Node y deja que Thold cree los umbrales cuando el plugin crea los gráficos. Después cambia la salida del `nvidia-smi` simulado tras un `snmpd` real, recoge por SNMPv3, ejecuta el sondeador de Cacti y la comprobación de Thold, y lee su registro:
+`tests/bin/alert-flow.php` importa las plantillas incluidas con el importador de Thold, las vincula a GPU Node y deja que Thold cree los umbrales cuando el plugin crea los gráficos. La fuente de datos `power_pct` se calcula con los valores `power` y `power_limit` de la muestra actual, sin redondear a un entero. Las lecturas ausentes y los límites no positivos producen un valor desconocido, que no supera el umbral. Después la prueba cambia la salida del `nvidia-smi` simulado tras un `snmpd` real, recoge por SNMPv3, ejecuta el sondeador de Cacti y la comprobación de Thold, y lee su registro:
 
 - una GPU caliente, limitada por hardware, con errores nuevos no corregidos y retirada de páginas pendiente activa cada umbral; la temperatura solo en el segundo sondeo, y cada uno se restablece cuando el valor vuelve a la normalidad;
 - una recarga del controlador reduce el total ECC a 0: el valor de errores nuevos devuelve `U`, no se supera ningún umbral y Thold sigue activo; dos errores nuevos tras el reinicio del contador vuelven a activar el umbral, que después se restablece;

@@ -36,7 +36,7 @@ The plugin stores no credential of its own. A node's SNMP settings stay on its C
 1. Copy the repository to `plugins/gpu` under the Cacti directory. The directory must be named `gpu`.
 2. Make `<cacti>/resource/script_server/` writable by the web server user for the install.
 3. In **Configuration > Plugins**, install and enable **GPU**. On PHP below 8.2 the install is refused with a message, and the rest of Cacti keeps working.
-4. Give users the realms under **Configuration > Users**. *GPU View* opens **GPU Inventory** and **GPU Health**; *GPU Admin* opens **GPU Nodes**. The installing user gets both. Every page shows only nodes on devices the user may see in Cacti.
+4. Give users the realms under **Configuration > Users**. *GPU View* opens **GPU Inventory** and **GPU Health**; *GPU Operator* adds **GPU Operations** and personal acknowledgments; *GPU Admin* opens **GPU Nodes** and inherits Operator access. The installing user gets View and Admin. Operators inherit View access. Every page shows only nodes on devices the user may see in Cacti.
 5. Set up each node's agent ([node-setup.md](node-setup.md)) and add it under **Management > GPU Nodes**.
 6. For alerts, import the Thold templates ([alerting.md](alerting.md)).
 

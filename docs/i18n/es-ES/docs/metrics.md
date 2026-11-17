@@ -1,4 +1,4 @@
-<!-- Source: docs/metrics.md; SHA256: 1f8f5b9a81f526894e1d25d7e2f40feec798eda1a886a189f1dd8533bd6c48f1 -->
+<!-- Source: docs/metrics.md; SHA256: ac39be2b6a6821343643ce61fbcc42614f82f48864d5c0e365eafc929f4452d4 -->
 
 <a id="gpu-metric-model"></a>
 # Modelo de métricas de GPU
@@ -17,6 +17,7 @@ El hito 3 implementa la columna nvidia-smi. Las columnas DCGM y AMD registran la
 | `temp_gpu` | Temperatura de GPU | grados C | GAUGE | U a U | `temperature.gpu` | 150 | `metric --temperature` `edge` (#18) |
 | `power` | Consumo de potencia de la tarjeta | vatios | GAUGE | 0 a U | `power.draw` | 155 | `metric --power` `socket_power` |
 | `power_limit` | Límite de potencia de la tarjeta | vatios | GAUGE | 0 a U | `power.limit` | 160 | #18 |
+| `power_pct` | Potencia de la tarjeta como porcentaje de su límite | porcentaje | GAUGE | 0 a U | calculado con las muestras actuales de `power` y `power_limit` | calculado con `power` y `power_limit` de la muestra actual | calculado con `power` y `power_limit` de la muestra actual |
 | `clock_sm` | Reloj SM | MHz | GAUGE | 0 a U | `clocks.sm` | 1603 (hercios, dividido por 1.000.000), o 100 (unidad no indicada) | `metric --clock` (#18) |
 | `clock_mem` | Reloj de memoria | MHz | GAUGE | 0 a U | `clocks.mem` | 1604 (hercios, dividido por 1.000.000), o 101 (unidad no indicada) | `metric --clock` (#18) |
 | `ecc_corr` | Errores ECC corregidos desde la carga del controlador | recuento | GAUGE | 0 a U | `ecc.errors.corrected.volatile.total` | 310 | `metric --ecc` `total_correctable_count` |

@@ -1,4 +1,4 @@
-<!-- Source: docs/metrics.md; SHA256: 1f8f5b9a81f526894e1d25d7e2f40feec798eda1a886a189f1dd8533bd6c48f1 -->
+<!-- Source: docs/metrics.md; SHA256: ac39be2b6a6821343643ce61fbcc42614f82f48864d5c0e365eafc929f4452d4 -->
 
 <a id="gpu-metric-model"></a>
 # GPU मेट्रिक मॉडल
@@ -17,6 +17,7 @@
 | `temp_gpu` | GPU तापमान | डिग्री C | GAUGE | U से U | `temperature.gpu` | 150 | `metric --temperature` `edge` (#18) |
 | `power` | बोर्ड की बिजली खपत | वाट | GAUGE | 0 से U | `power.draw` | 155 | `metric --power` `socket_power` |
 | `power_limit` | बोर्ड की बिजली सीमा | वाट | GAUGE | 0 से U | `power.limit` | 160 | #18 |
+| `power_pct` | बोर्ड की बिजली का उसकी सीमा के सापेक्ष प्रतिशत | प्रतिशत | GAUGE | 0 से U | वर्तमान `power` और `power_limit` नमूनों से गणना | वर्तमान नमूने के `power` और `power_limit` से गणना | वर्तमान नमूने के `power` और `power_limit` से गणना |
 | `clock_sm` | SM क्लॉक | MHz | GAUGE | 0 से U | `clocks.sm` | 1603 (हर्ट्ज़, भाग 1,000,000), या 100 (इकाई नहीं बताई गई) | `metric --clock` (#18) |
 | `clock_mem` | मेमोरी क्लॉक | MHz | GAUGE | 0 से U | `clocks.mem` | 1604 (हर्ट्ज़, भाग 1,000,000), या 101 (इकाई नहीं बताई गई) | `metric --clock` (#18) |
 | `ecc_corr` | ड्राइवर लोड के बाद सुधारी गई ECC त्रुटियाँ | गिनती | GAUGE | 0 से U | `ecc.errors.corrected.volatile.total` | 310 | `metric --ecc` `total_correctable_count` |

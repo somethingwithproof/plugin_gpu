@@ -1,4 +1,4 @@
-<!-- Source: docs/metrics.md; SHA256: 1f8f5b9a81f526894e1d25d7e2f40feec798eda1a886a189f1dd8533bd6c48f1 -->
+<!-- Source: docs/metrics.md; SHA256: ac39be2b6a6821343643ce61fbcc42614f82f48864d5c0e365eafc929f4452d4 -->
 
 <a id="gpu-metric-model"></a>
 # GPU 指标模型
@@ -17,6 +17,7 @@
 | `temp_gpu` | GPU 温度 | 摄氏度 | GAUGE | U 至 U | `temperature.gpu` | 150 | `metric --temperature` `edge` (#18) |
 | `power` | 板卡功耗 | 瓦 | GAUGE | 0 至 U | `power.draw` | 155 | `metric --power` `socket_power` |
 | `power_limit` | 板卡功率上限 | 瓦 | GAUGE | 0 至 U | `power.limit` | 160 | #18 |
+| `power_pct` | 板卡功耗占其上限的百分比 | 百分比 | GAUGE | 0 至 U | 从当前 `power` 和 `power_limit` 样本计算 | 从当前样本的 `power` 和 `power_limit` 计算 | 从当前样本的 `power` 和 `power_limit` 计算 |
 | `clock_sm` | SM 时钟 | MHz | GAUGE | 0 至 U | `clocks.sm` | 1603 (赫兹，除以 1,000,000)，或 100 (未说明单位) | `metric --clock` (#18) |
 | `clock_mem` | 内存时钟 | MHz | GAUGE | 0 至 U | `clocks.mem` | 1604 (赫兹，除以 1,000,000)，或 101 (未说明单位) | `metric --clock` (#18) |
 | `ecc_corr` | 驱动加载以来已纠正 ECC 错误 | 计数 | GAUGE | 0 至 U | `ecc.errors.corrected.volatile.total` | 310 | `metric --ecc` `total_correctable_count` |

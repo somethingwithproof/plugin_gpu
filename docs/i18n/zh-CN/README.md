@@ -1,4 +1,4 @@
-<!-- Source: README.md; SHA256: 76e9694c4eeb178394e7c9cd1a48518013fd8906410ffcb5c7d747c6c7d5b3b1 -->
+<!-- Source: README.md; SHA256: 3d0784bdacf4a5d7f8805178ca712abe9c15ddcf419d4fa433ff8c3f1092c9cd -->
 
 <!-- translations:start -->
 [English](../../../README.md) | [简体中文](README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية](../ar-SA/README.md)
@@ -47,7 +47,7 @@ GPU 节点通常已在 Cacti 中监控 CPU、内存和接口。但 GPU 健康是
 ## 里程碑 4 新增内容
 
 - **降频原因作为告警值。** 时钟事件掩码解码为每个原因一个 0 或 1 指示项；未知掩码产生未知指示项，绝不是零。没有指示项的位保留在原始掩码中，由 GPU 健康显示。
-- **ECC 作为告警值**（[docs/metrics.md](docs/metrics.md)）。插件用两个连续总数计算自上一个样本以来新增的已纠正和未纠正错误，并存为 gauge：首个样本、漏读或重新加载驱动后为未知，因此重置不会读成零或负数。也读取单比特与双比特退役页面计数及 ECC 模式。每 GPU 多两个图表，共十个，使 Cacti 存储这些字段。不采集 XID：没有来源适合固定 `nvidia-smi` 命令（#8）。
+- **ECC 作为告警值**（[docs/metrics.md](docs/metrics.md)）。插件用两个连续总数计算自上一个样本以来新增的已纠正和未纠正错误，并存为 gauge：首个样本、漏读或重新加载驱动后为未知，因此重置不会读成零或负数。也读取单比特与双比特退役页面计数及 ECC 模式。每 GPU 增加两个 ECC 图表，使 Cacti 存储这些字段；加上功率百分比图表，共十一个。不采集 XID：没有来源适合固定 `nvidia-smi` 命令（#8）。
 - **Thold 和 Maint**（[docs/alerting.md](docs/alerting.md)）。随附温度、相对功率上限、降频指示项、新增未纠正 ECC 错误、待退役页面和样本年龄的 Thold 模板。所有值都是 gauge，因为 Thold 1.8.2 处理未知 counter 会失败。使用未经修改的 Thold 1.8.2 和 Maint 1.3 的端到端测试证明，每个阈值在 ECC 重置前后触发和恢复，并能由 Maint 抑制。
 - **GPU 健康**（GPU View）。每节点：新鲜度、最近采集结果、Maint 状态、后端/工具/驱动版本和 GPU 数量；每 GPU：在场状态、样本年龄、ECC 状态和原始掩码。只读取已存储记录。
 - **权限。** 权限测试覆盖每个页面文件和操作、下一请求生效的撤销，以及不泄露任何信息的拒绝。
@@ -61,7 +61,7 @@ GPU 节点通常已在 Cacti 中监控 CPU、内存和接口。但 GPU 健康是
 - **通过 SNMP extend 采集**（[ADR 0008](../../decisions/0008-collect-through-snmp-extend.md)）。节点管理员在 `snmpd.conf` 中添加两条固定 `extend` 行（[docs/node-setup.md](docs/node-setup.md)）；插件通过 Cacti SNMP 函数，用设备自己的凭据读取 NET-SNMP-EXTEND-MIB，推荐 SNMPv3。它不在 Cacti 服务器或节点上运行程序。
 - **严格解析。** 按位置读取字段，每行用 UUID 指定 GPU；非零退出状态、超时、截断输出、字段数错误或混入错误文本均使整个采集失败：值变为 `U`，不会将任何 GPU 标为缺席，GPU 节点页面显示原因。
 - **每个轮询器周期后的采集器。** 读取每个启用节点的代理，更新身份记录，缓存最新样本。脚本服务器输入只读取该缓存，因此 Cacti 轮询绝不等待 GPU 节点。
-- **Cacti 对象**（[ADR 0010](../../decisions/0010-attach-to-existing-node-devices.md)）。模板和 *GPU - Devices* 数据查询以 XML 随附，在安装和升级时导入。保存节点时将数据查询附到其现有设备，重新索引方法设为 None；仅当节点没有设备时，GPU 节点页面才能创建设备。每 GPU 是按厂商和 UUID 建键的索引，共用一个数据源供利用率、内存、温度、功率、时钟、降频、ECC 错误和样本年龄图表使用。每个模型字段均被某个图表绘制，因为 Cacti 只存储图表使用的字段。每次 GPU 变化后插件重新索引；设备 Down 或禁用时被 Cacti 跳过的重新索引会保留，在设备 Up 后执行，并为新 GPU 创建图表。
+- **Cacti 对象**（[ADR 0010](../../decisions/0010-attach-to-existing-node-devices.md)）。模板和 *GPU - Devices* 数据查询以 XML 随附，在安装和升级时导入。保存节点时将数据查询附到其现有设备，重新索引方法设为 None；仅当节点没有设备时，GPU 节点页面才能创建设备。每 GPU 是按厂商和 UUID 建键的索引，共用一个数据源供利用率、内存、温度、功率、功率百分比、时钟、降频、ECC 错误、新增 ECC 错误、退役页面和样本年龄图表使用。每个模型字段均被某个图表绘制，因为 Cacti 只存储图表使用的字段。每次 GPU 变化后插件重新索引；设备 Down 或禁用时被 Cacti 跳过的重新索引会保留，在设备 Up 后执行，并为新 GPU 创建图表。
 - **历史跟随卡。** 缺席 GPU 仍为索引，因此图表出现缺口，返回后在同一 RRD 文件中继续。同槽位的替换卡获得自己的数据源。节点页面上的 **从数据查询移除** 可将缺席 GPU 移出列表；其 RRD 文件和图表保留，直到您删除。
 - **GPU 节点的设备权限。** GPU Admin 只能查看、修改、导出和移动其在 Cacti 中有权查看设备上的节点及 GPU；GPU 移动需要两个节点的权限。设备已删除的节点只能禁用。
 - **通用指标模型**（[ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md)、[docs/metrics.md](docs/metrics.md)）。内存以字节表示，时钟事件掩码解码为 `thr_*` 指示项，`age` 是 GPU 自身样本时间的年龄，未知时为 `U`。

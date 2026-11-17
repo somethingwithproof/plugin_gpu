@@ -1,4 +1,4 @@
-<!-- Source: docs/operations.md; SHA256: b68dea054747892f72251ecd7e6a2aa6b57e82a56e8c7a1d8eba3f7c4468f15e -->
+<!-- Source: docs/operations.md; SHA256: 20a2068972e3b2402d8914653651a799ff7cec3b23723e33dfc57fb305f036d4 -->
 
 <a id="operator-guide"></a>
 # 操作员指南
@@ -41,7 +41,7 @@ View、Operator 和 Admin 权限及个人分诊行为见[访问角色](../README
 1. 将仓库复制到 Cacti 目录下的 `plugins/gpu`。目录必须命名为 `gpu`。
 2. 安装期间，使 Web 服务器用户可以写入 `<cacti>/resource/script_server/`。
 3. 在 **配置 > 插件** 中安装并启用 **GPU**。PHP 低于 8.2 时会拒绝安装并显示消息，Cacti 其余功能继续正常工作。
-4. 在 **配置 > 用户** 中授予用户权限域。*GPU View* 可打开 **GPU 清单** 和 **GPU 健康**；*GPU Admin* 可打开 **GPU 节点**。安装用户获得两者。每个页面只显示用户在 Cacti 中有权查看设备上的节点。
+4. 在 **配置 > 用户** 中授予用户权限域。*GPU View* 可打开 **GPU 清单** 和 **GPU 健康**；*GPU Operator* 增加 **GPU 运维** 和个人确认功能；*GPU Admin* 可打开 **GPU 节点** 并继承 Operator 权限。安装用户获得 View 和 Admin。Operator 继承 View 权限。每个页面只显示用户在 Cacti 中有权查看设备上的节点。
 5. 设置每个节点的代理（[node-setup.md](node-setup.md)），并在 **管理 > GPU 节点** 中添加。
 6. 如需告警，导入 Thold 模板（[alerting.md](alerting.md)）。
 

@@ -1,4 +1,4 @@
-<!-- Source: docs/alerting.md; SHA256: a4efb73e2a0fe3cd52f61484aaafc468e8dbf216094686e7951c1ab6a4e051c6 -->
+<!-- Source: docs/alerting.md; SHA256: b677b227964a6c7b0e999eb33c07ccac9e4f1b6c72ba49e3f7c84617f21b5464 -->
 
 <a id="alerting-with-thold-and-maint"></a>
 # 使用 Thold 和 Maint 告警
@@ -24,7 +24,7 @@ Thold 为每个 GPU 数据源的每个模板创建一个阈值。通知列表、
 | 模板 | 数据项 | 超限条件 | 持续 |
 |---|---|---|---|
 | GPU - Temperature High | `temp_gpu` | 超过 85 °C | 2 次轮询 |
-| GPU - Power Above Limit | `power` | 超过 `power_limit` 的 100% | 2 次轮询 |
+| GPU - Power Above Limit | `power_pct` | 超过当前功率上限的 100% | 2 次轮询 |
 | GPU - Software Thermal Slowdown | `thr_sw_thermal` | 1 | 1 次轮询 |
 | GPU - Hardware Thermal Slowdown | `thr_hw_thermal` | 1 | 1 次轮询 |
 | GPU - Hardware Power Brake | `thr_hw_power_brake` | 1 | 1 次轮询 |
@@ -53,7 +53,7 @@ Thold 为每个 GPU 数据源的每个模板创建一个阈值。通知列表、
 <a id="what-the-end-to-end-test-proves"></a>
 ## 端到端测试证明了什么
 
-`tests/bin/alert-flow.php` 使用 Thold 自身的导入功能导入随附模板，将其关联到 GPU Node 模板，并在插件创建图表时让 Thold 创建阈值。随后，它改变真实 `snmpd` 后面的模拟 `nvidia-smi` 输出，通过 SNMPv3 采集，运行 Cacti 轮询器和 Thold 检查，并读取 Thold 日志：
+`tests/bin/alert-flow.php` 使用 Thold 自身的导入功能导入随附模板，将其关联到 GPU Node 模板，并在插件创建图表时让 Thold 创建阈值。`power_pct` 数据源根据当前样本的 `power` 和 `power_limit` 值计算，不做整数舍入。读数缺失或上限不大于零时结果为未知，不会超限。随后，测试改变真实 `snmpd` 后面的模拟 `nvidia-smi` 输出，通过 SNMPv3 采集，运行 Cacti 轮询器和 Thold 检查，并读取 Thold 日志：
 
 - 高温、硬件降频、有新增未纠正错误且待退役页面的 GPU 会触发各阈值；温度只在第二次轮询触发，各值恢复时相应阈值也恢复；
 - 驱动重新加载使 ECC 总数降为 0：新增错误值为 `U`，不触发任何阈值，Thold 仍保持启用；重置后的两个新错误再次触发阈值，随后恢复；

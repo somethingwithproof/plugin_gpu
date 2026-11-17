@@ -1,4 +1,4 @@
-<!-- Source: docs/metrics.md; SHA256: 1f8f5b9a81f526894e1d25d7e2f40feec798eda1a886a189f1dd8533bd6c48f1 -->
+<!-- Source: docs/metrics.md; SHA256: ac39be2b6a6821343643ce61fbcc42614f82f48864d5c0e365eafc929f4452d4 -->
 
 <a id="gpu-metric-model"></a>
 # نموذج مقاييس GPU
@@ -17,6 +17,7 @@
 | `temp_gpu` | درجة حرارة GPU | درجة مئوية | GAUGE | U إلى U | `temperature.gpu` | 150 | `metric --temperature` `edge` (#18) |
 | `power` | استهلاك طاقة اللوحة | واط | GAUGE | 0 إلى U | `power.draw` | 155 | `metric --power` `socket_power` |
 | `power_limit` | حد طاقة اللوحة | واط | GAUGE | 0 إلى U | `power.limit` | 160 | #18 |
+| `power_pct` | طاقة اللوحة كنسبة مئوية من حدها | نسبة مئوية | GAUGE | 0 إلى U | محسوب من عينتي `power` و`power_limit` الحاليتين | محسوب من `power` و`power_limit` في العينة الحالية | محسوب من `power` و`power_limit` في العينة الحالية |
 | `clock_sm` | ساعة SM | MHz | GAUGE | 0 إلى U | `clocks.sm` | 1603 (هرتز، مقسوم على 1,000,000)، أو 100 (الوحدة غير مذكورة) | `metric --clock` (#18) |
 | `clock_mem` | ساعة الذاكرة | MHz | GAUGE | 0 إلى U | `clocks.mem` | 1604 (هرتز، مقسوم على 1,000,000)، أو 101 (الوحدة غير مذكورة) | `metric --clock` (#18) |
 | `ecc_corr` | أخطاء ECC المصحّحة منذ تحميل برنامج التشغيل | عدد | GAUGE | 0 إلى U | `ecc.errors.corrected.volatile.total` | 310 | `metric --ecc` `total_correctable_count` |

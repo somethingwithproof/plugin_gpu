@@ -1,4 +1,4 @@
-<!-- Source: docs/alerting.md; SHA256: a4efb73e2a0fe3cd52f61484aaafc468e8dbf216094686e7951c1ab6a4e051c6 -->
+<!-- Source: docs/alerting.md; SHA256: b677b227964a6c7b0e999eb33c07ccac9e4f1b6c72ba49e3f7c84617f21b5464 -->
 
 <a id="alerting-with-thold-and-maint"></a>
 # التنبيه باستخدام Thold وMaint
@@ -24,7 +24,7 @@
 | القالب | العنصر | يحدث التجاوز عند | بعد |
 |---|---|---|---|
 | GPU - Temperature High | `temp_gpu` | أعلى من 85 °C | استطلاعين |
-| GPU - Power Above Limit | `power` | أعلى من 100 بالمئة من `power_limit` | استطلاعين |
+| GPU - Power Above Limit | `power_pct` | أعلى من 100 بالمئة من حد الطاقة الحالي | استطلاعين |
 | GPU - Software Thermal Slowdown | `thr_sw_thermal` | 1 | استطلاع واحد |
 | GPU - Hardware Thermal Slowdown | `thr_hw_thermal` | 1 | استطلاع واحد |
 | GPU - Hardware Power Brake | `thr_hw_power_brake` | 1 | استطلاع واحد |
@@ -53,7 +53,7 @@
 <a id="what-the-end-to-end-test-proves"></a>
 ## ما يثبته الاختبار الشامل
 
-يستورد `tests/bin/alert-flow.php` القوالب المرفقة باستيراد Thold نفسه، ويربطها بقالب GPU Node، ويترك Thold ينشئ العتبات عند إنشاء الملحق الرسوم. ثم يغيّر خرج `nvidia-smi` المحاكى خلف `snmpd` حقيقي، ويجمع عبر SNMPv3، ويشغّل مستطلع Cacti وفحص Thold، ويقرأ سجل Thold:
+يستورد `tests/bin/alert-flow.php` القوالب المرفقة باستيراد Thold نفسه، ويربطها بقالب GPU Node، ويترك Thold ينشئ العتبات عند إنشاء الملحق الرسوم. يُحسب مصدر البيانات `power_pct` من قيمتي `power` و`power_limit` للعينة الحالية دون تقريب إلى عدد صحيح. تنتج القراءات المفقودة والحدود غير الموجبة قيمة مجهولة لا تتجاوز العتبة. ثم يغيّر الاختبار خرج `nvidia-smi` المحاكى خلف `snmpd` حقيقي، ويجمع عبر SNMPv3، ويشغّل مستطلع Cacti وفحص Thold، ويقرأ سجل Thold:
 
 - تؤدي GPU حارة ومبطّأة عتاديًا، بأخطاء غير مصححة جديدة وصفحات تنتظر الإحالة إلى التقاعد، إلى تشغيل كل عتبة؛ ولا تعمل عتبة الحرارة إلا عند الاستطلاع الثاني، وتستعيد كل عتبة حالتها عند عودة القيمة؛
 - تخفض إعادة تحميل برنامج التشغيل مجموع ECC إلى 0: تكون قيمة الأخطاء الجديدة `U`، ولا يحدث تجاوز، ويظل Thold مفعّلًا؛ ويشغّل خطآن جديدان بعد إعادة الضبط العتبة مجددًا ثم تستعيد حالتها؛
