@@ -14,6 +14,7 @@ Milestone 3 implements the nvidia-smi column. The DCGM and AMD columns record th
 | `temp_gpu` | GPU temperature | degrees C | gauge | U to U | `temperature.gpu` | 150 | `metric --temperature` `edge` (#18) |
 | `power` | Board power draw | watts | gauge | 0 to U | `power.draw` | 155 | `metric --power` `socket_power` |
 | `power_limit` | Board power limit | watts | gauge | 0 to U | `power.limit` | 160 | #18 |
+| `power_pct` | Board power as a percentage of its limit | percent | gauge | 0 to U | computed from current `power` and `power_limit` samples | computed from `power` and `power_limit` in the current sample | computed from `power` and `power_limit` in the current sample |
 | `clock_sm` | SM clock | MHz | gauge | 0 to U | `clocks.sm` | 1603 (hertz, divided by 1,000,000), or 100 (unit not stated) | `metric --clock` (#18) |
 | `clock_mem` | Memory clock | MHz | gauge | 0 to U | `clocks.mem` | 1604 (hertz, divided by 1,000,000), or 101 (unit not stated) | `metric --clock` (#18) |
 | `ecc_corr` | Corrected ECC errors since driver load | count | gauge | 0 to U | `ecc.errors.corrected.volatile.total` | 310 | `metric --ecc` `total_correctable_count` |

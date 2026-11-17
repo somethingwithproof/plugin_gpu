@@ -69,6 +69,11 @@
 			<direction>output</direction>
 			<query_name>power_limit</query_name>
 		</power_limit>
+		<power_pct>
+			<name>Board power as a percentage of its limit</name>
+			<direction>output</direction>
+			<query_name>power_pct</query_name>
+		</power_pct>
 		<clock_sm>
 			<name>SM clock</name>
 			<direction>output</direction>

@@ -268,7 +268,21 @@ jobs:
         mv log/main.log log/cacti.log
         echo "== end-to-end log"
         cat log/e2e.log
-        if grep -E "FATAL:|ERROR:|WARNING:" log/e2e.log | grep -v "GPU WARNING: Node [0-9]*: collection failed"; then
+        # Cacti shares this log with core and other plugins. Gate only on
+        # diagnostics emitted by this plugin; the assertions and command
+        # status above cover the end-to-end test itself.
+        awk '
+          /GPU (FATAL|ERROR|WARNING):/ && $0 !~ /GPU WARNING: Node [0-9]+: collection failed/ {
+            print
+            found = 1
+          }
+          END { if (found) exit 10 }
+        ' log/e2e.log
+        scan_rc=$?
+        if [ "$scan_rc" -eq 10 ]; then
+          rc=1
+        elif [ "$scan_rc" -ne 0 ]; then
+          echo "Unable to scan the end-to-end log (awk exit $scan_rc)" >&2
           rc=1
         fi
         if [ "$rc" -ne 0 ]; then

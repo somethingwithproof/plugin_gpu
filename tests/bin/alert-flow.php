@@ -230,15 +230,6 @@ $hot    = array('temperature.gpu' => '95', $mask => '0x0000000000000048', $uncor
 
 $alert_result = thold_template_import((string) file_get_contents($config['base_path'] . '/plugins/gpu/templates/' . TholdTemplateXml::FILE));
 
-// Exercise Thold's real evaluator: it must preserve unknown power/limits
-// and avoid division by zero even though RPN evaluates both IF branches.
-foreach (array(array(250, 200, 125), array(0, 200, 0), array('U', 200, 'U'), array(250, 'U', 'U'), array(250, 0, 'U'), array(250, -1, 'U'), array('U', 'U', 'U')) as $case) {
-	$rrds = array(1 => array('POWER' => $case[0], 'POWER_LIMIT' => $case[1]));
-	$times = array();
-	$value = thold_calculate_expression(array('name' => 'GPU power', 'local_data_id' => 1, 'expression' => TholdTemplateXml::POWER_EXPRESSION), $case[0], $rrds, $times);
-	e2e_check($value == $case[2] && empty($GLOBALS['rpn_error']), 'power expression preserves the expected value for ' . json_encode(array($case[0], $case[1])));
-}
-
 e2e_check(count($alert_result['success'] ?? array()) === count(TholdTemplateXml::templates()) && empty($alert_result['errors']) && empty($alert_result['failure']), 'setup: Thold imported every shipped template (' . json_encode($alert_result) . ')');
 
 $alert_host_template = (new \Somethingwithproof\Gpu\CactiObjectRepository(false))->idByHash('host_template', TemplateXml::hash('02', TemplateXml::DEVICE_TEMPLATE));
@@ -263,8 +254,9 @@ e2e_check($alert_count === 8 * count(TholdTemplateXml::templates()), "setup: Tho
 
 foreach (TholdTemplateXml::templates() as $alert_name => $spec) {
 	$t = alert_thold($spec[0]);
+	$data_type = 0;
 
-	e2e_check(($t['thold_hi'] ?? '') === $spec[1] && ($t['thold_enabled'] ?? '') === 'on' && (int) ($t['data_type'] ?? -1) === ($spec[3] === '' ? 0 : 3) && ($t['expression'] ?? '') === ($spec[3] === '' ? '' : TholdTemplateXml::POWER_EXPRESSION), "setup: '$alert_name' is on GPU 0 above " . $spec[1]);
+	e2e_check(($t['thold_hi'] ?? '') === $spec[1] && ($t['thold_enabled'] ?? '') === 'on' && (int) ($t['data_type'] ?? -1) === $data_type && ($t['percent_ds'] ?? '') === $spec[3] && ($t['expression'] ?? '') === '', "setup: '$alert_name' is on GPU 0 above " . $spec[1]);
 }
 
 // A low staleness threshold for this test only (the template's is 900 s).
@@ -281,6 +273,34 @@ e2e_check((int) db_fetch_cell_prepared('SELECT status FROM host WHERE id = ?', a
 $logged = alert_round('baseline', array());
 alert_expect('baseline', $logged, $quiet);
 e2e_check(is_numeric(alert_thold('temp_gpu')['lastread'] ?? '') && is_numeric(alert_thold('age')['lastread'] ?? '') && (alert_thold('ecc_uncorr_new')['lastread'] ?? '') === '0', 'baseline: Thold read temperature, age, and zero new ECC errors');
+$power = alert_thold('power_pct')['lastread'] ?? '';
+e2e_check(is_numeric($power) && abs((float) $power - (100.5 / 700 * 100)) < 0.01, 'baseline: Thold read the derived power percentage');
+
+/* The current power sample and limit determine the percentage. */
+
+$logged = alert_round('power unknown with a valid limit', array('power.draw' => 'N/A'));
+alert_expect('power unknown with a valid limit', $logged, array('power_pct' => array(false, array())) + $quiet);
+e2e_check(!is_numeric(alert_thold('power_pct')['lastread'] ?? ''), 'power unknown with a valid limit: the derived value is unknown');
+e2e_check(e2e_ss($e2e_host, 'get', 'power_pct', e2e_key(1)) === 'U', 'power unknown with a valid limit: the script server returns U');
+
+$logged = alert_round('zero power limit', array('power.limit' => '0.00'));
+alert_expect('zero power limit', $logged, array('power_pct' => array(false, array())) + $quiet);
+e2e_check(!is_numeric(alert_thold('power_pct')['lastread'] ?? ''), 'zero power limit: the derived value is unknown and does not breach');
+e2e_check(e2e_ss($e2e_host, 'get', 'power_pct', e2e_key(1)) === 'U', 'zero power limit: the script server returns U');
+
+$logged = alert_round('fractional power limit', array('power.draw' => '200.25', 'power.limit' => '200.50'));
+alert_expect('fractional power limit', $logged, array('power_pct' => array(false, array())) + $quiet);
+e2e_check(abs((float) (alert_thold('power_pct')['lastread'] ?? 0) - (200.25 / 200.50 * 100)) < 0.000001, 'fractional power limit: Thold preserves decimal precision below 100 percent');
+
+$logged = alert_round('power exceeds changed limit', array('power.draw' => '250.00', 'power.limit' => '200.00'));
+alert_expect('power exceeds changed limit', $logged, array('power_pct' => array(true, array())) + $quiet);
+e2e_check(abs((float) (alert_thold('power_pct')['lastread'] ?? 0) - 125) < 0.01, 'power exceeds changed limit: Thold used the current 200 W limit rather than the previous poll');
+
+$logged = alert_round('power exceed persists', array('power.draw' => '250.00', 'power.limit' => '200.00'));
+alert_expect('power exceed persists', $logged, array('power_pct' => array(true, array(ALERT_NOTIFY))) + $quiet);
+
+$logged = alert_round('power returns below limit', array('power.draw' => '100.50', 'power.limit' => '700.00'));
+alert_expect('power returns below limit', $logged, array('power_pct' => array(false, array(ALERT_RESTORE))) + $quiet);
 
 /* A fault: hot, throttled by hardware, new uncorrected errors, a page pending. */
 

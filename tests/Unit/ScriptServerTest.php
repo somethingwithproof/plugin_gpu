@@ -56,6 +56,12 @@ it('prints a current value, and unknown for a missing one, never zero', function
 		->and(Freshness::format(Freshness::value('no_such_field', ss_row(), SS_NOW, 600)))->toBe('U');
 });
 
+it('computes power percentage precisely and leaves missing or nonpositive limits unknown', function () {
+	expect(Freshness::format(Freshness::value('power_pct', ss_row(['power' => '200.25', 'power_limit' => '200.50']), SS_NOW, 600)))->toBe('99.875312')
+		->and(Freshness::format(Freshness::value('power_pct', ss_row(['power' => '200.25', 'power_limit' => '0']), SS_NOW, 600)))->toBe('U')
+		->and(Freshness::format(Freshness::value('power_pct', ss_row(['power' => 'N/A', 'power_limit' => '200.50']), SS_NOW, 600)))->toBe('U');
+});
+
 it('prints unknown for stale, absent, unreported, failed, and never sampled GPUs, keeping age where a sample exists', function (array $row, string $value, string $age) {
 	expect(Freshness::format(Freshness::value('util_gpu', ss_row($row), SS_NOW, 600)))->toBe($value)
 		->and(Freshness::format(Freshness::value('age', ss_row($row), SS_NOW, 600)))->toBe($age);
