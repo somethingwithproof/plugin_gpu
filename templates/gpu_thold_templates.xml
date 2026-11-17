@@ -33,7 +33,7 @@
 	<thold_fail_trigger>2</thold_fail_trigger>
 	<data_type>3</data_type>
 	<percent_ds></percent_ds>
-	<expression>power,UN,power_limit,UN,OR,power_limit,UN,1,power_limit,IF,0,LE,OR,UNKN,power,UN,0,power,IF,power_limit,UN,1,power_limit,IF,0,LE,1,power_limit,UN,1,power_limit,IF,IF,/,100,*,IF</expression>
+	<expression>|ds:power|,UN,|ds:power_limit|,UN,OR,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,OR,UNKN,|ds:power|,UN,0,|ds:power|,IF,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,1,|ds:power_limit|,UN,1,|ds:power_limit|,IF,IF,/,100,*,IF</expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template2>

@@ -49,9 +49,9 @@ final class TholdTemplateXml {
 	private const EXACT      = 0;
 	private const EXPRESSION = 3;
 
-	public const POWER_EXPRESSION = 'power,UN,power_limit,UN,OR,power_limit,UN,1,power_limit,IF,0,LE,OR,UNKN,'
-		. 'power,UN,0,power,IF,power_limit,UN,1,power_limit,IF,0,LE,1,'
-		. 'power_limit,UN,1,power_limit,IF,IF,/,100,*,IF';
+	public const POWER_EXPRESSION = '|ds:power|,UN,|ds:power_limit|,UN,OR,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,OR,UNKN,'
+		. '|ds:power|,UN,0,|ds:power|,IF,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,1,'
+		. '|ds:power_limit|,UN,1,|ds:power_limit|,IF,IF,/,100,*,IF';
 
 	/**
 	 * name => [data source item, high threshold, fail trigger in polls,

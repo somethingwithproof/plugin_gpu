@@ -81,8 +81,8 @@ it('thresholds only drawn gauges, never a counter, Idle, or the volatile ECC tot
 		->and($items)->toContain('thr_hw_thermal');
 });
 
-it('uses the actual lowercase data-source names in the power expression', function () {
-	expect(TholdTemplateXml::POWER_EXPRESSION)->toContain('power,UN,power_limit,UN')
+it('uses Thold data-source replacement tokens in the power expression', function () {
+	expect(TholdTemplateXml::POWER_EXPRESSION)->toContain('|ds:power|,UN,|ds:power_limit|,UN')
 		->and(TholdTemplateXml::POWER_EXPRESSION)->not->toContain('POWER');
 });
 

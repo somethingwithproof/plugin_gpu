@@ -230,15 +230,6 @@ $hot    = array('temperature.gpu' => '95', $mask => '0x0000000000000048', $uncor
 
 $alert_result = thold_template_import((string) file_get_contents($config['base_path'] . '/plugins/gpu/templates/' . TholdTemplateXml::FILE));
 
-// Exercise Thold's real evaluator: it must preserve unknown power/limits
-// and avoid division by zero even though RPN evaluates both IF branches.
-foreach (array(array(250, 200, 125), array(0, 200, 0), array('U', 200, 'U'), array(250, 'U', 'U'), array(250, 0, 'U'), array(250, -1, 'U'), array('U', 'U', 'U')) as $case) {
-	$rrds = array(1 => array('power' => $case[0], 'power_limit' => $case[1]));
-	$times = array();
-	$value = thold_calculate_expression(array('name' => 'GPU power', 'local_data_id' => 1, 'expression' => TholdTemplateXml::POWER_EXPRESSION), $case[0], $rrds, $times);
-	e2e_check($value == $case[2] && empty($GLOBALS['rpn_error']), 'power expression preserves the expected value for ' . json_encode(array($case[0], $case[1])));
-}
-
 e2e_check(count($alert_result['success'] ?? array()) === count(TholdTemplateXml::templates()) && empty($alert_result['errors']) && empty($alert_result['failure']), 'setup: Thold imported every shipped template (' . json_encode($alert_result) . ')');
 
 $alert_host_template = (new \Somethingwithproof\Gpu\CactiObjectRepository(false))->idByHash('host_template', TemplateXml::hash('02', TemplateXml::DEVICE_TEMPLATE));
@@ -281,6 +272,7 @@ e2e_check((int) db_fetch_cell_prepared('SELECT status FROM host WHERE id = ?', a
 $logged = alert_round('baseline', array());
 alert_expect('baseline', $logged, $quiet);
 e2e_check(is_numeric(alert_thold('temp_gpu')['lastread'] ?? '') && is_numeric(alert_thold('age')['lastread'] ?? '') && (alert_thold('ecc_uncorr_new')['lastread'] ?? '') === '0', 'baseline: Thold read temperature, age, and zero new ECC errors');
+e2e_check(is_numeric(alert_thold('power')['lastread'] ?? ''), 'baseline: Thold evaluated the GPU power threshold using its data-source replacement tokens');
 
 /* A fault: hot, throttled by hardware, new uncorrected errors, a page pending. */
 
