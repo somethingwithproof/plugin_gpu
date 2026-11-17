@@ -29,7 +29,7 @@ const GPU_TABLES = ['plugin_gpu_collection', 'plugin_gpu_gpu', 'plugin_gpu_node'
 // Row counts after the seed action: one node and one GPU record.
 const GPU_SEEDED = ['plugin_gpu_collection' => 0, 'plugin_gpu_gpu' => 1, 'plugin_gpu_node' => 1, 'plugin_gpu_observation' => 0, 'plugin_gpu_reindex' => 0, 'plugin_gpu_retired' => 0];
 
-const GPU_HOOKS = ['api_device_new', 'config_arrays', 'config_settings', 'device_remove', 'draw_navigation_text', 'poller_bottom'];
+const GPU_HOOKS = ['api_device_new', 'auth_alternate_realms', 'config_arrays', 'config_settings', 'device_remove', 'draw_navigation_text', 'poller_bottom'];
 
 beforeEach(function () {
 	lifecycle('reset');
@@ -44,7 +44,7 @@ afterAll(function () {
 	lifecycle('reset');
 });
 
-it('installs fresh with tracked tables, hooks, and both realms, leaving the plugin disabled', function () {
+it('installs fresh with tracked tables, hooks, and three realms, leaving the plugin disabled', function () {
 	$state = lifecycle('install');
 
 	expect($state['plugin']['status'])->toEqual('4')
@@ -55,7 +55,8 @@ it('installs fresh with tracked tables, hooks, and both realms, leaving the plug
 		->and(array_keys($state['hooks']))->toBe(GPU_HOOKS)
 		->and($state['realms'])->toEqual([
 			'gpu_inventory.php,gpu_health.php' => 'GPU View',
-			'gpu_nodes.php'     => 'GPU Admin',
+			'gpu_nodes.php' => 'GPU Admin',
+			'gpu_operator.php' => 'GPU Operator',
 		])
 		->and($state['admin'])->toBe(2);
 });
@@ -116,7 +117,7 @@ it('re-registers hooks and realms that went missing', function () {
 
 	expect($state['result'])->toBeTrue()
 		->and(array_keys($state['hooks']))->toBe(GPU_HOOKS)
-		->and($state['realms'])->toHaveCount(2);
+		->and($state['realms'])->toHaveCount(3);
 });
 
 it('makes a hook repaired while the plugin is enabled active, and one repaired while disabled not', function () {
@@ -309,7 +310,7 @@ it('grants realms on install but never on a repair a viewer triggers', function 
 	expect(lifecycle('install')['admin'])->toBe(2);
 
 	$repair = lifecycle('repair_as_viewer');
-	expect($repair['realms'])->toHaveCount(2)
+	expect($repair['realms'])->toHaveCount(3)
 		->and($repair['result'])->toBe(['viewer_realms' => 0]);
 });
 
@@ -332,4 +333,24 @@ it('keeps GPU identity rules against the real schema', function () {
 		->and($r['delete_owner'])->toBeFalse()
 		->and($r['delete_empty'])->toBeTrue()
 		->and($r['nodes_left'])->toBe(2);
+});
+
+it('preserves old grants and resolves the three roles through Cacti including groups', function () {
+	lifecycle('install');
+	lifecycle('enable');
+	$roles = lifecycle('operator_roles')['result'];
+	expect($roles['ids_preserved'])->toBeTrue()
+		->and($roles['viewer_grants'])->toBe([$roles['expected_view']])
+		->and($roles['hook_enabled'])->toBe(1)
+		->and($roles['viewer'])->toBe([true, false, false])
+		->and($roles['operator'])->toBe([true, true, false])
+		->and($roles['admin'])->toBe([true, true, true])
+		->and($roles['revoked'])->toBe([false, false, false])
+		->and($roles['group_operator'])->toBe([true, true, false])
+		->and($roles['disabled_group'])->toBe([false, false, false])
+		->and($roles['first_request']['viewer'])->toBe([[true, true, true], [true, false, true], [false, false, true]])
+		->and($roles['first_request']['operator'])->toBe([[true, true, true], [true, true, true], [false, false, true]])
+		->and($roles['first_request']['admin'])->toBe([[true, true, true], [true, true, true], [false, true, true]])
+		->and($roles['first_request']['revoked'])->toBe([false, false, false])
+		->and($roles['disabled_user'])->toBe([false, false, false]);
 });

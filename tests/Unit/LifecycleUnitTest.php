@@ -62,8 +62,8 @@ it('gives every setting in the form a default that fromRow agrees with', functio
 		->and($form['gpu_absent_after']['options'])->toBe(['options' => ['min_range' => 1, 'max_range' => Settings::MAX_ABSENT_AFTER]]);
 });
 
-it('registers the two realms the requirements name', function () {
-	expect(array_column(Pages::realms(), 'name'))->toBe(['GPU View', 'GPU Admin']);
+it('registers viewer, operator and administrator realms', function () {
+	expect(array_column(Pages::realms(), 'name'))->toBe(['GPU Operator', 'GPU View', 'GPU Admin']);
 });
 
 it('puts every page in exactly one realm', function () {

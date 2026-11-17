@@ -4,6 +4,9 @@ How to install, run, upgrade, and remove the plugin, what each unavailable value
 
 This is pre-release software. Phase 1 has been run only against a real `snmpd` with a fake `nvidia-smi` printing synthetic output, never on GPU hardware; pilots are #54.
 
+See [Access roles](../README.md#access-roles) for the View, Operator and Admin
+permissions and personal triage behavior.
+
 ## Supported matrix
 
 | Component | Supported | Evidence |

@@ -350,7 +350,7 @@ Plugin code is object-oriented wherever Cacti's plugin contract allows it. Cacti
 - Classes live in `lib/*.php` under the `Somethingwithproof\Gpu` namespace (provisional until the repository home and name are decided in #11; `Cacti\Gpu` if the plugin moves to the Cacti organization), one class per file, loaded by a small `spl_autoload_register()` loader registered only after the PHP version check. No Composer runtime dependency. Files stay at depth 2 or less because the gettext build and the POT check scan with `find . -maxdepth 2`.
 - Settings use the `config_settings` hook. Logging uses `cacti_log()` with a `GPU` tag. Forms rely on csrf-magic.
 - Strings use the `gpu` text domain with a `locales/` directory and a POT file.
-- Realms: "GPU View" and "GPU Admin", each a list of page files.
+- Realms: "GPU View", "GPU Operator" and "GPU Admin", each a list of page files.
 
 **Classes.** Milestone 2 settled the first set; the rest of the table is planned.
 

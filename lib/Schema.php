@@ -38,6 +38,7 @@ final class Schema {
 	public const VERSION = 3;
 
 	public const HOOKS = [
+		'auth_alternate_realms' => 'gpu_auth_alternate_realms',
 		'config_arrays'        => 'gpu_config_arrays',
 		'config_settings'      => 'gpu_config_settings',
 		'draw_navigation_text' => 'gpu_draw_navigation_text',
