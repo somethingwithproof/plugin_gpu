@@ -95,7 +95,7 @@ it('upgrades from an older recorded version and is idempotent on repeated runs',
 });
 
 it('imports the shipped templates once, and a forced re-import updates them in place', function () {
-	$objects = ['data_query' => 1, 'data_template' => 1, 'graph_templates' => 10, 'graph_items' => 88, 'device_template' => 1, 'dq_graphs' => 10, 'dq_file' => true];
+	$objects = ['data_query' => 1, 'data_template' => 1, 'graph_templates' => 11, 'graph_items' => 92, 'device_template' => 1, 'dq_graphs' => 11, 'dq_file' => true];
 
 	expect(lifecycle('install')['objects'])->toBe($objects);
 
