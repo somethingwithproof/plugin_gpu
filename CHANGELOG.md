@@ -8,6 +8,8 @@ Phase 1 (NVIDIA through SNMP extend), first version 0.1.0. Not yet run on GPU ha
 
 ### Added
 
+- GPU Operator realm and Operations page with current observations and personal acknowledgments. Existing administrators inherit Operator access; operators inherit monitoring access without configuration rights.
+
 - Install, upgrade, disable, and uninstall through Cacti's Plugins page, refused with a message on PHP below 8.2.
 - GPU Nodes (GPU Admin), GPU Inventory and GPU Health (GPU View), each limited to devices the user may see.
 - GPU identity records keyed by vendor and UUID, with replacement detection, confirmed moves between nodes, absence after a configurable number of collections, and JSON export.

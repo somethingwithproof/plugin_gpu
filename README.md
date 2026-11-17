@@ -1,8 +1,34 @@
+<!-- translations:start -->
+[English](README.md) | [简体中文](docs/i18n/zh-CN/README.md) | [हिन्दी](docs/i18n/hi-IN/README.md) | [Español (España)](docs/i18n/es-ES/README.md) | [Español (Latinoamérica)](docs/i18n/es-419/README.md) | [العربية](docs/i18n/ar-SA/README.md)
+<!-- translations:end -->
+
 # plugin_gpu
 
-A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and throttling reasons from NVIDIA and AMD tools into Cacti. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
+A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, and throttling reasons from NVIDIA tools into Cacti. AMD support and XID error collection are planned, not implemented. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
 
 > **Status: in development, not released.** Milestone 4 makes phase 1 (NVIDIA through SNMP extend) code complete: collection, identity, graphs, throttle and ECC signals, Thold and Maint alerting, the health page, and the operator documentation. It has been run only against a real `snmpd` with a fake `nvidia-smi` printing synthetic output, never on GPU hardware. Still open before a release: pilots on real hardware ([docs/pilot-plan.md](docs/pilot-plan.md), #54), an external security review ([docs/security-review.md](docs/security-review.md)), fixtures captured from real tools (#14), and scale measured on production-sized hardware ([docs/performance.md](docs/performance.md)). XID errors wait on decision #8. Do not run it in production.
+
+## Access roles
+
+| Realm | Access |
+| --- | --- |
+| GPU View | Existing monitoring pages. |
+| GPU Operator | Monitoring plus the Operations page and personal triage acknowledgments. |
+| GPU Admin | Operator access plus the existing configuration and administrative actions. |
+
+After copying upgrade files, open the Plugins page as an administrator to register
+the new realm. Assign the Operator realm explicitly under **Configuration > Users** or user groups.
+Upgrades retain the existing View and Admin realm IDs and grants. Admin access
+inherits Operator access, and Operator access inherits View access on each request;
+this does not add stored grants to users or groups. Plugin settings also require
+GPU Admin access in addition to Cacti's Settings permission.
+
+Cacti device permissions still limit the rows and actions available to each user; unmapped objects require an administrator.
+Credentials, configuration, mapping, deletion and other administrative changes
+remain in the administrative pages. Acknowledgments last only in the current
+user's session, for at most one hour and only while the same observation remains
+fresh. New or changed observations invalidate them. They never mark a failed
+measurement healthy or suppress alerts.
 
 ## Why
 
@@ -24,7 +50,7 @@ Out of scope: any command that changes a GPU or node (clocks, power limits, rese
 ## What milestone 4 adds
 
 - **Throttle reasons as alert values.** The clock event mask is decoded into one 0 or 1 indicator per reason; an unknown mask gives unknown indicators, never zeros, and bits without an indicator stay in the raw mask, which GPU Health shows.
-- **ECC as alert values** ([docs/metrics.md](docs/metrics.md)). New corrected and uncorrected errors since the previous sample are computed by the plugin from two consecutive totals and stored as gauges: unknown for a first sample, a missed read, or a driver reload, so a reset never reads as zero or as a negative count. Retired single-bit and double-bit page counts and the ECC mode are read too. Two more graphs per GPU, ten in all, so Cacti stores them. XID is not collected: no source fits the fixed `nvidia-smi` commands (#8).
+- **ECC as alert values** ([docs/metrics.md](docs/metrics.md)). New corrected and uncorrected errors since the previous sample are computed by the plugin from two consecutive totals and stored as gauges: unknown for a first sample, a missed read, or a driver reload, so a reset never reads as zero or as a negative count. Retired single-bit and double-bit page counts and the ECC mode are read too. Two additional ECC graphs per GPU let Cacti store them; with Power Percent, there are eleven graphs in all. XID is not collected: no source fits the fixed `nvidia-smi` commands (#8).
 - **Thold and Maint** ([docs/alerting.md](docs/alerting.md)). Shipped Thold templates for temperature, power against its limit, the throttle indicators, new uncorrected ECC errors, pending page retirement, and sample age. Every value is a gauge, because Thold 1.8.2 fails on an unknown counter. An end-to-end test with unchanged Thold 1.8.2 and Maint 1.3 shows each threshold fire and restore, across an ECC reset, and Maint suppress it.
 - **GPU Health** (GPU View). Per node: freshness, how the last collection ended, Maint state, backend, tool and driver versions, and GPU counts; per GPU: presence, sample age, ECC state, and the raw mask. It reads stored records only.
 - **Permissions.** The permission suite covers every page file and action, revocation on the next request, and refusals that disclose nothing.
@@ -37,7 +63,7 @@ Out of scope: any command that changes a GPU or node (clocks, power limits, rese
 - **Collection through SNMP extend** ([ADR 0008](docs/decisions/0008-collect-through-snmp-extend.md)). The node's administrator adds two fixed `extend` lines to `snmpd.conf` ([docs/node-setup.md](docs/node-setup.md)); the plugin reads NET-SNMP-EXTEND-MIB through Cacti's SNMP functions with the device's own credentials, SNMPv3 recommended. It runs nothing on the Cacti server or the node.
 - **Strict parsing.** Fields are read by position, each line names its GPU by UUID, and a nonzero exit status, a timeout, truncated output, a line with the wrong field count, or merged error text fails the whole collection: values become `U`, no GPU is marked absent, and GPU Nodes shows why.
 - **A collector after each poller cycle.** It reads each enabled node's agent, updates the identity records, and caches the latest sample. The script server input reads only that cache, so a Cacti poll never waits on a GPU node.
-- **Cacti objects** ([ADR 0010](docs/decisions/0010-attach-to-existing-node-devices.md)). The templates and the *GPU - Devices* data query ship as XML and are imported on install and upgrade. Saving a node attaches the data query to its existing device with reindex method None; GPU Nodes can create a device only when the node has none. Each GPU is an index keyed by vendor and UUID, with one data source shared by its Utilization, Memory, Temperature, Power, Clocks, Throttle, ECC Errors, and Sample Age graphs. Every model field is drawn by some graph, because Cacti stores only the fields a graph uses. The plugin reindexes after every GPU change, keeps a reindex Cacti skipped while the device was Down or disabled and runs it once the device is Up, and creates graphs for new GPUs.
+- **Cacti objects** ([ADR 0010](docs/decisions/0010-attach-to-existing-node-devices.md)). The templates and the *GPU - Devices* data query ship as XML and are imported on install and upgrade. Saving a node attaches the data query to its existing device with reindex method None; GPU Nodes can create a device only when the node has none. Each GPU is an index keyed by vendor and UUID, with one data source shared by its Utilization, Memory, Temperature, Power, Power Percent, Clocks, Throttle, ECC Errors, New ECC Errors, Retired Pages, and Sample Age graphs. Every model field is drawn by some graph, because Cacti stores only the fields a graph uses. The plugin reindexes after every GPU change, keeps a reindex Cacti skipped while the device was Down or disabled and runs it once the device is Up, and creates graphs for new GPUs.
 - **History stays with the card.** An absent GPU stays an index, so its graphs show a gap and resume in the same RRD file when it returns. A replacement card in the same slot gets its own data source. **Remove from Data Query** on the node's page takes an absent GPU out of the listing; its RRD files and graphs are kept until you delete them.
 - **Device permissions on GPU Nodes.** A GPU Admin sees, changes, exports, and moves only nodes and GPUs on devices they may see in Cacti; a GPU move needs both nodes. A node whose device was deleted can only be disabled.
 - **The common metric model** ([ADR 0009](docs/decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](docs/metrics.md)). Memory is in bytes, the clock event mask is decoded into `thr_*` indicators, and `age` is the age of the GPU's own sample time, or `U` when unknown.
@@ -48,7 +74,7 @@ The installing (web server) user must be able to write `<cacti>/resource/script_
 
 - **A guarded install.** On PHP below 8.2, install and enable are refused with a message naming the required version, and the rest of Cacti keeps working. `setup.php` and the page scripts parse on PHP 8.0.
 - **Lifecycle.** Install, upgrade, disable, and uninstall through Cacti's Plugins page. Upgrades are ordered, finish after an interruption, and change the recorded version only after they succeed. Uninstall keeps the plugin's tables unless you clear *Keep Plugin Tables on Uninstall*; it never touches a Cacti device, data source, graph, or RRD file.
-- **Two realms.** *GPU Admin* opens **GPU Nodes**, where you register Cacti devices as GPU nodes, confirm or reject GPU moves between nodes, and export every record as JSON. *GPU View* opens **GPU Inventory**, which lists GPUs only on devices the viewer may see. Both pages are under Management, and every change is a POST checked by csrf-magic.
+- **Separate realms.** *GPU Admin* opens **GPU Nodes**, where you register Cacti devices as GPU nodes, confirm or reject GPU moves between nodes, and export every record as JSON. *GPU View* opens **GPU Inventory**, which lists GPUs only on devices the viewer may see. Both pages are under Management, and every change is a POST checked by csrf-magic.
 - **GPU identity records.** Each GPU is keyed by vendor and UUID. Index, PCI bus ID, name, driver, and the reporting tool are attributes that change in place. A new UUID in a known slot is flagged as a possible replacement and starts its own history; a GPU seen at another node moves only when an operator confirms; a GPU missing from successful collections is marked absent after a configurable count and never deleted. Only NVIDIA whole-GPU UUIDs are accepted for now; MIG instances wait on decision #13, and AMD on research #19. The rules are exercised by fixture sequences, since no collector feeds them yet.
 - **Tests and CI.** Unit and source-rule suites with no GPU or database, lifecycle and page-permission checks against Cacti 1.2.31 and current 1.2.x on PHP 8.2 to 8.5, a PHP 8.1 refusal job, a PHP 8.0 lint of the entry points, PHPStan at level 9, and REUSE. The harness is provisional until #12 is decided.
 
@@ -58,7 +84,7 @@ These steps install the current code to try it; [docs/operations.md](docs/operat
 
 1. Copy the repository to `plugins/gpu` under your Cacti directory. The directory must be named `gpu`.
 2. In Cacti, open **Configuration > Plugins**, then install and enable **GPU**.
-3. Give users the *GPU View* or *GPU Admin* realm under **Configuration > Users**. The installing user gets both.
+3. Give users the *GPU View*, *GPU Operator*, or *GPU Admin* realm under **Configuration > Users**, according to their role. The installing user receives View and Admin; Admin includes Operator access.
 4. Set up each GPU node's SNMP agent as described in [docs/node-setup.md](docs/node-setup.md), then add the node under **Management > GPU Nodes**.
 5. For alerts, import the shipped Thold templates as [docs/alerting.md](docs/alerting.md) describes.
 6. Optionally adjust **Configuration > Settings > GPU**: *Mark Absent After* (default 3 successful collections, from 1 to 100), *Stale After* (how old a sample may be before its values print `U`), and *Keep Plugin Tables on Uninstall* (default on).

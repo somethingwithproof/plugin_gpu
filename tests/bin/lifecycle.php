@@ -273,6 +273,10 @@ switch ($action) {
 		file_put_contents($config['base_path'] . '/resource/script_server/plugin_gpu.xml', "<!-- changed by an operator -->\n", FILE_APPEND);
 
 		break;
+	case 'operator_roles':
+		include(__DIR__ . '/operator-roles.php');
+
+		break;
 	case 'state':
 		break;
 	default:

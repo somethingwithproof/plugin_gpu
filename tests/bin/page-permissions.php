@@ -146,9 +146,8 @@ $plans = array(
 	'admin'     => array('gpu_nodes.php' => true, 'gpu_inventory.php' => true, 'gpu_health.php' => true),
 	'viewer'    => array('gpu_nodes.php' => false, 'gpu_inventory.php' => true, 'gpu_health.php' => true),
 	'norealm'   => array('gpu_nodes.php' => false, 'gpu_inventory.php' => false, 'gpu_health.php' => false),
-	// GPU Admin alone does not include the GPU View pages: each page file
-	// is checked against its own realm (REQ-PERM-004).
-	'scoped'    => array('gpu_nodes.php' => true, 'gpu_inventory.php' => false, 'gpu_health.php' => false),
+	// GPU Admin inherits viewing access, with the same device restrictions.
+	'scoped'    => array('gpu_nodes.php' => true, 'gpu_inventory.php' => true, 'gpu_health.php' => true),
 );
 
 foreach ($plans as $user => $expect) {

@@ -28,6 +28,7 @@ namespace Somethingwithproof\Gpu;
  * Admin pages; GPU View pages only read.
  */
 final class Pages {
+	public const OPERATOR = ['gpu_operator.php'];
 	public const VIEW  = ['gpu_inventory.php', 'gpu_health.php'];
 	public const ADMIN = ['gpu_nodes.php'];
 
@@ -36,6 +37,7 @@ final class Pages {
 	 */
 	public static function realms(): array {
 		return [
+			['name' => __('GPU Operator', 'gpu'), 'files' => self::OPERATOR],
 			['name' => __('GPU View', 'gpu'), 'files' => self::VIEW],
 			['name' => __('GPU Admin', 'gpu'), 'files' => self::ADMIN],
 		];
@@ -45,7 +47,7 @@ final class Pages {
 	 * @return list<string>
 	 */
 	public static function files(): array {
-		return array_merge(self::VIEW, self::ADMIN);
+		return array_merge(self::VIEW, self::ADMIN, self::OPERATOR);
 	}
 
 	/**
@@ -55,6 +57,7 @@ final class Pages {
 	 */
 	public static function menu(): array {
 		return [
+			'gpu_operator.php' => __('GPU Operations', 'gpu'),
 			'gpu_nodes.php'     => __('GPU Nodes', 'gpu'),
 			'gpu_inventory.php' => __('GPU Inventory', 'gpu'),
 			'gpu_health.php'    => __('GPU Health', 'gpu'),

@@ -1,0 +1,18 @@
+{
+  "locales": [
+    "zh-CN",
+    "hi-IN",
+    "es-ES",
+    "es-419",
+    "ar-SA"
+  ],
+  "sources": [
+    "README.md",
+    "docs/node-setup.md",
+    "docs/operations.md",
+    "docs/alerting.md",
+    "docs/backup.md",
+    "docs/metrics.md",
+    "docs/performance.md"
+  ]
+}
