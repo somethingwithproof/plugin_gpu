@@ -4,7 +4,7 @@
 
 # plugin_gpu
 
-A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, XID errors, and throttling reasons from NVIDIA and AMD tools into Cacti. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
+A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, and throttling reasons from NVIDIA tools into Cacti. AMD support and XID error collection are planned, not implemented. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
 
 > **Status: in development, not released.** Milestone 4 makes phase 1 (NVIDIA through SNMP extend) code complete: collection, identity, graphs, throttle and ECC signals, Thold and Maint alerting, the health page, and the operator documentation. It has been run only against a real `snmpd` with a fake `nvidia-smi` printing synthetic output, never on GPU hardware. Still open before a release: pilots on real hardware ([docs/pilot-plan.md](docs/pilot-plan.md), #54), an external security review ([docs/security-review.md](docs/security-review.md)), fixtures captured from real tools (#14), and scale measured on production-sized hardware ([docs/performance.md](docs/performance.md)). XID errors wait on decision #8. Do not run it in production.
 
@@ -84,7 +84,7 @@ These steps install the current code to try it; [docs/operations.md](docs/operat
 
 1. Copy the repository to `plugins/gpu` under your Cacti directory. The directory must be named `gpu`.
 2. In Cacti, open **Configuration > Plugins**, then install and enable **GPU**.
-3. Give users the *GPU View* or *GPU Admin* realm under **Configuration > Users**. The installing user gets both.
+3. Give users the *GPU View*, *GPU Operator*, or *GPU Admin* realm under **Configuration > Users**, according to their role. The installing user receives View and Admin; Admin includes Operator access.
 4. Set up each GPU node's SNMP agent as described in [docs/node-setup.md](docs/node-setup.md), then add the node under **Management > GPU Nodes**.
 5. For alerts, import the shipped Thold templates as [docs/alerting.md](docs/alerting.md) describes.
 6. Optionally adjust **Configuration > Settings > GPU**: *Mark Absent After* (default 3 successful collections, from 1 to 100), *Stale After* (how old a sample may be before its values print `U`), and *Keep Plugin Tables on Uninstall* (default on).

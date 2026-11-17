@@ -1,4 +1,4 @@
-<!-- Source: docs/node-setup.md; SHA256: bd138c845671d32102a4985b87e4356d95897b131711cc0e498982e626b81a98 -->
+<!-- Source: docs/node-setup.md; SHA256: 3babf869a8665fbf304f5b8f079391435900cf50ab354addb85d287dd9dacdbc -->
 
 <a id="setting-up-a-gpu-node"></a>
 # 设置 GPU 节点
@@ -8,7 +8,7 @@
 <a id="snmpdconf"></a>
 ## snmpd.conf
 
-每个节点需要以下两行，必须保持原样。插件解析条目名称、字段列表及顺序；列表变更会作为无效输出拒绝，而不会误读。
+每个节点需要以下两行，必须保持原样。请保留条目名称、字段列表及顺序：插件按位置解析字段。字段数量错误会被拒绝，但重新排列有效数字字段可能导致误读而无法检测。
 
 <!-- extend-lines:start -->
 ```
@@ -40,7 +40,7 @@ extend -cacheTime 30 cacti_gpu_legacy /usr/bin/env -i TZ=UTC /usr/bin/timeout -k
 ```
 <!-- extend-legacy:end -->
 
-`cacti_gpu_legacy` 使用相同位置上的旧名称 `clocks_throttle_reasons.active` 查询指标。插件仅在 `cacti_gpu` 以状态 2 退出时读取它，因此当前驱动不会执行该查询。两个名称输出相同位掩码，插件以相同方式解码。按本页旧版配置的节点必须将 `cacti_gpu` 行替换为上面的版本：此版本增加 `ecc.mode.current`、`retired_pages.sbe` 和 `retired_pages.dbe`，未替换时字段数量不匹配，采集显示 *Output rejected*。由于旧命令本身成功执行，状态 2 回退不能解决此情况。只有时钟事件原因名称允许不同：使用当前字段列表，最后一项为 `clocks_throttle_reasons.active` 的 `cacti_gpu` 行也可使用，因为两种名称都输出同一位掩码。
+`cacti_gpu_legacy` 使用相同位置上的旧名称 `clocks_throttle_reasons.active` 查询指标。插件仅在 `cacti_gpu` 以状态 2 退出时读取它，因此当前驱动不会执行该查询。两个名称输出相同位掩码，插件以相同方式解码。按本页旧版配置的节点必须将主指标行替换为上方的 `cacti_gpu_legacy` 查询，仅将其条目名称改为 `cacti_gpu`，并保留 `clocks_throttle_reasons.active` 作为最后一个字段：此版本增加 `ecc.mode.current`、`retired_pages.sbe` 和 `retired_pages.dbe`，未替换时字段数量不匹配，采集显示 *Output rejected*。由于旧命令本身成功执行，状态 2 回退不能解决此情况。只有时钟事件原因名称允许不同：使用当前字段列表，最后一项为 `clocks_throttle_reasons.active` 的 `cacti_gpu` 行也可使用，因为两种名称都输出同一位掩码。
 
 <a id="run-snmpd-as-an-unprivileged-user"></a>
 ## 以非特权用户运行 snmpd

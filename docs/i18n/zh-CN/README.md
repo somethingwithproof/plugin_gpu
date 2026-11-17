@@ -1,4 +1,4 @@
-<!-- Source: README.md; SHA256: 3d0784bdacf4a5d7f8805178ca712abe9c15ddcf419d4fa433ff8c3f1092c9cd -->
+<!-- Source: README.md; SHA256: cb3865a085270dfe8ee8d421f0e19cbf9abcdcfc9c91544f1aa566ab29198618 -->
 
 <!-- translations:start -->
 [English](../../../README.md) | [简体中文](README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية](../ar-SA/README.md)
@@ -7,7 +7,7 @@
 <a id="plugin_gpu"></a>
 # plugin_gpu
 
-一个 Cacti 1.2 插件，将 NVIDIA 和 AMD 工具提供的每 GPU 利用率、内存、温度、功率、ECC 错误、XID 错误和降频原因引入 Cacti。每个 GPU 成为其节点设备上数据查询的一个索引，因此 GPU 图表与节点的其他图表共用 Cacti 权限，Thold 和 Maint 可以对其告警并抑制告警。
+一个 Cacti 1.2 插件，将 NVIDIA 工具提供的每 GPU 利用率、内存、温度、功率、ECC 错误和降频原因引入 Cacti。AMD 支持和 XID 错误采集仍在计划中，尚未实现。每个 GPU 成为其节点设备上数据查询的一个索引，因此 GPU 图表与节点的其他图表共用 Cacti 权限，Thold 和 Maint 可以对其告警并抑制告警。
 
 > **状态：开发中，尚未发布。** 里程碑 4 完成阶段 1（通过 SNMP extend 采集 NVIDIA）的代码：采集、身份、图表、降频和 ECC 信号、Thold 与 Maint 告警、健康页面及操作员文档。仅使用真实 `snmpd` 和输出合成数据的模拟 `nvidia-smi` 运行过，从未在 GPU 硬件上运行。发布前仍需完成：真实硬件试点（[docs/pilot-plan.md](../../pilot-plan.md)，#54）、外部安全审查（[docs/security-review.md](../../security-review.md)）、从真实工具捕获的测试样本（#14），以及生产规模硬件上的规模测量（[docs/performance.md](docs/performance.md)）。XID 错误等待决策 #8。请勿用于生产环境。
 
@@ -84,7 +84,7 @@ GPU 节点通常已在 Cacti 中监控 CPU、内存和接口。但 GPU 健康是
 
 1. 将仓库复制到 Cacti 目录下的 `plugins/gpu`。目录必须名为 `gpu`。
 2. 在 Cacti 中打开 **配置 > 插件**，安装并启用 **GPU**。
-3. 在 **配置 > 用户** 中授予 *GPU View* 或 *GPU Admin*。安装用户获得两者。
+3. 在 **配置 > 用户** 中按用户职责授予 *GPU View*、*GPU Operator* 或 *GPU Admin*。安装用户获得 View 和 Admin；Admin 包含 Operator 访问权限。
 4. 按 [docs/node-setup.md](docs/node-setup.md) 配置每个 GPU 节点的 SNMP 代理，然后在 **管理 > GPU 节点** 添加节点。
 5. 如需告警，按 [docs/alerting.md](docs/alerting.md) 导入随附 Thold 模板。
 6. 可选调整 **配置 > 设置 > GPU**：*标记缺席前的次数*（默认 3 次成功采集，1 至 100）、*过期时间*（样本多旧后值显示为 `U`）和 *卸载时保留插件表*（默认开启）。

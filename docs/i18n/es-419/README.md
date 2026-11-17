@@ -1,4 +1,4 @@
-<!-- Source: README.md; SHA256: 3d0784bdacf4a5d7f8805178ca712abe9c15ddcf419d4fa433ff8c3f1092c9cd -->
+<!-- Source: README.md; SHA256: cb3865a085270dfe8ee8d421f0e19cbf9abcdcfc9c91544f1aa566ab29198618 -->
 
 <!-- translations:start -->
 [English](../../../README.md) | [简体中文](../zh-CN/README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](README.md) | [العربية](../ar-SA/README.md)
@@ -7,7 +7,7 @@
 <a id="plugin_gpu"></a>
 # plugin_gpu
 
-Un plugin para Cacti 1.2 que incorpora utilización, memoria, temperatura, potencia, errores ECC, errores XID y motivos de limitación por GPU desde las herramientas NVIDIA y AMD. Cada GPU se convierte en un índice de una consulta de datos del dispositivo de su nodo, de modo que sus gráficos aparecen junto a los demás del nodo bajo los permisos de Cacti, y Thold y Maint pueden alertar sobre ellos y suprimir las alertas.
+Un plugin para Cacti 1.2 que incorpora utilización, memoria, temperatura, potencia, errores ECC y motivos de limitación por GPU desde las herramientas NVIDIA. La compatibilidad con AMD y la recolección de errores XID están previstas, pero no implementadas. Cada GPU se convierte en un índice de una consulta de datos del dispositivo de su nodo, de modo que sus gráficos aparecen junto a los demás del nodo bajo los permisos de Cacti, y Thold y Maint pueden alertar sobre ellos y suprimir las alertas.
 
 > **Estado: en desarrollo, sin publicar.** El hito 4 completa el código de la fase 1 (NVIDIA mediante SNMP extend): recolección, identidad, gráficos, señales de limitación y ECC, alertas con Thold y Maint, página de estado y documentación del operador. Solo se ha ejecutado con un `snmpd` real y un `nvidia-smi` simulado que imprime salida sintética, nunca en hardware GPU. Antes de publicar siguen pendientes: pilotos en hardware real ([docs/pilot-plan.md](../../pilot-plan.md), #54), revisión externa de seguridad ([docs/security-review.md](../../security-review.md)), muestras capturadas de herramientas reales (#14) y mediciones a escala en hardware de tamaño productivo ([docs/performance.md](docs/performance.md)). Los errores XID esperan la decisión #8. No lo ejecute en producción.
 
@@ -84,7 +84,7 @@ Estos pasos instalan el código actual para probarlo; [docs/operations.md](docs/
 
 1. Copie el repositorio a `plugins/gpu` bajo el directorio de Cacti. Debe llamarse `gpu`.
 2. En Cacti, abra **Configuración > Plugins**, instale y active **GPU**.
-3. Asigne *GPU View* o *GPU Admin* en **Configuración > Usuarios**. El usuario que instala recibe ambos.
+3. Asigne *GPU View*, *GPU Operator* o *GPU Admin* en **Configuración > Usuarios**, según la función del usuario. El usuario que instala recibe View y Admin; Admin incluye el acceso Operator.
 4. Configure el agente SNMP de cada nodo según [docs/node-setup.md](docs/node-setup.md) y agregue el nodo en **Administración > Nodos GPU**.
 5. Para alertas, importe las plantillas Thold incluidas como indica [docs/alerting.md](docs/alerting.md).
 6. Opcionalmente ajuste **Configuración > Ajustes > GPU**: *Marcar ausente tras* (3 recoleccións correctas por defecto, de 1 a 100), *Obsoleto tras* (antigüedad antes de mostrar valores `U`) y *Conservar tablas del plugin al desinstalar* (activado por defecto).

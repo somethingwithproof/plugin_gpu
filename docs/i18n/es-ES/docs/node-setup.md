@@ -1,4 +1,4 @@
-<!-- Source: docs/node-setup.md; SHA256: bd138c845671d32102a4985b87e4356d95897b131711cc0e498982e626b81a98 -->
+<!-- Source: docs/node-setup.md; SHA256: 3babf869a8665fbf304f5b8f079391435900cf50ab354addb85d287dd9dacdbc -->
 
 <a id="setting-up-a-gpu-node"></a>
 # Configurar un nodo GPU
@@ -8,7 +8,7 @@ El complemento lee la salida `nvidia-smi` de cada nodo mediante su agente SNMP y
 <a id="snmpdconf"></a>
 ## snmpd.conf
 
-Cada nodo necesita estas dos líneas exactamente como aparecen. El complemento interpreta nombres, lista y orden de campos; una lista modificada se rechaza como salida inválida en vez de interpretarse erróneamente.
+Cada nodo necesita estas dos líneas exactamente como aparecen. Conserve los nombres, la lista y el orden de los campos: el complemento los interpreta por posición. Un número incorrecto de campos se rechaza, pero reordenar campos numéricos válidos puede producir una interpretación errónea sin detectarse.
 
 <!-- extend-lines:start -->
 ```
@@ -40,7 +40,7 @@ extend -cacheTime 30 cacti_gpu_legacy /usr/bin/env -i TZ=UTC /usr/bin/timeout -k
 ```
 <!-- extend-legacy:end -->
 
-`cacti_gpu_legacy` usa el nombre antiguo `clocks_throttle_reasons.active` en la misma posición. Se lee solo si `cacti_gpu` termina con estado 2, por lo que nunca se ejecuta con un controlador actual. Ambos nombres imprimen la misma máscara y se decodifican igual. Un nodo configurado con una versión anterior de esta página debe sustituir la línea `cacti_gpu`: esta versión añade `ecc.mode.current`, `retired_pages.sbe` y `retired_pages.dbe`. Hasta sustituirla, el número de campos no coincide y aparece *Output rejected*. La alternativa de estado 2 no cubre ese caso porque la línea antigua se ejecuta correctamente. Solo puede diferir el nombre de los motivos de reloj: también funciona una línea `cacti_gpu` con la lista actual y `clocks_throttle_reasons.active` al final, porque ambos nombres producen la misma máscara.
+`cacti_gpu_legacy` usa el nombre antiguo `clocks_throttle_reasons.active` en la misma posición. Se lee solo si `cacti_gpu` termina con estado 2, por lo que nunca se ejecuta con un controlador actual. Ambos nombres imprimen la misma máscara y se decodifican igual. Un nodo configurado con una versión anterior de esta página debe sustituir su línea principal de métricas por la consulta `cacti_gpu_legacy` mostrada arriba, cambiando solo su nombre de entrada a `cacti_gpu` y manteniendo `clocks_throttle_reasons.active` como último campo: esta versión añade `ecc.mode.current`, `retired_pages.sbe` y `retired_pages.dbe`. Hasta sustituirla, el número de campos no coincide y aparece *Output rejected*. La alternativa de estado 2 no cubre ese caso porque la línea antigua se ejecuta correctamente. Solo puede diferir el nombre de los motivos de reloj: también funciona una línea `cacti_gpu` con la lista actual y `clocks_throttle_reasons.active` al final, porque ambos nombres producen la misma máscara.
 
 <a id="run-snmpd-as-an-unprivileged-user"></a>
 ## Ejecutar snmpd sin privilegios

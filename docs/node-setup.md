@@ -4,7 +4,7 @@ The plugin reads each GPU node's `nvidia-smi` output through the node's SNMP age
 
 ## snmpd.conf
 
-Every node needs these two lines, exactly as shown. The entry names, the field list, and its order are what the plugin parses; a changed list is rejected as invalid output, not misread.
+Every node needs these two lines, exactly as shown. Preserve the entry names, the field list, and its order: the plugin parses fields by position. A wrong field count is rejected, but reordering valid numeric fields can be misread without detection.
 
 <!-- extend-lines:start -->
 ```
@@ -35,7 +35,7 @@ extend -cacheTime 30 cacti_gpu_legacy /usr/bin/env -i TZ=UTC /usr/bin/timeout -k
 ```
 <!-- extend-legacy:end -->
 
-`cacti_gpu_legacy` is the metrics query with the old name, `clocks_throttle_reasons.active`, in the same position. The plugin reads it only when `cacti_gpu` exits with status 2, so on a current driver it never runs. Both names print the same bitmask, and the plugin decodes it the same way. A node set up from an earlier version of this page needs its `cacti_gpu` line replaced with the one above: this release adds `ecc.mode.current`, `retired_pages.sbe`, and `retired_pages.dbe` to the field list, and until the line is replaced the node's collection fails with *Output rejected*, because the line count of fields no longer matches. The status 2 fallback does not cover that case, since the old line runs successfully. Only the clock event reasons name may differ: a `cacti_gpu` line with the current field list and `clocks_throttle_reasons.active` in the last position also works, because both names print the same bitmask there.
+`cacti_gpu_legacy` is the metrics query with the old name, `clocks_throttle_reasons.active`, in the same position. The plugin reads it only when `cacti_gpu` exits with status 2, so on a current driver it never runs. Both names print the same bitmask, and the plugin decodes it the same way. A node set up from an earlier version of this page needs its primary metrics line replaced with the `cacti_gpu_legacy` query shown above, changing only its entry name to `cacti_gpu` and keeping `clocks_throttle_reasons.active` as the final field: this release adds `ecc.mode.current`, `retired_pages.sbe`, and `retired_pages.dbe` to the field list, and until the line is replaced the node's collection fails with *Output rejected*, because the line count of fields no longer matches. The status 2 fallback does not cover that case, since the old line runs successfully. Only the clock event reasons name may differ: a `cacti_gpu` line with the current field list and `clocks_throttle_reasons.active` in the last position also works, because both names print the same bitmask there.
 
 ## Run snmpd as an unprivileged user
 
