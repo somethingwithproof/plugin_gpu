@@ -43,14 +43,14 @@ final class TholdTemplateXml {
 	public const FILE = 'gpu_thold_templates.xml';
 
 	// Thold's thold_type 0 is High / Low; data_type 0 is the exact value
-	// and 3 is an RPN expression. The percentage helper maps an unknown
-	// power limit to zero, so power uses an explicit unknown-preserving RPN.
+	// and 3 is an RPN expression. Use replacement tokens so Thold can resolve
+	// unknown current RRD samples, and return unknown for missing or zero limits.
 	private const HIGH_LOW   = 0;
 	private const EXACT      = 0;
 	private const EXPRESSION = 3;
 
-	public const POWER_EXPRESSION = 'CURRENT_DATA_SOURCE,UN,|ds:power_limit|,UN,OR,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,OR,UNKN,'
-		. 'CURRENT_DATA_SOURCE,UN,0,CURRENT_DATA_SOURCE,IF,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,1,'
+	public const POWER_EXPRESSION = '|ds:power|,UN,|ds:power_limit|,UN,OR,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,EXC,LE,OR,UNKN,'
+		. '|ds:power|,UN,0,|ds:power|,IF,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,EXC,LE,1,'
 		. '|ds:power_limit|,UN,1,|ds:power_limit|,IF,IF,/,100,*,IF';
 
 	/**

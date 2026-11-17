@@ -82,8 +82,9 @@ it('thresholds only drawn gauges, never a counter, Idle, or the volatile ECC tot
 });
 
 it('uses Thold data-source replacement tokens in the power expression', function () {
-	expect(TholdTemplateXml::POWER_EXPRESSION)->toContain('CURRENT_DATA_SOURCE,UN,|ds:power_limit|,UN')
-		->and(TholdTemplateXml::POWER_EXPRESSION)->not->toContain('POWER');
+	expect(TholdTemplateXml::POWER_EXPRESSION)->toContain('|ds:power|,UN,|ds:power_limit|,UN')
+		->and(TholdTemplateXml::POWER_EXPRESSION)->toContain('0,EXC,LE')
+		->and(TholdTemplateXml::POWER_EXPRESSION)->not->toContain('CURRENT_DATA_SOURCE');
 });
 
 it('stores every data source as a gauge, so Thold never computes a rate from an unknown value', function () {
