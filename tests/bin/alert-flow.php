@@ -281,10 +281,16 @@ e2e_check(is_numeric($power) && abs((float) $power - (100.5 / 700 * 100)) < 0.01
 $logged = alert_round('power unknown with a valid limit', array('power.draw' => 'N/A'));
 alert_expect('power unknown with a valid limit', $logged, array('power_pct' => array(false, array())) + $quiet);
 e2e_check(!is_numeric(alert_thold('power_pct')['lastread'] ?? ''), 'power unknown with a valid limit: the derived value is unknown');
+e2e_check(e2e_ss($e2e_host, 'get', 'power_pct', e2e_key(1)) === 'U', 'power unknown with a valid limit: the script server returns U');
 
 $logged = alert_round('zero power limit', array('power.limit' => '0.00'));
 alert_expect('zero power limit', $logged, array('power_pct' => array(false, array())) + $quiet);
 e2e_check(!is_numeric(alert_thold('power_pct')['lastread'] ?? ''), 'zero power limit: the derived value is unknown and does not breach');
+e2e_check(e2e_ss($e2e_host, 'get', 'power_pct', e2e_key(1)) === 'U', 'zero power limit: the script server returns U');
+
+$logged = alert_round('fractional power limit', array('power.draw' => '200.25', 'power.limit' => '200.50'));
+alert_expect('fractional power limit', $logged, array('power_pct' => array(false, array())) + $quiet);
+e2e_check(abs((float) (alert_thold('power_pct')['lastread'] ?? 0) - (200.25 / 200.50 * 100)) < 0.000001, 'fractional power limit: Thold preserves decimal precision below 100 percent');
 
 $logged = alert_round('power exceeds changed limit', array('power.draw' => '250.00', 'power.limit' => '200.00'));
 alert_expect('power exceeds changed limit', $logged, array('power_pct' => array(true, array())) + $quiet);
