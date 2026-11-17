@@ -77,7 +77,7 @@ it('parses each driver line\'s fixture into one reading per GPU, in model units'
 		->and($first->values['mem_used'])->toBe(2048 * 1048576.0)
 		->and($first->values['mem_total'])->toBe(81559 * 1048576.0)
 		->and($first->values['clock_sm'])->toBe(1410.0)
-		->and(array_keys($first->values))->toEqualCanonicalizing(array_values(array_diff(MetricModel::names(), ['age'], array_keys(MetricModel::DELTAS))));
+		->and(array_keys($first->values))->toEqualCanonicalizing(array_values(array_diff(MetricModel::names(), ['age', 'power_pct'], array_keys(MetricModel::DELTAS))));
 })->with([
 	['r580-8gpu', 8, '580.95.05'],
 	['r595-1gpu', 1, '595.45.04'],

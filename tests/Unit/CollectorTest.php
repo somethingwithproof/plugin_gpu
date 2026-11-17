@@ -340,7 +340,7 @@ it('reads the staleness limit within its bounds', function (mixed $stored, int $
 ]);
 
 it('keeps one observation column per stored model field', function () {
-	expect(Schema::observationMetrics())->toEqualCanonicalizing(array_values(array_diff(\Somethingwithproof\Gpu\MetricModel::names(), ['age'])));
+	expect(Schema::observationMetrics())->toEqualCanonicalizing(array_values(array_diff(\Somethingwithproof\Gpu\MetricModel::names(), ['age', 'power_pct'])));
 });
 
 it('computes new ECC errors from the stored total, as unknown across a reset or a missing total', function () {
