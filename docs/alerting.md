@@ -12,7 +12,7 @@ Tested against Thold v1.8.2 (`1eb406bd0f81f3204358cce7bd43c8bb5adc8e4a`) and Mai
 4. Turn on Thold's *Auto Create Thresholds* setting, so Thold creates the thresholds as the plugin creates each GPU's graphs. This is the path the end-to-end test takes.
 5. Devices that already had the GPU Node template before step 3 are not linked yet: add the templates under *Associated Threshold Templates* on each device's page, then select the devices under **Management > Devices** and run the **Apply Thresholds** action.
 
-Thold creates one threshold per template for each GPU's data source. Notification lists, emails, and repeat settings are Thold's; set them on the templates or the thresholds.
+Thold creates one threshold per template for each GPU's data source. Notification lists, emails, and repeat settings are Thold's; set them on the templates or thresholds.
 
 ## Shipped templates
 
@@ -46,7 +46,7 @@ The template list is generated from `lib/TholdTemplateXml.php`, and a unit test 
 
 ## What the end-to-end test proves
 
-`tests/bin/alert-flow.php` imports the shipped templates with Thold's own import, links them to the GPU Node template, and lets Thold create the thresholds when the plugin creates the graphs. It then changes the fake `nvidia-smi` output behind a real `snmpd`, collects over SNMPv3, runs Cacti's poller and Thold's check, and reads Thold's log:
+`tests/bin/alert-flow.php` imports the shipped templates with Thold's own import, links them to the GPU Node template, and lets Thold create the thresholds when the plugin creates the graphs. It checks the power percentage against the current power and limit, including unknown power and a zero limit, then changes the fake `nvidia-smi` output behind a real `snmpd`, collects over SNMPv3, runs Cacti's poller and Thold's check, and reads Thold's log:
 
 - a hot, hardware-throttled GPU with new uncorrected errors and a pending page retirement fires each threshold, the temperature only on its second poll, and each restores when the value returns;
 - a driver reload drops the ECC total to 0: the new-error value reads `U`, nothing breaches, and Thold stays enabled; two new errors after the reset fire the threshold again, and it restores;

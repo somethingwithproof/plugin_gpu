@@ -49,8 +49,8 @@ final class TholdTemplateXml {
 	private const EXACT      = 0;
 	private const EXPRESSION = 3;
 
-	public const POWER_EXPRESSION = '|ds:power|,UN,|ds:power_limit|,UN,OR,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,OR,UNKN,'
-		. '|ds:power|,UN,0,|ds:power|,IF,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,1,'
+	public const POWER_EXPRESSION = 'CURRENT_DATA_SOURCE,UN,|ds:power_limit|,UN,OR,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,OR,UNKN,'
+		. 'CURRENT_DATA_SOURCE,UN,0,CURRENT_DATA_SOURCE,IF,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,LE,1,'
 		. '|ds:power_limit|,UN,1,|ds:power_limit|,IF,IF,/,100,*,IF';
 
 	/**
