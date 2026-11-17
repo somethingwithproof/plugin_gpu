@@ -254,8 +254,9 @@ e2e_check($alert_count === 8 * count(TholdTemplateXml::templates()), "setup: Tho
 
 foreach (TholdTemplateXml::templates() as $alert_name => $spec) {
 	$t = alert_thold($spec[0]);
+	$data_type = $spec[3] === '' ? 0 : 2;
 
-	e2e_check(($t['thold_hi'] ?? '') === $spec[1] && ($t['thold_enabled'] ?? '') === 'on' && (int) ($t['data_type'] ?? -1) === ($spec[3] === '' ? 0 : 3) && ($t['expression'] ?? '') === ($spec[3] === '' ? '' : TholdTemplateXml::POWER_EXPRESSION), "setup: '$alert_name' is on GPU 0 above " . $spec[1]);
+	e2e_check(($t['thold_hi'] ?? '') === $spec[1] && ($t['thold_enabled'] ?? '') === 'on' && (int) ($t['data_type'] ?? -1) === $data_type && ($t['percent_ds'] ?? '') === $spec[3] && ($t['expression'] ?? '') === '', "setup: '$alert_name' is on GPU 0 above " . $spec[1]);
 }
 
 // A low staleness threshold for this test only (the template's is 900 s).
@@ -283,7 +284,7 @@ e2e_check(!is_numeric(alert_thold('power')['lastread'] ?? ''), 'power unknown wi
 
 $logged = alert_round('zero power limit', array('power.limit' => '0.00'));
 alert_expect('zero power limit', $logged, array('power' => array(false, array())) + $quiet);
-e2e_check(!is_numeric(alert_thold('power')['lastread'] ?? ''), 'zero power limit: the expression returns an unknown percentage');
+e2e_check((float) (alert_thold('power')['lastread'] ?? -1) === 0.0, 'zero power limit: Thold avoids division by zero and does not breach');
 
 $logged = alert_round('power exceeds changed limit', array('power.draw' => '250.00', 'power.limit' => '200.00'));
 alert_expect('power exceeds changed limit', $logged, array('power' => array(true, array())) + $quiet);

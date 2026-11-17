@@ -81,10 +81,21 @@ it('thresholds only drawn gauges, never a counter, Idle, or the volatile ECC tot
 		->and($items)->toContain('thr_hw_thermal');
 });
 
-it('uses Thold data-source replacement tokens in the power expression', function () {
-	expect(TholdTemplateXml::POWER_EXPRESSION)->toContain('|ds:power|,UN,|ds:power_limit|,UN')
-		->and(TholdTemplateXml::POWER_EXPRESSION)->toContain('0,EXC,LE')
-		->and(TholdTemplateXml::POWER_EXPRESSION)->not->toContain('CURRENT_DATA_SOURCE');
+it('uses Thold percent data type for power against the current limit data source', function () {
+	$xml      = simplexml_load_string(TholdTemplateXml::xml());
+	$power    = null;
+
+	foreach ($xml->children() as $template) {
+		if ((string) $template->name === 'GPU - Power Above Limit') {
+			$power = $template;
+			break;
+		}
+	}
+
+	expect($power)->not->toBeNull()
+		->and((string) $power->data_type)->toBe('2')
+		->and((string) $power->percent_ds)->toBe('power_limit')
+		->and((string) $power->expression)->toBe('');
 });
 
 it('stores every data source as a gauge, so Thold never computes a rate from an unknown value', function () {

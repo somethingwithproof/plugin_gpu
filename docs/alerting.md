@@ -46,7 +46,7 @@ The template list is generated from `lib/TholdTemplateXml.php`, and a unit test 
 
 ## What the end-to-end test proves
 
-`tests/bin/alert-flow.php` imports the shipped templates with Thold's own import, links them to the GPU Node template, and lets Thold create the thresholds when the plugin creates the graphs. It checks the power percentage against the current power and limit, including unknown power and a zero limit, then changes the fake `nvidia-smi` output behind a real `snmpd`, collects over SNMPv3, runs Cacti's poller and Thold's check, and reads Thold's log:
+`tests/bin/alert-flow.php` imports the shipped templates with Thold's own import, links them to the GPU Node template, and lets Thold create the thresholds when the plugin creates the graphs. The power threshold uses Thold's built-in percentage data type, which calculates against the current poll's `power_limit` sample; an unknown power reading does not breach, and a zero limit resolves to zero under Thold's calculation. The test then changes the fake `nvidia-smi` output behind a real `snmpd`, collects over SNMPv3, runs Cacti's poller and Thold's check, and reads Thold's log:
 
 - a hot, hardware-throttled GPU with new uncorrected errors and a pending page retirement fires each threshold, the temperature only on its second poll, and each restores when the value returns;
 - a driver reload drops the ECC total to 0: the new-error value reads `U`, nothing breaches, and Thold stays enabled; two new errors after the reset fire the threshold again, and it restores;

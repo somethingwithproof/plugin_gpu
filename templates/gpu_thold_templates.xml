@@ -31,9 +31,9 @@
 	<thold_hi>100</thold_hi>
 	<thold_low></thold_low>
 	<thold_fail_trigger>2</thold_fail_trigger>
-	<data_type>3</data_type>
-	<percent_ds></percent_ds>
-	<expression>|ds:power|,UN,|ds:power_limit|,UN,OR,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,EXC,LE,OR,UNKN,|ds:power|,UN,0,|ds:power|,IF,|ds:power_limit|,UN,1,|ds:power_limit|,IF,0,EXC,LE,1,|ds:power_limit|,UN,1,|ds:power_limit|,IF,IF,/,100,*,IF</expression>
+	<data_type>2</data_type>
+	<percent_ds>power_limit</percent_ds>
+	<expression></expression>
 	<repeat_alert>0</repeat_alert>
 	<restored_alert></restored_alert>
 </template2>
