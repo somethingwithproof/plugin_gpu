@@ -64,3 +64,39 @@ it('keeps a deleted device selected when a node is edited, instead of the first 
 	expect($html)->toContain('<option value="101" selected>Deleted device (ID 101)</option>')
 		->and($html)->toContain('<option value="5">other device</option>');
 });
+
+it('offers Delete for a node whose device was deleted, in the list and on the edit page', function () {
+	$GLOBALS['__gpu_db_rows'] = ['FROM plugin_gpu_node' => [
+		['id' => 4, 'host_id' => 101, 'admin_state' => 'enabled', 'description' => null, 'device_id' => null, 'created_at' => 1, 'updated_at' => 1],
+		['id' => 5, 'host_id' => 5, 'admin_state' => 'enabled', 'description' => 'hidden device', 'device_id' => 5, 'created_at' => 1, 'updated_at' => 1],
+	]];
+
+	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), new NodeAccess(fn (int $id): bool => false));
+
+	ob_start();
+	$page->renderList();
+	$list = (string) ob_get_clean();
+
+	ob_start();
+	$page->renderEdit(new Node(4, 101, AdminState::Enabled, '', false, 0, 0));
+	$edit = (string) ob_get_clean();
+
+	$GLOBALS['__gpu_db_rows'] = [];
+
+	expect($list)->toContain('name="id" value="4"')
+		->and($list)->toContain('value="Delete"')
+		->and($list)->not->toContain('name="id" value="5"')
+		->and($edit)->toContain('name="action" value="delete"');
+});
+
+it('offers Delete on the edit page of a node the user may manage', function () {
+	$GLOBALS['__gpu_db_rows'] = [];
+
+	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), new NodeAccess(fn (int $id): bool => true));
+
+	ob_start();
+	$page->renderEdit(new Node(4, 101, AdminState::Enabled, '', true, 0, 0));
+	$edit = (string) ob_get_clean();
+
+	expect($edit)->toContain('name="action" value="delete"');
+});

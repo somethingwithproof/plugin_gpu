@@ -69,7 +69,7 @@ final class NodesPage {
 				. '<td>' . html_escape($this->collection($statuses[$node->id] ?? null)) . '</td>'
 				. '<td>' . ($counts[$node->id][Presence::Present->value] ?? 0) . '</td>'
 				. '<td>' . ($counts[$node->id][Presence::Absent->value] ?? 0) . '</td>'
-				. '<td>' . ($this->access->canManage($node) ? $this->actionForm($node->id, 'delete', __('Delete', 'gpu')) : '') . '</td>'
+				. '<td>' . ($this->access->canRemove($node) ? $this->actionForm($node->id, 'delete', __('Delete', 'gpu')) : '') . '</td>'
 				. '</tr>';
 		}
 
@@ -191,7 +191,13 @@ final class NodesPage {
 
 		if ($node !== null && $this->access->canManage($node)) {
 			$this->renderRetire($node);
-		} elseif ($canCreateDevice) {
+		}
+
+		if ($node !== null && $this->access->canRemove($node)) {
+			print $this->actionForm($node->id, 'delete', __('Delete', 'gpu'));
+		}
+
+		if ($canCreateDevice && ($node === null || !$this->access->canRemove($node))) {
 			$this->renderCreateDevice();
 		}
 	}

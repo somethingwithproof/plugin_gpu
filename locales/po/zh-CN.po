@@ -106,6 +106,14 @@ msgstr "监控视图"
 msgid "Observations could not be read. Ask an administrator to check the plugin log."
 msgstr "无法读取观测结果。请联系管理员检查插件日志。"
 
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "已禁用"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "从未"
+
 #: include/operator.php
 msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
 msgstr "将 GPU 健康页面上的样本时效、ECC 和限频状态与设备图表进行比较。身份变更和节点配置请交由管理员处理。"
@@ -284,10 +292,6 @@ msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports t
 msgstr "尚无 GPU 记录。节点采集报告 GPU 后会在此显示。"
 
 #: lib/HealthPage.php lib/NodesPage.php
-msgid "Disabled"
-msgstr "已禁用"
-
-#: lib/HealthPage.php lib/NodesPage.php
 msgid "Enabled"
 msgstr "已启用"
 
@@ -384,10 +388,6 @@ msgstr "发现于 %s，移动尚未确认"
 #: lib/InventoryPage.php
 msgid "seen at another node, move not confirmed"
 msgstr "发现于另一节点，移动尚未确认"
-
-#: lib/InventoryPage.php lib/OperatorPage.php
-msgid "Never"
-msgstr "从未"
 
 #: lib/NodesPage.php lib/Pages.php
 msgid "GPU Nodes"

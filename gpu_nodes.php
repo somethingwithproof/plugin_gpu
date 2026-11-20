@@ -148,7 +148,7 @@ switch ($gpu_action) {
 
 		// A node whose device was deleted may be deleted too, by any GPU
 		// Admin; see NodeAccess.
-		if (!$gpu_access->canRemove($gpu_node)) {
+		if ($gpu_node === null || !$gpu_access->canRemove($gpu_node)) {
 			gpu_nodes_refuse();
 		}
 
@@ -186,7 +186,7 @@ switch ($gpu_action) {
 		exit;
 	case 'retire':
 		$gpu_record = gpu_nodes_gpu($gpu_access, (int) get_filter_request_var('id'), false);
-		$gpu_user   = isset($_SESSION[SESS_USER_ID]) ? (int) $_SESSION[SESS_USER_ID] : 0;
+		$gpu_user   = is_numeric($_SESSION['sess_user_id'] ?? null) ? (int) $_SESSION['sess_user_id'] : 0;
 
 		if ($gpu_gpus->retire($gpu_record->id, $gpu_record->nodeId, $gpu_user, $gpu_clock->now())) {
 			$gpu_reindex->request($gpu_record->nodeId, 'GPU retired', $gpu_clock->now());

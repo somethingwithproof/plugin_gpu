@@ -106,6 +106,14 @@ msgstr "Vista de supervisión"
 msgid "Observations could not be read. Ask an administrator to check the plugin log."
 msgstr "No se pudieron leer las observaciones. Pida a un administrador que revise el registro del complemento."
 
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Nunca"
+
 #: include/operator.php
 msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
 msgstr "Compare la antigüedad de las muestras, ECC y la limitación de rendimiento en GPU Health con los gráficos del dispositivo. Remita los cambios de identidad y la configuración de nodos a un administrador."
@@ -284,10 +292,6 @@ msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports t
 msgstr "Todavía no hay GPU registradas. Aparecerán aquí cuando la recopilación de un nodo las detecte."
 
 #: lib/HealthPage.php lib/NodesPage.php
-msgid "Disabled"
-msgstr "Desactivado"
-
-#: lib/HealthPage.php lib/NodesPage.php
 msgid "Enabled"
 msgstr "Activado"
 
@@ -384,10 +388,6 @@ msgstr "Detectada en %s; traslado sin confirmar"
 #: lib/InventoryPage.php
 msgid "seen at another node, move not confirmed"
 msgstr "Detectada en otro nodo; traslado sin confirmar"
-
-#: lib/InventoryPage.php lib/OperatorPage.php
-msgid "Never"
-msgstr "Nunca"
 
 #: lib/NodesPage.php lib/Pages.php
 msgid "GPU Nodes"

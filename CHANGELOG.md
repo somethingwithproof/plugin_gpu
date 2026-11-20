@@ -27,7 +27,7 @@ Phase 1 (NVIDIA through SNMP extend), first version 0.1.0. Not yet run on GPU ha
 
 ### Upgrade notes
 
-- Schema version 3 adds the observation columns `ecc_corr_new`, `ecc_uncorr_new`, `retired_sbe`, `retired_dbe`, and `ecc_mode`. The upgrade runs when the Plugins page or a GPU page is opened.
+- Schema version 3 adds the observation columns `ecc_corr_new`, `ecc_uncorr_new`, `retired_sbe`, `retired_dbe`, and `ecc_mode`. The upgrade runs when a signed-in user opens the Plugins page or a GPU page.
 - The metrics `extend` line now also asks for `ecc.mode.current`, `retired_pages.sbe`, and `retired_pages.dbe`. Update it on every node from [docs/node-setup.md](docs/node-setup.md); until then the node's collection fails with *Output rejected*.
 - Only on a node whose `nvidia-smi` is older than the clock event reasons rename, add the optional `cacti_gpu_legacy` extend line from the same page. A metrics line with the current field list that asks for `clocks_throttle_reasons.active` in the last position also works, because both names print the same bitmask there; a line with the earlier field list does not.
 - Re-import `templates/gpu_thold_templates.xml` in Thold to pick up template changes. Existing power threshold rows keep their stored settings after a template re-import; edit each existing power threshold or recreate it from the template to monitor the derived `power_pct` value.

@@ -25,6 +25,12 @@ parameters:
         - setup.php
         - include/operator.php
         - include/unbooted-uninstall.php
+        - gpu_nodes.php
+        - gpu_operator.php
+        - gpu_health.php
+        - gpu_inventory.php
+        - poller_gpu.php
+        - ss_gpu.php
     scanDirectories:
         - %env.CACTI_PATH%/lib
         - %env.CACTI_PATH%/include
@@ -37,3 +43,23 @@ parameters:
             - %env.CACTI_PATH%/include/js/*
             - %env.CACTI_PATH%/include/themes/*
     treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # Cacti pages and CLI scripts chdir() to the Cacti root before
+        # including core files, so the relative paths resolve only at runtime.
+        -
+            identifiers: [include.fileNotFound, includeOnce.fileNotFound]
+            paths: [gpu_*.php]
+        -
+            identifier: requireOnce.fileNotFound
+            path: gpu_operator.php
+        -
+            identifier: require.fileNotFound
+            path: poller_gpu.php
+        # $config comes from core's cli_check.php.
+        -
+            identifier: variable.undefined
+            path: poller_gpu.php
+        # csrf-magic is in include/vendor, which is not scanned.
+        -
+            message: '#^Function csrf_check not found\.$#'
+            path: gpu_operator.php

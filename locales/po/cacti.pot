@@ -108,6 +108,14 @@ msgstr ""
 msgid "Observations could not be read. Ask an administrator to check the plugin log."
 msgstr ""
 
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr ""
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr ""
+
 #: include/operator.php
 msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
 msgstr ""
@@ -286,10 +294,6 @@ msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports t
 msgstr ""
 
 #: lib/HealthPage.php lib/NodesPage.php
-msgid "Disabled"
-msgstr ""
-
-#: lib/HealthPage.php lib/NodesPage.php
 msgid "Enabled"
 msgstr ""
 
@@ -385,10 +389,6 @@ msgstr ""
 
 #: lib/InventoryPage.php
 msgid "seen at another node, move not confirmed"
-msgstr ""
-
-#: lib/InventoryPage.php lib/OperatorPage.php
-msgid "Never"
 msgstr ""
 
 #: lib/NodesPage.php lib/Pages.php

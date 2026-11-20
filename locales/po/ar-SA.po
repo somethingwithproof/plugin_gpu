@@ -106,6 +106,14 @@ msgstr "عرض المراقبة"
 msgid "Observations could not be read. Ask an administrator to check the plugin log."
 msgstr "تعذرت قراءة الملاحظات. اطلب من مسؤول مراجعة سجل الإضافة."
 
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "معطل"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "مطلقًا"
+
 #: include/operator.php
 msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
 msgstr "قارن عمر العينة وحالة ECC وخفض الأداء في GPU Health برسوم الجهاز. أحِل تغييرات الهوية وإعداد العقدة إلى مسؤول."
@@ -284,10 +292,6 @@ msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports t
 msgstr "لا توجد وحدات GPU مسجلة بعد. تظهر هنا عندما يبلغ جمع بيانات العقدة عنها."
 
 #: lib/HealthPage.php lib/NodesPage.php
-msgid "Disabled"
-msgstr "معطل"
-
-#: lib/HealthPage.php lib/NodesPage.php
 msgid "Enabled"
 msgstr "مفعّل"
 
@@ -384,10 +388,6 @@ msgstr "رُصدت في %s، ولم يُؤكد النقل"
 #: lib/InventoryPage.php
 msgid "seen at another node, move not confirmed"
 msgstr "رُصدت في عقدة أخرى، ولم يُؤكد النقل"
-
-#: lib/InventoryPage.php lib/OperatorPage.php
-msgid "Never"
-msgstr "مطلقًا"
 
 #: lib/NodesPage.php lib/Pages.php
 msgid "GPU Nodes"

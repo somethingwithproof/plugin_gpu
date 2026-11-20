@@ -32,18 +32,20 @@ if (!isset($called_by_script_server)) {
 	include_once(__DIR__ . '/../../include/cli_check.php');
 	include_once(__DIR__ . '/setup.php');
 
+	// Set by PHP for CLI scripts; PHPStan on PHP 8.5 does not know it here.
+	/** @var list<string> $argv */
 	array_shift($argv);
 
-	print call_user_func_array('ss_gpu', $argv);
+	print ss_gpu(...$argv);
 } else {
 	include_once(__DIR__ . '/setup.php');
 }
 
 /**
- * @param mixed $host_id
- * @param mixed $cmd
- * @param mixed $arg1
- * @param mixed $arg2
+ * @param int|string $host_id
+ * @param int|string $cmd
+ * @param int|string $arg1
+ * @param int|string $arg2
  */
 function ss_gpu($host_id = '', $cmd = '', $arg1 = '', $arg2 = ''): string {
 	$fallback = $cmd === 'get' ? 'U' : '';
