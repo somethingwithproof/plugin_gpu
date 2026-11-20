@@ -32,6 +32,8 @@ if (!isset($called_by_script_server)) {
 	include_once(__DIR__ . '/../../include/cli_check.php');
 	include_once(__DIR__ . '/setup.php');
 
+	// Set by PHP for CLI scripts; PHPStan on PHP 8.5 does not know it here.
+	/** @var list<string> $argv */
 	array_shift($argv);
 
 	print ss_gpu(...$argv);
