@@ -483,8 +483,15 @@ function gpu_config_arrays(): void {
 	}
 
 	// Cacti has not checked the session yet; a repair that keeps failing
-	// must not rerun, and log, on every anonymous request.
-	if (!empty($_SESSION['sess_user_id']) && in_array(get_current_page(), \Somethingwithproof\Gpu\Pages::upgradeTriggers(), true)) {
+	// must not rerun, and log, on every anonymous request. A guest visit to
+	// graph_view.php leaves the guest ID in the session, so exclude it.
+	$sessionUser = (int) ($_SESSION['sess_user_id'] ?? 0);
+
+	if (
+		$sessionUser > 0
+		&& in_array(get_current_page(), \Somethingwithproof\Gpu\Pages::upgradeTriggers(), true)
+		&& $sessionUser !== (int) get_guest_account()
+	) {
 		plugin_gpu_upgrade();
 	}
 }

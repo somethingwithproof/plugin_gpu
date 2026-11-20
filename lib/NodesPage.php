@@ -191,10 +191,13 @@ final class NodesPage {
 
 		if ($node !== null && $this->access->canManage($node)) {
 			$this->renderRetire($node);
-		} elseif ($node !== null && $this->access->canRemove($node)) {
-			// The device is gone, so only Delete applies (canRemove).
+		}
+
+		if ($node !== null && $this->access->canRemove($node)) {
 			print $this->actionForm($node->id, 'delete', __('Delete', 'gpu'));
-		} elseif ($canCreateDevice) {
+		}
+
+		if ($canCreateDevice && ($node === null || !$this->access->canRemove($node))) {
 			$this->renderCreateDevice();
 		}
 	}

@@ -88,3 +88,15 @@ it('offers Delete for a node whose device was deleted, in the list and on the ed
 		->and($list)->not->toContain('name="id" value="5"')
 		->and($edit)->toContain('name="action" value="delete"');
 });
+
+it('offers Delete on the edit page of a node the user may manage', function () {
+	$GLOBALS['__gpu_db_rows'] = [];
+
+	$page = new NodesPage(new NodeRepository(false, new FixedClock(0)), new GpuRepository(false), new NodeAccess(fn (int $id): bool => true));
+
+	ob_start();
+	$page->renderEdit(new Node(4, 101, AdminState::Enabled, '', true, 0, 0));
+	$edit = (string) ob_get_clean();
+
+	expect($edit)->toContain('name="action" value="delete"');
+});
