@@ -106,6 +106,14 @@ msgstr "निगरानी दृश्य"
 msgid "Observations could not be read. Ask an administrator to check the plugin log."
 msgstr "अवलोकन पढ़े नहीं जा सके। प्रशासक से प्लगइन लॉग जाँचने को कहें।"
 
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "अक्षम"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "कभी नहीं"
+
 #: include/operator.php
 msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
 msgstr "GPU Health में नमूने की आयु, ECC और थ्रॉटल स्थिति की तुलना डिवाइस ग्राफ़ से करें। पहचान परिवर्तन और नोड कॉन्फ़िगरेशन के लिए प्रशासक से संपर्क करें।"
@@ -284,10 +292,6 @@ msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports t
 msgstr "अभी कोई GPU रिकॉर्ड नहीं है। नोड के संग्रह में GPU मिलने पर वे यहाँ दिखाई देंगे।"
 
 #: lib/HealthPage.php lib/NodesPage.php
-msgid "Disabled"
-msgstr "अक्षम"
-
-#: lib/HealthPage.php lib/NodesPage.php
 msgid "Enabled"
 msgstr "सक्षम"
 
@@ -384,10 +388,6 @@ msgstr "%s पर देखा गया, स्थानांतरण की 
 #: lib/InventoryPage.php
 msgid "seen at another node, move not confirmed"
 msgstr "दूसरे नोड पर देखा गया, स्थानांतरण की पुष्टि नहीं हुई"
-
-#: lib/InventoryPage.php lib/OperatorPage.php
-msgid "Never"
-msgstr "कभी नहीं"
 
 #: lib/NodesPage.php lib/Pages.php
 msgid "GPU Nodes"

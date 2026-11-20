@@ -32,7 +32,7 @@ function gpu_operator_rows(): array {
 		$rows[] = [
 			'id' => (string) $node->id,
 			'name' => $node->description,
-			'state' => $node->enabled() ? ($h->state->value ?? 'never') : 'disabled',
+			'state' => $node->enabled() ? ($h?->state?->label() ?? __('Never', 'gpu')) : __('Disabled', 'gpu'),
 			'observed' => $h->finishedAt ?? 0,
 			'interval' => max(60, (int) read_config_option('poller_interval')),
 			'detail'       => __('Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator.', 'gpu')

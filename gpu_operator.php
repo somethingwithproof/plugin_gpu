@@ -28,14 +28,8 @@ if (!gpu_page_start()) {
 }
 require_once('./plugins/gpu/include/operator.php');
 
-$user    = (int) ($_SESSION['sess_user_id'] ?? 0);
-$allowed = $user > 0 && api_plugin_user_realm_auth('gpu_operator.php');
-
-if (!$allowed) {
-	http_response_code(403);
-	exit;
-}
-$actions = [];
+// gpu_page_start() has checked the session and the Operator realm.
+$user    = is_numeric($_SESSION['sess_user_id'] ?? null) ? (int) $_SESSION['sess_user_id'] : 0;
 $action  = (string) get_nfilter_request_var('action');
 $session = $_SESSION['gpu_triage'] ?? [];
 $session = is_array($session) ? $session : [];
@@ -46,8 +40,8 @@ try {
 	$now  = time();
 
 	if ($action !== '' && $action !== 'default') {
-		$method = $_SERVER['REQUEST_METHOD'] ?? '';
-		$status = OperatorPage::actionStatus($allowed, $action, $method, $method === 'POST' && csrf_check(false), array_merge(['acknowledge'], array_keys($actions)));
+		$method = is_string($_SERVER['REQUEST_METHOD'] ?? null) ? $_SERVER['REQUEST_METHOD'] : '';
+		$status = OperatorPage::actionStatus($user > 0, $action, $method, $method === 'POST' && csrf_check(false), ['acknowledge']);
 
 		if ($status !== 200) {
 			http_response_code($status);
@@ -92,7 +86,7 @@ try {
 	}
 	top_header();
 	print '<p><a href="gpu_inventory.php">' . html_escape(__('Monitoring view', 'gpu')) . '</a></p>';
-	OperatorPage::render($rows, $session, $user, $now, $actions);
+	OperatorPage::render($rows, $session, $user, $now, []);
 	bottom_footer();
 } catch (Throwable $error) {
 	cacti_log('Operator page failed (' . get_class($error) . ')', false, 'GPU');

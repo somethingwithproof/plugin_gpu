@@ -1,4 +1,4 @@
-<!-- Source: README.md; SHA256: cb3865a085270dfe8ee8d421f0e19cbf9abcdcfc9c91544f1aa566ab29198618 -->
+<!-- Source: README.md; SHA256: 126deef1783d64f878bf565f1433c10f31aef828eb9bc313aeff2b0335e54c7c -->
 
 <!-- translations:start -->
 [English](../../../README.md) | [简体中文](README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية](../ar-SA/README.md)
@@ -63,7 +63,7 @@ GPU 节点通常已在 Cacti 中监控 CPU、内存和接口。但 GPU 健康是
 - **每个轮询器周期后的采集器。** 读取每个启用节点的代理，更新身份记录，缓存最新样本。脚本服务器输入只读取该缓存，因此 Cacti 轮询绝不等待 GPU 节点。
 - **Cacti 对象**（[ADR 0010](../../decisions/0010-attach-to-existing-node-devices.md)）。模板和 *GPU - Devices* 数据查询以 XML 随附，在安装和升级时导入。保存节点时将数据查询附到其现有设备，重新索引方法设为 None；仅当节点没有设备时，GPU 节点页面才能创建设备。每 GPU 是按厂商和 UUID 建键的索引，共用一个数据源供利用率、内存、温度、功率、功率百分比、时钟、降频、ECC 错误、新增 ECC 错误、退役页面和样本年龄图表使用。每个模型字段均被某个图表绘制，因为 Cacti 只存储图表使用的字段。每次 GPU 变化后插件重新索引；设备 Down 或禁用时被 Cacti 跳过的重新索引会保留，在设备 Up 后执行，并为新 GPU 创建图表。
 - **历史跟随卡。** 缺席 GPU 仍为索引，因此图表出现缺口，返回后在同一 RRD 文件中继续。同槽位的替换卡获得自己的数据源。节点页面上的 **从数据查询移除** 可将缺席 GPU 移出列表；其 RRD 文件和图表保留，直到您删除。
-- **GPU 节点的设备权限。** GPU Admin 只能查看、修改、导出和移动其在 Cacti 中有权查看设备上的节点及 GPU；GPU 移动需要两个节点的权限。设备已删除的节点只能禁用。
+- **GPU 节点的设备权限。** GPU Admin 只能查看、修改、导出和移动其在 Cacti 中有权查看设备上的节点及 GPU；GPU 移动需要两个节点的权限。设备已删除的节点可以禁用或删除。
 - **通用指标模型**（[ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md)、[docs/metrics.md](docs/metrics.md)）。内存以字节表示，时钟事件掩码解码为 `thr_*` 指示项，`age` 是 GPU 自身样本时间的年龄，未知时为 `U`。
 
 执行安装的 Web 服务器用户必须能够写入 `<cacti>/resource/script_server/`，插件在此放置数据查询 XML；否则安装和升级会显示消息并停止，下一次尝试时重试。仅当勾选 *卸载时移除插件的 Cacti 对象* 时，卸载才移除模板和 XML；绝不删除 RRD 文件、设备、图表或数据源（[docs/operations.md](docs/operations.md#uninstall)）。远程数据采集器上的节点要到阶段 3 才采集。

@@ -482,7 +482,9 @@ function gpu_config_arrays(): void {
 		$menu[__('Management')]['plugins/gpu/' . $file] = $title;
 	}
 
-	if (in_array(get_current_page(), \Somethingwithproof\Gpu\Pages::upgradeTriggers(), true)) {
+	// Cacti has not checked the session yet; a repair that keeps failing
+	// must not rerun, and log, on every anonymous request.
+	if (!empty($_SESSION['sess_user_id']) && in_array(get_current_page(), \Somethingwithproof\Gpu\Pages::upgradeTriggers(), true)) {
 		plugin_gpu_upgrade();
 	}
 }
