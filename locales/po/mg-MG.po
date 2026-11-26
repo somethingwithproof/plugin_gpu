@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: mg-MG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Tsy misy io tendro GPU na GPU io, na eo amin'ny fitaovana tsy azonao idirana."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Tsy azo nampidirina tao amin'ny fitaovana ny fanontaniana angona GPU. Hamarino fa tafapetraka ny môdelin'ny plugin."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Fitaovana: voafafa ny fitaovan'ilay tendro, ka tsy azo atao afa-tsy ny manakatona ilay tendro."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Fitaovana: mifidiana fitaovana Cacti efa misy."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Fitaovana: efa tendro GPU ity fitaovana ity."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "Voatahiry ny tendro GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Tsy voatahiry ny tendro GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "Voaisotra ny tendro GPU. Navela teo amin'ny toerany ny fitaovana Cacti-ny."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "Tsy voaisotra ny tendro GPU satria misy firaketana GPU miankina aminy. Akatony fotsiny izy; tsy fafana mihitsy ny firaketana GPU."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "An'ilay tendro nahitana azy izao ny GPU, miaraka amin'ny tantarany."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "Mijanona ao amin'ny tendro voarakitra ho azy ny GPU."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "Hiala amin'ny fanontaniana angona amin'ny fanavaozana index manaraka ny GPU. Tazomina ny kisariny sy ny rakitra RRD-ny."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "Ny GPU tsy eo ihany no azo esorina amin'ny fanontaniana angona."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Mitaky fahazoan-dalana hitantana fitaovana Cacti ny famoronana fitaovana."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Famaritana: ampidiro tarehintsoratra azo atonta hatramin'ny 150."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Anaran'ny mpampiantrano: ampidiro anaran'ny mpampiantrano na adiresy IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "Tsy tafapetraka ny môdelin'ny fitaovana Tendro GPU."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "Tsy notazonina ny fitaovana: mety tsy hahazo mijery ireo fitaovana noforoniny ny kaontinao. Angataho ny mpitantana hamorona azy."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Tsy azo nesorina ny fitaovana rehefa nolavina ny fidirana. Angataho ny mpitantana hanaisotra azy."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "Voaforona ny fitaovana sy ny tendro GPU-ny. Amboary ny fikirakirana SNMP an'ilay fitaovana ao amin'ny pejin'ny fitaovana."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Tsy azo noforonina ny fitaovana; jereo ny rakitr'asa Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Fomba fijery fanaraha-maso"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Tsy azo novakiana ny fandinihana. Angataho ny mpitantana hanamarina ny firaketana ny plugin."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Tsy alefa"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Tsy mbola nisy"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "Ampitahao ny taonan'ny santionany, ny ECC ary ny toeran'ny famerana haingam-pandeha ao amin'ny Fahasalaman'ny GPU amin'ny kisarin'ny fitaovana. Ampitao amin'ny mpitantana ny fiovan'ny famantarana sy ny fikirakirana tendro."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "Tsy alefa ny ECC amin'ity GPU ity"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "Tsy mitatitra ECC ity GPU ity"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Tsy notaterina ny fomba ECC"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Vita"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Tsy nahazo alalana"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Lany ny fe-potoana"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Tsy fantatra"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Hadisoan'ny fitaovana"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "Voangona"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Tsy misy GPU notaterina"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Tsy tratra ny mpiasan'ny SNMP"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Tsy hita ny fidirana extend"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Tsy voasintona ny mpamily (driver)"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Tsy hita ny fitaovana"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Notapahina ny vokatra"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Nolavina ny vokatra"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "Nodinganina: efa mandeha"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Tsy voatahiry ny vokatra"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Amin'izao fotoana"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Tara"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Lany andro"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Tsy mbola hita mihitsy"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Mialoha ny famantaranandron'ny mpizara Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Toerana fitantanana"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Backend"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Mpamily (Driver)"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Fahavaozana"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Fanangonana farany"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Fikojakojana"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Node"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Fitaovana"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Fahasalaman'ny tendro GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Tsy misy tendro GPU azonao jerena."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Antony fisehoan-javatra amin'ny famantaranandro"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Index"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Anarana"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Santionany"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Toetra"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Fahasalaman'ny GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "Mbola tsy misy GPU voarakitra. Miseho eto ny GPU raha vao mitatitra azy ireo ny fanangonana tendro iray."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "Alefa"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "Eo am-pikojakojana"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Tsy tafapetraka ny Maint"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Tsy eo am-pikojakojana"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d eo, %d tsy eo, %d mety ho fanoloana"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Tsy eo"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Eo"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "mety ho fanoloana ny firaketana GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Tsy fantatra: mbola tsy voangona"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "GPU %d"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "vita farany %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "fandehanana %d taty aoriana no nodinganina raha mbola nisy fandehanana hafa nitazona ny tendro"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d segondra lasa izay"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d minitra lasa izay"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d ora lasa izay"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d andro lasa izay"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Hita Farany"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "PCI Bus ID"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Notaterin'i"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Lisitry ny GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "hita tao amin'ny %s, tsy voamarina ny famindrana"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "hita tao amin'ny tendro hafa, tsy voamarina ny famindrana"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Tendro GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Hetsika"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Fitaovana"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPU tsy eo"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPU eo"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Mbola tsy misy tendro GPU. Ampidiro fitaovana Cacti manana GPU."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Fitaovana %d voafafa"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Fafao"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Aondrana"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "Alaivo ho JSON ny firaketana tendro sy GPU an'ireo fitaovana azonao jerena. Manaova fanondranana alohan'ny fanesorana izay mamafa ireo tabilao plugin."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Aondrano ny firaketana"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Mbola tsy voangona"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: GPU %d"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "GPU vaovao %d voarakitra"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d s lasa izay"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "fandehanana %d no nodinganina raha mbola nisy iray nandeha"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "Famindrana GPU miandry fanamafisana"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Voarakitra tao amin'ny"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Hita tao amin'ny"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Hamafiso ny famindrana"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Tsipaho"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Tendro GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Tendro GPU vaovao"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Fitaovana voafafa (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Ny fitehirizana dia manampy ny fanontaniana angona GPU amin'ny fitaovana, miaraka amin'ny fanavaozana index mandeha ho azy an'ny Cacti nakatona: manavao index ny plugin isaky ny misy fiovana GPU. Amboary aloha ny mpiasan'ny SNMP an'ilay fitaovana; jereo ny docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Tehirizo"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPU tsy eo"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "Mijanona ho index ao amin'ny fanontaniana angona ny GPU tsy eo, ka mijanona ho miraikitra sy mampiseho banga ny kisariny sy ny rakitra RRD-ny. Ny fanesorana azy amin'ny fanontaniana angona dia mampijanona izany: amin'ny fanavaozana index manaraka dia tsy tanisan'ny Cacti intsony izy, mijanona tsy mihavao ny kisariny ary miseho ho kamboty ny loharanon'angonany, ary tazomina ny rakitra RRD-ny sy ny kisariny mandra-pamafanao azy ireo. Mijanona ny firaketana GPU, ary miverina ao amin'ny fanontaniana angona ny GPU raha tatiterina indray izy."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Esory amin'ny fanontaniana angona"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Nesorina tamin'ny fanontaniana angona"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "Mamoròna fitaovana ho an'ny tendro vaovao"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Rehefa tsy mbola fitaovana Cacti ilay tendro ihany. Ny fitaovana dia mampiasa ny sanda mahazatra an'ny fitaovana eo amin'ny toerana sy ny môdelin'ny fitaovana Tendro GPU; amboary ao amin'ny pejin'ny fitaovana avy eo ny fikirakirana SNMP-ny."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Famaritana"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Anaran'ny mpampiantrano"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Mamorona Fitaovana sy Node"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Jereo eto ambany ny fandinihana voarakitra. Ny fanekena dia manokana ho an'ity fivoriana ity, lany daty rehefa miova ny fandinihana, ary tsy manafoana fampitandremana na manova ny fahasalamana velively."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Fampandehanana GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Fanadihadiana"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Singa"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Voamarika (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Tsy fantatra na efa antitra"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Voamarika ho ekena; tsy niova ny fahasalamana."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Ekeo"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Tsy misy fandinihana azo jerena ho an'ny fitaovana azonao idirana."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Mpandrindra GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Fijery GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Mpitantana GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Famantarana GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "Mariho ho Tsy Hita Rehefa Afaka"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Fanangonana mahomby mifanesy tsy mahita GPU alohan'ny hanamarihana azy ho tsy hita, manomboka amin'ny 1 ka hatramin'ny 100. Tsy isaina mihitsy ny fanangonana tsy nahomby na izay tsy mitatitra GPU. Mitazona ny firaketany sy ny tantarany ireo GPU tsy hita ary tsy voafafa ho azy mihitsy."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Fanangonana GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Lany Andro Rehefa Afaka"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Segondra aorian'ny nakàn'ny fitaovana santionany vao mitsahatra ny fanaovana grafika ny sandany, manomboka amin'ny 60 ka hatramin'ny 86400. Tatitra ho tsy fantatra ny sanda taloha kokoa, ka miseho ho banga ny fanangonana nijanona fa tsy ho tsipika mahitsy mihitsy. Mitohy ny fanisana ny faharetan'ny GPU mba hahafahana mandefa fampitandremana momba izany."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Fanesorana"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Tazomy ny tabilaon'ny plugin rehefa manaisotra"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Rehefa voamarika, ny fanesorana ny plugin dia mitazona ny firaketana node sy GPU. Esory ny marika mba hamafan'ny fanesorana azy ireo; aondrano aloha avy ao amin'ny GPU Nodes izy ireo. Tsy kitihina mihitsy ny fitaovana Cacti, ny loharanon-drakitra, ny grafika ary ny rakitra RRD na izany na tsy izany."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Esory ny singa Cacti an'ny plugin mandritra ny fanesorana"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Rehefa voamarika, ny fanesorana ny plugin dia manala ihany koa ny modely fitaovana GPU, ny fangatahana rakitra, ny modely rakitra ary ny modely grafika nafarany, samy esorina ihany raha tsy misy zavatra ivelan'ny plugin mampiasa azy, ary ny XML fangatahana rakitra GPU nosoratany raha toa ka tsy niova ilay rakitra. Tsy mamafa rakitra RRD, fitaovana, grafika, na loharanon-drakitra mihitsy izy; tazonina ireo modely mbola ampiasain'ireny."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "bits tsy misy famantarana: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Mitaky PHP %s na vaovao kokoa ny plugin GPU. Mampiasa PHP %s ity mpizara ity, ka tsy napetraka na tsy nalefa ny plugin."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "Tsy alefa ny plugin GPU."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "Mitaky PHP %s na vaovao kokoa ny plugin GPU."
+
+#: setup.php
+msgid "Management"
+msgstr "Fitantanana"

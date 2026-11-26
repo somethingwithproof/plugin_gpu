@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: bn-BD\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "ওই GPU নোড বা GPU বিদ্যমান নেই, অথবা এটি এমন একটি ডিভাইসে রয়েছে যাতে আপনার প্রবেশাধিকার নেই।"
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "ডিভাইসটিতে GPU ডেটা কোয়েরি যোগ করা যায়নি। প্লাগইনটির টেমপ্লেটগুলো ইনস্টল করা আছে কি না তা যাচাই করুন।"
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "ডিভাইস: নোডটির ডিভাইস মুছে ফেলা হয়েছে, তাই নোডটিকে কেবল নিষ্ক্রিয় করা যাবে।"
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "ডিভাইস: একটি বিদ্যমান Cacti ডিভাইস নির্বাচন করুন।"
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "ডিভাইস: এই ডিভাইসটি ইতিমধ্যেই একটি GPU নোড।"
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "GPU নোডটি সংরক্ষণ করা হয়েছে।"
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "GPU নোডটি সংরক্ষণ করা যায়নি।"
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "GPU নোডটি সরানো হয়েছে। এর Cacti ডিভাইসটি যথাস্থানে রাখা হয়েছে।"
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "GPU নোডটি সরানো হয়নি কারণ এর অধীনে GPU রেকর্ড রয়েছে। এর পরিবর্তে এটি নিষ্ক্রিয় করুন; GPU রেকর্ড কখনোই মুছে ফেলা হয় না।"
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPU-টি এখন এর ইতিহাসসহ সেই নোডের অধীনে রয়েছে যেখানে এটি দেখা গেছে।"
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU-টি এর রেকর্ডকৃত নোডের সাথেই থাকে।"
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "পরবর্তী রি-ইনডেক্সের সময় GPU-টি ডেটা কোয়েরি থেকে বাদ পড়বে। এর গ্রাফ এবং RRD ফাইলগুলো সংরক্ষিত থাকবে।"
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "কেবল একটি অনুপস্থিত GPU-কে ডেটা কোয়েরি থেকে সরানো যাবে।"
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "একটি ডিভাইস তৈরি করতে Cacti ডিভাইস পরিচালনার অনুমতি প্রয়োজন।"
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "বিবরণ: সর্বোচ্চ ১৫০টি প্রিন্টযোগ্য অক্ষর লিখুন।"
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "হোস্টনাম: একটি হোস্টনাম বা IP ঠিকানা লিখুন।"
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "GPU Node ডিভাইস টেমপ্লেটটি ইনস্টল করা নেই।"
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "ডিভাইসটি রাখা হয়নি: আপনার অ্যাকাউন্ট নিজের তৈরি করা ডিভাইস দেখতে নাও পারে। এটি তৈরি করতে একজন অ্যাডমিনিস্ট্রেটরকে বলুন।"
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "প্রবেশাধিকার প্রত্যাখ্যাত হওয়ার পর ডিভাইসটি সরানো যায়নি। এটি সরাতে একজন অ্যাডমিনিস্ট্রেটরকে বলুন।"
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "ডিভাইস এবং এর GPU নোড তৈরি করা হয়েছে। ডিভাইসটির ডিভাইস পৃষ্ঠায় এর SNMP সেটিংস নির্ধারণ করুন।"
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "ডিভাইসটি তৈরি করা যায়নি; Cacti লগ দেখুন।"
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "মনিটরিং ভিউ"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "পর্যবেক্ষণগুলো পড়া যায়নি। প্লাগইন লগ পরীক্ষা করতে একজন প্রশাসককে বলুন।"
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "নিষ্ক্রিয়"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "কখনো না"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "ডিভাইস গ্রাফগুলোর সাথে GPU Health-এ থাকা স্যাম্পলের বয়স, ECC এবং থ্রটল অবস্থা তুলনা করুন। পরিচয় পরিবর্তন এবং নোড কনফিগারেশনের বিষয়টি একজন অ্যাডমিনিস্ট্রেটরের কাছে পাঠান।"
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "এই GPU-তে ECC নিষ্ক্রিয় রয়েছে"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "এই GPU ECC রিপোর্ট করে না"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "ECC মোড রিপোর্ট করা হয়নি"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "সম্পন্ন"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "অনুমতি প্রত্যাখ্যাত"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "সময় শেষ হয়েছে"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "অজানা"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "টুল ত্রুটি"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "সংগৃহীত"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "কোনো GPU রিপোর্ট করা হয়নি"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "SNMP এজেন্টে পৌঁছানো যাচ্ছে না"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Extend এন্ট্রি অনুপস্থিত"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "ড্রাইভার লোড করা নেই"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "টুল পাওয়া যায়নি"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "আউটপুট ছাঁটাই করা হয়েছে"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "আউটপুট প্রত্যাখ্যাত হয়েছে"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "এড়িয়ে যাওয়া হয়েছে: ইতিমধ্যেই চলছে"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "ফলাফল সংরক্ষিত হয়নি"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "বর্তমান"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "বিলম্বিত"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "পুরনো"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "কখনো পর্যবেক্ষিত হয়নি"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Cacti সার্ভারের ঘড়ির চেয়ে এগিয়ে"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "অ্যাডমিন অবস্থা"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "ব্যাকএন্ড"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "ড্রাইভার"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "হালনাগাদ অবস্থা"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU-সমূহ"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "সর্বশেষ সংগ্রহ"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "রক্ষণাবেক্ষণ"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "নোড"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "টুল"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "GPU নোড স্বাস্থ্য"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "আপনার দেখার মতো কোনো GPU নোড নেই।"
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "ক্লক ইভেন্টের কারণসমূহ"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "ইনডেক্স"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "নাম"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "স্যাম্পল"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "অবস্থা"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "GPU স্বাস্থ্য"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "এখনো কোনো GPU রেকর্ড করা হয়নি। কোনো নোডের সংগ্রহ সেগুলো রিপোর্ট করলেই GPU-গুলো এখানে দেখা যাবে।"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "সক্রিয়"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "রক্ষণাবেক্ষণে রয়েছে"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint ইনস্টল করা নেই"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "রক্ষণাবেক্ষণে নেই"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%dটি উপস্থিত, %dটি অনুপস্থিত, %dটি সম্ভাব্য প্রতিস্থাপন"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "অনুপস্থিত"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "উপস্থিত"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "GPU রেকর্ড %d-এর সম্ভাব্য প্রতিস্থাপন"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "অজানা: এখনো সংগৃহীত হয়নি"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%dটি GPU"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "সর্বশেষ সম্পন্ন %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "অন্য একটি রান নোডটি ধরে রাখায় পরবর্তী %dটি রান এড়িয়ে যাওয়া হয়েছে"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d সেকেন্ড আগে"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d মিনিট আগে"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d ঘণ্টা আগে"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d দিন আগে"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "সর্বশেষ দেখা গেছে"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "PCI Bus ID"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "রিপোর্টকারী"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "GPU ইনভেন্টরি"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "%s-এ দেখা গেছে, স্থানান্তর নিশ্চিত করা হয়নি"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "অন্য একটি নোডে দেখা গেছে, স্থানান্তর নিশ্চিত করা হয়নি"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "GPU নোডসমূহ"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "কার্যক্রম"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "ডিভাইস"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "অনুপস্থিত GPU-সমূহ"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "উপস্থিত GPU-সমূহ"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "এখনো কোনো GPU নোড নেই। GPU রয়েছে এমন একটি Cacti ডিভাইস যোগ করুন।"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "মুছে ফেলা ডিভাইস %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "মুছুন"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "রপ্তানি করুন"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "আপনি দেখতে পারেন এমন ডিভাইসগুলোর নোড ও GPU রেকর্ড JSON হিসেবে ডাউনলোড করুন। প্লাগইন টেবিলগুলো মুছে ফেলার মতো আনইনস্টল করার আগে একটি এক্সপোর্ট নিয়ে নিন।"
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "রেকর্ড এক্সপোর্ট করুন"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "এখনো সংগৃহীত হয়নি"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %dটি GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "%dটি নতুন GPU রেকর্ড করা হয়েছে"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d সেকেন্ড আগে"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "একটি রান চালু থাকা অবস্থায় %dটি রান এড়িয়ে যাওয়া হয়েছে"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "নিশ্চিতকরণের অপেক্ষায় থাকা GPU স্থানান্তর"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "যেখানে রেকর্ড করা হয়েছে"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "যেখানে দেখা গেছে"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "স্থানান্তর নিশ্চিত করুন"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "প্রত্যাখ্যান করুন"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "GPU নোড: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "নতুন GPU নোড"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "মুছে ফেলা ডিভাইস (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "সংরক্ষণ করলে Cacti-র স্বয়ংক্রিয় রি-ইনডেক্স বন্ধ রেখে ডিভাইসটিতে GPU ডেটা কোয়েরি যোগ হয়: প্রতিটি GPU পরিবর্তনের পর প্লাগইনটি রি-ইনডেক্স করে। প্রথমে ডিভাইসটির SNMP এজেন্ট কনফিগার করুন; docs/node-setup.md দেখুন।"
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "সংরক্ষণ করুন"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "অনুপস্থিত GPU-সমূহ"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "একটি অনুপস্থিত GPU ডেটা কোয়েরির একটি ইনডেক্স হিসেবে থেকে যায়, ফলে এর গ্রাফ এবং RRD ফাইলগুলো সংযুক্ত থাকে ও একটি ফাঁক দেখায়। এটিকে ডেটা কোয়েরি থেকে সরিয়ে দিলে তা বন্ধ হয়: পরবর্তী রি-ইনডেক্সে Cacti এটিকে আর তালিকাভুক্ত করে না, এর গ্রাফগুলো হালনাগাদ হওয়া বন্ধ হয় এবং এর ডেটা সোর্সগুলো অরফ্যানড (বিচ্ছিন্ন) হিসেবে দেখায়, আর আপনি মুছে না ফেলা পর্যন্ত এর RRD ফাইল এবং গ্রাফগুলো সংরক্ষিত থাকে। GPU রেকর্ডটি থেকে যায় এবং এটি আবার রিপোর্ট করা হলে GPU-টি ডেটা কোয়েরিতে ফিরে আসে।"
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "ডেটা কোয়েরি থেকে সরান"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "ডেটা কোয়েরি থেকে সরানো হয়েছে"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "নতুন নোডের জন্য একটি ডিভাইস তৈরি করুন"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "কেবল যখন নোডটি এখনো কোনো Cacti ডিভাইস নয়। ডিভাইসটি সাইটের ডিভাইস ডিফল্ট এবং GPU Node ডিভাইস টেমপ্লেট ব্যবহার করে; পরে ডিভাইস পৃষ্ঠায় গিয়ে এর SNMP সেটিংস নির্ধারণ করুন।"
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "বিবরণ"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "হোস্টনেম"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "ডিভাইস ও নোড তৈরি করুন"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "নিচে নথিভুক্ত পর্যবেক্ষণগুলো পর্যালোচনা করুন। স্বীকৃতিগুলো এই সেশনের জন্য ব্যক্তিগত, পর্যবেক্ষণ পরিবর্তিত হলে মেয়াদ শেষ হয় এবং কখনোই সতর্কতা দমন করে না বা স্বাস্থ্য অবস্থা পরিবর্তন করে না।"
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "GPU অপারেশনস"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "অনুসন্ধান"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "অবজেক্ট"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "পর্যবেক্ষিত (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "অজানা বা পুরনো"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "স্বীকৃত; স্বাস্থ্য অবস্থা অপরিবর্তিত।"
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "স্বীকার করুন"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "আপনার অ্যাক্সেসযোগ্য ডিভাইসগুলোর জন্য কোনো পর্যবেক্ষণ উপলব্ধ নেই।"
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "GPU অপারেটর"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "GPU ভিউ"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "GPU অ্যাডমিন"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "GPU পরিচিতি"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "অনুপস্থিত হিসেবে চিহ্নিত করার সীমা"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "কোনো GPU-কে অনুপস্থিত হিসেবে চিহ্নিত করার আগে পরপর কতটি সফল সংগ্রহে সেটি অনুপস্থিত থাকতে হবে, ১ থেকে ১০০ পর্যন্ত। ব্যর্থ সংগ্রহ বা যে সংগ্রহে কোনো GPU পাওয়া যায়নি তা কখনোই গণনা করা হয় না। অনুপস্থিত GPU-গুলোর রেকর্ড ও ইতিহাস সংরক্ষিত থাকে এবং কখনোই স্বয়ংক্রিয়ভাবে মুছে ফেলা হয় না।"
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "GPU সংগ্রহ"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "পুরোনো গণ্য হওয়ার সময়সীমা"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "টুলটি নমুনা নেওয়ার কত সেকেন্ড পর এর মানগুলো আর গ্রাফে দেখানো হবে না, ৬০ থেকে ৮৬৪০০ পর্যন্ত। এর চেয়ে পুরোনো মান 'অজানা' হিসেবে রিপোর্ট করা হয়, ফলে সংগ্রহ বন্ধ হলে সেটি সমতল রেখা না হয়ে ফাঁকা অংশ হিসেবে দেখা যায়। GPU-এর বয়স মান গণনা চলতে থাকে যাতে এর ওপর অ্যালার্ট পাঠানো যায়।"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "আনইনস্টল"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "আনইনস্টলের সময় প্লাগইন টেবিল রাখুন"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "টিক দেওয়া থাকলে, প্লাগইন আনইনস্টল করার সময় এর নোড ও GPU রেকর্ডগুলো রেখে দেওয়া হয়। আনইনস্টলের সময় এগুলো মুছে ফেলতে টিক সরিয়ে দিন; তার আগে GPU Nodes থেকে সেগুলো এক্সপোর্ট করে নিন। উভয় ক্ষেত্রেই Cacti ডিভাইস, ডেটা সোর্স, গ্রাফ এবং RRD ফাইলগুলোতে কখনোই হাত দেওয়া হয় না।"
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "আনইনস্টলের সময় প্লাগইনের Cacti অবজেক্টগুলো সরিয়ে ফেলুন"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "টিক দেওয়া থাকলে, প্লাগইন আনইনস্টল করার সময় এটি যে GPU ডিভাইস টেমপ্লেট, ডেটা কোয়েরি, ডেটা টেমপ্লেট এবং গ্রাফ টেমপ্লেটগুলো ইম্পোর্ট করেছিল সেগুলোও সরিয়ে ফেলে (প্রতিটি কেবল তখনই যখন প্লাগইনের বাইরের কোনো কিছু সেটি ব্যবহার করে না) এবং এটি যে GPU ডেটা কোয়েরি XML লিখেছিল সেটিও সরায় (কেবল যদি ফাইলটি অপরিবর্তিত থাকে)। এটি কখনোই RRD ফাইল, ডিভাইস, গ্রাফ বা ডেটা সোর্স মুছে ফেলে না; যেসব টেমপ্লেট সেগুলো এখনো ব্যবহার করে, তা রেখে দেওয়া হয়।"
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "ইন্ডিকেটর ছাড়া বিটসমূহ: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "GPU প্লাগইনটির জন্য PHP %s বা পরবর্তী সংস্করণ প্রয়োজন। এই সার্ভারে PHP %s চলছে, তাই প্লাগইনটি ইনস্টল বা সক্রিয় করা হয়নি।"
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "GPU প্লাগইনটি সক্রিয় নয়।"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "GPU প্লাগইনটির জন্য PHP %s বা পরবর্তী সংস্করণ প্রয়োজন।"
+
+#: setup.php
+msgid "Management"
+msgstr "ব্যবস্থাপনা"

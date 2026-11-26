@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: ta-IN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "அந்த GPU கணு அல்லது GPU இல்லை, அல்லது உங்களுக்கு அணுகல் இல்லாத ஒரு சாதனத்தில் உள்ளது."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "GPU தரவு வினவலைச் சாதனத்தில் சேர்க்க முடியவில்லை. செருகுநிரலின் வார்ப்புருக்கள் நிறுவப்பட்டுள்ளனவா என்பதைச் சரிபார்க்கவும்."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "சாதனம்: கணுவின் சாதனம் நீக்கப்பட்டுவிட்டது, எனவே கணுவை முடக்க மட்டுமே முடியும்."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "சாதனம்: ஏற்கனவே உள்ள ஒரு Cacti சாதனத்தைத் தேர்ந்தெடுக்கவும்."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "சாதனம்: இந்தச் சாதனம் ஏற்கனவே ஒரு GPU கணுவாக உள்ளது."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "GPU கணு சேமிக்கப்பட்டது."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "GPU கணுவைச் சேமிக்க முடியவில்லை."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "GPU கணு அகற்றப்பட்டது. அதன் Cacti சாதனம் அப்படியே விடப்பட்டது."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "GPU பதிவுகள் அதற்கு உரியதாக இருப்பதால் GPU கணு அகற்றப்படவில்லை. அதற்குப் பதிலாக அதை முடக்கவும்; GPU பதிவுகள் ஒருபோதும் நீக்கப்படாது."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPU இப்போது அதன் வரலாற்றுடன், அது காணப்பட்ட கணுவிற்கு உரியதாகிறது."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU அதன் பதிவு செய்யப்பட்ட கணுவுடனேயே இருக்கும்."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "அடுத்த மறுஅட்டவணைப்படுத்தலில் GPU தரவு வினவலிலிருந்து நீங்கும். அதன் வரைபடங்களும் RRD கோப்புகளும் தக்கவைக்கப்படும்."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "இல்லாத GPU ஐ மட்டுமே தரவு வினவலிலிருந்து அகற்ற முடியும்."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "ஒரு சாதனத்தை உருவாக்க Cacti சாதனங்களை நிர்வகிப்பதற்கான அனுமதி தேவை."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "விளக்கம்: அச்சிடக்கூடிய 150 எழுத்துகள் வரை உள்ளிடவும்."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "புரவலன் பெயர்: புரவலன் பெயர் அல்லது IP முகவரியை உள்ளிடவும்."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "GPU கணு சாதன வார்ப்புரு நிறுவப்படவில்லை."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "சாதனம் தக்கவைக்கப்படவில்லை: உங்கள் கணக்கு உருவாக்கும் சாதனங்களை அதனால் பார்க்க முடியாமல் இருக்கலாம். அதை உருவாக்க நிர்வாகியிடம் கேளுங்கள்."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "அணுகல் மறுக்கப்பட்ட பிறகு சாதனத்தை அகற்ற முடியவில்லை. அதை அகற்ற நிர்வாகியிடம் கேளுங்கள்."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "சாதனமும் அதன் GPU கணுவும் உருவாக்கப்பட்டன. சாதனத்தின் பக்கத்தில் அதன் SNMP அமைப்புகளை அமைக்கவும்."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "சாதனத்தை உருவாக்க முடியவில்லை; Cacti பதிவைப் பார்க்கவும்."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "கண்காணிப்புப் பார்வை"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "அவதானிப்புகளைப் படிக்க முடியவில்லை. செருகுநிரல் பதிவைச் சரிபார்க்க நிர்வாகியிடம் கேளுங்கள்."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "முடக்கப்பட்டது"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "ஒருபோதும் இல்லை"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "GPU நலனில் உள்ள மாதிரி வயது, ECC மற்றும் வேகக்கட்டுப்பாட்டு நிலையைச் சாதன வரைபடங்களுடன் ஒப்பிடவும். அடையாள மாற்றங்கள் மற்றும் கணு கட்டமைப்பை நிர்வாகியிடம் மேல்முறையீடு செய்யவும்."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "இந்த GPU இல் ECC முடக்கப்பட்டுள்ளது"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "இந்த GPU ECC ஐப் புகாரளிக்கவில்லை"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "ECC பயன்முறை புகாரளிக்கப்படவில்லை"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "நிறைவடைந்தது"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "அனுமதி மறுக்கப்பட்டது"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "காலாவதியானது"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "தெரியாதது"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "கருவிப் பிழை"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "சேகரிக்கப்பட்டது"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "எந்த GPU-களும் புகாரளிக்கப்படவில்லை"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "SNMP முகவர் அணுக முடியாத நிலையில் உள்ளது"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "நீட்டிப்பு உள்ளீடு இல்லை"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "இயக்கி ஏற்றப்படவில்லை"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "கருவி கிடைக்கவில்லை"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "வெளியீடு சுருக்கப்பட்டது"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "வெளியீடு நிராகரிக்கப்பட்டது"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "தவிர்க்கப்பட்டது: ஏற்கனவே இயங்குகிறது"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "முடிவு சேமிக்கப்படவில்லை"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "தற்போதைய"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "தாமதமானது"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "பழமையானது"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "ஒருபோதும் கவனிக்கப்படவில்லை"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Cacti சேவையகத்தின் கடிகாரத்தை விட முன்னால் உள்ளது"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "நிர்வாக நிலை"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "பின்தளம்"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "இயக்கி"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "புதுமை"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU-கள்"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "கடைசி சேகரிப்பு"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "பராமரிப்பு"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "முனை"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "கருவி"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "GPU கணு நலன்"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "நீங்கள் பார்க்கக்கூடிய GPU கணுக்கள் எதுவும் இல்லை."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "கடிகார நிகழ்வு காரணங்கள்"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "அட்டவணை"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "பெயர்"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "மாதிரி"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "நிலை"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "GPU நலன்"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "இதுவரை எந்த GPU-களும் பதிவு செய்யப்படவில்லை. ஒரு கணுவின் சேகரிப்பு அவற்றைப் புகாரளித்தவுடன் GPU-கள் இங்கே தோன்றும்."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "இயக்கப்பட்டது"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "பராமரிப்பில் உள்ளது"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "பராமரிப்பு நிறுவப்படவில்லை"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "பராமரிப்பில் இல்லை"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d உள்ளன, %d இல்லை, %d சாத்தியமான மாற்றீடுகள்"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "இல்லாதது"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "உள்ளது"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "GPU பதிவு %d இன் சாத்தியமான மாற்றீடு"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "தெரியாதது: இதுவரை சேகரிக்கப்படவில்லை"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPU-கள்"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "கடைசியாக நிறைவடைந்தது %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "மற்றொரு இயக்கம் கணுவைப் பிடித்திருந்தபோது %d பிந்தைய இயக்கங்கள் தவிர்க்கப்பட்டன"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d விநாடிகளுக்கு முன்"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d நிமிடங்களுக்கு முன்"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d மணிநேரங்களுக்கு முன்"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d நாட்களுக்கு முன்"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "கடைசியாகப் பார்க்கப்பட்டது"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "PCI பஸ் ID"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "புகாரளித்தது"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "GPU இருப்புப் பட்டியல்"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "%s இல் காணப்பட்டது, இடமாற்றம் உறுதிப்படுத்தப்படவில்லை"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "மற்றொரு கணுவில் காணப்பட்டது, இடமாற்றம் உறுதிப்படுத்தப்படவில்லை"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "GPU கணுக்கள்"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "செயல்கள்"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "சாதனம்"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "இல்லாத GPU-கள்"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "உள்ள GPU-கள்"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "இதுவரை GPU கணுக்கள் இல்லை. GPU-களைக் கொண்ட Cacti சாதனத்தைச் சேர்க்கவும்."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "நீக்கப்பட்ட சாதனம் %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "நீக்கு"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "ஏற்றுமதி"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "நீங்கள் பார்க்கக்கூடிய சாதனங்களின் கணு மற்றும் GPU பதிவுகளை JSON ஆகப் பதிவிறக்கவும். செருகுநிரல் அட்டவணைகளை நீக்கும் நிறுவல் நீக்கத்திற்கு முன்பு ஏற்றுமதி செய்யவும்."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "பதிவுகளை ஏற்றுமதி செய்"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "இதுவரை சேகரிக்கப்படவில்லை"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d GPU-கள்"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "%d புதிய GPU-கள் பதிவு செய்யப்பட்டன"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d வினாடிகளுக்கு முன்"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "ஒன்று இன்னும் இயங்கிக்கொண்டிருந்தபோது %d இயக்கங்கள் தவிர்க்கப்பட்டன"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "உறுதிப்படுத்தலுக்காகக் காத்திருக்கும் GPU இடமாற்றங்கள்"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "பதிவு செய்யப்பட்ட இடம்"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "காணப்பட்ட இடம்"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "இடமாற்றத்தை உறுதிப்படுத்து"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "நிராகரி"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "GPU கணு: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "புதிய GPU கணு"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "நீக்கப்பட்ட சாதனம் (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "சேமிப்பது, Cacti இன் தானியங்கி மறுஅட்டவணைப்படுத்தல் முடக்கப்பட்ட நிலையில் சாதனத்தில் GPU தரவு வினவலைச் சேர்க்கும்: ஒவ்வொரு GPU மாற்றத்திற்குப் பிறகும் செருகுநிரல் மறுஅட்டவணைப்படுத்தும். முதலில் சாதனத்தின் SNMP முகவரைக் கட்டமைக்கவும்; docs/node-setup.md ஐப் பார்க்கவும்."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "சேமி"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "இல்லாத GPU-கள்"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "இல்லாத GPU தரவு வினவலின் அட்டவணையாகவே இருக்கும், எனவே அதன் வரைபடங்களும் RRD கோப்புகளும் இணைக்கப்பட்டே இருந்து இடைவெளியைக் காட்டும். தரவு வினவலிலிருந்து அதை அகற்றுவது அதை நிறுத்துகிறது: அடுத்த மறுஅட்டவணைப்படுத்தலில் Cacti அதைப் பட்டியலிடாது, அதன் வரைபடங்கள் புதுப்பிப்பதை நிறுத்தி அதன் தரவு மூலங்கள் ஆதரவற்றவையாகக் காண்பிக்கப்படும், மேலும் நீங்கள் அவற்றை நீக்கும் வரை அதன் RRD கோப்புகளும் வரைபடங்களும் தக்கவைக்கப்படும். GPU பதிவு அப்படியே இருக்கும், மேலும் அது மீண்டும் புகாரளிக்கப்பட்டால் GPU தரவு வினவலுக்குத் திரும்பும்."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "தரவு வினவலிலிருந்து அகற்று"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "தரவு வினவலிலிருந்து அகற்றப்பட்டது"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "புதிய கணுவிற்கான சாதனத்தை உருவாக்கு"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "கணு இன்னும் ஒரு Cacti சாதனமாக இல்லாதபோது மட்டுமே. சாதனம் தளத்தின் சாதன இயல்புநிலைகளையும் GPU கணு சாதன வார்ப்புருவையும் பயன்படுத்துகிறது; அதன் பிறகு சாதனப் பக்கத்தில் அதன் SNMP அமைப்புகளை அமைக்கவும்."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "விளக்கம்"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "புரவலன் பெயர்"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "சாதனம் மற்றும் முனையை உருவாக்கு"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "கீழே பதிவுசெய்யப்பட்ட அவதானிப்புகளை மதிப்பாய்வு செய்யவும். ஒப்புதல்கள் இந்த அமர்வுக்குத் தனிப்பட்டவை, அவதானிப்புகள் மாறும்போது காலாவதியாகும், மேலும் எச்சரிக்கைகளைத் தடுக்கவோ நலநிலையை மாற்றவோ செய்யாது."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "GPU செயல்பாடுகள்"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "ஆய்வு"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "பொருள்"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "அவதானிக்கப்பட்டது (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "தெரியாதது அல்லது பழமையானது"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "ஒப்புக்கொள்ளப்பட்டது; நலநிலை மாறவில்லை."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "ஒப்புக்கொள்"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "நீங்கள் அணுகக்கூடிய சாதனங்களுக்கு அவதானிப்புகள் எதுவும் இல்லை."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "GPU இயக்குபவர்"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "GPU பார்வை"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "GPU நிர்வாகி"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "GPU அடையாளம்"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "இதன் பிறகு இல்லாததாகக் குறி"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "ஒரு GPU இல்லாததாகக் குறிக்கப்படுவதற்கு முன்பு, அதைத் தவறவிட வேண்டிய தொடர்ச்சியான வெற்றிகரமான சேகரிப்புகளின் எண்ணிக்கை, 1 முதல் 100 வரை. தோல்வியடைந்த சேகரிப்பு அல்லது எந்த GPU-க்களையும் தெரிவிக்காத சேகரிப்பு ஒருபோதும் கணக்கில் எடுத்துக்கொள்ளப்படாது. இல்லாத GPU-க்கள் அவற்றின் பதிவுகளையும் வரலாற்றையும் தக்கவைத்துக்கொள்ளும், மேலும் அவை தானாகவே நீக்கப்படாது."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "GPU சேகரிப்பு"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "இதன் பிறகு பழையதாகக் குறி"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "கருவி ஒரு மாதிரியை எடுத்த பிறகு, அதன் மதிப்புகள் வரைபடத்தில் காட்டப்படுவது நிறுத்தப்படும் வினாடிகள், 60 முதல் 86400 வரை. பழைய மதிப்பு அறியப்படாததாகத் தெரிவிக்கப்படும், எனவே நிறுத்தப்பட்ட சேகரிப்பு ஒரு நேர்கோடாக இல்லாமல் இடைவெளியாகக் காட்டப்படும். GPU வயது மதிப்பு தொடர்ந்து கணக்கிடப்படும், இதனால் அதன் மீது எச்சரிக்கை அனுப்ப முடியும்."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "நிறுவல் நீக்கு"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "நிறுவல் நீக்கும்போது செருகுநிரல் அட்டவணைகளை வைத்திரு"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "தேர்ந்தெடுக்கப்படும்போது, செருகுநிரலை நிறுவல் நீக்கம் செய்வது அதன் முனை மற்றும் GPU பதிவுகளைத் தக்கவைக்கும். நிறுவல் நீக்கம் செய்யும்போது அவற்றை நீக்க இதைத் தேர்வுநீக்கவும்; முதலில் GPU முனைகளிலிருந்து அவற்றை ஏற்றுமதி செய்யவும். எந்த வகையிலும் Cacti சாதனங்கள், தரவு மூலங்கள், வரைபடங்கள் மற்றும் RRD கோப்புகள் தொடப்படாது."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "நிறுவல் நீக்கம் செய்யும்போது செருகுநிரலின் Cacti பொருட்களை அகற்று"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "தேர்ந்தெடுக்கப்படும்போது, செருகுநிரலை நிறுவல் நீக்கம் செய்வது அது இறக்குமதி செய்த GPU சாதன வார்ப்புரு, தரவு வினவல், தரவு வார்ப்புரு மற்றும் வரைபட வார்ப்புருக்கள் (ஒவ்வொன்றும் செருகுநிரலுக்கு வெளியே எதுவும் அதைப் பயன்படுத்தாத இடங்களில் மட்டுமே) மற்றும் அது எழுதிய GPU தரவு வினவல் XML (கோப்பு மாற்றப்படாமல் இருந்தால் மட்டுமே) ஆகியவற்றையும் அகற்றும். இது ஒருபோதும் RRD கோப்புகள், சாதனங்கள், வரைபடங்கள் அல்லது தரவு மூலங்களை நீக்காது; அவை இன்னும் பயன்படுத்தும் வார்ப்புருக்கள் தக்கவைக்கப்படும்."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "காட்டி இல்லாத பிட்கள்: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "GPU செருகுநிரலுக்கு PHP %s அல்லது அதற்குப் பிந்தைய பதிப்பு தேவைப்படுகிறது. இந்தச் சேவையகம் PHP %s ஐ இயக்குகிறது, எனவே செருகுநிரல் நிறுவப்படவில்லை அல்லது இயக்கப்படவில்லை."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "GPU செருகுநிரல் இயக்கப்படவில்லை."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "GPU செருகுநிரலுக்கு PHP %s அல்லது அதற்குப் பிந்தைய பதிப்பு தேவைப்படுகிறது."
+
+#: setup.php
+msgid "Management"
+msgstr "மேலாண்மை"

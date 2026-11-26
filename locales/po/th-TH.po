@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: th-TH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "ไม่มีโหนด GPU หรือ GPU นั้นอยู่ หรืออยู่บนอุปกรณ์ที่คุณไม่มีสิทธิ์เข้าถึง"
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "ไม่สามารถเพิ่มคำสั่งสืบค้นข้อมูล GPU ลงในอุปกรณ์ได้ โปรดตรวจสอบว่าได้ติดตั้งเทมเพลตของปลั๊กอินแล้ว"
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "อุปกรณ์: อุปกรณ์ของโหนดถูกลบไปแล้ว ดังนั้นจึงสามารถปิดใช้งานโหนดได้เท่านั้น"
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "อุปกรณ์: เลือกอุปกรณ์ Cacti ที่มีอยู่"
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "อุปกรณ์: อุปกรณ์นี้เป็นโหนด GPU อยู่แล้ว"
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "บันทึกโหนด GPU แล้ว"
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "ไม่สามารถบันทึกโหนด GPU ได้"
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "นำโหนด GPU ออกแล้ว อุปกรณ์ Cacti ของโหนดยังคงอยู่ตามเดิม"
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "ไม่ได้นำโหนด GPU ออกเนื่องจากมีบันทึก GPU เป็นของโหนดนี้ โปรดปิดใช้งานแทน ระบบจะไม่ลบบันทึก GPU"
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "ขณะนี้ GPU เป็นของโหนดที่พบล่าสุดพร้อมประวัติทั้งหมดแล้ว"
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU ยังคงอยู่กับโหนดที่บันทึกไว้เดิม"
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU จะถูกนำออกจากคำสั่งสืบค้นข้อมูลในการจัดทำดัชนีใหม่ครั้งถัดไป กราฟและไฟล์ RRD ของ GPU จะยังคงถูกเก็บไว้"
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "สามารถนำออกจากการสืบค้นข้อมูลได้เฉพาะ GPU ที่ไม่อยู่แล้วเท่านั้น"
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "การสร้างอุปกรณ์ต้องมีสิทธิ์ในการจัดการอุปกรณ์ Cacti"
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "คำอธิบาย: ป้อนอักขระที่พิมพ์ได้ไม่เกิน 150 ตัว"
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "ชื่อโฮสต์: ป้อนชื่อโฮสต์หรือที่อยู่ IP"
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "ยังไม่ได้ติดตั้งเทมเพลตอุปกรณ์ GPU Node"
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "ไม่ได้เก็บอุปกรณ์ไว้: บัญชีของคุณอาจไม่มีสิทธิ์ดูอุปกรณ์ที่สร้างขึ้น โปรดขอให้ผู้ดูแลระบบสร้างให้"
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "ไม่สามารถนำอุปกรณ์ออกได้หลังจากถูกปฏิเสธการเข้าถึง โปรดขอให้ผู้ดูแลระบบนำออกให้"
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "สร้างอุปกรณ์และโหนด GPU แล้ว โปรดกำหนดการตั้งค่า SNMP ของอุปกรณ์ในหน้าอุปกรณ์"
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "ไม่สามารถสร้างอุปกรณ์ได้ โปรดดูบันทึกของ Cacti"
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "มุมมองการติดตามตรวจสอบ"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "ไม่สามารถอ่านผลการสังเกตการณ์ได้ โปรดแจ้งผู้ดูแลระบบให้ตรวจสอบบันทึกของปลั๊กอิน"
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "ปิดใช้งาน"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "ไม่เคย"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "เปรียบเทียบอายุตัวอย่างข้อมูล สถานะ ECC และสถานะการลดความเร็วในหน้าสุขภาพ GPU กับกราฟของอุปกรณ์ ส่งต่อการเปลี่ยนแปลงตัวตนและการตั้งค่าโหนดให้ผู้ดูแลระบบ"
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ปิดใช้งาน ECC บน GPU นี้"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "GPU นี้ไม่รายงานสถานะ ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "ไม่มีรายงานโหมด ECC"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "เสร็จสมบูรณ์"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "ถูกปฏิเสธสิทธิ์"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "หมดเวลา"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "ไม่ทราบ"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "ข้อผิดพลาดของเครื่องมือ"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "เก็บรวบรวมแล้ว"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "ไม่มีรายงาน GPU"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "ไม่สามารถติดต่อเอเจนต์ SNMP ได้"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "ไม่พบรายการ Extend"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "ไม่ได้โหลดไดรเวอร์"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "ไม่พบเครื่องมือ"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "ผลลัพธ์ถูกตัดทอน"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "ผลลัพธ์ถูกปฏิเสธ"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "ข้าม: กำลังทำงานอยู่แล้ว"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "ไม่ได้จัดเก็บผลลัพธ์"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "ปัจจุบัน"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "ล่าช้า"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "ล้าสมัย"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "ไม่เคยพบ"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "เร็วกว่าเวลาของเซิร์ฟเวอร์ Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "สถานะผู้ดูแล"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "แบ็กเอนด์"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "ไดรเวอร์"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "ความใหม่ของข้อมูล"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "การเก็บรวบรวมล่าสุด"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "การบำรุงรักษา"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "โหนด"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "เครื่องมือ"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "สุขภาพโหนด GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "ไม่มีโหนด GPU ที่คุณมีสิทธิ์ดู"
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "สาเหตุเหตุการณ์สัญญาณนาฬิกา"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "ดัชนี"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "ชื่อ"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "ตัวอย่างข้อมูล"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "สถานะ"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "สุขภาพ GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "ยังไม่มี GPU ที่บันทึกไว้ GPU จะปรากฏที่นี่เมื่อการเก็บรวบรวมข้อมูลของโหนดรายงานเข้ามา"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "เปิดใช้งาน"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "อยู่ระหว่างการบำรุงรักษา"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "ไม่ได้ติดตั้ง Maint"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "ไม่ได้อยู่ระหว่างการบำรุงรักษา"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "พบอยู่ %d, ไม่อยู่ %d, อาจมีการเปลี่ยนแทน %d"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "ไม่อยู่"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "พบอยู่"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "อาจเป็นการเปลี่ยนแทนบันทึก GPU หมายเลข %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "ไม่ทราบ: ยังไม่ได้เก็บรวบรวม"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "GPU %d ตัว"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "เสร็จสมบูรณ์ล่าสุด %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "ข้ามการทำงานภายหลัง %d ครั้งระหว่างที่การทำงานอื่นถือสิทธิ์โหนดอยู่"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d วินาทีที่แล้ว"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d นาทีที่แล้ว"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d ชั่วโมงที่แล้ว"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d วันที่แล้ว"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "พบล่าสุด"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "รหัส PCI Bus"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "รายงานโดย"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "รายการอุปกรณ์ GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "พบที่ %s ยังไม่ได้ยืนยันการย้าย"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "พบที่โหนดอื่น ยังไม่ได้ยืนยันการย้าย"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "โหนด GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "การดำเนินการ"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "อุปกรณ์"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPU ที่ไม่อยู่"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPU ที่พบอยู่"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "ยังไม่มีโหนด GPU โปรดเพิ่มอุปกรณ์ Cacti ที่มี GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "ลบอุปกรณ์ %d แล้ว"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "ลบ"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "ส่งออก"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "ดาวน์โหลดบันทึกโหนดและ GPU ของอุปกรณ์ที่คุณมีสิทธิ์ดูเป็น JSON ควรส่งออกข้อมูลก่อนถอนการติดตั้งแบบลบตารางของปลั๊กอิน"
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "ส่งออกบันทึก"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "ยังไม่ได้เก็บรวบรวม"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: GPU %d ตัว"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "บันทึก GPU ใหม่ %d ตัว"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d วินาทีที่แล้ว"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "ข้ามการทำงาน %d ครั้งระหว่างที่ยังมีงานหนึ่งกำลังทำงานอยู่"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "การย้าย GPU ที่รอยืนยัน"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "บันทึกไว้ที่"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "พบที่"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "ยืนยันการย้าย"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "ปฏิเสธ"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "โหนด GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "โหนด GPU ใหม่"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "อุปกรณ์ที่ถูกลบ (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "การบันทึกจะเพิ่มคำสั่งสืบค้นข้อมูล GPU ให้กับอุปกรณ์ โดยปิดการจัดทำดัชนีใหม่อัตโนมัติของ Cacti ไว้ เนื่องจากปลั๊กอินจะจัดทำดัชนีใหม่หลังการเปลี่ยนแปลง GPU ทุกครั้ง โปรดกำหนดค่าเอเจนต์ SNMP ของอุปกรณ์ก่อน ดูที่ docs/node-setup.md"
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "บันทึก"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPU ที่ไม่อยู่"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "GPU ที่ไม่อยู่จะยังคงเป็นดัชนีของคำสั่งสืบค้นข้อมูล ดังนั้นกราฟและไฟล์ RRD ของ GPU นั้นจะยังคงผูกอยู่และแสดงช่วงว่าง การนำออกจากคำสั่งสืบค้นข้อมูลจะหยุดพฤติกรรมนี้: ในการจัดทำดัชนีใหม่ครั้งถัดไป Cacti จะไม่แสดงรายการนั้นอีก กราฟจะหยุดอัปเดตและแหล่งข้อมูลจะแสดงเป็นไม่มีเจ้าของ ส่วนไฟล์ RRD และกราฟจะยังคงเก็บไว้จนกว่าคุณจะลบออก บันทึก GPU จะยังคงอยู่ และ GPU จะกลับเข้าสู่คำสั่งสืบค้นข้อมูลอีกครั้งหากมีรายงานเข้ามาใหม่"
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "นำออกจากคำสั่งสืบค้นข้อมูล"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "นำออกจากคำสั่งสืบค้นข้อมูลแล้ว"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "สร้างอุปกรณ์สำหรับโหนดใหม่"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "ใช้เฉพาะเมื่อโหนดยังไม่ได้เป็นอุปกรณ์ Cacti อุปกรณ์จะใช้ค่าเริ่มต้นของอุปกรณ์ในไซต์และเทมเพลตอุปกรณ์ GPU Node จากนั้นให้กำหนดการตั้งค่า SNMP ในหน้าอุปกรณ์ในภายหลัง"
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "ชื่อโฮสต์"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "สร้างอุปกรณ์และโหนด"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "ตรวจสอบผลการสังเกตการณ์ที่บันทึกไว้ด้านล่าง การรับทราบมีผลเฉพาะในเซสชันนี้ จะหมดอายุเมื่อผลการสังเกตการณ์เปลี่ยนแปลง และจะไม่ระงับการแจ้งเตือนหรือเปลี่ยนสถานะสุขภาพ"
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "การปฏิบัติการ GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "การตรวจสอบเชิงลึก"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "ออบเจ็กต์"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "เวลาที่สังเกตการณ์ (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "ไม่ทราบค่าหรือข้อมูลเก่า"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "รับทราบแล้ว สถานะสุขภาพยังคงเดิม"
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "รับทราบ"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "ไม่มีผลการสังเกตการณ์สำหรับอุปกรณ์ที่คุณมีสิทธิ์เข้าถึง"
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "ผู้ปฏิบัติงาน GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "มุมมอง GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "ผู้ดูแลระบบ GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "ข้อมูลระบุตัวตน GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "ทำเครื่องหมายว่าไม่อยู่หลังจาก"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "จำนวนครั้งที่เก็บข้อมูลสำเร็จติดต่อกันซึ่งไม่พบ GPU ก่อนที่จะทำเครื่องหมายว่าไม่อยู่ ตั้งแต่ 1 ถึง 100 การเก็บข้อมูลที่ล้มเหลวหรือรายงานว่าไม่มี GPU จะไม่ถูกนับ GPU ที่ไม่อยู่จะยังคงเก็บบันทึกและประวัติไว้ และจะไม่ถูกลบโดยอัตโนมัติ"
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "การเก็บข้อมูล GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "ข้อมูลเก่าหลังจาก"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "จำนวนวินาทีหลังจากเครื่องมือเก็บตัวอย่างก่อนที่ค่าจะหยุดถูกนำไปสร้างกราฟ ตั้งแต่ 60 ถึง 86400 ค่าที่เก่ากว่านั้นจะถูกรายงานเป็น unknown ดังนั้นการเก็บข้อมูลที่หยุดลงจะแสดงเป็นช่องว่าง ไม่ใช่เส้นตรง ค่าอายุข้อมูลของ GPU จะยังคงนับต่อไปเพื่อให้สามารถแจ้งเตือนได้"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "ถอนการติดตั้ง"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "เก็บตารางของปลั๊กอินไว้เมื่อถอนการติดตั้ง"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "เมื่อเลือกไว้ การถอนการติดตั้งปลั๊กอินจะยังคงเก็บบันทึกโหนดและ GPU ไว้ ยกเลิกการเลือกเพื่อให้การถอนการติดตั้งลบบันทึกเหล่านั้นออก โดยควรส่งออกจาก GPU Nodes ก่อน ไม่ว่าจะเลือกแบบใด อุปกรณ์ แหล่งข้อมูล กราฟ และไฟล์ RRD ของ Cacti จะไม่ถูกแตะต้อง"
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "ลบอ็อบเจกต์ Cacti ของปลั๊กอินเมื่อถอนการติดตั้ง"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "เมื่อเลือกไว้ การถอนการติดตั้งปลั๊กอินจะลบเทมเพลตอุปกรณ์ data query เทมเพลตข้อมูล และเทมเพลตกราฟของ GPU ที่นำเข้าไว้ด้วย โดยจะลบเฉพาะรายการที่ไม่มีสิ่งอื่นนอกปลั๊กอินใช้งานอยู่ รวมถึงไฟล์ XML ของ data query สำหรับ GPU ที่เขียนไว้เฉพาะในกรณีที่ไฟล์ยังไม่ถูกแก้ไข ระบบจะไม่ลบไฟล์ RRD อุปกรณ์ กราฟ หรือแหล่งข้อมูล และเทมเพลตที่รายการเหล่านั้นยังคงใช้อยู่จะถูกเก็บไว้"
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "บิตที่ไม่มีตัวบ่งชี้: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "ปลั๊กอิน GPU ต้องการ PHP %s หรือใหม่กว่า เซิร์ฟเวอร์นี้ใช้ PHP %s จึงไม่ได้ติดตั้งหรือเปิดใช้งานปลั๊กอิน"
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "ปลั๊กอิน GPU ไม่ได้เปิดใช้งานอยู่"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "ปลั๊กอิน GPU ต้องการ PHP %s หรือใหม่กว่า"
+
+#: setup.php
+msgid "Management"
+msgstr "การจัดการ"
