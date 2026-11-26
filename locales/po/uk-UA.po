@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: uk-UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Такий вузол GPU або GPU не існує чи розташований на пристрої, до якого ви не маєте доступу."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Не вдалося додати запит даних GPU до пристрою. Перевірте, чи встановлено шаблони плагіна."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Пристрій: пристрій вузла було видалено, тому вузол можна лише вимкнути."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Пристрій: виберіть наявний пристрій Cacti."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Пристрій: цей пристрій уже є вузлом GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "Вузол GPU збережено."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Не вдалося зберегти вузол GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "Вузол GPU вилучено. Його пристрій Cacti залишено без змін."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "Вузол GPU не вилучено, оскільки до нього належать записи GPU. Натомість вимкніть його; записи GPU ніколи не видаляються."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "Тепер GPU належить вузлу, на якому його було виявлено, разом з усією історією."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU залишається за своїм зафіксованим вузлом."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU буде вилучено із запиту даних під час наступної переіндексації. Його графіки та файли RRD збережуться."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "Із запиту даних можна вилучити лише відсутній GPU."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Для створення пристрою потрібен дозвіл на керування пристроями Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Опис: введіть до 150 друкованих символів."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Ім'я хоста: введіть ім'я хоста або IP-адресу."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "Шаблон пристрою GPU Node не встановлено."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "Пристрій не збережено: ваш обліковий запис не може бачити створені ним пристрої. Попросіть адміністратора створити його."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Не вдалося видалити пристрій після відмови в доступі. Попросіть адміністратора видалити його."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "Пристрій і його вузол GPU створено. Задайте параметри SNMP пристрою на його сторінці."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Не вдалося створити пристрій; див. журнал Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Перегляд моніторингу"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Не вдалося прочитати спостереження. Попросіть адміністратора перевірити журнал плагіна."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Вимкнено"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Ніколи"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "Порівняйте вік вибірки, стан ECC і тротлінгу на сторінці стану GPU з графіками пристрою. Передавайте зміни ідентифікації та налаштування вузла адміністратору."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ECC вимкнено на цьому GPU"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "Цей GPU не повідомляє дані ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Режим ECC не повідомляється"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Завершено"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Доступ заборонено"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Час очікування вичерпано"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Невідомо"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Помилка інструмента"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "Зібрано"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Жодного GPU не повідомлено"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Агент SNMP недоступний"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Відсутній запис extend"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Драйвер не завантажено"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Інструмент не знайдено"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Вивід обрізано"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Вивід відхилено"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "Пропущено: уже виконується"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Результат не збережено"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Актуально"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Із затримкою"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Застаріло"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Не спостерігалося"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Випереджає годинник сервера Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Адміністративний стан"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Бекенд"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Драйвер"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Актуальність"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Останній збір"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Обслуговування"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Вузол"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Інструмент"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Стан вузлів GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Немає доступних для перегляду вузлів GPU."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Причини подій частоти"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Індекс"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Назва"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Вибірка"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Стан"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Стан GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "GPU ще не зафіксовані. Вони з'являться тут після того, як збір даних на вузлі повідомить про них."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "Увімкнено"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "На обслуговуванні"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint не встановлено"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Не на обслуговуванні"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d наявних, %d відсутніх, %d можливих замін"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Відсутній"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Наявний"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "можлива заміна запису GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Невідомо: ще не зібрано"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPU"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "останній завершений %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "%d наступних запусків пропущено, поки вузол утримувався іншим запуском"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d секунд тому"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d хвилин тому"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d годин тому"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d днів тому"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Востаннє виявлено"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "ID шини PCI"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Повідомив"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Інвентар GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "виявлено на %s, переміщення не підтверджено"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "виявлено на іншому вузлі, переміщення не підтверджено"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Вузли GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Дії"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Пристрій"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "Відсутні GPU"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "Наявні GPU"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Вузлів GPU ще немає. Додайте пристрій Cacti, що має GPU."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Видалений пристрій %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Видалити"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Експорт"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "Завантажте записи вузлів і GPU для доступних вам пристроїв у форматі JSON. Зробіть експорт перед видаленням плагіна, яке знищує його таблиці."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Експортувати записи"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Ще не зібрано"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "Зафіксовано %d нових GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d с тому"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "%d запусків пропущено, поки виконувався поточний"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "Переміщення GPU, що очікують підтвердження"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Зафіксовано на"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Виявлено на"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Підтвердити переміщення"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Відхилити"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Вузол GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Новий вузол GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Видалений пристрій (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Збереження додає запит даних GPU до пристрою з вимкненою автоматичною переіндексацією Cacti: плагін виконує переіндексацію після кожної зміни GPU. Спочатку налаштуйте агент SNMP пристрою; див. docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Зберегти"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "Відсутні GPU"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "Відсутній GPU залишається індексом запиту даних, тому його графіки та файли RRD залишаються прикріпленими й показують прогалину. Вилучення із запиту даних припиняє це: під час наступної переіндексації Cacti більше не відображає його, графіки припиняють оновлюватися, джерела даних позначаються як осиротілі, а файли RRD і графіки зберігаються, доки ви їх не видалите. Запис GPU зберігається, і GPU повертається до запиту даних, якщо про нього знову буде повідомлено."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Вилучити із запиту даних"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Вилучено із запиту даних"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "Створити пристрій для нового вузла"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Лише коли вузол ще не є пристроєм Cacti. Пристрій використовує типові параметри пристрою сайту та шаблон пристрою GPU Node; потім задайте його налаштування SNMP на сторінці пристрою."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Опис"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Ім'я хоста"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Створити пристрій і вузол"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Перегляньте зафіксовані спостереження нижче. Підтвердження стосуються лише цього сеансу, втрачають чинність після зміни спостережень і ніколи не приглушують сповіщення та не змінюють стан здоров'я."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Операції GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Розслідування"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Об'єкт"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Зафіксовано (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Невідомо або застаріло"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Підтверджено; стан не змінено."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Підтвердити"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Немає доступних спостережень для пристроїв, до яких ви маєте доступ."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Оператор GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Перегляд GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Адміністратор GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Ідентифікація GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "Позначати відсутнім після"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Кількість послідовних успішних зборів даних, під час яких GPU не виявлено, перш ніж його буде позначено як відсутній, від 1 до 100. Невдалий збір або збір, що не повідомляє про жоден GPU, не враховується. Відсутні GPU зберігають свої записи та історію і ніколи не видаляються автоматично."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Збір даних GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Застаріває через"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Кількість секунд після отримання вибірки інструментом, після якої її значення припиняють відображатися на графіках, від 60 до 86400. Старіше значення повідомляється як невідоме, тому зупинений збір відображається як прогалина, а не як пряма лінія. Значення віку даних GPU продовжує відраховуватися, щоб за ним можна було надсилати сповіщення."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Видалення"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Зберігати таблиці плагіна під час видалення"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Якщо позначено, видалення плагіна зберігає його записи вузлів і GPU. Зніміть прапорець, щоб під час видалення їх було знищено; спершу експортуйте їх зі сторінки «Вузли GPU». Пристрої Cacti, джерела даних, графіки та файли RRD у будь-якому разі не зачіпаються."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Вилучати об'єкти Cacti плагіна під час видалення"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Якщо позначено, під час видалення плагіна також вилучаються імпортовані ним шаблон пристрою GPU, запит даних, шаблон даних і шаблони графіків (кожен лише тоді, коли ніщо поза плагіном його не використовує), а також записаний ним XML-файл запиту даних GPU (лише якщо файл не змінювався). Плагін ніколи не видаляє файли RRD, пристрої, графіки чи джерела даних; шаблони, які вони досі використовують, зберігаються."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "біти без індикатора: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Плагін GPU потребує PHP %s або новішої версії. На цьому сервері запущено PHP %s, тому плагін не було встановлено або ввімкнено."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "Плагін GPU не ввімкнено."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "Плагін GPU потребує PHP %s або новішої версії."
+
+#: setup.php
+msgid "Management"
+msgstr "Керування"
