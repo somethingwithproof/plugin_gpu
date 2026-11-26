@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: vi-VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Nút GPU hoặc GPU đó không tồn tại, hoặc nằm trên thiết bị mà bạn không có quyền truy cập."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Không thể thêm truy vấn dữ liệu GPU vào thiết bị. Hãy kiểm tra xem các mẫu của plugin đã được cài đặt chưa."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Thiết bị: thiết bị của nút đã bị xóa, nên chỉ có thể vô hiệu hóa nút."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Thiết bị: hãy chọn một thiết bị Cacti hiện có."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Thiết bị: thiết bị này đã là một nút GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "Đã lưu nút GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Không thể lưu nút GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "Đã xóa nút GPU. Thiết bị Cacti của nó vẫn được giữ nguyên."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "Không thể xóa nút GPU vì có các bản ghi GPU thuộc về nó. Thay vào đó hãy vô hiệu hóa nút; các bản ghi GPU không bao giờ bị xóa."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPU hiện thuộc về nút nơi nó được phát hiện, kèm theo lịch sử của nó."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU vẫn ở lại với nút đã ghi nhận của nó."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU sẽ rời khỏi truy vấn dữ liệu ở lần lập lại chỉ mục tiếp theo. Các biểu đồ và tệp RRD của nó vẫn được giữ lại."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "Chỉ có GPU vắng mặt mới có thể bị xóa khỏi truy vấn dữ liệu."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Việc tạo thiết bị cần quyền quản lý thiết bị Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Mô tả: nhập tối đa 150 ký tự có thể in được."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Tên máy chủ: nhập tên máy chủ hoặc địa chỉ IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "Mẫu thiết bị GPU Node chưa được cài đặt."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "Thiết bị không được giữ lại: tài khoản của bạn không có quyền xem các thiết bị do chính mình tạo. Hãy nhờ quản trị viên tạo thiết bị đó."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Không thể xóa thiết bị sau khi bị từ chối truy cập. Hãy nhờ quản trị viên xóa thiết bị đó."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "Đã tạo thiết bị và nút GPU của nó. Hãy cấu hình thiết lập SNMP của thiết bị trên trang thiết bị."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Không thể tạo thiết bị; hãy xem nhật ký Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Chế độ xem giám sát"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Không thể đọc các quan sát. Hãy yêu cầu quản trị viên kiểm tra nhật ký plugin."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Đã tắt"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Chưa bao giờ"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "So sánh tuổi mẫu, trạng thái ECC và điều tiết xung nhịp trên Tình trạng GPU với biểu đồ thiết bị. Chuyển các thay đổi về định danh và cấu hình nút lên quản trị viên."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ECC đã bị tắt trên GPU này"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "GPU này không báo cáo ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Chế độ ECC không được báo cáo"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Hoàn tất"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Từ chối quyền truy cập"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Hết thời gian chờ"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Không rõ"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Lỗi công cụ"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "Đã thu thập"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Không có GPU nào được báo cáo"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Không thể liên hệ tác nhân SNMP"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Thiếu mục extend"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Trình điều khiển chưa được nạp"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Không tìm thấy công cụ"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Đầu ra bị cắt bớt"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Đầu ra bị từ chối"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "Đã bỏ qua: đang chạy"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Kết quả chưa được lưu"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Hiện tại"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Bị trễ"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Cũ"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Chưa từng quan sát"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Nhanh hơn đồng hồ của máy chủ Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Trạng thái quản trị"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Backend"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Trình điều khiển"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Độ mới"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Lần thu thập cuối"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Bảo trì"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Nút"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Công cụ"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Tình trạng nút GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Không có nút GPU nào bạn có quyền xem."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Lý do sự kiện xung nhịp"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Chỉ mục"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Tên"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Mẫu"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Trạng thái"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Tình trạng GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "Chưa có GPU nào được ghi nhận. Các GPU sẽ xuất hiện tại đây sau khi quá trình thu thập của nút báo cáo chúng."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "Đã bật"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "Đang bảo trì"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Chưa cài đặt Bảo trì"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Không trong bảo trì"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d có mặt, %d vắng mặt, %d có thể là thay thế"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Vắng mặt"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Có mặt"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "có thể là thay thế của bản ghi GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Không rõ: chưa thu thập"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPU"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "hoàn tất lần cuối %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "%d lần chạy sau đã bị bỏ qua trong khi một lần chạy khác đang giữ nút"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d giây trước"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d phút trước"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d giờ trước"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d ngày trước"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Thấy lần cuối"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "ID Bus PCI"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Được báo cáo bởi"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Danh mục GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "phát hiện tại %s, chưa xác nhận di chuyển"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "phát hiện tại nút khác, chưa xác nhận di chuyển"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Nút GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Thao tác"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Thiết bị"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPU vắng mặt"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPU có mặt"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Chưa có nút GPU nào. Hãy thêm một thiết bị Cacti có GPU."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Thiết bị đã xóa %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Xóa"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Xuất"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "Tải xuống bản ghi nút và GPU của các thiết bị bạn có quyền xem dưới dạng JSON. Hãy xuất dữ liệu trước khi gỡ cài đặt làm xóa các bảng của plugin."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Xuất bản ghi"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Chưa thu thập"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "Đã ghi nhận %d GPU mới"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d giây trước"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "%d lần chạy đã bị bỏ qua khi một lần vẫn đang chạy"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "Di chuyển GPU đang chờ xác nhận"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Ghi nhận tại"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Phát hiện tại"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Xác nhận di chuyển"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Từ chối"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Nút GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Nút GPU mới"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Thiết bị đã bị xóa (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Việc lưu sẽ thêm truy vấn dữ liệu GPU vào thiết bị, với tính năng tự động lập lại chỉ mục của Cacti được tắt: plugin sẽ tự lập lại chỉ mục sau mỗi thay đổi GPU. Hãy cấu hình tác nhân SNMP của thiết bị trước; xem docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Lưu"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPU vắng mặt"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "Một GPU vắng mặt vẫn giữ vai trò là một chỉ mục của truy vấn dữ liệu, nên các biểu đồ và tệp RRD của nó vẫn gắn liền và hiển thị khoảng trống. Xóa nó khỏi truy vấn dữ liệu sẽ dừng việc đó: ở lần lập lại chỉ mục tiếp theo, Cacti không còn liệt kê nó, các biểu đồ ngừng cập nhật và nguồn dữ liệu hiển thị là mồ côi, còn tệp RRD và biểu đồ được giữ lại cho đến khi bạn xóa chúng. Bản ghi GPU vẫn còn và GPU sẽ quay lại truy vấn dữ liệu nếu được báo cáo lại."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Xóa khỏi truy vấn dữ liệu"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Đã xóa khỏi truy vấn dữ liệu"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "Tạo thiết bị cho nút mới"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Chỉ dùng khi nút chưa phải là một thiết bị Cacti. Thiết bị sử dụng các giá trị mặc định của trang và mẫu thiết bị GPU Node; hãy cấu hình thiết lập SNMP của nó trên trang thiết bị sau đó."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Mô tả"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Tên máy chủ"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Tạo thiết bị và nút"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Xem lại các quan sát đã ghi nhận bên dưới. Xác nhận chỉ áp dụng riêng cho phiên này, hết hạn khi các quan sát thay đổi và không bao giờ ẩn cảnh báo hay thay đổi tình trạng."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Vận hành GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Điều tra"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Đối tượng"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Quan sát lúc (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Không xác định hoặc cũ"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Đã xác nhận; tình trạng không thay đổi."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Xác nhận"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Không có quan sát nào cho các thiết bị bạn có quyền truy cập."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Người vận hành GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Xem GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Quản trị GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Danh tính GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "Đánh dấu vắng mặt sau"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Số lần thu thập thành công liên tiếp không thấy GPU trước khi đánh dấu GPU đó là vắng mặt, từ 1 đến 100. Một lần thu thập thất bại hoặc không báo cáo GPU nào sẽ không bao giờ được tính. Các GPU vắng mặt vẫn giữ bản ghi và lịch sử của chúng và không bao giờ bị xóa tự động."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Thu thập GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Cũ sau"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Số giây sau khi công cụ lấy mẫu mà các giá trị của nó ngừng được vẽ biểu đồ, từ 60 đến 86400. Giá trị cũ hơn được báo cáo là không xác định, vì vậy việc thu thập bị dừng sẽ hiển thị dưới dạng khoảng trống, không bao giờ là đường phẳng. Giá trị tuổi GPU vẫn tiếp tục đếm để có thể cảnh báo."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Gỡ cài đặt"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Giữ các bảng của plugin khi gỡ cài đặt"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Khi được chọn, việc gỡ cài đặt plugin sẽ giữ lại các bản ghi nút và GPU của nó. Bỏ chọn để quá trình gỡ cài đặt xóa chúng; hãy xuất chúng trước từ Nút GPU. Thiết bị Cacti, nguồn dữ liệu, biểu đồ và tệp RRD không bao giờ bị động đến trong cả hai trường hợp."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Xóa các đối tượng Cacti của plugin khi gỡ cài đặt"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Khi được chọn, việc gỡ cài đặt plugin cũng sẽ xóa mẫu thiết bị GPU, truy vấn dữ liệu, mẫu dữ liệu và các mẫu biểu đồ mà nó đã nhập, mỗi thành phần chỉ bị xóa khi không có gì bên ngoài plugin sử dụng nó, cùng với tệp XML truy vấn dữ liệu GPU mà nó đã ghi, chỉ khi tệp không bị thay đổi. Nó không bao giờ xóa tệp RRD, thiết bị, biểu đồ hoặc nguồn dữ liệu; các mẫu vẫn đang được những đối tượng đó sử dụng sẽ được giữ lại."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "bit không có chỉ báo: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Plugin GPU yêu cầu PHP %s trở lên. Máy chủ này đang chạy PHP %s, vì vậy plugin chưa được cài đặt hoặc bật."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "Plugin GPU chưa được bật."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "Plugin GPU yêu cầu PHP %s trở lên."
+
+#: setup.php
+msgid "Management"
+msgstr "Quản lý"

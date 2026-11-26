@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: pt-BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Esse nó de GPU ou GPU não existe ou está em um dispositivo ao qual você não tem acesso."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Não foi possível adicionar a consulta de dados de GPU ao dispositivo. Verifique se os modelos do plugin estão instalados."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Dispositivo: o dispositivo do nó foi excluído, portanto o nó só pode ser desabilitado."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Dispositivo: escolha um dispositivo Cacti existente."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Dispositivo: este dispositivo já é um nó de GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "O nó de GPU foi salvo."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Não foi possível salvar o nó de GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "O nó de GPU foi removido. Seu dispositivo Cacti foi mantido."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "O nó de GPU não foi removido porque há registros de GPU associados a ele. Em vez disso, desabilite-o; os registros de GPU nunca são excluídos."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "A GPU agora pertence ao nó em que foi vista, com seu histórico."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "A GPU permanece com seu nó registrado."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "A GPU sairá da consulta de dados na próxima reindexação. Seus gráficos e arquivos RRD são mantidos."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "Apenas uma GPU ausente pode ser removida da consulta de dados."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Criar um dispositivo requer permissão para gerenciar dispositivos do Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Descrição: insira até 150 caracteres imprimíveis."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Nome do host: insira um nome de host ou endereço IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "O modelo de dispositivo GPU Node não está instalado."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "O dispositivo não foi mantido: sua conta não tem permissão para visualizar dispositivos que cria. Peça a um administrador para criá-lo."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Não foi possível remover o dispositivo após a recusa de acesso. Peça a um administrador para removê-lo."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "O dispositivo e seu nó de GPU foram criados. Defina as configurações de SNMP do dispositivo na página do dispositivo."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Não foi possível criar o dispositivo; consulte o log do Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Visão de monitoramento"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Não foi possível ler as observações. Peça a um administrador para verificar o log do plugin."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Desabilitado"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Nunca"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "Compare a idade da amostra, o ECC e o estado de throttling em Integridade da GPU com os gráficos do dispositivo. Encaminhe alterações de identidade e configuração do nó para um administrador."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "O ECC está desabilitado nesta GPU"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "Esta GPU não reporta ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Modo ECC não reportado"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Concluído"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Permissão negada"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Tempo esgotado"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Erro da ferramenta"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "Coletado"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Nenhuma GPU reportada"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Agente SNMP inacessível"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Entrada extend ausente"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Driver não carregado"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Ferramenta não encontrada"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Saída truncada"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Saída rejeitada"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "Ignorado: já em execução"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Resultado não armazenado"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Atual"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Atrasado"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Desatualizado"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Nunca observado"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Adiantado em relação ao relógio do servidor Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Estado administrativo"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Backend"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Driver"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Atualidade"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPUs"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Última coleta"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Manutenção"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Nó"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Ferramenta"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Integridade do nó de GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Não há nós de GPU que você possa visualizar."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Motivos de eventos de clock"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Índice"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Nome"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Amostra"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Estado"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Integridade da GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "Nenhuma GPU registrada ainda. As GPUs aparecem aqui assim que a coleta de um nó as reportar."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "Habilitado"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "Em manutenção"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint não instalado"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Fora de manutenção"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d presentes, %d ausentes, %d possíveis substituições"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Ausente"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Presente"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "possível substituição do registro de GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Desconhecido: ainda não coletado"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPUs"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "última conclusão %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "%d execuções posteriores ignoradas enquanto outra execução retinha o nó"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "há %d segundos"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "há %d minutos"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "há %d horas"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "há %d dias"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Visto por Último"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "ID do barramento PCI"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Reportado por"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Inventário de GPUs"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "vista em %s, movimentação não confirmada"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "vista em outro nó, movimentação não confirmada"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Nós de GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Ações"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Dispositivo"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPUs ausentes"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPUs presentes"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Ainda não há nós de GPU. Adicione um dispositivo Cacti que tenha GPUs."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Dispositivo %d excluído"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Excluir"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Exportar"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "Baixe os registros de nós e GPUs dos dispositivos que você pode visualizar em JSON. Faça uma exportação antes de uma desinstalação que remova as tabelas do plugin."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Exportar registros"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Ainda não coletado"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d GPUs"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "%d novas GPUs registradas"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "há %d s"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "%d execuções ignoradas enquanto uma ainda estava em execução"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "Movimentações de GPU aguardando confirmação"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Registrado em"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Vista em"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Confirmar movimentação"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Rejeitar"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Nó de GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Novo nó de GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Dispositivo excluído (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Salvar adiciona a consulta de dados de GPU ao dispositivo, com a reindexação automática do Cacti desativada: o plugin reindexa após cada alteração de GPU. Configure primeiro o agente SNMP do dispositivo; consulte docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Salvar"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPUs ausentes"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "Uma GPU ausente permanece como um índice da consulta de dados, portanto seus gráficos e arquivos RRD permanecem vinculados e exibem uma lacuna. Removê-la da consulta de dados interrompe isso: na próxima reindexação o Cacti não a listará mais, seus gráficos param de atualizar e suas fontes de dados aparecem como órfãs, e seus arquivos RRD e gráficos são mantidos até que você os exclua. O registro da GPU permanece, e a GPU retorna à consulta de dados se for reportada novamente."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Remover da consulta de dados"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Removida da consulta de dados"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "Criar um dispositivo para um novo nó"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Somente quando o nó ainda não for um dispositivo do Cacti. O dispositivo usa os padrões de dispositivo do site e o modelo de dispositivo GPU Node; defina suas configurações de SNMP na página do dispositivo em seguida."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Descrição"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Nome do host"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Criar dispositivo e nó"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Analise as observações registradas abaixo. As confirmações são pessoais para esta sessão, expiram quando as observações mudam e nunca suprimem alertas nem alteram a integridade."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Operações de GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Investigação"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Objeto"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Observado (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Desconhecido ou desatualizado"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Confirmado; integridade inalterada."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Confirmar"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Não há observações disponíveis para os dispositivos aos quais você tem acesso."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Operador de GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Visualização de GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Administrador de GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Identidade da GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "Marcar como ausente após"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Coletas bem-sucedidas consecutivas sem detectar uma GPU antes que ela seja marcada como ausente, de 1 a 100. Uma coleta com falha, ou que não relate nenhuma GPU, nunca é contabilizada. GPUs ausentes mantêm seus registros e histórico e nunca são excluídas automaticamente."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Coleta de GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Obsoleto após"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Segundos após a ferramenta coletar uma amostra até que seus valores deixem de ser exibidos no gráfico, de 60 a 86400. Um valor mais antigo é relatado como desconhecido, de modo que uma coleta interrompida aparece como uma lacuna, nunca como uma linha reta. O valor de idade da GPU continua contando para que possa gerar alertas."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Desinstalação"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Manter tabelas do plugin ao desinstalar"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Quando marcado, a desinstalação do plugin mantém seus registros de nós e GPUs. Desmarque para que a desinstalação os remova; exporte-os primeiro em Nós de GPU. Dispositivos, fontes de dados, gráficos e arquivos RRD do Cacti nunca são afetados em nenhum dos casos."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Remover os objetos do Cacti do plugin ao desinstalar"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Quando marcado, a desinstalação do plugin também remove o modelo de dispositivo GPU, a consulta de dados, o modelo de dados e os modelos de gráfico importados por ele, cada um somente se nada fora do plugin o utilizar, além do XML da consulta de dados GPU gravado por ele, somente se o arquivo não tiver sido alterado. Nunca exclui arquivos RRD, dispositivos, gráficos ou fontes de dados; modelos ainda usados por eles são mantidos."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "bits sem um indicador: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "O plugin GPU requer PHP %s ou posterior. Este servidor executa PHP %s, portanto o plugin não foi instalado nem ativado."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "O plugin GPU não está ativado."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "O plugin GPU requer PHP %s ou posterior."
+
+#: setup.php
+msgid "Management"
+msgstr "Gerenciamento"
