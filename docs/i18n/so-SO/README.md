@@ -1,0 +1,131 @@
+<!-- Source: README.md; SHA256: 126deef1783d64f878bf565f1433c10f31aef828eb9bc313aeff2b0335e54c7c -->
+
+<!-- translations:start -->
+[English](../../../README.md) | [简体中文](../zh-CN/README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [বাংলা](../bn-BD/README.md) | [Deutsch](../de-DE/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](../he-IL/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](../ja-JP/README.md) | [한국어](../ko-KR/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](../zh-TW/README.md) | [isiZulu](../zu-ZA/README.md)
+<!-- translations:end -->
+
+# plugin_gpu
+
+Kordhin (plugin) Cacti 1.2 ah oo Cacti keenta isticmaalka GPU-giiba, xusuusta, heerkulka, awoodda korontada, khaladaadka ECC, iyo sababaha xaddidaadda (throttling) ee qalabka NVIDIA. Taageerada AMD iyo ururinta khaladaadka XID waa la qorsheeyay, weli lama hirgelin. GPU kasta wuxuu noqdaa tusme (index) weydiin xogeed oo ku jirta aaladda noodhkeeda, si jaantusyada GPU ay ula fadhiistaan jaantusyada kale ee noodhka iyadoo la raacayo ogolaanshaha Cacti, Thold iyo Maint-na ay digniin uga bixin karaan una joojin karaan.
+
+> **Xaaladda: waa la horumarinayaa, weli lama sii deyn.** Marxaladda 4 (Milestone 4) waxay dhammeystiraysaa koodhka wejiga 1 (NVIDIA iyada oo loo marayo SNMP extend): ururinta, aqoonsiga, jaantusyada, calaamadaha xaddidaadda iyo ECC, digniinaha Thold iyo Maint, bogga caafimaadka, iyo dukumeentiga hawlwadeenka. Waxaa lagu tijaabiyay oo keliya `snmpd` dhab ah oo wata `nvidia-smi` been abuur ah oo soo saaraya natiijooyin macmal ah, weligeed laguma shaqeyn qalab GPU dhab ah. Waxyaabaha weli furan ka hor sii deynta: tijaabooyinka qalabka dhabta ah ([docs/pilot-plan.md](../../pilot-plan.md), #54), dib-u-eegista amniga ee dibadda ([docs/security-review.md](../../security-review.md)), xogta tijaabada ee laga qabtay qalab dhab ah (#14), iyo cabbirka lagu sameeyay qalab la mid ah kan wax-soo-saarka ([docs/performance.md](../../performance.md)). Khaladaadka XID waxay sugayaan go'aanka #8. Ha ku isticmaalin nidaamka wax-soo-saarka (production).
+
+## Doorarka gelitaanka
+
+| Aagga (Realm) | Gelitaanka |
+| --- | --- |
+| GPU View | Boggaga kormeerka ee jira. |
+| GPU Operator | Kormeerka iyo bogga Hawlgallada iyo oggolaanshaha kala-soocidda shakhsi ahaaneed. |
+| GPU Admin | Gelitaanka hawlwadeenka iyo habaynta jirta iyo tallaabooyinka maamulka. |
+
+Ka dib marka aad koobiyeyso faylasha cusboonaysiinta, u fur bogga Plugins adigoo ah maamule si aad u diiwaangeliso aagga (realm) cusub. Si cad ugu meelalee aagga Operator hoos timaada **Configuration > Users** ama kooxaha isticmaalayaasha. Cusboonaysiintu waxay haystaan aqoonsiyada (IDs) iyo deeqaha aagagga View iyo Admin ee jira. Gelitaanka Admin wuxuu dhaxlaa gelitaanka Operator, gelitaanka Operator-na wuxuu dhaxlaa gelitaanka View codsi kasta; tani kuma darayso deeqo kaydsan isticmaalayaasha ama kooxaha. Dejinta plugin-ka waxay sidoo kale u baahan tahay gelitaanka GPU Admin marka lagu daro ogolaanshaha Settings ee Cacti.
+
+Ogolaanshaha aaladaha Cacti weli waxay xaddidaan safafka iyo tallaabooyinka u furan isticmaale kasta; walxaha aan la khariidadeyn waxay u baahan yihiin maamule. Aqoonsiyada sirta ah, habaynta, khariidadeynta, tirtiridda iyo isbeddellada kale ee maamulka waxay ku sii jiraan boggaga maamulka. Oggolaanshaha (acknowledgments) waxay jiraan oo keliya kalfadhiga hadda ee isticmaalaha, ugu badnaan hal saac iyo inta isla indho-indheyntu ay tahay mid cusub. Indho-indheyn cusub ama isbeddeshay way burisaa iyaga. Weligood cabbir fashilmay uma calaamadeeyaan mid caafimaad qaba mana joojiyaan digniinaha.
+
+## Sababta
+
+Noodhadhka GPU badanaa waxay horay ugu jiraan Cacti si loogu kormeero CPU, xusuusta, iyo is-dhexgallada (interfaces). Caafimaadka GPU waa su'aal gaar ah oo xogta SNMP ee noodhku aanay ka jawaabin: kaarku wuxuu noqon karaa mid heerkul ahaan la xaddiday, urursada khaladaadka ECC, ama soo sheega cillad XID iyadoo noodhka laftiisu u muuqdo mid caafimaad qaba. Qalabka soo-saarayaasha ayaa soo sheega (`nvidia-smi`, DCGM, `amd-smi`), laakiin natiijadoodu waxay ka baxsan tahay jaantusyada, ogolaanshaha, iyo digniinaha Cacti.
+
+Plugin-ku wuxuu buuxiyaa farqigaas isagoo u beddelaya natiijada qalabka soo-saaraha ilo xogeed oo Cacti ah, oo lagu fureeyo aqoonsiga GPU kasta halkii booskiisa lagu furayn lahaa, si dib-u-bilow (reboot) dib u habeynaya GPU-yada uusan taariikhda hal kaar ugu xirin mid kale. Wuxuu dib u isticmaalaa jaantusyada, ogolaanshaha, ururiyayaasha xogta ee fogfog, Thold, iyo Maint ee Cacti halkii uu ka dhisi lahaa noocyo u dhigma oo gaar ah.
+
+## Baaxadda la qorsheeyay
+
+| Weji | Baaxad | Marxaladaha (Milestones) |
+|---|---|---|
+| 0, cilmi-baaris | Natiijada qalabka soo-saaraha, calaamadaha XID iyo xaddidaadda, aqoonsiga GPU, mudnaanta, go'aanka dariiqa ururinta | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | Ururinta `nvidia-smi`, liiska agabka ee UUID, jaantusyada, calaamadaha xaddidaadda, ECC iyo XID, Thold iyo Maint, bogga caafimaadka | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, hababka dambe (backends) | Habka dambe ee DCGM, habka dambe ee `amd-smi` | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig iyo meel fog | Tusaalooyinka MIG, ururiyayaasha xogta ee fogfog ee Cacti | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+
+Waxyaabaha ka baxsan baaxadda: amar kasta oo beddela GPU ama noodh (saacadaha, xadka awoodda, dib-u-dejinta, qaab-dhismeedka MIG), matoor digniin oo plugin-ku leeyahay, daemon gaar ah ama borotokool shabakadeed, iyo jadwaleeye ama xisaabinta shaqooyinka. Eeg qorshaha si aad u aragto hawlaha cilmi-baarista ee dhiman.
+
+## Waxa marxaladda 4 ku darto
+
+- **Sababaha xaddidaadda oo ah qiyam digniin.** Maaskiga dhacdada saacadda (clock event mask) waxaa loo fasiraa hal tilmaame oo 0 ama 1 ah sabab kasta; maaski aan la aqoon wuxuu bixiyaa tilmaamayaal aan la aqoon, weligood ma bixiyaan eber, bit-yada aan lahayn tilmaame waxay ku sii jiraan maaskiga cayriin, kaasoo GPU Health uu muujiyo.
+- **ECC oo ah qiyam digniin** ([docs/metrics.md](../../metrics.md)). Khaladaadka cusub ee la saxay iyo kuwa aan la sixin tan iyo muunaddii hore waxaa xisaabiya plugin-ka isagoo ka soo saaraya laba wadar oo isku xiga waxaana loo kaydiyaa sidii cabbirro (gauges): aan la aqoon muunadda koowaad, akhrin la waayay, ama dib-u-soo-raridda darawalka, si dib-u-dejin weligeed loogu akhriyin sidii eber ama tiro taban. Tirada boggaga la fariisiyay ee hal-bit iyo laba-bit ah iyo qaabka ECC ayaa iyagana la akhriyaa. Laba jaantus oo ECC ah oo dheeraad ah GPU kasta waxay u oggolaadaan Cacti inay kaydiso; iyadoo ay weheliso Power Percent, waxaa jira kow iyo toban jaantus guud ahaan. XID lama ururiyo: ma jiro il ku habboon amarada go'an ee `nvidia-smi` (#8).
+- **Thold iyo Maint** ([docs/alerting.md](../../alerting.md)). Moodooyinka Thold ee la soo raaciyay ee heerkulka, awoodda marka la barbar dhigo xadkeeda, tilmaamayaasha xaddidaadda, khaladaadka ECC ee cusub ee aan la sixin, fariisinta bogga ee sugaysa, iyo da'da muunadda. Qiime kasta waa cabbir (gauge), sababtoo ah Thold 1.8.2 wuu ku fashilmaa tiro-koob aan la aqoon. Tijaabo dhammeystiran oo lagu sameeyay Thold 1.8.2 iyo Maint 1.3 oo aan waxba laga beddelin waxay tusaysaa xad kasta oo shidma dibna u soo noqda, iyadoo la marayo dib-u-dejin ECC, iyo Maint oo joojiya.
+- **GPU Health** (GPU View). Noodhkiiba: cusboonaanta, sida ururintii u dambeysay ku dhammaatay, xaaladda Maint, habka dambe (backend), noocyada qalabka iyo darawalka, iyo tirada GPU-yada; GPU-giiba: joogitaanka, da'da muunadda, xaaladda ECC, iyo maaskiga cayriin. Waxay akhridaa diiwaannada kaydsan oo keliya.
+- **Ogolaanshaha.** Qaybta tijaabada ogolaanshaha waxay dabooshaa fayl kasta oo bog ah iyo tallaabadiisa, ka noqoshada codsiga xiga, iyo diidmooyinka aan waxba shaacin.
+- **Hubinta fashilka iyo soo-celinta.** Tijaabooyin qoran oo dhammeystiran waxay jabiyaan wakiilka, aqoonsiyada sirta ah, qalabka, natiijadiisa, isku xirka xogta (database), iyo qoraallada RRD, waxayna dib u soo celiyaan xogta laga bilaabo kayd (dump), oo ay ku jirto mid ka da' weyn faylasha RRD; GPU cusub weligeed ma dhaxasho faylka RRD ee mid kale ([docs/backup.md](../../backup.md)).
+- **Cabbirka (Scale)** ([docs/performance.md](../../performance.md)). Tijaabada cabbirku waxay cabbirtaa waqtiga ururinta, gelinta script server-ka, abuurista walxaha Cacti, wareegga poller-ka, iyo bogga caafimaadka marka tirada GPU-gu tahay mid la siiyay; CI waxay ku socodsiisaa 100 GPU. Cabbirrada 1,000 iyo 8,000 GPU weli lama diiwaangelin, sidaas darteed tiro GPU oo la taageero lama sheegin.
+- **Dukumeentiga hawlwadeenka** ([docs/operations.md](../../operations.md)): rakibidda, cusboonaysiinta, ka-saarista, mudnaanta ugu yar, qiyamka aan la heli karin, iyo xallinta dhibaatooyinka. Isbeddellada waxaa lagu taxay [CHANGELOG.md](../../../CHANGELOG.md).
+
+## Waxa marxaladda 3 ku darto
+
+- **Ururinta iyada oo loo marayo SNMP extend** ([ADR 0008](../../decisions/0008-collect-through-snmp-extend.md)). Maamulaha noodhku wuxuu ku daraa laba sadar oo `extend` ah oo go'an faylka `snmpd.conf` ([docs/node-setup.md](../../node-setup.md)); plugin-ku wuxuu akhriyaa NET-SNMP-EXTEND-MIB isagoo adeegsanaya hawlaha SNMP ee Cacti oo wata aqoonsiyada sirta ah ee aaladda lafteeda, iyadoo SNMPv3 la door bidayo. Waxba kama socodsiiyo serfarka Cacti ama noodhka.
+- **Falanqayn adag (Strict parsing).** Goobaha xogta waxaa loo akhriyaa iyadoo la eegayo booska, sadar kasta wuxuu ku magacaabaa GPU-giisa UUID, waxaana xaalad bixitaan oo aan eber ahayn, waqti-dhammaad, natiijo go'an, sadar leh tiro goobood oo khaldan, ama qoraal khalad ah oo isku dhafan ay fashiliyaan ururinta oo dhan: qiyamku waxay noqdaan `U`, GPU looma calaamadeeyo maqan, GPU Nodes-na wuxuu muujiyaa sababta.
+- **Ururiye ka dib wareeg kasta oo poller ah.** Wuxuu akhriyaa wakiilka noodh kasta oo shidan, wuxuu cusboonaysiiyaa diiwaannada aqoonsiga, wuxuuna ku kaydiyaa muunaddii ugu dambeysay kaydka ku meel gaarka ah. Gelinta script server-ku waxay akhridaa kaydkaas ku meel gaarka ah oo keliya, si codeynta (poll) Cacti aanay weligeed u sugin noodh GPU.
+- **Walxaha Cacti** ([ADR 0010](../../decisions/0010-attach-to-existing-node-devices.md)). Moodooyinka iyo weydiinta xogta ee *GPU - Devices* waxay ku yimaadaan sidii XML waxaana la soo dejiyaa marka la rakibayo iyo marka la cusboonaysiinayo. Kaydinta noodhku waxay ku xirtaa weydiinta xogta aaladdiisa jirta iyadoo habka dib-u-tusmaynta (reindex) uu yahay None; GPU Nodes wuxuu abuuri karaa aalad oo keliya marka noodhku aanu lahayn midna. GPU kasta waa tusme lagu fureeyay soo-saaraha iyo UUID, iyadoo hal il xogeed ay wadaagaan jaantusyadiisa Utilization, Memory, Temperature, Power, Power Percent, Clocks, Throttle, ECC Errors, New ECC Errors, Retired Pages, iyo Sample Age. Goob kasta oo moodelka ka mid ah waxaa sawira jaantus uun, sababtoo ah Cacti wuxuu kaydiyaa oo keliya goobaha uu jaantus isticmaalo. Plugin-ku wuxuu dib-u-tusmayn sameeyaa isbeddel kasta oo GPU ka dib, wuxuu hayaa dib-u-tusmayn uu Cacti ka booday intii aaladdu ahayd Down ama dansan wuxuuna socodsiiyaa marka aaladdu noqoto Up, wuxuuna jaantusyo u abuuraa GPU-yada cusub.
+- **Taariikhdu waxay la joogtaa kaarka.** GPU maqan wuxuu sii ahaadaa tusme, si jaantusyadiisu u muujiyaan farqi oo ay uga sii socdaan isla faylka RRD marka uu soo noqdo. Kaar beddel ah oo ku jira isla booska wuxuu helaa il xogeed u gaar ah. **Remove from Data Query** oo ku taal bogga noodhku waxay ka saartaa GPU maqan liiska; faylashiisa RRD iyo jaantusyadiisa waa la hayaa ilaa aad adigu tirtirto.
+- **Ogolaanshaha aaladda ee GPU Nodes.** GPU Admin wuxuu arkaa, beddelaa, dhoofiyaa, oo u dhaqaajiyaa oo keliya noodhadhka iyo GPU-yada ku yaalla aaladaha ay u oggol yihiin inay ku arkaan Cacti; dhaqaajinta GPU waxay u baahan tahay labada noodhba. Noodh aaladdiisa la tirtiray waa la damin karaa ama waa la tirtiri karaa.
+- **Moodelka cabbirka guud** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)). Xusuustu waxay ku jirtaa bytes, maaskiga dhacdada saacadda waxaa loo fasiraa tilmaamayaasha `thr_*`, `age`-na waa da'da waqtiga muunadda ee GPU-ga laftiisa, ama `U` marka aan la aqoon.
+
+Isticmaalaha rakibaya (web server) waa inuu awoodaa inuu wax ku qoro `<cacti>/resource/script_server/`, halkaas oo plugin-ku dhigo XML-kiisa weydiinta xogta; haddii kale rakibidda iyo cusboonaysiintu way istaagaan iyagoo soo saaraya farriin waxayna isku dayaan mar kale isku dayga xiga. Ka-saaristu waxay tirtirtaa moodooyinka iyo XML-ka oo keliya marka *Remove the plugin's Cacti objects on uninstall* la calaamadeeyo, weligeedna ma tirtirto faylasha RRD, aaladaha, jaantusyada, ama ilaha xogta ([docs/operations.md](../../operations.md#uninstall)). Noodhadhka ku yaalla ururiyayaasha xogta ee fogfog lama ururiyo ilaa wejiga 3.
+
+## Waxa marxaladda 2 soo saarto
+
+- **Rakibid ilaalin leh.** Marka PHP ka hooseeyo 8.2, rakibidda iyo shididda waa la diidaa iyadoo la soo saarayo farriin magacaabaysa nooca loo baahan yahay, inta kale ee Cacti-na way sii shaqeysaa. `setup.php` iyo qoraallada boggu waxay ku falanqeeyaan PHP 8.0.
+- **Wareegga nolosha.** Rakib, cusboonaysii, dami, oo ka saar adigoo adeegsanaya bogga Plugins ee Cacti. Cusboonaysiintu waa kuwo kala horreeya, way dhammaadaan ka dib hakad, waxayna beddelaan nooca diiwaangashan oo keliya ka dib marka ay guuleystaan. Ka-saaristu waxay haysaa miisaska plugin-ka ilaa aad ka saarto calaamadda *Keep Plugin Tables on Uninstall*; weligeed ma taabato aalad Cacti, il xogeed, jaantus, ama fayl RRD.
+- **Aagag kala gaar ah.** *GPU Admin* wuxuu furaa **GPU Nodes**, halkaas oo aad ka diiwaangeliso aaladaha Cacti sidii noodhadh GPU, aad ku xaqiijiso ama ku diiddo dhaqaajinta GPU ee u dhexeysa noodhadhka, aadna u dhoofiso diiwaan kasta sidii JSON. *GPU View* wuxuu furaa **GPU Inventory**, kaasoo taxaya GPU-yada ku jira aaladaha daawaduhu arki karo oo keliya. Labada bogguba waxay hoos yimaadaan Management, isbeddel kastaana waa POST ay hubisay csrf-magic.
+- **Diiwaannada aqoonsiga GPU.** GPU kasta waxaa lagu fureeyay soo-saaraha iyo UUID. Tusmada, PCI bus ID, magaca, darawalka, iyo qalabka warbixinta soo saaraya waa sifooyin isla meeshooda ku beddelma. UUID cusub oo ku jira boos la yaqaan waxaa loo calaamadeeyaa sidii beddelaad suurtagal ah wuxuuna bilaabaa taariikh u gaar ah; GPU lagu arkay noodh kale wuxuu guuraa oo keliya marka hawlwadeen xaqiijiyo; GPU ka maqan ururinnada guuleystay waxaa loo calaamadeeyaa maqan ka dib tiro la habeyn karo weligiisna lama tirtiro. Kaliya UUID-yada GPU-ga dhammeystiran ee NVIDIA ayaa la aqbalaa hadda; tusaalooyinka MIG waxay sugayaan go'aanka #13, AMD-na cilmi-baarista #19. Xeerarka waxaa lagu tijaabiyaa taxaneyaal xog tijaabo ah, maadaama aanu jirin ururiye weli xog siiya.
+- **Tijaabooyinka iyo CI.** Qaybaha tijaabada unugga iyo xeerarka isha iyada oo aan la haysan GPU ama database, hubinta wareegga nolosha iyo ogolaanshaha bogga ee ka dhanka ah Cacti 1.2.31 iyo 1.2.x hadda jira ee PHP 8.2 ilaa 8.5, hawl diidmo ah oo PHP 8.1 ah, hubinta (lint) PHP 8.0 ee meelaha laga galo, PHPStan heerka 9, iyo REUSE. Qalabka tijaabadu waa ku meel gaar ilaa #12 go'aan laga gaaro.
+
+### Rakibidda qiimeynta
+
+Tallaabooyinkani waxay rakibayaan koodhka hadda jira si loo tijaabiyo; [docs/operations.md](../../operations.md) ayaa leh hagaha dhammeystiran ee hawlwadeenka. Waxay u baahan yihiin Cacti 1.2.31 ama ka dambeeya oo ku shaqeynaya PHP 8.2 ama ka dambeeya.
+
+1. U koobiyee kaydka (repository) galka `plugins/gpu` ee hoos yimaada galka Cacti. Galka waa in loo bixiyaa `gpu`.
+2. Gudaha Cacti, fur **Configuration > Plugins**, ka dibna rakib oo shid **GPU**.
+3. Sii isticmaalayaasha aagga *GPU View*, *GPU Operator*, ama *GPU Admin* hoos timaada **Configuration > Users**, iyadoo loo eegayo doorkooda. Isticmaalaha rakibaya wuxuu helaa View iyo Admin; Admin waxaa ku jira gelitaanka Operator.
+4. U diyaari wakiilka SNMP ee noodh kasta oo GPU sida lagu sharraxay [docs/node-setup.md](../../node-setup.md), ka dibna ku dar noodhka hoos timaada **Management > GPU Nodes**.
+5. Digniinaha, soo deji moodooyinka Thold ee la soo raaciyay sida [docs/alerting.md](../../alerting.md) ku qeexan.
+6. Ikhtiyaar ahaan u hagaaji **Configuration > Settings > GPU**: *Mark Absent After* (caadigu waa 3 ururin oo guuleystay, laga bilaabo 1 ilaa 100), *Stale After* (inta ay da'da muunaddu noqon karto ka hor inta qiyamkeedu daabicin `U`), iyo *Keep Plugin Tables on Uninstall* (caadigu waa shidan).
+
+## Sida cabbirradu u gaaraan Cacti
+
+Go'aanka [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) wuxuu doortay SNMP `extend` ([ADR 0008](../../decisions/0008-collect-through-snmp-extend.md)): wakiilka noodhka laftiisa ayaa socodsiiya amar go'an oo `nvidia-smi` ah plugin-kuna wuxuu akhriyaa natiijada oo keliya. Qorshuhu wuxuu isbarbar dhigayaa ikhtiyaarrada hoos yimaada [Collection paths](../../PLAN.md#collection-paths).
+
+## Bartilmaameedyada iswaafaqsanaanta
+
+| Qayb | Bartilmaameed |
+|---|---|
+| Cacti | 1.2.31 ama ka dambeeya, iyada oo aan lahayn wax ka beddel xuddunta ah (core patches) |
+| PHP | 8.2 ama ka dambeeya; `setup.php` wuxuu ku sii ahaadaa mid lagu falanqeyn karo 8.0 si nidaamka socodsiinta aan la taageerin uu u helo diidmo halkii uu ka heli lahaa Cacti UI jaban |
+| NVIDIA | Noocyada darawalka iyo qalabka waxaa dejin doona cilmi-baarista [#26](https://github.com/somethingwithproof/plugin_gpu/issues/26); aqoonsiyada goobaha DCGM waxaa lagu hubiyay v3.3.9 iyo v4.7.0 |
+| AMD | `amd-smi` oo ku saabsan sii-deynta ROCm ee ay dejin doonto cilmi-baarista [#26](https://github.com/somethingwithproof/plugin_gpu/issues/26) |
+| Thold, Maint | Thold 1.8.2 iyo Maint 1.3, aan waxba laga beddelin, si dhammeystiran loo tijaabiyay ([docs/alerting.md](../../alerting.md)) |
+
+## Naqshadda
+
+- [docs/PLAN.md](../../PLAN.md) waa qorshaha buuxa: qaab-dhismeedka, xaqiiqooyinka ilaha sare ee uu ku tiirsan yahay (oo wata ilo), moodelka aqoonsiga, xuduudaha amniga, xisaabinta waxqabadka, tijaabinta, iyo khataraha.
+- [docs/decisions/](../../decisions) waxay haysaa diiwaannada go'aannada qaab-dhismeedka ee doorashooyinka horay loo sameeyay.
+- [docs/REQUIREMENTS.md](../../REQUIREMENTS.md) waxay ku xirtaa aqoonsi shuruudeed kasta arrintiisa (issue).
+
+```mermaid
+flowchart LR
+    NODE[Noodhka GPU: snmpd extend oo wada nvidia-smi] -->|Akhriska SNMP, v3 ayaa la door bidayaa| C[Ururiyaha]
+    C --> CACHE[(Kaydka ku meel gaarka ah ee plugin-ka oo ku xiran GPU UUID)]
+    CACHE --> SS[Gelinta weydiinta xogta ee script server]
+    SS --> RRD[(Faylasha Cacti RRD, hal il xogeed GPU kasta)]
+    SS -->|poller_output| T[Thold iyo Maint]
+    RRD --> G[Jaantusyada iyo ogolaanshaha Cacti]
+```
+
+## Sida shaqada loola socdo
+
+- **Marxaladaha (Milestones)** waxay raacaan marxaladaha qorshaha. Mid kasta wuxuu leeyahay arrin weyn (epic issue) oo taxaysa arrimaha hoose iyo caddaynta bixitaanka.
+- **Arrimaha (Issues)** waxaa lagu kala soocaa calaamado: `type: requirement`, `type: research`, `type: decision`, `type: epic`. Arrimaha shuruuduhu waxay sheegaan shuruudo tiro leh oo la tijaabin karo (`REQ-AREA-NNN`) iyo shuruudaha aqbalaadda.
+- **Calaamaduhu** waxay sidoo kale sitaan `area:`, `phase:`, `priority:`, iyo `status:`. Eeg [CONTRIBUTING.md](../../../CONTRIBUTING.md#labels).
+- [Guddiga mashruuca](https://github.com/users/somethingwithproof/projects/9) wuxuu muujinayaa dhammaan arrimaha marxaladaha oo dhan.
+
+## Wax ku darsashada
+
+Akhri [CONTRIBUTING.md](../../../CONTRIBUTING.md). Gudbinta (commits) waxay u baahan yihiin saxiixa DCO. Doodaha naqshadda waxay ka dhacaan arrimaha (issues); go'aannada furan waxay sitaan calaamadda `type: decision`. Natiijooyinka laga qabtay qalabka GPU ee dhabta ah waa wax ku darsashada ugu faa'iidada badan ee marxaladda 1; marka hore ka saar magacyada martigeliyayaasha (hostnames), lambarada taxanaha ah, iyo UUID-yada.
+
+## Amniga
+
+Ku soo sheeg nuglaanshaha si qarsoodi ah; eeg [SECURITY.md](../../../SECURITY.md).
+
+## Shatiga
+
+GNU General Public License v2.0, isla shatiga ay leeyihiin Cacti iyo plugin-yadiisa. Eeg [LICENSE](../../../LICENSE).

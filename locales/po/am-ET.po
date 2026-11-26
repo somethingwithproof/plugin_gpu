@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: am-ET\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "ያ የGPU ኖድ ወይም GPU የለም፣ ወይም እርስዎ መዳረሻ በሌለዎት መሳሪያ ላይ ነው።"
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "የGPU የውሂብ መጠይቁ ወደ መሳሪያው መታከል አልቻለም። የተሰኪው አብነቶች መጫናቸውን ያረጋግጡ።"
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "መሳሪያ፦ የኖዱ መሳሪያ ተሰርዟል፣ ስለዚህ ኖዱ መሰናከል ብቻ ነው የሚችለው።"
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "መሳሪያ፦ ነባር የCacti መሳሪያ ይምረጡ።"
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "መሳሪያ፦ ይህ መሳሪያ ቀድሞውኑ የGPU ኖድ ነው።"
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "የGPU ኖዱ ተቀምጧል።"
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "የGPU ኖዱ ሊቀመጥ አልቻለም።"
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "የGPU ኖዱ ተወግዷል። የCacti መሳሪያው ባለበት ተትቷል።"
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "የGPU መዝገቦች ስላሉት የGPU ኖዱ አልተወገደም። በምትኩ ያሰናክሉት፤ የGPU መዝገቦች በፍጹም አይሰረዙም።"
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPUው አሁን ከታሪኩ ጋር በታየበት ኖድ ስር ሆኗል።"
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPUው ከተመዘገበበት ኖድ ጋር ይቆያል።"
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPUው በሚቀጥለው ዳግም መረጃ ጠቋሚ ጊዜ የውሂብ መጠይቁን ይለቃል። ግራፎቹ እና RRD ፋይሎቹ ይቀመጣሉ።"
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "ከውሂብ መጠይቁ ሊወገድ የሚችለው የሌለ GPU ብቻ ነው።"
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "መሳሪያ ለመፍጠር የCacti መሳሪያዎችን የማስተዳደር ፈቃድ ያስፈልጋል።"
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "መግለጫ፦ እስከ 150 የሚደርሱ ሊታተሙ የሚችሉ ቁምፊዎችን ያስገቡ።"
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "የአስተናጋጅ ስም፦ የአስተናጋጅ ስም ወይም የIP አድራሻ ያስገቡ።"
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "የGPU ኖድ መሳሪያ አብነት አልተጫነም።"
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "መሳሪያው አልተቀመጠም፦ መለያዎ የፈጠራቸውን መሳሪያዎች ላይመለከት ይችላል። አስተዳዳሪ እንዲፈጥረው ይጠይቁ።"
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "መዳረሻ ከተከለከለ በኋላ መሳሪያው ሊወገድ አልቻለም። አስተዳዳሪ እንዲያስወግደው ይጠይቁ።"
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "መሳሪያው እና የGPU ኖዱ ተፈጥረዋል። የመሳሪያውን የSNMP ቅንብሮች በመሳሪያው ገጽ ላይ ያዋቅሩ።"
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "መሳሪያው ሊፈጠር አልቻለም፤ የCacti መዝገብን ይመልከቱ።"
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "የክትትል እይታ"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "ምልከታዎቹን ማንበብ አልተቻለም። አስተዳዳሪ የተሰኪውን መዝገብ እንዲያረጋግጥ ይጠይቁ።"
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "ተሰናክሏል"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "በፍጹም"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "በGPU ጤና ላይ ያለውን የናሙና ዕድሜ፣ ECC እና የፍጥነት ገደብ ሁኔታ ከመሳሪያው ግራፎች ጋር ያወዳድሩ። የማንነት ለውጦችን እና የኖድ ውቅርን ለአስተዳዳሪ ያሳውቁ።"
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "በዚህ GPU ላይ ECC ተሰናክሏል"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "ይህ GPU ECCን ሪፖርት አያደርግም"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "የECC ሁነታ ሪፖርት አልተደረገም"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "ተጠናቋል"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "ፈቃድ ተከልክሏል"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "ጊዜው አልፏል"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "ያልታወቀ"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "የመሳሪያ ስህተት"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "ተሰብስቧል"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "ምንም GPUዎች ሪፖርት አልተደረጉም"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "የSNMP ወኪል አይደረስበትም"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "የማራዘሚያ ግቤት ጠፍቷል"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "ድራይቨር አልተጫነም"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "መሳሪያው አልተገኘም"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "ውጤቱ ተቆርጧል"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "ውጤቱ ተቀባይነት አላገኘም"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "ተዘሏል፦ ቀድሞውኑ እየሰራ ነው"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "ውጤቱ አልተቀመጠም"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "ወቅታዊ"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "የዘገየ"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "ጊዜው ያለፈበት"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "በፍጹም አልታየም"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "ከCacti አገልጋይ ሰዓት የቀደመ"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "የአስተዳደር ሁኔታ"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "ባክኤንድ"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "ድራይቨር"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "ወቅታዊነት"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPUዎች"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "የመጨረሻ ስብስብ"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "ጥገና"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "ኖድ"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "መሳሪያ"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "የGPU ኖድ ጤና"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "ሊመለከቷቸው የሚችሉ የGPU ኖዶች የሉም።"
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "የሰዓት ክስተት ምክንያቶች"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "መረጃ ጠቋሚ"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "ስም"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "ናሙና"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "ሁኔታ"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "የGPU ጤና"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "እስካሁን ምንም GPUዎች አልተመዘገቡም። የኖድ ስብስብ ሪፖርት ካደረጋቸው በኋላ GPUዎች እዚህ ይታያሉ።"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "ነቅቷል"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "በጥገና ላይ"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint አልተጫነም"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "በጥገና ላይ አይደለም"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d ያሉ፣ %d የሌሉ፣ %d ሊሆኑ የሚችሉ መተኪያዎች"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "የሌለ"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "ያለ"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "የGPU መዝገብ %d ሊሆን የሚችል መተኪያ"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "ያልታወቀ፦ እስካሁን አልተሰበሰበም"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPUዎች"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "ለመጨረሻ ጊዜ የተጠናቀቀው %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "ሌላ ሂደት ኖዱን ይዞት ሳለ %d ተከታይ ሂደቶች ተዘለዋል"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "ከ%d ሰከንዶች በፊት"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "ከ%d ደቂቃዎች በፊት"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "ከ%d ሰዓታት በፊት"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "ከ%d ቀናት በፊት"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "ለመጨረሻ ጊዜ የታየው"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "የPCI ባስ ID"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "ሪፖርት ያደረገው"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "የGPU ቆጠራ"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "በ%s ላይ ታይቷል፣ ዝውውሩ አልተረጋገጠም"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "በሌላ ኖድ ላይ ታይቷል፣ ዝውውሩ አልተረጋገጠም"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "የGPU ኖዶች"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "እርምጃዎች"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "መሣሪያ"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "የሌሉ GPUዎች"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "ያሉ GPUዎች"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "እስካሁን ምንም የGPU ኖዶች የሉም። GPUዎች ያሉት የCacti መሳሪያ ያክሉ።"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "የተሰረዘ መሳሪያ %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "ሰርዝ"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "ላክ"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "ሊመለከቷቸው የሚችሉትን መሳሪያዎች የኖድ እና የGPU መዝገቦች እንደ JSON ያውርዱ። የተሰኪውን ሠንጠረዦች የሚያጠፋ ማራገፍ ከማድረግዎ በፊት ወደ ውጭ ይላኩ።"
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "መዝገቦችን ወደ ውጭ ላክ"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "እስካሁን አልተሰበሰበም"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s፦ %d GPUዎች"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "%d አዳዲስ GPUዎች ተመዝግበዋል"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "ከ%d ሰከንድ በፊት"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "አንዱ ገና እየሰራ ሳለ %d ሂደቶች ተዘለዋል"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "ማረጋገጫ የሚጠባበቁ የGPU ዝውውሮች"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "የተመዘገበበት"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "የታየበት"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "ዝውውሩን አረጋግጥ"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "ውድቅ አድርግ"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "የGPU ኖድ፦ %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "አዲስ የGPU ኖድ"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "የተሰረዘ መሣሪያ (መታወቂያ %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "ማስቀመጥ የCacti ራስ-ሰር ዳግም መረጃ ጠቋሚ ጠፍቶ የGPU የውሂብ መጠይቁን ወደ መሳሪያው ያክላል፤ ተሰኪው ከእያንዳንዱ የGPU ለውጥ በኋላ ዳግም መረጃ ጠቋሚ ያደርጋል። መጀመሪያ የመሳሪያውን የSNMP ወኪል ያዋቅሩ፤ docs/node-setup.mdን ይመልከቱ።"
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "አስቀምጥ"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "የሌሉ GPUዎች"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "የሌለ GPU የውሂብ መጠይቁ መረጃ ጠቋሚ ሆኖ ይቆያል፣ ስለዚህ ግራፎቹ እና RRD ፋይሎቹ ተያይዘው ይቆያሉ እና ክፍተት ያሳያሉ። ከውሂብ መጠይቁ ማስወገድ ያንን ያቆማል፦ በሚቀጥለው ዳግም መረጃ ጠቋሚ ጊዜ Cacti ከአሁን በኋላ አይዘረዝረውም፣ ግራፎቹ መዘመን ያቆማሉ እና የውሂብ ምንጮቹ እንደ ወላጅ አልባ ይታያሉ፣ እና RRD ፋይሎቹ እና ግራፎቹ እርስዎ እስኪሰርዟቸው ድረስ ይቀመጣሉ። የGPU መዝገቡ ይቆያል፣ እና GPUው እንደገና ሪፖርት ከተደረገ ወደ ውሂብ መጠይቁ ይመለሳል።"
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "ከውሂብ መጠይቅ አስወግድ"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "ከውሂብ መጠይቁ ተወግዷል"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "ለአዲስ ኖድ መሳሪያ ይፍጠሩ"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "ኖዱ ገና የCacti መሳሪያ ሳይሆን ብቻ። መሳሪያው የጣቢያውን ነባሪ የመሳሪያ ቅንብሮች እና የGPU ኖድ መሳሪያ አብነት ይጠቀማል፤ ከዚያ በኋላ የSNMP ቅንብሮቹን በመሳሪያው ገጽ ላይ ያዋቅሩ።"
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "መግለጫ"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "የአስተናጋጅ ስም"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "መሣሪያ እና ኖድ ፍጠር"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "ከዚህ በታች የተመዘገቡትን ምልከታዎች ይገምግሙ። እውቅናዎች ለዚህ ክፍለ ጊዜ ግላዊ ናቸው፣ ምልከታዎች ሲለወጡ ጊዜያቸው ያልፋል፣ እና ማንቂያዎችን አያፍኑም ወይም ጤናን አይለውጡም።"
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "የGPU ክንውኖች"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "ምርመራ"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "ነገር"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "የታየበት (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "ያልታወቀ ወይም ያረጀ"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "እውቅና ተሰጥቷል፤ ጤና አልተለወጠም።"
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "እውቅና ስጥ"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "መድረስ ለሚችሉባቸው መሣሪያዎች ምንም ምልከታዎች የሉም።"
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "የGPU ኦፕሬተር"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "የGPU እይታ"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "የGPU አስተዳዳሪ"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "የGPU ማንነት"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "የሌለ ተብሎ ምልክት የሚደረግበት ከ"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "አንድ GPU የሌለ ተብሎ ምልክት ከመደረጉ በፊት ሊያጣው የሚገባው ተከታታይ ስኬታማ ስብሰባዎች ብዛት፣ ከ1 እስከ 100። ያልተሳካ ስብሰባ ወይም ምንም GPU ያላሳወቀ ስብሰባ ፈጽሞ አይቆጠርም። የሌሉ GPUዎች መዝገባቸውንና ታሪካቸውን ይይዛሉ እናም በራስ-ሰር ፈጽሞ አይሰረዙም።"
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "የGPU ስብሰባ"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "ጊዜው ያለፈበት ተብሎ የሚቆጠርበት ከ"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "መሣሪያው ናሙና ከወሰደ በኋላ እሴቶቹ በግራፍ መሳል የሚያቆሙበት ሰከንዶች፣ ከ60 እስከ 86400። የቆየ እሴት እንደ ያልታወቀ ይመዘገባል፣ ስለዚህ የቆመ ስብሰባ እንደ ክፍተት እንጂ ፈጽሞ እንደ ቀጥታ መስመር አይታይም። ማንቂያ እንዲሰጥበት የGPU እድሜ እሴት መቁጠሩን ይቀጥላል።"
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "አራግፍ"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "ሲራገፍ የተሰኪ ሰንጠረዦችን አቆይ"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "ሲመረጥ፣ ተሰኪውን ማራገፍ የኖድ እና የGPU መዝገቦቹን ይይዛል። ማራገፉ እንዲያጠፋቸው ምርጫውን ያንሱ፤ መጀመሪያ ከGPU ኖዶች ወደ ውጭ ይላኳቸው። በየትኛውም መንገድ የCacti መሣሪያዎች፣ የውሂብ ምንጮች፣ ግራፎች እና RRD ፋይሎች ፈጽሞ አይነኩም።"
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "ተሰኪው ሲራገፍ የተሰኪውን የCacti ነገሮች አስወግድ"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "ሲመረጥ፣ ተሰኪውን ማራገፍ ያስመጣውን የGPU መሣሪያ አብነት፣ የውሂብ መጠይቅ፣ የውሂብ አብነት እና የግራፍ አብነቶችንም ያስወግዳል፤ እያንዳንዳቸው ከተሰኪው ውጭ ምንም ነገር በማይጠቀምባቸው ጊዜ ብቻ፣ እና የጻፈውን የGPU የውሂብ መጠይቅ XML ፋይሉ ካልተቀየረ ብቻ ያስወግዳል። RRD ፋይሎችን፣ መሣሪያዎችን፣ ግራፎችን ወይም የውሂብ ምንጮችን ፈጽሞ አይሰርዝም፤ እነዚያ አሁንም የሚጠቀሙባቸው አብነቶች ይቀመጣሉ።"
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "አመላካች የሌላቸው ቢቶች፦ %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "የGPU ተሰኪ PHP %s ወይም ከዚያ በላይ ይፈልጋል። ይህ አገልጋይ PHP %s ያስኬዳል፣ ስለዚህ ተሰኪው አልተጫነም ወይም አልነቃም።"
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "የGPU ተሰኪ አልነቃም።"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "የGPU ተሰኪ PHP %s ወይም ከዚያ በላይ ይፈልጋል።"
+
+#: setup.php
+msgid "Management"
+msgstr "አስተዳደር"

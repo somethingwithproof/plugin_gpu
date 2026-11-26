@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: ms-MY\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Nod GPU atau GPU tersebut tidak wujud, atau berada pada peranti yang anda tidak mempunyai akses kepadanya."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Pertanyaan data GPU tidak dapat ditambahkan pada peranti. Semak bahawa templat pemalam telah dipasang."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Peranti: peranti nod tersebut telah dipadamkan, jadi nod tersebut hanya boleh dinyahdayakan."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Peranti: pilih peranti Cacti yang sedia ada."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Peranti: peranti ini sudah menjadi nod GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "Nod GPU telah disimpan."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Nod GPU tidak dapat disimpan."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "Nod GPU telah dibuang. Peranti Cacti miliknya dikekalkan."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "Nod GPU tidak dibuang kerana terdapat rekod GPU yang dimiliki olehnya. Nyahdayakannya sebagai ganti; rekod GPU tidak pernah dipadamkan."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPU tersebut kini dimiliki oleh nod tempat ia dikesan, bersama sejarahnya."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU tersebut kekal dengan nodnya yang direkodkan."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU tersebut akan dikeluarkan daripada pertanyaan data pada pengindeksan semula seterusnya. Graf dan fail RRD miliknya dikekalkan."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "Hanya GPU yang tiada boleh dibuang daripada pertanyaan data."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Mencipta peranti memerlukan kebenaran untuk mengurus peranti Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Penerangan: masukkan sehingga 150 aksara boleh cetak."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Nama hos: masukkan nama hos atau alamat IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "Templat peranti GPU Node tidak dipasang."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "Peranti tersebut tidak dikekalkan: akaun anda tidak dibenarkan melihat peranti yang diciptanya. Minta pentadbir untuk menciptanya."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Peranti tersebut tidak dapat dibuang selepas akses ditolak. Minta pentadbir untuk membuangnya."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "Peranti dan nod GPU miliknya telah dicipta. Tetapkan tetapan SNMP peranti pada halaman perantinya."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Peranti tidak dapat dicipta; lihat log Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Paparan pemantauan"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Pemerhatian tidak dapat dibaca. Minta pentadbir menyemak log pemalam."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Dinyahdayakan"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Tidak pernah"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "Bandingkan usia sampel, ECC dan keadaan pendikitan pada Kesihatan GPU dengan graf peranti. Eskalasikan perubahan identiti dan konfigurasi nod kepada pentadbir."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ECC dinyahdayakan pada GPU ini"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "GPU ini tidak melaporkan ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Mod ECC tidak dilaporkan"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Selesai"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Kebenaran ditolak"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Tamat masa"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Tidak diketahui"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Ralat alat"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "Dikutip"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Tiada GPU dilaporkan"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Ejen SNMP tidak dapat dicapai"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Entri extend tiada"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Pemacu tidak dimuatkan"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Alat tidak ditemui"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Output dipendekkan"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Output ditolak"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "Dilangkau: sedang berjalan"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Keputusan tidak disimpan"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Semasa"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Tertunda"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Lapuk"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Tidak pernah diperhatikan"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Mendahului jam pelayan Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Keadaan Pentadbir"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Backend"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Pemacu"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Kesegaran"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Kutipan Terakhir"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Penyelenggaraan"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Nod"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Alat"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Kesihatan Nod GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Tiada nod GPU yang boleh anda lihat."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Sebab Peristiwa Jam"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Indeks"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Nama"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Sampel"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Keadaan"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Kesihatan GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "Belum ada GPU direkodkan. GPU akan dipaparkan di sini setelah kutipan nod melaporkannya."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "Didayakan"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "Dalam penyelenggaraan"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint tidak dipasang"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Tidak dalam penyelenggaraan"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d hadir, %d tiada, %d kemungkinan penggantian"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Tiada"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Hadir"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "kemungkinan penggantian rekod GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Tidak diketahui: belum dikutip"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPU"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "terakhir selesai %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "%d pelaksanaan berikutnya dilangkau semasa pelaksanaan lain memegang nod"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d saat lalu"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d minit lalu"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d jam lalu"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d hari lalu"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Terakhir Dilihat"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "ID Bas PCI"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Dilaporkan Oleh"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Inventori GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "dikesan di %s, perpindahan belum disahkan"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "dikesan di nod lain, perpindahan belum disahkan"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Nod GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Tindakan"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Peranti"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPU Tiada"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPU Hadir"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Belum ada nod GPU. Tambahkan peranti Cacti yang mempunyai GPU."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Peranti %d dipadamkan"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Padam"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Eksport"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "Muat turun rekod nod dan GPU bagi peranti yang boleh anda lihat sebagai JSON. Lakukan eksport sebelum penyahpasangan yang membuang jadual pemalam."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Eksport Rekod"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Belum dikutip"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "%d GPU baharu direkodkan"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d s lalu"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "%d pelaksanaan dilangkau semasa satu lagi masih berjalan"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "Perpindahan GPU Menunggu Pengesahan"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Direkodkan Pada"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Dikesan Pada"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Sahkan Perpindahan"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Tolak"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Nod GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Nod GPU Baharu"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Peranti dipadamkan (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Menyimpan akan menambahkan pertanyaan data GPU pada peranti, dengan pengindeksan semula automatik Cacti dimatikan: pemalam akan mengindeks semula selepas setiap perubahan GPU. Konfigurasikan ejen SNMP peranti terlebih dahulu; lihat docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Simpan"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPU Tiada"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "GPU yang tiada kekal sebagai indeks dalam pertanyaan data, jadi graf dan fail RRD miliknya kekal terpaut dan menunjukkan jurang. Membuangnya daripada pertanyaan data akan menghentikannya: pada pengindeksan semula seterusnya Cacti tidak lagi menyenaraikannya, grafnya berhenti dikemas kini dan sumber datanya dipaparkan sebagai yatim, manakala fail RRD dan grafnya dikekalkan sehingga anda memadamkannya. Rekod GPU kekal, dan GPU tersebut kembali ke pertanyaan data jika dilaporkan semula."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Buang daripada Pertanyaan Data"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Dibuang daripada pertanyaan data"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "Cipta Peranti untuk Nod Baharu"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Hanya apabila nod belum lagi menjadi peranti Cacti. Peranti ini menggunakan tetapan lalai peranti tapak dan templat peranti GPU Node; tetapkan tetapan SNMP miliknya pada halaman peranti selepas itu."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Keterangan"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Nama hos"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Cipta Peranti dan Nod"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Semak pemerhatian yang direkodkan di bawah. Pengakuan adalah peribadi untuk sesi ini, tamat tempoh apabila pemerhatian berubah, dan tidak sekali-kali menyekat amaran atau mengubah kesihatan."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Operasi GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Siasatan"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Objek"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Diperhatikan (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Tidak diketahui atau lapuk"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Diakui; kesihatan tidak berubah."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Akui"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Tiada pemerhatian tersedia untuk peranti yang boleh anda akses."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Pengendali GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Paparan GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Pentadbir GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Identiti GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "Tandakan Tidak Hadir Selepas"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Bilangan pengumpulan berjaya berturut-turut yang mesti terlepas sesuatu GPU sebelum ia ditandakan tidak hadir, dari 1 hingga 100. Pengumpulan yang gagal, atau yang melaporkan tiada GPU, tidak pernah dikira. GPU yang tidak hadir mengekalkan rekod serta sejarahnya dan tidak pernah dipadamkan secara automatik."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Pengumpulan GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Lapuk Selepas"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Saat selepas alat mengambil sampel sebelum nilainya berhenti digrafkan, dari 60 hingga 86400. Nilai yang lebih lama dilaporkan sebagai tidak diketahui, jadi pengumpulan yang terhenti dipaparkan sebagai jurang, bukan sebagai garis mendatar. Nilai umur GPU terus mengira supaya makluman boleh dicetuskan."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Nyahpasang"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Kekalkan Jadual Pemalam semasa Nyahpasang"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Apabila ditandakan, menyahpasang pemalam akan mengekalkan rekod nod dan GPU. Kosongkan tanda ini supaya penyahpasangan menggugurkannya; eksport rekod tersebut terlebih dahulu daripada Nod GPU. Peranti Cacti, sumber data, graf dan fail RRD tidak akan disentuh dalam kedua-dua keadaan."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Alih keluar objek Cacti pemalam semasa nyahpasang"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Apabila ditandakan, menyahpasang pemalam juga akan mengalih keluar templat peranti GPU, kueri data, templat data dan templat graf yang diimportnya, setiap satunya hanya apabila tiada apa-apa di luar pemalam menggunakannya, serta XML kueri data GPU yang ditulisnya, hanya jika fail tersebut tidak diubah. Ia tidak pernah memadamkan fail RRD, peranti, graf atau sumber data; templat yang masih digunakan oleh objek tersebut akan dikekalkan."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "bit tanpa penunjuk: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Pemalam GPU memerlukan PHP %s atau yang lebih baharu. Pelayan ini menjalankan PHP %s, jadi pemalam tidak dipasang atau didayakan."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "Pemalam GPU tidak didayakan."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "Pemalam GPU memerlukan PHP %s atau yang lebih baharu."
+
+#: setup.php
+msgid "Management"
+msgstr "Pengurusan"

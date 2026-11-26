@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: rw-RW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Iyo node ya GPU cyangwa GPU ntibaho, cyangwa iri ku gikoresho udafitiye uburenganzira."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Ishakisha ry'amakuru ya GPU ntiryashoboye kongerwa ku gikoresho. Genzura ko inyandikorugero z'umugereka zashyizwemo."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Igikoresho: igikoresho cya node cyasibwe, bityo node ishobora guhagarikwa gusa."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Igikoresho: hitamo igikoresho cya Cacti gisanzwe kiriho."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Igikoresho: iki gikoresho gisanzwe ari node ya GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "Node ya GPU yabitswe."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Node ya GPU ntiyashoboye kubikwa."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "Node ya GPU yakuweho. Igikoresho cyayo cya Cacti cyasigaye mu mwanya wacyo."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "Node ya GPU ntiyakuweho kuko hari inyandiko za GPU ziyigize. Ahubwo yihagarike; inyandiko za GPU ntizisibwa na rimwe."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "Ubu GPU ibarirwa kuri node yabonetseho, hamwe n'amateka yayo."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU iguma kuri node yanditsweho."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU izava mu ishakisha ry'amakuru mu isubiramo ry'urutonde rukurikira. Ibishushanyo byayo na dosiye za RRD biragumishwa."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "GPU idahari gusa ni yo ishobora gukurwa mu ishakisha ry'amakuru."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Kurema igikoresho bisaba uburenganzira bwo gucunga ibikoresho bya Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Ibisobanuro: injiza ibimenyetso bishobora gucapwa bitarenze 150."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Izina ry'igikoresho (Hostname): injiza izina rya host cyangwa aderesi ya IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "Inyandikorugero y'igikoresho cya GPU Node ntiyashyizwemo."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "Igikoresho ntikigumishijweho: konti yawe ntishobora kubona ibikoresho yaremye. Saba umuyobozi kugirema."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Igikoresho nticyashoboye gukurwaho nyuma yo kwimwa uburenganzira. Saba umuyobozi kugikuraho."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "Igikoresho na node yacyo ya GPU byaremwe. Shyiraho igenamiterere rya SNMP ry'igikoresho ku ipaji y'igikoresho cyacyo."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Igikoresho nticyashoboye kuremwa; reba inyandiko-mvugo ya Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Imboni y'ikurikirana"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Ibyagaragaye ntibyashoboye gusomwa. Saba umuyobozi kugenzura inyandiko-mvugo y'umugereka."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Byahagaritswe"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Nta na rimwe"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "Gereranya imyaka y'urugero, ECC n'imiterere yo kugabanya umuvuduko kuri GPU Health n'ibishushanyo by'igikoresho. Ohereza impinduka z'umwirondoro n'igenamiterere rya node ku muyobozi."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ECC yahagaritswe kuri iyi GPU"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "Iyi GPU ntitanga raporo ya ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Uburyo bwa ECC ntibwatangajwe"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Byarangiye"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Uburenganzira bwanzwe"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Igihe cyarangiye"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Ntibizwi"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Ikosa ry'igikoresho"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "Byakusanyijwe"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Nta GPU zatanzweho raporo"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Uhagarariye SNMP ntagerwaho"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Icyinjijwe cyo kwagura (Extend) kirabura"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Driver ntiyapakiwe"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Igikoresho nticyabonetse"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Ibisohoka byagabanyijwe"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Ibisohoka byanzwe"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "Byasimbwe: bisanzwe biri gukora"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Igisubizo nticyabitswe"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Bigezweho"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Byatinze"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Byashaje"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Ntibiragaragara na rimwe"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Biri imbere y'isaha ya seriveri ya Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Imiterere y'ubuyobozi"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Backend"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Driver"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Ubushyashya bw'amakuru"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Ikusanya rya nyuma"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Isana n'ivugurura"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Nodi"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Igikoresho"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Ubuzima bwa Node ya GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Nta node za GPU ushobora kubona."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Impamvu z'ibyabaye ku muvuduko w'isaha"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Index"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Izina"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Urugero"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Imiterere"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Ubuzima bwa GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "Nta GPU zirandikwa. GPU zigaragara hano iyo ikusanya rya node rizitangaje."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "Byafunguwe"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "Mu kubungabunga"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Umugereka wa Maint ntiwashyizwemo"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Ntabwo iri mu kubungabunga"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d zihari, %d zidahari, %d zishobora gusimbura izindi"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Ntibihari"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Bihari"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "ishobora gusimbura inyandiko ya GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Ntibizwi: ntibirakusanywa"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "GPU %d"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "byarangiye bwa nyuma %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "ibikorwa %d byakurikiyeho byasimbwe mu gihe ikindi gikorwa cyari gifite node"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "hashize amasegonda %d"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "hashize iminota %d"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "hashize amasaha %d"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "hashize iminsi %d"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Biheruka kugaragara"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "ID ya PCI Bus"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Byatangajwe na"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Urutonde rwa GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "yabonetse kuri %s, kwimuka ntikwemejwe"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "yabonetse ku yindi node, kwimuka ntikwemejwe"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Node za GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Ibikorwa"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Igikoresho"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPU zidahari"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPU zihari"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Nta node za GPU zirabaho. Ongeramo igikoresho cya Cacti gifite GPU."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Igikoresho cyasibwe %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Siba"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Ohereza hanze"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "Kuramo inyandiko za node na GPU z'ibikoresho ushobora kubona nka JSON. Banza wohereze hanze amakuru mbere yo gukuramo umugereka gusiba imbonerahamwe zawo."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Kohereza hanze inyandiko"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Ntibirakusanywa"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: GPU %d"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "GPU nshya %d zanditswe"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "hashize %d s"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "ibikorwa %d byasimbwe mu gihe kimwe cyari kigikora"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "Kwimuka kwa GPU gutegereje kwemezwa"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Byanditswe kuri"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Byabonetse kuri"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Emeza kwimuka"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Anga"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Node ya GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Node nshya ya GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Igikoresho cyasibwe (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Kubika byongera ishakisha ry'amakuru ya GPU ku gikoresho, isubiramo ry'urutonde rwikora rya Cacti rifunzwe: umugereka usubiramo urutonde nyuma ya buri mpinduka ya GPU. Banza utunganye uhagarariye SNMP w'igikoresho; reba docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Bika"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPU zidahari"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "GPU idahari iguma ari umurongo w'ishakisha ry'amakuru, bityo ibishushanyo byayo na dosiye za RRD biguma bifatanye kandi bikerekana icyuho. Kuyikura mu ishakisha ry'amakuru bihagarika ibyo: mu isubiramo ry'urutonde rukurikira Cacti nticyongera kuyishyira ku rutonde, ibishushanyo byayo bihagarika kuvugururwa kandi amasoko y'amakuru yayo agaragara nk'ayasigaye yonyine, na dosiye zayo za RRD n'ibishushanyo biragumishwa kugeza ubisibye. Inyandiko ya GPU iraguma, kandi GPU isubira mu ishakisha ry'amakuru niyongera gutangwaho raporo."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Kuvana mu ishakisha ry'amakuru"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Byakuwe mu ishakisha ry'amakuru"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "Kurema igikoresho cya Node nshya"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Gusa igihe node itari igikoresho cya Cacti. Igikoresho gikoresha ibisanzwe by'igikoresho by'ahantu n'inyandikorugero y'igikoresho cya GPU Node; shyiraho igenamiterere rya SNMP ryacyo ku ipaji y'igikoresho nyuma yaho."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Ibisobanuro"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Izina rya host (Hostname)"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Kurema Igikoresho na Nodi"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Suzuma ibyagaragaye byanditswe hasi aha. Kwemeza ko wabibonye ni umwihariko w'iki gikorwa cyo kwinjira, birarangira iyo ibyagaragaye bihindutse, kandi ntibihagarika na rimwe impuruza cyangwa ngo bihindure ubuzima bwa sisitemu."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Ibikorwa bya GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Iperereza"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Ikintu"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Byagaragaye (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Ntibizwi cyangwa byashaje"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Byemejwe ko byabonywe; ubuzima ntibwahindutse."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Emeza ko wabibonye"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Nta byagaragaye biboneka ku bikoresho ufite uburenganzira bwo kugeraho."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Ukoresha GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Kureba GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Umuyobozi wa GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Umwirondoro wa GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "Garagaza ko idahari nyuma ya"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Ikusanya ry'amakuru rikurikirana ryagenze neza rigomba kubura GPU mbere y'uko igaragazwa nk'idahari, kuva kuri 1 kugeza ku 100. Ikusanya ryapfuye, cyangwa irigaragaza ko nta GPU zihari, ntiribarwa. GPU zidahari zigumana inyandiko n'amateka yazo kandi ntizigera zisibwa mu buryo bwikora."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Ikusanya rya GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Bita agaciro nyuma ya"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Amasegonda nyuma y'uko igikoresho gifashe icyitegererezo aho agaciro kacyo kahagarikwa gushyirwa mu gishushanyo, kuva kuri 60 kugeza kuri 86400. Agaciro gashaje kagaragazwa nk'akatazwi, bityo ikusanya ryahagaze rigaragara nk'icyuho, ntirigaragare nk'umurongo urambuye. Agaciro k'igihe GPU imaze itavugururwa gakomeza kubarwa kugira ngo hashobore gutangwa integuza."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Kura muri sisitemu"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Gumisha imbonerahamwe z'umugereka igihe ukurwa muri sisitemu"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Iyo gihiswemo, gukura umugereka muri sisitemu bigumisha inyandiko zayo za nodi na GPU. Gikureho kugira ngo gukura umugereka bizisibe; banza ubisohore uvuye kuri Nodi za GPU. Ibikoresho bya Cacti, amasoko y'amakuru, ibishushanyo, na dosiye za RRD ntibikora na rimwe uko byagenda kose."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Siba ibintu bya Cacti by'umugereka mu gihe ukuweho"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Iyo gihiswemo, gukura umugereka muri sisitemu binasiba icyitegererezo cy'igikoresho cya GPU, ishakisha ry'amakuru, icyitegererezo cy'amakuru, n'ibyitegererezo by'ibishushanyo winjije, buri kimwe gusa aho nta kindi kintu hanze y'umugereka gikikoresha, ndetse na XML y'ishakisha ry'amakuru ya GPU wanditse, gusa niba iyo dosiye itahinduwe. Ntigera isiba dosiye za RRD, ibikoresho, ibishushanyo, cyangwa amasoko y'amakuru; ibyitegererezo bikoreshwa n'ibyo biragumishwa."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "ibiti bidafite ikirango: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Umugereka wa GPU usaba PHP %s cyangwa iyisumbuyeho. Iyi seriveri ikoresha PHP %s, bityo umugereka ntiwashyizwemo cyangwa ngo wemererwe gukora."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "Umugereka wa GPU ntabwo wemerewe gukora."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "Umugereka wa GPU usaba PHP %s cyangwa iyisumbuyeho."
+
+#: setup.php
+msgid "Management"
+msgstr "Imicungire"

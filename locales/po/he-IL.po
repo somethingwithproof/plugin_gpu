@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: he-IL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && n % 10 == 0) ? 2 : 3));\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "צומת ה-GPU או ה-GPU הזה אינו קיים, או שהוא נמצא בהתקן שאין לך גישה אליו."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "לא ניתן היה להוסיף את שאילתת הנתונים של GPU להתקן. בדוק שתבניות התוסף מותקנות."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "התקן: ההתקן של הצומת נמחק, ולכן ניתן רק להשבית את הצומת."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "התקן: בחר התקן Cacti קיים."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "התקן: התקן זה הוא כבר צומת GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "צומת ה-GPU נשמר."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "לא ניתן היה לשמור את צומת ה-GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "צומת ה-GPU הוסר. התקן ה-Cacti שלו נשאר במקומו."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "צומת ה-GPU לא הוסר מכיוון שמשויכות אליו רשומות GPU. השבת אותו במקום זאת; רשומות GPU לעולם אינן נמחקות."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "ה-GPU משויך כעת לצומת שבו נצפה, יחד עם ההיסטוריה שלו."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "ה-GPU נשאר משויך לצומת המתועד שלו."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "ה-GPU יוסר משאילתת הנתונים במיפתוח מחדש (reindex) הבא. הגרפים וקובצי ה-RRD שלו נשמרים."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "ניתן להסיר משאילתת הנתונים רק GPU חסר."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "יצירת התקן דורשת הרשאה לניהול התקני Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "תיאור: הזן עד 150 תווים הניתנים להדפסה."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "שם מארח: הזן שם מארח או כתובת IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "תבנית ההתקן GPU Node אינה מותקנת."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "ההתקן לא נשמר: לחשבונך אין הרשאה לצפות בהתקנים שהוא יוצר. בקש ממנהל מערכת ליצור אותו."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "לא ניתן היה להסיר את ההתקן לאחר שהגישה נדחתה. בקש ממנהל מערכת להסיר אותו."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "ההתקן וצומת ה-GPU שלו נוצרו. הגדר את הגדרות ה-SNMP של ההתקן בדף ההתקן שלו."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "לא ניתן היה ליצור את ההתקן; עיין ביומן Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "תצוגת ניטור"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "לא ניתן היה לקרוא תצפיות. בקש ממנהל המערכת לבדוק את יומן התוסף."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "מושבת"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "אף פעם"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "השווה את גיל הדגימה, מצב ה-ECC ומצב ההגבלה (throttle) בדף תקינות GPU מול גרפי ההתקן. הסלם שינויי זהות ותצורת צומת למנהל מערכת."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ECC מושבת ב-GPU זה"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "GPU זה אינו מדווח ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "מצב ECC לא דווח"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "הושלם"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "הרשאה נדחתה"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "הזמן הקצוב פג"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "לא ידוע"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "שגיאת כלי"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "נאסף"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "לא דווחו רכיבי GPU"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "סוכן SNMP אינו נגיש"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "רשומת Extend חסרה"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "מנהל התקן לא נטען"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "הכלי לא נמצא"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "הפלט נקטע"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "הפלט נדחה"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "דולג: כבר פועל"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "התוצאה לא נשמרה"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "עדכני"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "מעוכב"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "מיושן"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "מעולם לא נצפה"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "מקדים את השעון של שרת Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "מצב ניהולי"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "מנוע עורפי"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "מנהל התקן"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "עדכניות"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "רכיבי GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "איסוף אחרון"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "תחזוקה"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "צומת"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "כלי"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "תקינות צומת GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "אין צומתי GPU שיש לך הרשאה לצפות בהם."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "סיבות לאירועי שעון"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "אינדקס"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "שם"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "דגימה"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "מצב"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "תקינות GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "טרם תועדו רכיבי GPU. רכיבי GPU מופיעים כאן לאחר שאיסוף של צומת מדווח עליהם."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "מופעל"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "בתחזוקה"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint לא מותקן"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "לא בתחזוקה"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d נוכחים, %d חסרים, %d החלפות אפשריות"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "חסר"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "נוכח"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "החלפה אפשרית של רשומת GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "לא ידוע: טרם נאסף"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d רכיבי GPU"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "הושלם לאחרונה %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "%d הרצות מאוחרות יותר דולגו בזמן שהרצה אחרת החזיקה בצומת"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "לפני %d שניות"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "לפני %d דקות"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "לפני %d שעות"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "לפני %d ימים"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "נראה לאחרונה"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "מזהה אפיק PCI"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "דווח על ידי"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "מלאי GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "נצפה ב-%s, ההעברה לא אושרה"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "נצפה בצומת אחר, ההעברה לא אושרה"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "צומתי GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "פעולות"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "התקן"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "רכיבי GPU חסרים"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "רכיבי GPU נוכחים"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "אין עדיין צומתי GPU. הוסף התקן Cacti הכולל רכיבי GPU."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "התקן %d שנמחק"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "מחק"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "ייצוא"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "הורד את רשומות הצמתים וה-GPU של ההתקנים שיש לך הרשאה לצפות בהם כ-JSON. בצע ייצוא לפני הסרת התקנה שמוחקת את טבלאות התוסף."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "ייצוא רשומות"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "טרם נאסף"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d רכיבי GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "תועדו %d רכיבי GPU חדשים"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "לפני %d שנ'"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "%d הרצות דולגו בזמן שהרצה אחת עדיין פעלה"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "העברות GPU הממתינות לאישור"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "תועד ב-"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "נצפה ב-"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "אשר העברה"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "דחייה"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "צומת GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "צומת GPU חדש"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "התקן שנמחק (מזהה %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "שמירה מוסיפה את שאילתת הנתונים של GPU להתקן, כאשר המיפתוח מחדש (reindex) האוטומטי של Cacti כבוי: התוסף ממפתח מחדש לאחר כל שינוי GPU. הגדר תחילה את סוכן ה-SNMP של ההתקן; ראה docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "שמור"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "רכיבי GPU חסרים"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "GPU חסר נשאר אינדקס בשאילתת הנתונים, כך שהגרפים וקובצי ה-RRD שלו נשארים משויכים ומציגים פער. הסרתו משאילתת הנתונים עוצרת זאת: במיפתוח מחדש (reindex) הבא Cacti מפסיק לכלול אותו, הגרפים שלו מפסיקים להתעדכן ומקורות הנתונים שלו מוצגים כיתומים, וקובצי ה-RRD והגרפים שלו נשמרים עד שתמחק אותם. רשומת ה-GPU נשמרת, וה-GPU חוזר לשאילתת הנתונים אם הוא מדווח שוב."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "הסר משאילתת הנתונים"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "הוסר משאילתת הנתונים"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "צור התקן עבור צומת חדש"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "רק כאשר הצומת אינו התקן Cacti עדיין. ההתקן משתמש בברירות המחדל להתקנים של האתר ובתבנית ההתקן GPU Node; הגדר לאחר מכן את הגדרות ה-SNMP שלו בדף ההתקן שלו."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "תיאור"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "שם מארח"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "צור התקן וצומת"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "עיין בתצפיות המתועדות להלן. אישורי צפייה הם אישיים להפעלה זו, פגים כאשר התצפיות משתנות, ולעולם אינם משתיקים התראות או משנים את מצב התקינות."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "תפעול GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "חקירה"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "אובייקט"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "נצפה (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "לא ידוע או מיושן"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "אושר; התקינות לא השתנתה."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "אשר"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "אין תצפיות זמינות עבור התקנים שיש לך גישה אליהם."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "מפעיל GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "תצוגת GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "מנהל GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "זיהוי GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "סמן כנעדר לאחר"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "מספר האיסופים התקינים הרצופים שבהם ייעדר GPU לפני שיסומן כנעדר, מ-1 עד 100. איסוף שנכשל, או כזה שמדווח על אפס כרטיסי GPU, אינו נספר לעולם. כרטיסי GPU נעדרים שומרים על הרשומות וההיסטוריה שלהם ואינם נמחקים אוטומטית לעולם."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "איסוף GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "התיישנות לאחר"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "מספר השניות לאחר שהכלי לקח דגימה שבהן הערכים שלו מפסיקים להופיע בגרף, מ-60 עד 86400. ערך ישן יותר מדווח כלא ידוע, כך שאיסוף שנעצר מוצג כמרווח ולא כקו ישר. ערך הגיל של ה-GPU ממשיך להיספר כדי שניתן יהיה להתריע עליו."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "הסרת התקנה"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "שמור את טבלאות התוסף בעת הסרת ההתקנה"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "כאשר מסומן, הסרת התוסף שומרת על רשומות הצמתים וה-GPU שלו. נקה את הסימון כדי שההסרה תמחק אותן; ייצא אותן קודם מתוך צמתי GPU. התקני Cacti, מקורות נתונים, גרפים וקובצי RRD אינם נפגעים בשום מקרה."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "הסר את אובייקטי ה-Cacti של התוסף בעת הסרת ההתקנה"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "כאשר מסומן, הסרת התוסף מסירה גם את תבנית ההתקן של GPU, שאילתת הנתונים, תבנית הנתונים ותבניות הגרפים שהוא ייבא, כל אחת מהן רק כאשר שום דבר מחוץ לתוסף אינו משתמש בה, וכן את קובץ ה-XML של שאילתת הנתונים של GPU שהוא כתב, רק אם הקובץ לא שונה. ההסרה אינה מוחקת לעולם קובצי RRD, התקנים, גרפים או מקורות נתונים; תבניות שעדיין נמצאות בשימושם נשמרות."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "סיביות ללא מחוון: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "תוסף ה-GPU דורש PHP %s ומעלה. שרת זה מריץ PHP %s, ולכן התוסף לא הותקן ולא הופעל."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "תוסף ה-GPU אינו מופעל."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "תוסף ה-GPU דורש PHP %s ומעלה."
+
+#: setup.php
+msgid "Management"
+msgstr "ניהול"

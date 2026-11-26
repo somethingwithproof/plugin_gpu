@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: sw-KE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Nodi hiyo ya GPU au GPU hiyo haipo, au iko kwenye kifaa ambacho huna ruhusa ya kukifikia."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Hoja ya data ya GPU haikuweza kuongezwa kwenye kifaa. Hakikisha kuwa violezo vya programu-jalizi vimesakinishwa."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Kifaa: kifaa cha nodi kilifutwa, kwa hivyo nodi inaweza kuzimwa pekee."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Kifaa: chagua kifaa kilichopo cha Cacti."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Kifaa: kifaa hiki tayari ni nodi ya GPU."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "Nodi ya GPU ilihifadhiwa."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Nodi ya GPU haikuweza kuhifadhiwa."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "Nodi ya GPU iliondolewa. Kifaa chake cha Cacti kiliachwa mahali pake."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "Nodi ya GPU haikuondolewa kwa sababu kumbukumbu za GPU ni zake. Izime badala yake; kumbukumbu za GPU hazifutwi kamwe."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPU sasa ni ya nodi ambapo ilionekana, pamoja na historia yake."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU inabaki na nodi yake iliyorekodiwa."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU itaondoka kwenye hoja ya data wakati wa kuorodhesha upya kunakofuata. Grafu zake na faili za RRD zinahifadhiwa."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "GPU isiyopo pekee ndiyo inayoweza kuondolewa kwenye hoja ya data."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Kuunda kifaa kunahitaji ruhusa ya kudhibiti vifaa vya Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Maelezo: ingiza hadi vibambo 150 vinavyoweza kuchapishwa."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Jina la kipangishi: ingiza jina la kipangishi au anwani ya IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "Kiolezo cha kifaa cha GPU Node hakijasakinishwa."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "Kifaa hakikuhifadhiwa: akaunti yako huenda isione vifaa inavyounda. Mwombe msimamizi akiunde."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Kifaa hakikuweza kuondolewa baada ya ufikiaji kukataliwa. Mwombe msimamizi akiondoe."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "Kifaa na nodi yake ya GPU vimeundwa. Weka mipangilio ya SNMP ya kifaa kwenye ukurasa wa kifaa hicho."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Kifaa hakikuweza kuundwa; angalia kumbukumbu ya Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Mwonekano wa ufuatiliaji"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Maangalizo hayakuweza kusomwa. Mwombe msimamizi aangalie kumbukumbu ya programu-jalizi."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "Imezimwa"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Kamwe"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "Linganisha umri wa sampuli, ECC na hali ya kupunguza kasi kwenye Afya ya GPU na grafu za kifaa. Peleka mabadiliko ya utambulisho na usanidi wa nodi kwa msimamizi."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ECC imezimwa kwenye GPU hii"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "GPU hii hairipoti ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Hali ya ECC haijaripotiwa"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Imekamilika"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Ruhusa imekataliwa"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Muda umeisha"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Haijulikani"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Hitilafu ya zana"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "Imekusanywa"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Hakuna GPU zilizoripotiwa"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Wakala wa SNMP haupatikani"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Ingizo la Extend linakosekana"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Kiendeshi hakijapakiwa"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Zana haikupatikana"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Tokeo limekatwa"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Tokeo limekataliwa"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "Imerukwa: tayari inaendeshwa"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Tokeo halijahifadhiwa"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Ya sasa"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Imechelewa"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Imepitwa na wakati"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Haijawahi kuonekana"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Mbele ya saa ya seva ya Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Hali ya Usimamizi"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Mfumo wa nyuma"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Kiendeshi"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Upya"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Ukusanyaji wa Mwisho"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Matengenezo"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Nodi"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Zana"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Afya ya Nodi ya GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Hakuna nodi za GPU unazoweza kuona."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Sababu za Matukio ya Saa"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Faharasa"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Jina"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Sampuli"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Hali"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Afya ya GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "Hakuna GPU zilizorekodiwa bado. GPU huonekana hapa pindi ukusanyaji wa nodi unapoziripoti."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "Imewashwa"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "Katika matengenezo"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint haijasakinishwa"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Haiko katika matengenezo"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d zipo, %d hazipo, %d zinazoweza kuwa mbadala"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Haipo"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Ipo"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "uwezekano wa mbadala wa kumbukumbu ya GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Haijulikani: haijakusanywa bado"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "GPU %d"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "ilikamilika mwisho %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "uendeshaji %d uliofuata ulirukwa wakati uendeshaji mwingine ulishikilia nodi"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "sekunde %d zilizopita"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "dakika %d zilizopita"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "saa %d zilizopita"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "siku %d zilizopita"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Ilipoonekana Mwisho"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "Kitambulisho cha Basi la PCI"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Imeripotiwa Na"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Orodha ya GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "ilionekana katika %s, uhamisho haujathibitishwa"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "ilionekana kwenye nodi nyingine, uhamisho haujathibitishwa"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Nodi za GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Vitendo"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Kifaa"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPU Zisizopo"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPU Zilizopo"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Hakuna nodi za GPU bado. Ongeza kifaa cha Cacti kilicho na GPU."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Kifaa %d kilichofutwa"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Futa"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Hamisha"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "Pakua kumbukumbu za nodi na GPU za vifaa unavyoweza kuona kama JSON. Fanya uhamishaji kabla ya kuondoa usakinishaji unaofuta majedwali ya programu-jalizi."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Hamisha Kumbukumbu"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Haijakusanywa bado"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: GPU %d"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "GPU mpya %d zimerekodiwa"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "sekunde %d zilizopita"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "uendeshaji %d ulirukwa wakati mmoja bado ulikuwa unaendeshwa"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "Uhamisho wa GPU Unaosubiri Uthibitisho"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Ilirekodiwa Katika"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Ilionekana Katika"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Thibitisha Uhamisho"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Kataa"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Nodi ya GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Nodi Mpya ya GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Kifaa kilichofutwa (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Kuhifadhi huongeza hoja ya data ya GPU kwenye kifaa, huku uorodheshaji upya wa kiotomatiki wa Cacti ukiwa umezimwa: programu-jalizi huorodhesha upya baada ya kila badiliko la GPU. Sanidi wakala wa SNMP wa kifaa kwanza; angalia docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Hifadhi"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPU Zisizopo"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "GPU isiyopo hubaki kuwa faharasa ya hoja ya data, kwa hivyo grafu zake na faili za RRD hubaki zimeambatishwa na kuonyesha pengo. Kuiondoa kwenye hoja ya data husimamisha hali hiyo: wakati wa kuorodhesha upya kunakofuata Cacti haiorodheshi tena, grafu zake huacha kusasishwa na vyanzo vyake vya data huonyeshwa kama vilivyoachwa bila mzazi, na faili zake za RRD na grafu huhifadhiwa hadi utakapozifuta. Kumbukumbu ya GPU hubaki, na GPU hurejea kwenye hoja ya data ikiripotiwa tena."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Ondoa kwenye Hoja ya Data"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Imeondolewa kwenye hoja ya data"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "Unda Kifaa kwa Ajili ya Nodi Mpya"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Ni wakati tu ambapo nodi bado si kifaa cha Cacti. Kifaa hutumia mipangilio chaguomsingi ya kifaa ya tovuti na kiolezo cha kifaa cha GPU Node; weka mipangilio yake ya SNMP kwenye ukurasa wa kifaa baadaye."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Maelezo"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Jina la Mwenyeji"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Unda Kifaa na Nodi"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Kagua maangalizo yaliyorekodiwa hapa chini. Utambuzi ni wa kipindi hiki cha mtumiaji pekee, huisha wakati maangalizo yanapobadilika, na kamwe hauzuii arifa au kubadilisha afya."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Uendeshaji wa GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Uchunguzi"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Kipengee"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "Ilionekana (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Haijulikani au imepitwa na wakati"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "Imetambuliwa; afya haijabadilika."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Tambua"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Hakuna maangalizo yanayopatikana kwa vifaa unavyoweza kufikia."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Mwendeshaji wa GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Mwonekano wa GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Msimamizi wa GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Utambulisho wa GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "Weka Alama ya Kutokuwepo Baada ya"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Mikusanyo mfululizo iliyofanikiwa ambayo lazima ikose GPU kabla haijawekwa alama kuwa haipo, kuanzia 1 hadi 100. Mkusanyo ulioshindwa, au unaoripoti hakuna GPU, hauhesabiwi kamwe. GPU zisizokuwepo huhifadhi kumbukumbu na historia yake na hazifutwi kiotomatiki kamwe."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Ukusanyaji wa GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Ipitwe na Wakati Baada ya"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Sekunde baada ya zana kuchukua sampuli ambapo thamani zake zitaacha kuchorwa kwenye grafu, kuanzia 60 hadi 86400. Thamani ya zamani zaidi huripotiwa kama isiyojulikana, kwa hivyo ukusanyaji uliosimama huonekana kama pengo, kamwe si kama mstari tambarare. Thamani ya umri wa GPU huendelea kuhesabu ili iweze kutoa tahadhari."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Sakinusha"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Weka Majedwali ya Programu-jalizi Wakati wa Kusakinusha"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Ikiteuliwa, kuondoa programu-jalizi huhifadhi kumbukumbu zake za nodi na GPU. Ondoa uteuzi ili kuondoa programu-jalizi kuzifuta; zisafirishe kwanza kutoka GPU Nodes. Vifaa vya Cacti, vyanzo vya data, grafu, na faili za RRD haziguswi kamwe kwa vyovyote vile."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Ondoa vipengee vya Cacti vya programu-jalizi wakati wa kuondoa"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Ikiteuliwa, kuondoa programu-jalizi pia huondoa kiolezo cha kifaa cha GPU, hoja ya data, kiolezo cha data, na violezo vya grafu ilivyoagiza, kila kimoja pale tu ambapo hakuna kitu nje ya programu-jalizi kinachokitumia, na XML ya hoja ya data ya GPU iliyoandika, ikiwa tu faili haijabadilishwa. Haifuti kamwe faili za RRD, vifaa, grafu, au vyanzo vya data; violezo ambavyo bado vinatumika na hivyo huhifadhiwa."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "biti bila kiashirio: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Programu-jalizi ya GPU inahitaji PHP %s au toleo jipya zaidi. Seva hii inaendesha PHP %s, kwa hivyo programu-jalizi haikusakinishwa au kuwezeshwa."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "Programu-jalizi ya GPU haijawezeshwa."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "Programu-jalizi ya GPU inahitaji PHP %s au toleo jipya zaidi."
+
+#: setup.php
+msgid "Management"
+msgstr "Usimamizi"

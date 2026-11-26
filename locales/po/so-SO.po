@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-26 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: so-SO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "Noodhkaas GPU ama GPU-gaas ma jiro, ama wuxuu ku yaallaa qalab aadan ogolaansho u lahayn."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "Weydiinta xogta GPU laguma dari karin qalabka. Hubi in qaababka kordhintu ay rakiban yihiin."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "Qalabka: qalabka noodhka waa la tirtiray, sidaas darteed noodhka waxaa oo keliya laga dhigi karaa mid la damiyay."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "Qalabka: dooro qalab Cacti ah oo jira."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "Qalabka: qalabkani horay ayuu u yahay noodh GPU ah."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "Noodhka GPU waa la kaydiyay."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "Noodhka GPU lama kaydin karin."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "Noodhka GPU waa la saaray. Qalabkiisii Cacti meeshiisii ayaa looga tagay."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "Noodhka GPU lama saarin sababtoo ah diiwaannada GPU ayaa iska leh. Dami taa beddelkeeda; diiwaannada GPU weligood lama tirtiro."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPU-gu hadda wuxuu ka tirsan yahay noodhkii lagu arkay, isagoo wata taariikhdiisa."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU-gu wuxuu la joogaa noodhkiisa diiwaangashan."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU-gu wuxuu ka bixi doonaa weydiinta xogta dib-u-tusmaynta xigta. Jaantusyadiisa iyo faylasha RRD waa la hayaa."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "Kaliya GPU maqan ayaa laga saari karaa weydiinta xogta."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "Abuurista qalab waxay u baahan tahay ogolaanshaha maamulka qalabka Cacti."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "Sharaxaadda: geli ilaa 150 xaraf oo la daabici karo."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "Magaca martigeliyaha: geli magac martigeliye ama ciwaan IP."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "Qaabka qalabka ee GPU Node ma rakibna."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "Qalabka lama hayn: koontadaadu ma arki karto qalabka ay abuurto. Waydiiso maamule inuu abuuro."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "Qalabka lama saari karin ka dib markii ogolaanshaha la diiday. Waydiiso maamule inuu saaro."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "Qalabka iyo noodhkiisa GPU waa la abuuray. Deji dejinta SNMP ee qalabka bogga qalabkiisa."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "Qalabka lama abuuri karin; eeg diiwaanka Cacti."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "Muuqaalka kormeerka"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "Kormeerada lama akhrin karin. Weydiiso maamulaha inuu hubiyo diiwaanka plugin-ka."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "La joojiyay"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "Marna"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "Isbarbardhig da'da muunadda, ECC iyo xaaladda xaddidaadda ee GPU Health iyo jaantusyada qalabka. U gudbi isbeddellada aqoonsiga iyo dejinta noodhka maamulaha."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ECC waa la damiyay GPU-gan"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "GPU-gan ma soo sheego ECC"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "Habka ECC lama soo sheegin"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "Dhammaaday"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "Ogolaansho waa la diiday"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "Wakhtigu waa dhammaaday"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "Aan la aqoon"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "Khalad qalab"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "La ururiyay"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "Wax GPU ah lama soo sheegin"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "Wakiilka SNMP lama gaari karo"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Gelitaanka kordhintu waa maqan yahay"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "Darawalku ma rarna"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "Qalabka lama helin"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "Soo-saarka waa la jaray"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "Soo-saarka waa la diiday"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "La dhaafay: horay ayuu u socdaa"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "Natiijada lama kaydin"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "Hadda"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "Dib u dhacay"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "Duugoobay"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "Weligii lama arag"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Ka horreeya saacadda server-ka Cacti"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "Xaaladda Maamulka"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "Backend"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "Darawal"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "Cusboonaanta"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU-yada"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "Ururintii Ugu Dambeysay"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "Dayactirka"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "Noodh"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "Qalabka"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "Caafimaadka Noodhka GPU"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "Ma jiraan noodhadh GPU oo aad arki karto."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "Sababaha Dhacdada Saacadda"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "Tusme"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "Magaca"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "Muunad"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "Xaaladda"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "Caafimaadka GPU"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "Weli lama diiwaangelin wax GPU ah. GPU-yadu waxay halkan ka soo muuqdaan marka ururinta noodhku soo sheegto."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "La hawlgeliyay"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "Dayactir ku jira"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint ma rakibna"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "Kuma jiro dayactir"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d jooga, %d maqan, %d beddelaad suurtagal ah"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "Maqan"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "Jooga"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "beddelaad suurtagal ah oo diiwaanka GPU %d"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "Aan la aqoon: weli lama ururin"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPU-yo"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "markii ugu dambeysay la dhammeeyay %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "%d socodsiin oo dambe waa la dhaafay intii socodsiin kale haystay noodhka"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d ilbiriqsi ka hor"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d daqiiqo ka hor"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d saacadood ka hor"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d maalmood ka hor"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "Markii Ugu Dambaysay ee La Arkay"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "PCI Bus ID"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "Waxaa Soo Sheegay"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "Diiwaanka Hantida GPU"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "lagu arkay %s, u-guurista lama xaqiijin"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "lagu arkay noodh kale, u-guurista lama xaqiijin"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "Noodhadhka GPU"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "Ficilada"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "Qalabka"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "GPU-yada Maqan"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "GPU-yada Jooga"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "Weli ma jiraan noodhadh GPU. Ku dar qalab Cacti ah oo leh GPU-yo."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "Qalabka la tirtiray %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "Tirtir"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "Dhoofi"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "U soo deji diiwaannada noodhka iyo GPU ee qalabka aad arki karto sida JSON. Qaado dhoofin ka hor ka-saaris tirtirta miisaska kordhinta."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "Dhoofi Diiwaannada"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "Weli lama ururin"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d GPU-yo"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "%d GPU-yo cusub ayaa la diiwaangeliyay"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d ilbiriqsi ka hor"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "%d socodsiin waa la dhaafay intii mid weli socday"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "U-guurista GPU ee Sugaysa Xaqiijinta"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "Lagu Diiwaangeliyay"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "Lagu Arkay"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "Xaqiiji U-guurista"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "Diid"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "Noodhka GPU: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "Noodh GPU Cusub"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "Qalab la tirtiray (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "Kaydintu waxay ku dartaa weydiinta xogta GPU qalabka, iyada oo dib-u-tusmaynta tooska ah ee Cacti la damiyay: kordhintu waxay dib-u-tusmaysaa isbeddel kasta oo GPU ka dib. Marka hore habee wakiilka SNMP ee qalabka; eeg docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "Kaydi"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "GPU-yada Maqan"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "GPU maqan wuxuu sii ahaadaa tusme ka mid ah weydiinta xogta, sidaas darteed jaantusyadiisa iyo faylasha RRD way ku xirnaadaan waxayna muujiyaan farqi. Ka saarista weydiinta xogta ayaa joojisa taas: dib-u-tusmaynta xigta Cacti mar dambe ma taxdo, jaantusyadiisu way joojiyaan cusboonaysiinta ilaha xogtiisana waxay u muuqdaan kuwo agoontobay, faylasha RRD iyo jaantusyadiisana waa la hayaa ilaa aad ka tirtirto. Diiwaanka GPU wuu sii jiraa, GPU-guna wuxuu ku soo noqdaa weydiinta xogta haddii mar kale la soo sheego."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "Ka Saar Weydiinta Xogta"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "Waa laga saaray weydiinta xogta"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "U Abuur Qalab Noodh Cusub"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "Kaliya marka noodhku aanu weli ahayn qalab Cacti ah. Qalabku wuxuu isticmaalaa dejinta caadiga ah ee qalabka goobta iyo qaabka qalabka GPU Node; deji dejinta SNMP bogga qalabka ka dib."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "Sharaxaad"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "Magaca martigeliyaha"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "Abuur Aalad iyo Nood"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "Dib u eeg kormeerada hoos ku diiwaangashan. Aqoonsiyadu waxay u gaar yihiin fadhigan, waxay dhacaan marka kormeeradu isbeddelaan, marna ma joojiyaan digniinaha mana beddelaan caafimaadka."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "Hawlgallada GPU"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "Baaritaan"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "Shay"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "La Kormeeray (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "Aan la garanayn ama duugoobay"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "La qiray; caafimaadku isma beddelin."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "Qir"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "Ma jiraan kormeero loo heli karo qalabka aad geli karto."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "Hawl-wadeenka GPU"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "Muuqaalka GPU"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "Maamulaha GPU"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "Aqoonsiga GPU"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "U Calaamadee Maqan Ka Dib"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "Tirada ururinta guuleysta ee isku xigta ee GPU lagu waayo ka hor inta aan loo calaamadin maqan, laga bilaabo 1 ilaa 100. Ururinta fashilantay, ama mid aan soo sheegin wax GPU ah, marnaba lama tiriyo. GPU-yada maqan waxay ilaashadaan diiwaankooda iyo taariikhdooda, marnaba si toos ah looma tirtiro."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "Ururinta GPU"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "Duugooba Ka Dib"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "Ilbiriqsiyada ka dib marka qalabku qaato muunad oo qiimaheedu joojinayaan in la sawiro garaafkeeda, laga bilaabo 60 ilaa 86400. Qiime ka weyn waxaa loo soo sheegaa mid aan la aqoon, si ururinta joogsatay ay u muuqato meel bannaan, marnaba sida xariiq siman. Qiimaha da'da GPU wuu sii socdaa tirinta si looga digo."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "Ka saar"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "Ilaali Jadwalka Plugin-ka Marka La Saarayo"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "Marka la calaamadiyo, ka-saarista barnaamij-ku-darka waxay ilaalinaysaa diiwaannada noodadka iyo GPU-yada. Ka saar calaamadda si ka-saaristu u tirtirto; marka hore ka dhoofi Noodadka GPU. Aaladaha Cacti, ilaha xogta, garaafyada, iyo faylasha RRD marnaba lama taabto labada dhinacba."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "Ka saar walxaha Cacti ee barnaamij-ku-darka marka laga saarayo"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "Marka la calaamadiyo, ka-saarista barnaamij-ku-darka waxay sidoo kale saaraysaa qaab-dhismeedka aaladda GPU, weydiinta xogta, qaab-dhismeedka xogta, iyo qaab-dhismeedyada garaafka ee uu soo dejiyay, mid walba kaliya marka wax ka baxsan barnaamij-ku-darku uusan isticmaalin, iyo XML-ka weydiinta xogta GPU ee uu qoray, kaliya haddii faylku uusan isbeddelin. Marnaba ma tirtiro faylasha RRD, aaladaha, garaafyada, ama ilaha xogta; qaab-dhismeedyada ay weli isticmaalaan waa la hayaa."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "bit-yo aan lahayn tilmaame: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "Barnaamij-ku-darka GPU wuxuu u baahan yahay PHP %s ama ka dambeeya. Adeeggan wuxuu ku shaqeeyaa PHP %s, sidaas darteed barnaamij-ku-darka lama rakibin lamana hawlgelin."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "Barnaamij-ku-darka GPU lama hawlgelin."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "Barnaamij-ku-darka GPU wuxuu u baahan yahay PHP %s ama ka dambeeya."
+
+#: setup.php
+msgid "Management"
+msgstr "Maamulka"
