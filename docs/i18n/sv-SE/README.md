@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-Ett tillägg för Cacti 1.2 som hämtar användning, minne, temperatur, effekt, ECC-fel och orsaker till strypning per GPU från NVIDIA-verktyg till Cacti. Stöd för AMD och insamling av XID-fel är planerade men ännu inte implementerade. Varje GPU blir ett index i en datafråga på nodens enhet, så GPU-graferna visas bredvid nodens övriga grafer under Cactis behörighetsmodell, och Thold och Maint kan larma om och undertrycka dem.
+Ett tillägg för Cacti 1.2 som hämtar användning, minne, temperatur, effekt, ECC-fel och orsaker till strypning per GPU från NVIDIA- och AMD-verktyg till Cacti. Varje GPU (eller MIG-instans) blir ett index i en datafråga på nodens enhet, så GPU-graferna visas bredvid nodens övriga grafer under Cactis behörighetsmodell, och Thold och Maint kan larma om och undertrycka dem.
 
-> **Status: under utveckling, ej utgiven.** Milstolpe 4 gör fas 1 (NVIDIA via SNMP extend) kodmässigt färdig: insamling, identitet, grafer, strypnings- och ECC-signaler, larm via Thold och Maint, hälsosidan samt operatörsdokumentationen. Koden har endast körts mot en riktig `snmpd` med en simulerad `nvidia-smi` som skriver ut syntetisk utdata, aldrig på riktig GPU-hårdvara. Kvarstår före en release: pilottester på riktig hårdvara ([docs/pilot-plan.md](../../pilot-plan.md), #54), en extern säkerhetsgranskning ([docs/security-review.md](../../security-review.md)), testfixturer insamlade från riktiga verktyg (#14) samt skalmätningar på hårdvara i produktionsstorlek ([docs/performance.md](../../performance.md)). XID-fel inväntar beslut #8. Kör den inte i produktion.
+> **Status: fas 1 till och med 3 implementerade i kod, ej utgiven ännu.** Fas 1 (NVIDIA `nvidia-smi` via SNMP extend, identitetsspårning, grafer, strypnings- och ECC-signaler, larm via Thold och Maint, hälsosida), fas 2 (skrivskyddad HTTP(S)-tolk/klient för NVIDIA DCGM Exporter samt tolk för AMD `amd-smi`), fas 3 (identitetsspårning för MIG-instanser, kolumner för Schema v4, poller-avgränsad körning av fjärrinsamlare, krokarna `replicate_out` och `remote_agent`), operatörs-CLI för CasC (`cli/gpu.php`) samt ekosystemkrokar (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) är implementerade och täcks av enhets-, säkerhets- och integrationstester mot tillfälliga Cacti-instanser. Körningar hittills använder syntetisk `snmpd` och testfixturer i stället för fysisk GPU-hårdvara. Kvarstår före en release-tagg: pilottester på riktig hårdvara ([docs/pilot-plan.md](../../pilot-plan.md), #54), en extern säkerhetsgranskning ([docs/security-review.md](../../security-review.md)), testfixturer insamlade från riktiga verktyg (#14) samt skalmätningar på hårdvara i produktionsstorlek ([docs/performance.md](../../performance.md)). Insamling av XID-fel förblir öppen under beslut #8.
 
 ## Åtkomstroller
 
@@ -40,25 +40,25 @@ Tillägget täpper till det gapet genom att omvandla utdata från tillverkarens 
 
 ## Planerad omfattning
 
-| Fas | Omfattning | Milstolpar |
-|---|---|---|
-| 0, förstudie | Utdata från tillverkarverktyg, XID- och strypningssignaler, GPU-identitet, behörigheter, beslut om insamlingsväg | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | Insamling via `nvidia-smi`, inventering efter UUID, grafer, strypnings-, ECC- och XID-signaler, Thold och Maint, hälsosida | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, bakändar | Bakände för DCGM, bakände för `amd-smi` | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, mig och fjärrinsamling | MIG-instanser, Cactis fjärrinsamlare | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| Fas | Omfattning | Status | Milstolpar |
+|---|---|---|---|
+| 0, förstudie | Utdata från tillverkarverktyg, XID- och strypningssignaler, GPU-identitet, behörigheter, beslut om insamlingsväg | Slutförd | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | Insamling via `nvidia-smi`, inventering efter UUID, grafer, strypnings- och ECC-signaler, Thold och Maint, hälsosida | Implementerad (fixturtestad) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, bakändar | Skrivskyddad HTTP(S)-tolk/klient för DCGM Exporter (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), tolk för AMD `amd-smi` (`lib/AmdSmiParser.php`) | Implementerad (enhetstestad) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig, fjärrinsamling och ekosystem | Identitetsspårning för MIG-instanser, fjärrinsamlare (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC CLI (`cli/gpu.php`), MCP/Doctor/CasC-krokar | Implementerad (enhets- och CI-integrationstestad) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 Utanför omfattningen: alla kommandon som ändrar en GPU eller nod (klockfrekvenser, effektgränser, återställningar, MIG-layout), en egen larmmotor i tillägget, en anpassad daemon eller ett eget nätverksprotokoll samt schemaläggar- eller jobbredovisning. Se planen för förstudie-backloggen.
 
 ## Vad milstolpe 4 tillför
 
-- **Strypningsorsaker som larmvärden.** Klockhändelsemasken avkodas till en indikator med värdet 0 eller 1 per orsak; en okänd mask ger okända indikatorer, aldrig nollor, och bitar utan indikator ligger kvar i råmasken, som visas på GPU Health.
-- **ECC som larmvärden** ([docs/metrics.md](../../metrics.md)). Nya korrigerade och okorrigerade fel sedan föregående mätning beräknas av tillägget från två på varandra följande totalsummor och lagras som mätarvärden (gauge): okänt vid en första mätning, en missad avläsning eller en omladdning av drivrutinen, så att en återställning aldrig tolkas som noll eller som ett negativt antal. Antal pensionerade enkelbits- och dubbelbitssidor samt ECC-läget läses också in. Två extra ECC-grafer per GPU låter Cacti lagra dem; tillsammans med Power Percent finns det elva grafer totalt. XID samlas inte in: ingen källa passar de fasta `nvidia-smi`-kommandona (#8).
-- **Thold och Maint** ([docs/alerting.md](../../alerting.md)). Medföljande Thold-mallar för temperatur, effekt i förhållande till sin gräns, strypningsindikatorer, nya okorrigerade ECC-fel, väntande sidpensionering och mätvärdets ålder. Varje värde är en gauge, eftersom Thold 1.8.2 misslyckas på en okänd räknare. Ett end-to-end-test med oförändrade Thold 1.8.2 och Maint 1.3 visar att varje tröskelvärde löser ut och återställs, även över en ECC-återställning, och att Maint undertrycker det.
-- **GPU Health** (GPU View). Per nod: aktualitet, hur den senaste insamlingen avslutades, Maint-status, bakände, verktygs- och drivrutinsversioner samt antal GPU:er; per GPU: närvaro, mätvärdesålder, ECC-tillstånd och råmask. Sidan läser endast lagrade poster.
-- **Behörigheter.** Behörighetstestsviten täcker varje sidfil och åtgärd, återkallande vid nästa begäran samt avslag som inte röjer någon information.
-- **Kvalificering av fel och återställning.** Skriptade end-to-end-körningar bryter avsiktligt agenten, inloggningsuppgifterna, verktyget, dess utdata, databasanslutningen och RRD-skrivningar, och återställer databasen från en dump, inklusive en dump som är äldre än RRD-filerna; en ny GPU ärver aldrig en annans RRD-fil ([docs/backup.md](../../backup.md)).
-- **Skalning** ([docs/performance.md](../../performance.md)). Ett skalningstest mäter tiden för insamling, script server-indata, skapande av Cacti-objekt, en poller-cykel och hälsosidan vid ett givet antal GPU:er; CI kör det med 100 GPU:er. Mätningarna för 1 000 och 8 000 GPU:er är inte registrerade ännu, så inget högsta antal GPU:er som stöds anges.
-- **Operatörsdokumentation** ([docs/operations.md](../../operations.md)): installation, uppgradering, avinstallation, minsta möjliga privilegium, otillgängliga värden och felsökning. Ändringar listas i [CHANGELOG.md](../../../CHANGELOG.md).
+- **Skrivskyddad insamlare för NVIDIA DCGM Exporter** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`). Tolkar Prometheus-mätvärden i textformat (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`, samt MIG-etiketterna `GPU_I_ID` och `GPU_I_PROFILE`). HTTP(S)-klienten upprätthåller en explicit tillåtelselista för slutpunktsvärdar/CIDR, verifierar TLS-motpartscertifikat som standard, begränsar tidsgränser och svarsstorlek, inaktiverar omdirigeringar och avvisar scheman som inte är HTTP(S).
+- **Skrivskyddad tolk för AMD `amd-smi`** (`lib/AmdSmiParser.php`). Normaliserar JSON/SNMP-extend-utdata från `amd-smi` (användning, VRAM, effekt, junction-/kanttemperatur, ECC, partitionsmetadata och separata strypningsackumulatorer via `Reading::$vendorExtensions`) till den gemensamma mätvärdesmodellen under `Vendor::Amd`.
+- **Spårning av MIG-instanser och Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`). Spårar UUID:n för MIG-instanser (`MIG-<uuid>` och `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid` och `partition_info` vid sidan av överordnade GPU:er, samtidigt som oföränderliga identitetsnycklar (`vendor`, `uuid`, `parent_uuid`) skyddas vid uppdateringar och valideras före databasfrågor.
+- **Fjärrinsamlare** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`). Deklarerar `remote_collect:1, remote_poller:1` i `INFO`, stöder poller-avgränsad körning via `php plugins/gpu/poller_gpu.php --poller=N`, hoppar över skapande av Cacti-objekt på sekundära pollers, replikerar poller-avgränsade tabeller via `replicate_out` och besvarar skrivskyddade `gpu_health`- och `gpu_inventory`-anrop via `remote_agent`.
+- **Operatörs- och CasC-CLI** (`cli/gpu.php`, `lib/CascProvider.php`). Körs på PHP 8.2+ (tolkbart på PHP 8.0) utan externa Composer-beroenden: `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]` och `health [--format=text|json]`. Planer beräknar en deterministisk SHA-256-bekräftelsehash, apply avbryter säkert vid hash-avvikelse och XML-tolkning avvisar `DOCTYPE`- och `ENTITY`-deklarationer.
+- **Ekosystem-integrationskrokar** (`lib/EcosystemIntegration.php`, `setup.php`). Registrerar `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; skrivskyddade, begränsade av behörighetsområdet `GPU View` och Cactis enhetsbehörigheter), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`) och `casc_register_providers`.
+- **Strypningsorsaker och ECC som larmvärden** ([docs/metrics.md](../../metrics.md)). Avkodar klockhändelsemasker till 0/1-indikatorer och beräknar nya korrigerade/okorrigerade ECC-fel per intervall som mätarvärden (gauge) så att Thold 1.8.2 och Maint 1.3 larmar och undertrycker utan negativa räknare eller återställningstoppar ([docs/alerting.md](../../alerting.md)).
+- **GPU Health, behörigheter, fel/återställning och skalning.** GPU Health (GPU View) visar lagrad aktualitet, utfall av senaste insamling, Maint-status, bakände, versioner och råa strypningsmasker utan att kontakta noder. Skriptade end-to-end-tester verifierar behörigheter, återställning vid agent-/DB-/RRD-fel ([docs/backup.md](../../backup.md)) samt en skalningskörning med 100 GPU:er i CI ([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md)).
 
 ## Vad milstolpe 3 tillför
 
@@ -70,7 +70,7 @@ Utanför omfattningen: alla kommandon som ändrar en GPU eller nod (klockfrekven
 - **Enhetsbehörigheter på GPU Nodes.** En GPU Admin ser, ändrar, exporterar och flyttar endast noder och GPU:er på enheter som användaren får se i Cacti; en GPU-flytt kräver åtkomst till båda noderna. En nod vars enhet har tagits bort kan inaktiveras eller raderas.
 - **Den gemensamma mätvärdesmodellen** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)). Minne anges i byte, klockhändelsemasken avkodas till `thr_*`-indikatorer och `age` är åldern på GPU:ns egen mättidpunkt, eller `U` om den är okänd.
 
-Den användare som utför installationen (webbservern) måste kunna skriva till `<cacti>/resource/script_server/`, där tillägget placerar sin XML-fil för datafrågan; annars avbryts installationen eller uppgraderingen med ett meddelande och försöker igen vid nästa försök. Avinstallation tar endast bort mallarna och XML-filen om *Remove the plugin's Cacti objects on uninstall* är markerad, och tar aldrig bort RRD-filer, enheter, grafer eller datakällor ([docs/operations.md](../../operations.md#uninstall)). Noder på fjärrinsamlare samlas inte in förrän i fas 3.
+Den användare som utför installationen (webbservern) måste kunna skriva till `<cacti>/resource/script_server/`, där tillägget placerar sin XML-fil för datafrågan; annars avbryts installationen eller uppgraderingen med ett meddelande och försöker igen vid nästa försök. Avinstallation tar endast bort mallarna och XML-filen om *Remove the plugin's Cacti objects on uninstall* är markerad, och tar aldrig bort RRD-filer, enheter, grafer eller datakällor ([docs/operations.md](../../operations.md#uninstall)). Noder på fjärrinsamlare körs avgränsade till sitt tilldelade `poller_id`.
 
 ## Vad milstolpe 2 levererar
 
@@ -113,9 +113,10 @@ Beslut [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) valde SNM
 
 ```mermaid
 flowchart LR
-    NODE[GPU-nod: snmpd extend kör nvidia-smi] -->|SNMP-läsningar, v3 rekommenderas| C[Insamlare]
-    C --> CACHE[(Tilläggscache nycklad på GPU-UUID)]
+    NODE["GPU-nod: snmpd extend / DCGM Exporter / amd-smi"] -->|Skrivskyddad SNMPv3 eller HTTPS på tillåtelselista| C[Poller-avgränsad insamlare]
+    C --> CACHE[(Tilläggscache nycklad på tillverkare + GPU/MIG-UUID)]
     CACHE --> SS[Indata för script server-datafråga]
+    CACHE --> ECO[CasC CLI, MCP-funktioner, Doctor-kontroller]
     SS --> RRD[(Cacti RRD-filer, en datakälla per GPU)]
     SS -->|poller_output| T[Thold och Maint]
     RRD --> G[Cacti-grafer och behörigheter]

@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-ከNVIDIA መሣሪያዎች የሚገኙ የእያንዳንዱን GPU አጠቃቀም፣ ማህደረ ትውስታ፣ ሙቀት፣ ኃይል፣ የECC ስህተቶች እና የፍጥነት መገደብ (throttling) ምክንያቶችን ወደ Cacti የሚያመጣ የCacti 1.2 ተሰኪ (plugin)። የAMD ድጋፍ እና የXID ስህተቶች መሰብሰብ በዕቅድ ላይ ያሉ እንጂ ገና ያልተተገበሩ ናቸው። እያንዳንዱ GPU በኖዱ መሣሪያ ላይ የውሂብ መጠይቅ (data query) ማውጫ (index) ይሆናል፤ ስለዚህ የGPU ግራፎች በCacti ፈቃዶች ስር ከኖዱ ሌሎች ግራፎች ጎን ይቀመጣሉ፣ እንዲሁም Thold እና Maint ማንቂያዎችን መላክ እና ማፈን ይችላሉ።
+ከNVIDIA እና AMD መሣሪያዎች የሚገኙ የእያንዳንዱን GPU አጠቃቀም፣ ማህደረ ትውስታ፣ ሙቀት፣ ኃይል፣ የECC ስህተቶች እና የፍጥነት መገደብ (throttling) ምክንያቶችን ወደ Cacti የሚያመጣ የCacti 1.2 ተሰኪ (plugin)። እያንዳንዱ GPU (ወይም MIG ክፍል) በኖዱ መሣሪያ ላይ የውሂብ መጠይቅ (data query) ማውጫ (index) ይሆናል፤ ስለዚህ የGPU ግራፎች በCacti ፈቃዶች ስር ከኖዱ ሌሎች ግራፎች ጎን ይቀመጣሉ፣ እንዲሁም Thold እና Maint ማንቂያዎችን መላክ እና ማፈን ይችላሉ።
 
-> **ሁኔታ፦ በልማት ላይ፣ ገና አልተለቀቀም።** ምዕራፍ (Milestone) 4 ደረጃ 1ን (NVIDIA በSNMP extend በኩል) በኮድ ደረጃ የተሟላ ያደርገዋል፦ መሰብሰብ፣ ማንነት፣ ግራፎች፣ የፍጥነት መገደብ እና የECC ምልክቶች፣ የThold እና Maint ማንቂያ፣ የጤና ገጽ እና የኦፕሬተር ሰነዶች። እስካሁን የተሞከረው ሰው ሰራሽ ውጤት በሚያትም የውሸት `nvidia-smi` ከእውነተኛ `snmpd` ጋር ብቻ እንጂ በእውነተኛ የGPU ሃርድዌር ላይ ፈጽሞ አልተሞከረም። ከመለቀቁ በፊት ገና ያልተጠናቀቁ ጉዳዮች፦ በእውነተኛ ሃርድዌር ላይ የሚደረጉ የሙከራ ስራዎች ([docs/pilot-plan.md](../../pilot-plan.md)፣ #54)፣ ውጫዊ የደህንነት ግምገማ ([docs/security-review.md](../../security-review.md))፣ ከእውነተኛ መሣሪያዎች የተወሰዱ የሙከራ ውሂቦች (#14)፣ እና በምርት-መጠን ሃርድዌር ላይ የተለካ የመጠን አቅም ([docs/performance.md](../../performance.md))። የXID ስህተቶች ውሳኔ #8ን ይጠብቃሉ። በምርት አካባቢ (production) አያስኪዱት።
+> **ሁኔታ፦ ከደረጃ 1 እስከ 3 በኮድ ተተግብረዋል፣ ገና አልተለቀቁም።** ደረጃ 1 (NVIDIA `nvidia-smi` በSNMP extend በኩል፣ የማንነት ክትትል፣ ግራፎች፣ የፍጥነት መገደብ እና የECC ምልክቶች፣ የThold እና Maint ማንቂያ፣ የጤና ገጽ)፣ ደረጃ 2 (ተነባቢ ብቻ የሆነ የNVIDIA DCGM Exporter HTTP(S) ተንታኝ/ደንበኛ እና የAMD `amd-smi` ተንታኝ)፣ ደረጃ 3 (የMIG ክፍል ማንነት ክትትል፣ የSchema v4 አምዶች፣ በፖለር ወሰን የተገደበ የርቀት ሰብሳቢ አፈጻጸም፣ የ`replicate_out` እና `remote_agent` መንጠቆዎች)፣ የCasC ኦፕሬተር CLI (`cli/gpu.php`) እና የስነ-ምህዳር መንጠቆዎች (`abilities_register`፣ `doctor_register_checks`፣ `casc_register_providers`) ተተግብረው በክፍል (unit)፣ በደህንነት እና በተጣይ Cacti (disposable-Cacti) የውህደት ሙከራዎች ተሸፍነዋል። እስካሁን የተደረጉ የቀጥታ ሙከራዎች ከአካላዊ የGPU ሃርድዌር ይልቅ ሰው ሰራሽ `snmpd` እና የሙከራ ውሂብ (fixture payloads) ይጠቀማሉ። ልቀት ከመሰየሙ በፊት ገና ያልተጠናቀቁ ጉዳዮች፦ በእውነተኛ ሃርድዌር ላይ የሚደረጉ የሙከራ ስራዎች ([docs/pilot-plan.md](../../pilot-plan.md)፣ #54)፣ ውጫዊ የደህንነት ግምገማ ([docs/security-review.md](../../security-review.md))፣ ከእውነተኛ መሣሪያዎች የተወሰዱ የሙከራ ውሂቦች (#14)፣ እና በምርት-መጠን ሃርድዌር ላይ የተለካ የመጠን አቅም ([docs/performance.md](../../performance.md))። የXID ስህተት መሰብሰብ በውሳኔ #8 ስር ክፍት ሆኖ ይቆያል።
 
 ## የመዳረሻ ሚናዎች
 
@@ -32,25 +32,25 @@
 
 ## የታቀደው ወሰን
 
-| ደረጃ | ወሰን | ምዕራፎች |
-|---|---|---|
-| 0፣ ምርምር | የአምራች መሣሪያ ውጤት፣ የXID እና የፍጥነት መገደብ ምልክቶች፣ የGPU ማንነት፣ መብቶች፣ የመሰብሰቢያ መንገድ ውሳኔ | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1፣ nvidia | የ`nvidia-smi` መሰብሰብ፣ በUUID ላይ የተመሰረተ ቆጠራ፣ ግራፎች፣ የፍጥነት መገደብ፣ የECC እና የXID ምልክቶች፣ Thold እና Maint፣ የጤና ገጽ | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2፣ backends | የDCGM backend፣ የ`amd-smi` backend | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3፣ mig እና remote | የMIG ክፍሎች (instances)፣ የCacti የርቀት ውሂብ ሰብሳቢዎች | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| ደረጃ | ወሰን | ሁኔታ | ምዕራፎች |
+|---|---|---|---|
+| 0፣ ምርምር | የአምራች መሣሪያ ውጤት፣ የXID እና የፍጥነት መገደብ ምልክቶች፣ የGPU ማንነት፣ መብቶች፣ የመሰብሰቢያ መንገድ ውሳኔ | ተጠናቋል | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1፣ nvidia | የ`nvidia-smi` መሰብሰብ፣ በUUID ላይ የተመሰረተ ቆጠራ፣ ግራፎች፣ የፍጥነት መገደብ እና የECC ምልክቶች፣ Thold እና Maint፣ የጤና ገጽ | ተተግብሯል (በሙከራ ውሂብ ተፈትኗል) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2፣ backends | ተነባቢ ብቻ DCGM Exporter HTTP(S) ተንታኝ/ደንበኛ (`lib/DcgmExporterParser.php`፣ `lib/DcgmExporterClient.php`)፣ የAMD `amd-smi` ተንታኝ (`lib/AmdSmiParser.php`) | ተተግብሯል (በክፍል ሙከራ ተፈትኗል) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3፣ mig፣ remote እና ስነ-ምህዳር | የMIG ክፍል ማንነት ክትትል፣ የርቀት ውሂብ ሰብሳቢዎች (`INFO`፣ `poller_gpu.php --poller=N`፣ `replicate_out`፣ `remote_agent`)፣ CasC CLI (`cli/gpu.php`)፣ MCP/Doctor/CasC መንጠቆዎች | ተተግብሯል (በክፍል እና CI ውህደት ተፈትኗል) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 ከወሰን ውጭ የሆኑ፦ GPUን ወይም ኖድን የሚቀይር ማንኛውም ትዕዛዝ (ሰዓቶች፣ የኃይል ገደቦች፣ ዳግም ማስጀመሮች፣ የMIG አቀማመጥ)፣ በተሰኪው ባለቤትነት የሚተዳደር የማንቂያ ሞተር፣ ብጁ ዴሞን (daemon) ወይም የአውታረ መረብ ፕሮቶኮል፣ እና የመርሐግብር (scheduler) ወይም የስራ ሂሳብ አያያዝ። ለምርምር ክምችት (backlog) ዕቅዱን ይመልከቱ።
 
 ## ምዕራፍ 4 የሚጨምራቸው ነገሮች
 
-- **የፍጥነት መገደብ (throttle) ምክንያቶች እንደ ማንቂያ እሴቶች።** የሰዓት ክስተት ጭንብል (clock event mask) ለእያንዳንዱ ምክንያት ወደ አንድ 0 ወይም 1 አመልካች ይፈታል፤ ያልታወቀ ጭንብል በፍጹም ዜሮዎችን ሳይሆን ያልታወቁ አመልካቾችን ይሰጣል፣ እንዲሁም አመልካች የሌላቸው ቢቶች GPU Health በሚያሳየው ጥሬ ጭንብል (raw mask) ውስጥ ይቆያሉ።
-- **ECC እንደ ማንቂያ እሴቶች** ([docs/metrics.md](../../metrics.md))። ካለፈው ናሙና ወዲህ የታዩ አዳዲስ የተስተካከሉ እና ያልተስተካከሉ ስህተቶች በተሰኪው አማካኝነት ከሁለት ተከታታይ ድምሮች ተሰልተው እንደ ጌጅ (gauge) ይቀመጣሉ፦ ለመጀመሪያ ናሙና፣ ላመለጠ ንባብ ወይም ለድራይቨር ዳግም መጫን (reload) ያልታወቀ (unknown) ይሆናል፣ ስለዚህ ዳግም ማስጀመር በፍጹም እንደ ዜሮ ወይም እንደ አሉታዊ ቆጠራ አይነበብም። ጡረታ የወጡ ነጠላ-ቢት እና ድርብ-ቢት ገጽ ቆጠራዎች እንዲሁም የECC ሁነታም ይነበባሉ። በአንድ GPU ሁለት ተጨማሪ የECC ግራፎች Cacti እንዲያከማቻቸው ያስችላሉ፤ ከPower Percent ጋር በአጠቃላይ አስራ አንድ ግራፎች አሉ። XID አይሰበሰብም፦ ለቋሚው የ`nvidia-smi` ትዕዛዞች የሚመጥን ምንጭ የለም (#8)።
-- **Thold እና Maint** ([docs/alerting.md](../../alerting.md))። ለሙቀት፣ ከገደቡ አንጻር ለኃይል፣ ለፍጥነት መገደብ አመልካቾች፣ ላልተስተካከሉ አዳዲስ የECC ስህተቶች፣ ለሚጠበቅ የገጽ መገለል (pending page retirement) እና ለናሙና ዕድሜ የተላኩ የThold አብነቶች (templates)። Thold 1.8.2 ባልታወቀ ቆጣሪ ላይ ስለሚከሽፍ እያንዳንዱ እሴት ጌጅ ነው። ካልተለወጡ Thold 1.8.2 እና Maint 1.3 ጋር የተደረገ ከጫፍ እስከ ጫፍ ሙከራ እያንዳንዱ ገደብ በECC ዳግም ማስጀመር ውስጥ ጭምር ሲነሳ እና ሲመለስ፣ እንዲሁም Maint ሲያፍነው ያሳያል።
-- **GPU Health** (GPU View)። በአንድ ኖድ፦ ትኩስነት (freshness)፣ የመጨረሻው ስብስብ እንዴት እንዳበቃ፣ የMaint ሁኔታ፣ backend፣ የመሣሪያ እና የድራይቨር ስሪቶች፣ እና የGPU ቆጠራዎች፤ በአንድ GPU፦ መገኘት፣ የናሙና ዕድሜ፣ የECC ሁኔታ እና ጥሬው ጭንብል። የሚያነበው የተከማቹ መዝገቦችን ብቻ ነው።
-- **ፈቃዶች።** የፈቃድ የሙከራ ስብስብ እያንዳንዱን የገጽ ፋይል እና እርምጃ፣ በሚቀጥለው ጥያቄ ላይ መሰረዝን (revocation) እና ምንም የማያጋልጡ እምቢታዎችን ይሸፍናል።
-- **የብልሽት እና የመመለስ ብቁነት ማረጋገጫ።** በስክሪፕት የተጻፉ ከጫፍ እስከ ጫፍ ሙከራዎች ወኪሉን (agent)፣ ማረጋገጫዎችን፣ መሣሪያውን፣ ውጤቱን፣ የውሂብ ጎታ ግንኙነቱን እና የRRD ጽሑፎችን ያበላሻሉ፣ እንዲሁም ከRRD ፋይሎቹ የቆየ ቅጂን ጨምሮ ውሂብ ጎታውን ከdump ይመልሳሉ፤ አዲስ GPU የሌላውን RRD ፋይል በፍጹም አይወርስም ([docs/backup.md](../../backup.md))።
-- **መጠን (Scale)** ([docs/performance.md](../../performance.md))። የመጠን ሙከራ በተወሰነ የGPU ብዛት የመሰብሰብን፣ የስክሪፕት አገልጋይ ግብዓትን፣ የCacti ነገር መፍጠርን፣ የፖለር (poller) ዑደትን እና የጤና ገጹን ጊዜ ይለካል፤ CI በ100 GPUዎች ያስኪደዋል። የ1,000 እና የ8,000 GPU ልኬቶች ገና ስላልተመዘገቡ የሚደገፍ የGPU ብዛት አልተገለጸም።
-- **የኦፕሬተር ሰነዶች** ([docs/operations.md](../../operations.md))፦ መጫን፣ ማሻሻል፣ ማራገፍ፣ አነስተኛ መብት (least privilege)፣ የማይገኙ እሴቶች እና ችግር መፍታት። ለውጦች በ[CHANGELOG.md](../../../CHANGELOG.md) ውስጥ ተዘርዝረዋል።
+- **የNVIDIA DCGM Exporter ተነባቢ ብቻ ሰብሳቢ** (`lib/DcgmExporterParser.php`፣ `lib/DcgmExporterClient.php`)። የPrometheus የጽሁፍ መግለጫ መለኪያዎችን (`DCGM_FI_DEV_GPU_UTIL`፣ `DCGM_FI_DEV_FB_USED`፣ `DCGM_FI_DEV_FB_FREE`፣ `DCGM_FI_DEV_POWER_USAGE`፣ `DCGM_FI_DEV_GPU_TEMP`፣ `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`፣ `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`፣ እና የMIG መለያዎችን `GPU_I_ID` እና `GPU_I_PROFILE`) ይተነትናል። የHTTP(S) ደንበኛው ግልጽ የሆነ የመድረሻ አስተናጋጅ/CIDR የፍቃድ ዝርዝርን ያስፈጽማል፣ በነባሪነት የTLS የአቻ የምስክር ወረቀቶችን ያረጋግጣል፣ የጊዜ ማብቂያዎችን እና የምላሽ መጠንን ይገድባል፣ አቅጣጫ ማዞሮችን (redirects) ያቦዝናል፣ እና HTTP(S) ያልሆኑ መርሐ-ግብሮችን ውድቅ ያደርጋል።
+- **የAMD `amd-smi` ተነባቢ ብቻ ተንታኝ** (`lib/AmdSmiParser.php`)። የ`amd-smi` JSON/SNMP-extend ውጤትን (አጠቃቀም፣ VRAM፣ ኃይል፣ የመገናኛ/ጠርዝ ሙቀት፣ ECC፣ የክፍልፋይ (partition) ሜታዳታ፣ እና በ`Reading::$vendorExtensions` በኩል የተለዩ የፍጥነት መገደብ አጠራቃሚዎችን) በ`Vendor::Amd` ስር ወደሚገኘው የጋራ መለኪያ ሞዴል ያስተካክላል።
+- **የMIG ክፍል ክትትል እና Schema v4** (`lib/GpuReport.php`፣ `lib/GpuSnapshot.php`፣ `lib/GpuRecord.php`፣ `lib/Schema.php`፣ `lib/ScriptServer.php`)። የማይለወጡ የማንነት ቁልፎችን (`vendor`፣ `uuid`፣ `parent_uuid`) በዝመናዎች ላይ እየጠበቀ እና ከውሂብ ጎታ መጠይቆች በፊት እያረጋገጠ፣ የMIG ክፍል UUIDዎችን (`MIG-<uuid>` እና `MIG-GPU-<parent>/<gi>/<ci>`)፣ `mig_mode`፣ `mig_instance_id`፣ `mig_profile`፣ `parent_uuid` እና `partition_info`ን ከወላጅ GPUዎች ጋር ይከታተላል።
+- **የርቀት ውሂብ ሰብሳቢዎች** (`INFO`፣ `poller_gpu.php`፣ `lib/Poller.php`፣ `lib/ReplicationRepository.php`፣ `setup.php`)። በ`INFO` ውስጥ `remote_collect:1, remote_poller:1`ን ያውጃል፣ በ`php plugins/gpu/poller_gpu.php --poller=N` አማካኝነት በፖለር ወሰን የተገደበ አፈጻጸምን ይደግፋል፣ ዋና ባልሆኑ ፖለሮች ላይ የCacti ነገር ማዘጋጀትን ይዘላል፣ በፖለር ወሰን የተገደቡ ሰንጠረዦችን በ`replicate_out` በኩል ያባዛል፣ እና በ`remote_agent` በኩል ተነባቢ ብቻ ለሆኑ የ`gpu_health` እና `gpu_inventory` እርምጃዎች ምላሽ ይሰጣል።
+- **የኦፕሬተር እና CasC CLI** (`cli/gpu.php`፣ `lib/CascProvider.php`)። ምንም ውጫዊ የComposer ጥገኝነት ሳይኖረው በPHP 8.2+ ላይ ይሰራል (በPHP 8.0 ላይ ይተነተናል)፦ `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`፣ `validate <file> [--format=yaml|xml]`፣ `plan <file> [--format=yaml|xml] [--output=text|json]`፣ `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]` እና `health [--format=text|json]`። ዕቅዶች ቆራጥ (deterministic) የSHA-256 ማረጋገጫ ሃሽ ያሰላሉ፣ `apply` ሃሽ ካልተዛመደ በጥብቅ ይከሽፋል፣ እና የXML ትንተና የ`DOCTYPE` እና `ENTITY` መግለጫዎችን ውድቅ ያደርጋል።
+- **የስነ-ምህዳር ውህደት መንጠቆዎች** (`lib/EcosystemIntegration.php`፣ `setup.php`)። `abilities_register`ን (`gpu-list-nodes`፣ `gpu-list-devices`፣ `gpu-get-health`፤ ተነባቢ ብቻ፣ በ`GPU View` ዘርፍ እና በCacti መሣሪያ ፈቃዶች የተገደበ)፣ `doctor_register_checks`ን (`gpu_schema`፣ `gpu_poller_freshness`፣ `gpu_node_health`) እና `casc_register_providers`ን ይመዘግባል።
+- **የፍጥነት መገደብ (throttle) ምክንያቶች እና ECC እንደ ማንቂያ እሴቶች** ([docs/metrics.md](../../metrics.md))። Thold 1.8.2 እና Maint 1.3 አሉታዊ ቆጣሪዎች ወይም የዳግም ማስጀመር ዝላይዎች (reset spikes) ሳይኖሩ ማንቂያ እንዲሰጡ እና እንዲያፍኑ ([docs/alerting.md](../../alerting.md)) የሰዓት ክስተት ጭንብሎችን ወደ 0/1 አመልካቾች ይፈታል እና በየክፍለ-ጊዜው የተከሰቱ አዳዲስ የተስተካከሉ/ያልተስተካከሉ የECC ስህተቶችን እንደ ጌጅ (gauge) ያሰላል።
+- **GPU Health፣ ፈቃዶች፣ ብልሽት/መመለስ እና መጠን (Scale)።** GPU Health (GPU View) ኖዶችን ሳያገኝ የተከማቸ ትኩስነትን፣ የመጨረሻውን ስብስብ ውጤት፣ የMaint ሁኔታን፣ backendን፣ ስሪቶችን እና ጥሬ የፍጥነት መገደብ ጭንብሎችን ያሳያል። በስክሪፕት የተጻፉ ከጫፍ እስከ ጫፍ ሙከራዎች ፈቃዶችን፣ የወኪል/DB/RRD ብልሽት መመለስን ([docs/backup.md](../../backup.md)) እና በCI ውስጥ የ100 GPU መጠን ሩጫን ([docs/performance.md](../../performance.md)፣ [docs/operations.md](../../operations.md)፣ [CHANGELOG.md](../../../CHANGELOG.md)) ያረጋግጣሉ።
 
 ## ምዕራፍ 3 የሚጨምራቸው ነገሮች
 
@@ -62,7 +62,7 @@
 - **በGPU Nodes ላይ የመሣሪያ ፈቃዶች።** አንድ GPU Admin የሚያየው፣ የሚቀይረው፣ ወደ ውጭ የሚልከው (export) እና የሚያንቀሳቅሰው በCacti ውስጥ ማየት በሚችላቸው መሣሪያዎች ላይ ያሉትን ኖዶች እና GPUዎች ብቻ ነው፤ GPUን ማንቀሳቀስ ሁለቱንም ኖዶች ይፈልጋል። መሣሪያው የተሰረዘበት ኖድ ሊቦዝን ወይም ሊሰረዝ ይችላል።
 - **የጋራ መለኪያ ሞዴል** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md)፣ [docs/metrics.md](../../metrics.md))። ማህደረ ትውስታ በባይት (bytes) ነው፣ የሰዓት ክስተት ጭንብል ወደ `thr_*` አመልካቾች ይፈታል፣ እና `age` የGPUው የራሱ ናሙና ጊዜ ዕድሜ ወይም ካልታወቀ `U` ነው።
 
-ጫኚው (የድር አገልጋይ) ተጠቃሚ ተሰኪው የውሂብ መጠይቅ XMLውን ወደሚያስቀምጥበት `<cacti>/resource/script_server/` መጻፍ መቻል አለበት፤ ካልሆነ መጫን እና ማሻሻል በመልእክት ይቆማሉ እና በሚቀጥለው ሙከራ ላይ እንደገና ይሞክራሉ። ማራገፍ አብነቶቹን እና XMLውን የሚያስወግደው *Remove the plugin's Cacti objects on uninstall* ምልክት ከተደረገበት ብቻ ሲሆን RRD ፋይሎችን፣ መሣሪያዎችን፣ ግራፎችን ወይም የውሂብ ምንጮችን በፍጹም አይሰርዝም ([docs/operations.md](../../operations.md#uninstall))። በርቀት ውሂብ ሰብሳቢዎች ላይ ያሉ ኖዶች እስከ ደረጃ 3 ድረስ አይሰበሰቡም።
+ጫኚው (የድር አገልጋይ) ተጠቃሚ ተሰኪው የውሂብ መጠይቅ XMLውን ወደሚያስቀምጥበት `<cacti>/resource/script_server/` መጻፍ መቻል አለበት፤ ካልሆነ መጫን እና ማሻሻል በመልእክት ይቆማሉ እና በሚቀጥለው ሙከራ ላይ እንደገና ይሞክራሉ። ማራገፍ አብነቶቹን እና XMLውን የሚያስወግደው *Remove the plugin's Cacti objects on uninstall* ምልክት ከተደረገበት ብቻ ሲሆን RRD ፋይሎችን፣ መሣሪያዎችን፣ ግራፎችን ወይም የውሂብ ምንጮችን በፍጹም አይሰርዝም ([docs/operations.md](../../operations.md#uninstall))። በርቀት ውሂብ ሰብሳቢዎች ላይ ያሉ ኖዶች በተመደበላቸው `poller_id` ወሰን ውስጥ ይሰራሉ።
 
 ## ምዕራፍ 2 የሚልካቸው ነገሮች
 
@@ -105,9 +105,10 @@
 
 ```mermaid
 flowchart LR
-    NODE["GPU ኖድ፦ nvidia-smiን የሚያስኪድ snmpd extend"] -->|SNMP ንባቦች፣ v3 ይመከራል| C["ሰብሳቢ (Collector)"]
-    C --> CACHE[("በGPU UUID የተሰየመ የተሰኪ መሸጎጫ")]
+    NODE["GPU ኖድ፦ snmpd extend / DCGM Exporter / amd-smi"] -->|ተነባቢ ብቻ SNMPv3 ወይም የተፈቀደ HTTPS| C["በፖለር ወሰን የተገደበ ሰብሳቢ"]
+    C --> CACHE[("በአምራች + GPU/MIG UUID የተሰየመ የተሰኪ መሸጎጫ")]
     CACHE --> SS["የስክሪፕት አገልጋይ የውሂብ መጠይቅ ግብዓት"]
+    CACHE --> ECO["CasC CLI፣ MCP ችሎታዎች፣ የDoctor ፍተሻዎች"]
     SS --> RRD[("የCacti RRD ፋይሎች፣ በአንድ GPU አንድ የውሂብ ምንጭ")]
     SS -->|poller_output| T["Thold እና Maint"]
     RRD --> G["የCacti ግራፎች እና ፈቃዶች"]

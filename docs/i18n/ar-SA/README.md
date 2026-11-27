@@ -7,9 +7,9 @@
 <a id="plugin_gpu"></a>
 # plugin_gpu
 
-ملحق لـ Cacti 1.2 يجلب استخدام كل GPU وذاكرته وحرارته وقدرته وأخطاء ECC وأسباب خفض الأداء من أدوات NVIDIA إلى Cacti. دعم AMD وجمع أخطاء XID مخططان، ولم يُنفذا بعد. يصبح كل GPU فهرسًا لاستعلام بيانات على جهاز عقدته، فتظهر رسومه بجوار رسوم العقدة الأخرى ضمن صلاحيات Cacti، ويمكن لـ Thold وMaint إطلاق التنبيهات وكتمها.
+ملحق لـ Cacti 1.2 يجلب استخدام كل GPU وذاكرته وحرارته وقدرته وأخطاء ECC وأسباب خفض الأداء من أدوات NVIDIA وAMD إلى Cacti. يصبح كل GPU (أو مثيل MIG) فهرسًا لاستعلام بيانات على جهاز عقدته، فتظهر رسومه بجوار رسوم العقدة الأخرى ضمن صلاحيات Cacti، ويمكن لـ Thold وMaint إطلاق التنبيهات وكتمها.
 
-> **الحالة: قيد التطوير، لم يصدر بعد.** يكمل المعلم 4 شيفرة المرحلة 1 (NVIDIA عبر SNMP extend): الجمع والهوية والرسوم وإشارات خفض التردد وECC وتنبيه Thold وMaint وصفحة الصحة ووثائق المشغّل. لم يُشغّل إلا مع `snmpd` حقيقي و`nvidia-smi` محاكى يطبع خرجًا اصطناعيًا، ولم يُشغّل قط على عتاد GPU. ما يزال مطلوبًا قبل الإصدار: تجارب على عتاد حقيقي ([docs/pilot-plan.md](../../pilot-plan.md)، #54)، ومراجعة أمنية خارجية ([docs/security-review.md](../../security-review.md))، وعينات ملتقطة من أدوات حقيقية (#14)، وقياس الحجم على عتاد بحجم الإنتاج ([docs/performance.md](docs/performance.md)). تنتظر أخطاء XID القرار #8. لا تستخدمه في الإنتاج.
+> **الحالة: المراحل 1 إلى 3 منفذة في الشيفرة، ولم تُصدر بعد.** المرحلة 1 (جمع NVIDIA `nvidia-smi` عبر SNMP extend، وتتبع الهوية، والرسوم، وإشارات خفض التردد وECC، وتنبيهات Thold وMaint، وصفحة الصحة)، والمرحلة 2 (محلل/عميل HTTP(S) للقراءة فقط لـ NVIDIA DCGM Exporter ومحلل AMD `amd-smi`)، والمرحلة 3 (تتبع هوية مثيلات MIG، وأعمدة Schema v4، وتنفيذ المجمّع البعيد ضمن نطاق المستطلع، وخطافات `replicate_out` و`remote_agent`)، وأداة سطر أوامر المشغّل وCasC (`cli/gpu.php`)، وخطافات التكامل البيئي (`abilities_register`، `doctor_register_checks`، `casc_register_providers`) منفذة ومغطاة باختبارات الوحدة والأمان والتكامل على Cacti مؤقت. تعتمد التشغيلات الحية حتى الآن على `snmpd` اصطناعي وحمولات اختبارية بدلًا من عتاد GPU فعلي. لا يزال مفتوحًا قبل وسْم الإصدار: تجارب على عتاد حقيقي ([docs/pilot-plan.md](../../pilot-plan.md)، #54)، ومراجعة أمنية خارجية ([docs/security-review.md](../../security-review.md))، وعينات ملتقطة من أدوات حقيقية (#14)، وقياسات الحجم على عتاد بحجم الإنتاج ([docs/performance.md](docs/performance.md)). يظل جمع أخطاء XID مفتوحًا بموجب القرار #8.
 
 <a id="access-roles"></a>
 ## أدوار الوصول
@@ -34,26 +34,26 @@
 <a id="planned-scope"></a>
 ## النطاق المخطط
 
-| المرحلة | النطاق | المعالم |
-|---|---|---|
-| 0، البحث | خرج أدوات الشركات وإشارات XID وخفض التردد وهوية GPU والامتيازات وقرار مسار الجمع | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1، nvidia | جمع `nvidia-smi`، وجرد حسب UUID، ورسوم، وإشارات خفض التردد وECC وXID، وThold وMaint، وصفحة الصحة | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2)، [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3)، [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2، الواجهات الخلفية | واجهة DCGM وواجهة `amd-smi` | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3، MIG والبعيد | مثيلات MIG ومجمّعات بيانات Cacti البعيدة | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| المرحلة | النطاق | الحالة | المعالم |
+|---|---|---|---|
+| 0، البحث | خرج أدوات الشركات وإشارات XID وخفض التردد وهوية GPU والامتيازات وقرار مسار الجمع | مكتمل | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1، nvidia | جمع `nvidia-smi`، وجرد حسب UUID، ورسوم، وإشارات خفض التردد وECC، وThold وMaint، وصفحة الصحة | منفذ (مختبر بالعينات) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2)، [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3)، [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2، الواجهات الخلفية | محلل/عميل HTTP(S) للقراءة فقط لـ DCGM Exporter (`lib/DcgmExporterParser.php`، `lib/DcgmExporterClient.php`)، ومحلل AMD `amd-smi` (`lib/AmdSmiParser.php`) | منفذ (مختبر بالوحدة) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3، MIG والبعيد والنظام البيئي | تتبع هوية مثيلات MIG، ومجمّعات البيانات البعيدة (`INFO`، `poller_gpu.php --poller=N`، `replicate_out`، `remote_agent`)، وأداة CasC CLI (`cli/gpu.php`)، وخطافات MCP/Doctor/CasC | منفذ (مختبر بالوحدة وتكامل CI) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 خارج النطاق: أي أمر يغيّر GPU أو العقدة (الساعات وحدود الطاقة وإعادة الضبط وتخطيط MIG)، ومحرك تنبيه خاص بالملحق، وخدمة خلفية أو بروتوكول شبكي مخصص، ومحاسبة المجدول أو المهام. راجع الخطة لقائمة البحث المتبقية.
 
 <a id="what-milestone-4-adds"></a>
 ## ما يضيفه المعلم 4
 
-- **أسباب خفض التردد كقيم تنبيه.** يُفك قناع أحداث الساعة إلى مؤشر 0 أو 1 لكل سبب؛ يعطي القناع المجهول مؤشرات مجهولة لا أصفارًا، وتبقى البتات بلا مؤشر في القناع الخام الذي تعرضه صحة GPU.
-- **ECC كقيم تنبيه** ([docs/metrics.md](docs/metrics.md)). يحسب الملحق الأخطاء المصحّحة وغير المصحّحة الجديدة منذ العينة السابقة من مجموعين متتاليين، ويخزنها كقيم gauge: مجهولة لأول عينة أو قراءة مفقودة أو إعادة تحميل برنامج التشغيل، فلا تظهر إعادة الضبط كصفر أو عدد سالب. تُقرأ أيضًا أعداد الصفحات المحالة إلى التقاعد بعد أخطاء أحادية وثنائية البت ووضع ECC. يتيح رسمان إضافيان لأخطاء ECC لكل GPU تخزينها في Cacti؛ ومع رسم نسبة الطاقة يصبح الإجمالي أحد عشر رسمًا. لا يُجمع XID: لا مصدر يناسب أوامر `nvidia-smi` الثابتة (#8).
-- **Thold وMaint** ([docs/alerting.md](docs/alerting.md)). قوالب Thold مرفقة للحرارة والطاقة نسبةً إلى حدها ومؤشرات خفض التردد وأخطاء ECC غير المصحّحة الجديدة وانتظار تقاعد الصفحات وعمر العينة. كل قيمة gauge لأن Thold 1.8.2 يفشل مع عداد مجهول. يبيّن اختبار شامل مع Thold 1.8.2 وMaint 1.3 دون تعديل تشغيل كل عتبة واستعادتها عبر إعادة ضبط ECC وكبتها بواسطة Maint.
-- **صحة GPU** (GPU View). لكل عقدة: الحداثة ونتيجة آخر جمع وحالة Maint وإصدارات الواجهة الخلفية والأداة وبرنامج التشغيل وأعداد GPU؛ ولكل GPU: الوجود وعمر العينة وحالة ECC والقناع الخام. تقرأ السجلات المخزنة فقط.
-- **الصلاحيات.** تغطي مجموعة اختبارات الصلاحيات كل ملف صفحة وإجراء، وسحب الصلاحية في الطلب التالي، ورفضًا لا يكشف أي معلومات.
-- **تأهيل الفشل والاستعادة.** تُعطّل تشغيلات شاملة مبرمجة الوكيل وبيانات الاعتماد والأداة وخرجها واتصال قاعدة البيانات وكتابة RRD، وتستعيد قاعدة البيانات من تفريغ، بما فيه تفريغ أقدم من ملفات RRD؛ ولا ترث GPU جديدة ملف RRD لأخرى مطلقًا ([docs/backup.md](docs/backup.md)).
-- **الحجم** ([docs/performance.md](docs/performance.md)). يقيس اختبار الحجم أزمنة الجمع وإدخال خادم السكربت وإنشاء كائنات Cacti ودورة المستطلع وصفحة الصحة لعدد GPU محدد؛ يشغله CI عند 100 GPU. لم تُسجل قياسات 1,000 و8,000 GPU بعد، لذا لا يُعلن عدد GPU مدعوم.
-- **وثائق المشغّل** ([docs/operations.md](docs/operations.md)): التثبيت والترقية والإزالة وأقل الامتيازات والقيم غير المتاحة واستكشاف الأخطاء. التغييرات في [CHANGELOG.md](../../../CHANGELOG.md).
+- **مجمّع القراءة فقط لـ NVIDIA DCGM Exporter** (`lib/DcgmExporterParser.php`، `lib/DcgmExporterClient.php`). يحلل مقاييس العرض النصي لـ Prometheus (`DCGM_FI_DEV_GPU_UTIL` و`DCGM_FI_DEV_FB_USED` و`DCGM_FI_DEV_FB_FREE` و`DCGM_FI_DEV_POWER_USAGE` و`DCGM_FI_DEV_GPU_TEMP` و`DCGM_FI_DEV_ECC_DBE_VOL_TOTAL` و`DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`، ووسمي MIG `GPU_I_ID` و`GPU_I_PROFILE`). يفرض عميل HTTP(S) قائمة سماح صريحة للمضيف أو نطاق CIDR لنقطة النهاية، ويتحقق من شهادات TLS للنظير افتراضيًا، ويقيد المهلات وحجم الاستجابة، ويعطل إعادة التوجيه، ويرفض المخططات غير HTTP(S).
+- **محلل القراءة فقط لـ AMD `amd-smi`** (`lib/AmdSmiParser.php`). يوحّد خرج `amd-smi` بصيغة JSON أو SNMP-extend (الاستخدام وVRAM والقدرة وحرارة الوصلة والحافة وECC وبيانات التقسيم الوصفية ومراكمات خفض التردد المنفصلة عبر `Reading::$vendorExtensions`) في نموذج المقاييس المشترك تحت `Vendor::Amd`.
+- **تتبع مثيلات MIG وSchema v4** (`lib/GpuReport.php`، `lib/GpuSnapshot.php`، `lib/GpuRecord.php`، `lib/Schema.php`، `lib/ScriptServer.php`). يتتبع معرّفات UUID لمثيلات MIG (`MIG-<uuid>` و`MIG-GPU-<parent>/<gi>/<ci>`) و`mig_mode` و`mig_instance_id` و`mig_profile` و`parent_uuid` و`partition_info` إلى جانب وحدات GPU الأصلية، مع إبقاء مفاتيح الهوية الثابتة (`vendor` و`uuid` و`parent_uuid`) محمية عند التحديثات ومتحققًا منها قبل استعلامات قاعدة البيانات.
+- **مجمّعات البيانات البعيدة** (`INFO`، `poller_gpu.php`، `lib/Poller.php`، `lib/ReplicationRepository.php`، `setup.php`). يعلن `remote_collect:1, remote_poller:1` في `INFO`، ويدعم التنفيذ ضمن نطاق المستطلع عبر `php plugins/gpu/poller_gpu.php --poller=N`، ويتخطى توفير كائنات Cacti على المستطلعات غير الرئيسية، وينسخ الجداول المقيدة بالمستطلع عبر `replicate_out`، ويجيب عن إجراءات القراءة فقط `gpu_health` و`gpu_inventory` عبر `remote_agent`.
+- **أداة سطر الأوامر للمشغّل وCasC** (`cli/gpu.php`، `lib/CascProvider.php`). تعمل على PHP 8.2+ (وتُحلل على PHP 8.0) دون أي اعتماديات Composer خارجية: `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`، و`validate <file> [--format=yaml|xml]`، و`plan <file> [--format=yaml|xml] [--output=text|json]`، و`apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`، و`health [--format=text|json]`. تحسب الخطط تجزئة تأكيد SHA-256 حتمية، ويفشل `apply` بأمان عند عدم تطابق التجزئة، ويرفض تحليل XML تصريحات `DOCTYPE` و`ENTITY`.
+- **خطافات التكامل البيئي** (`lib/EcosystemIntegration.php`، `setup.php`). يسجّل `abilities_register` (`gpu-list-nodes` و`gpu-list-devices` و`gpu-get-health`؛ للقراءة فقط ومقيدة بنطاق `GPU View` وصلاحيات أجهزة Cacti)، و`doctor_register_checks` (`gpu_schema` و`gpu_poller_freshness` و`gpu_node_health`)، و`casc_register_providers`.
+- **أسباب خفض التردد وECC كقيم تنبيه** ([docs/metrics.md](docs/metrics.md)). يفك قناع أحداث الساعة إلى مؤشرات 0/1 ويحسب أخطاء ECC المصحّحة وغير المصحّحة الجديدة لكل فترة كقيم gauge بحيث ينبّه Thold 1.8.2 وMaint 1.3 ويكتمان التنبيهات دون عدادات سالبة أو قفزات إعادة الضبط ([docs/alerting.md](docs/alerting.md)).
+- **صحة GPU والصلاحيات والفشل/الاستعادة والحجم.** تعرض صفحة صحة GPU (GPU View) الحداثة المخزنة ونتيجة آخر جمع وحالة Maint والواجهة الخلفية والإصدارات والأقنعة الخام لخفض التردد دون الاتصال بالعقد. وتتحقق الاختبارات الشاملة المؤتمتة من الصلاحيات واستعادة أعطال الوكيل وقاعدة البيانات وRRD ([docs/backup.md](docs/backup.md))، وتشغيل اختبار حجم لـ 100 GPU في CI ([docs/performance.md](docs/performance.md)، [docs/operations.md](docs/operations.md)، [CHANGELOG.md](../../../CHANGELOG.md)).
 
 <a id="what-milestone-3-adds"></a>
 ## ما يضيفه المعلم 3
@@ -66,7 +66,7 @@
 - **صلاحيات الأجهزة في عقد GPU.** لا يرى GPU Admin ولا يغيّر ولا يصدّر ولا ينقل إلا عقد وGPU أجهزة يجوز له رؤيتها في Cacti؛ ويتطلب نقل GPU كلا العقدتين. العقدة التي حُذف جهازها يمكن تعطيلها أو حذفها.
 - **نموذج المقاييس المشترك** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md)، [docs/metrics.md](docs/metrics.md)). الذاكرة بالبايت، ويُفك قناع أحداث الساعة إلى مؤشرات `thr_*`، و`age` عمر وقت العينة الخاصة بـGPU، أو `U` عند الجهل به.
 
-يجب أن يستطيع مستخدم التثبيت (خادم الويب) الكتابة إلى `<cacti>/resource/script_server/` حيث يضع الملحق XML استعلام البيانات؛ وإلا يتوقف التثبيت والترقية برسالة ويعيدان المحاولة لاحقًا. لا تزيل الإزالة القوالب وXML إلا عند تحديد *إزالة كائنات Cacti الخاصة بالملحق عند الإزالة*، ولا تحذف ملفات RRD أو الأجهزة أو الرسوم أو مصادر البيانات مطلقًا ([docs/operations.md](docs/operations.md#uninstall)). لا تُجمع عقد المجمّعات البعيدة حتى المرحلة 3.
+يجب أن يستطيع مستخدم التثبيت (خادم الويب) الكتابة إلى `<cacti>/resource/script_server/` حيث يضع الملحق XML استعلام البيانات؛ وإلا يتوقف التثبيت والترقية برسالة ويعيدان المحاولة لاحقًا. لا تزيل الإزالة القوالب وXML إلا عند تحديد *إزالة كائنات Cacti الخاصة بالملحق عند الإزالة*، ولا تحذف ملفات RRD أو الأجهزة أو الرسوم أو مصادر البيانات مطلقًا ([docs/operations.md](docs/operations.md#uninstall)). تعمل العقد على المجمّعات البعيدة للبيانات ضمن نطاق معرّف المستطلع `poller_id` المعيّن لها.
 
 <a id="what-milestone-2-ships"></a>
 ## ما يقدمه المعلم 2
@@ -114,12 +114,13 @@
 
 ```mermaid
 flowchart LR
-    NODE[GPU node: snmpd extend running nvidia-smi] -->|SNMP reads, v3 recommended| C[Collector]
-    C --> CACHE[(Plugin cache keyed by GPU UUID)]
-    CACHE --> SS[Script server data query input]
-    SS --> RRD[(Cacti RRD files, one data source per GPU)]
-    SS -->|poller_output| T[Thold and Maint]
-    RRD --> G[Cacti graphs and permissions]
+    NODE["عقدة GPU: snmpd extend / DCGM Exporter / amd-smi"] -->|SNMPv3 للقراءة فقط أو HTTPS مسموح به| C["مجمّع ضمن نطاق المستطلع"]
+    C --> CACHE[("ذاكرة الإضافة المؤقتة مفهرسة بالمورّد + GPU/MIG UUID")]
+    CACHE --> SS["إدخال استعلام بيانات خادم السكربت"]
+    CACHE --> ECO["CasC CLI وقدرات MCP وفحوصات Doctor"]
+    SS --> RRD[("ملفات Cacti RRD، مصدر بيانات واحد لكل GPU")]
+    SS -->|poller_output| T["Thold وMaint"]
+    RRD --> G["رسوم Cacti وصلاحياته"]
 ```
 
 <a id="how-work-is-tracked"></a>

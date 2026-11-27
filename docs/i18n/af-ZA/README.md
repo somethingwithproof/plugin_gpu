@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-'n Cacti 1.2-inprop wat per-GPU-benutting, geheue, temperatuur, krag, ECC-foute en smoorredes vanaf NVIDIA-nutsgoed na Cacti bring. AMD-ondersteuning en die insameling van XID-foute word beplan, maar is nog nie geïmplementeer nie. Elke GPU word 'n indeks van 'n datanavraag op sy nodus se toestel, sodat GPU-grafieke langs die nodus se ander grafieke onder Cacti se toestemmings sit, en Thold en Maint daarop kan waarsku en dit kan onderdruk.
+'n Cacti 1.2-inprop wat per-GPU-benutting, geheue, temperatuur, krag, ECC-foute en smoorredes vanaf NVIDIA- en AMD-nutsgoed na Cacti bring. Elke GPU (of MIG-instansie) word 'n indeks van 'n datanavraag op sy nodus se toestel, sodat GPU-grafieke langs die nodus se ander grafieke onder Cacti se toestemmings sit, en Thold en Maint daarop kan waarsku en dit kan onderdruk.
 
-> **Status: in ontwikkeling, nog nie vrygestel nie.** Mylpaal 4 maak fase 1 (NVIDIA via SNMP extend) kode-voltooid: insameling, identiteit, grafieke, smoor- en ECC-seine, Thold- en Maint-waarskuwings, die gesondheidsbladsy en die operateurdokumentasie. Dit is slegs teen 'n regte `snmpd` met 'n nagemaakte `nvidia-smi` wat sintetiese uitvoer druk uitgevoer, nooit op GPU-hardeware nie. Nog oop voor 'n vrystelling: loodsprojekte op regte hardeware ([docs/pilot-plan.md](../../pilot-plan.md), #54), 'n eksterne sekuriteitsoorsig ([docs/security-review.md](../../security-review.md)), toetsdata vanaf regte nutsgoed (#14), en skaal gemeet op produksiegrootte-hardeware ([docs/performance.md](../../performance.md)). XID-foute wag op besluit #8. Moet dit nie in produksie gebruik nie.
+> **Status: fases 1 tot 3 in kode geïmplementeer, nog nie vrygestel nie.** Fase 1 (NVIDIA `nvidia-smi` via SNMP extend, identiteitsnasporing, grafieke, smoor- en ECC-seine, Thold- en Maint-waarskuwings, gesondheidsbladsy), Fase 2 (leesalleen NVIDIA DCGM Exporter HTTP(S)-ontleder/kliënt en AMD `amd-smi`-ontleder), Fase 3 (MIG-instansie-identiteitsnasporing, Schema v4-kolomme, peiler-omvangde afgeleë versamelaaruitvoering, `replicate_out`- en `remote_agent`-hake), die CasC-operateur-CLI (`cli/gpu.php`), en ekosisteemhake (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) is geïmplementeer en gedek deur eenheids-, sekuriteits- en weggooibare-Cacti-integrasietoetse. Lewende lopies tot dusver gebruik sintetiese `snmpd` en toetsdata eerder as fisiese GPU-hardeware. Nog oop voor 'n vrystelling gemerk word: loodsprojekte op regte hardeware ([docs/pilot-plan.md](../../pilot-plan.md), #54), 'n eksterne sekuriteitsoorsig ([docs/security-review.md](../../security-review.md)), toetsdata vanaf regte nutsgoed (#14), en skaalmetings op produksiegrootte-hardeware ([docs/performance.md](../../performance.md)). XID-foutinsameling bly oop onder besluit #8.
 
 ## Toegangsrolle
 
@@ -30,25 +30,25 @@ Die inprop oorbrug daardie gaping deur vervaardigernutsmiddel-uitvoer in Cacti-d
 
 ## Beplande omvang
 
-| Fase | Omvang | Mylpale |
-|---|---|---|
-| 0, navorsing | Vervaardigernutsmiddel-uitvoer, XID- en smoorseine, GPU-identiteit, voorregte, insamelingspadbesluit | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | `nvidia-smi`-insameling, inventaris volgens UUID, grafieke, smoor-, ECC- en XID-seine, Thold en Maint, gesondheidsbladsy | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, agterkante | DCGM-agterkant, `amd-smi`-agterkant | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, mig en afgeleë | MIG-instansies, Cacti se afgeleë dataversamelaars | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| Fase | Omvang | Status | Mylpale |
+|---|---|---|---|
+| 0, navorsing | Vervaardigernutsmiddel-uitvoer, XID- en smoorseine, GPU-identiteit, voorregte, insamelingspadbesluit | Voltooid | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | `nvidia-smi`-insameling, inventaris volgens UUID, grafieke, smoor- en ECC-seine, Thold en Maint, gesondheidsbladsy | Geïmplementeer (toetsdata-getoets) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, agterkante | Leesalleen DCGM Exporter HTTP(S)-ontleder/kliënt (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), AMD `amd-smi`-ontleder (`lib/AmdSmiParser.php`) | Geïmplementeer (eenheidsgetoets) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig, afgeleë en ekosisteem | MIG-instansie-identiteitsnasporing, afgeleë dataversamelaars (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC-CLI (`cli/gpu.php`), MCP/Doctor/CasC-hake | Geïmplementeer (eenheids- en CI-integrasiegetoets) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 Buite omvang: enige opdrag wat 'n GPU of nodus verander (klokspoed, kraglimiete, herstellings, MIG-uitleg), 'n inprop-beheerde waarskuwingsenjin, 'n pasgemaakte bedienerproses of netwerkprotokol, en skeduleerder- of taakboekhouding. Sien die plan vir die navorsingsagterstand.
 
 ## Wat mylpaal 4 byvoeg
 
-- **Smoorredes as waarskuwingswaardes.** Die klokgebeurtenismasker word gedekodeer in een 0- of 1-aanwyser per rede; 'n onbekende masker gee onbekende aanwysers, nooit nulle nie, en bisse sonder 'n aanwyser bly in die rou masker, wat GPU Health wys.
-- **ECC as waarskuwingswaardes** ([docs/metrics.md](../../metrics.md)). Nuwe gekorrigeerde en ongekorrigeerde foute sedert die vorige monster word deur die inprop uit twee opeenvolgende totale bereken en as meters gestoor: onbekend vir 'n eerste monster, 'n gemiste lesing of 'n drywerherlaai, sodat 'n herstel nooit as nul of as 'n negatiewe telling lees nie. Afgetrede enkelbis- en dubbelbisbladsytellings en die ECC-modus word ook gelees. Twee addisionele ECC-grafieke per GPU laat Cacti dit stoor; saam met Kragpersentasie is daar elf grafieke in totaal. XID word nie ingesamel nie: geen bron pas by die vaste `nvidia-smi`-opdragte nie (#8).
-- **Thold en Maint** ([docs/alerting.md](../../alerting.md)). Meegeleverde Thold-sjablone vir temperatuur, krag teenoor sy limiet, die smooraanwysers, nuwe ongekorrigeerde ECC-foute, hangende bladsy-aftrede en monsterouderdom. Elke waarde is 'n meter, omdat Thold 1.8.2 op 'n onbekende teller misluk. 'n End-tot-end-toets met onveranderde Thold 1.8.2 en Maint 1.3 wys hoe elke drempelwaarde afgaan en herstel, oor 'n ECC-herstel heen, en hoe Maint dit onderdruk.
-- **GPU Health** (GPU View). Per nodus: varsheid, hoe die laaste insameling geëindig het, Maint-toestand, agterkant, nutsmiddel- en drywerweergawes, en GPU-tellings; per GPU: teenwoordigheid, monsterouderdom, ECC-toestand en die rou masker. Dit lees slegs gestoorde rekords.
-- **Toestemmings.** Die toestemmingstoetsstel dek elke bladsylêer en aksie, herroeping met die volgende versoek, en weierings wat niks openbaar nie.
-- **Mislukkings- en herstelkwalifikasie.** Geskripeerde end-tot-end-lopies breek die agent, die geloofsbriewe, die nutsmiddel, sy uitvoer, die databasisverbinding en RRD-skrywings, en herstel die databasis vanaf 'n rugsteunlêer, insluitend een ouer as die RRD-lêers; 'n nuwe GPU erf nooit 'n ander een se RRD-lêer nie ([docs/backup.md](../../backup.md)).
-- **Skaal** ([docs/performance.md](../../performance.md)). 'n Skaaltoets neem die tyd van insameling, die skripbedienerinvoer, Cacti-objekskepping, 'n peilersiklus en die gesondheidsbladsy teen 'n gegewe GPU-telling; CI voer dit by 100 GPU's uit. Die 1 000- en 8 000-GPU-metings is nog nie aangeteken nie, dus word geen ondersteunde GPU-telling vermeld nie.
-- **Operateurdokumentasie** ([docs/operations.md](../../operations.md)): installasie, opgradering, deïnstallasie, minste voorregte, onbeskikbare waardes en foutsporing. Veranderinge word in [CHANGELOG.md](../../../CHANGELOG.md) gelys.
+- **NVIDIA DCGM Exporter leesalleen-versamelaar** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`). Ontleed Prometheus-teksuitstalmetrieke (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`, en MIG-etikette `GPU_I_ID` en `GPU_I_PROFILE`). Die HTTP(S)-kliënt dwing 'n eksplisiete eindpunt-gasheer/CIDR-toelatingslys af, verifieer TLS-ewekniesertifikate by verstek, beperk tydsverstrekings en antwoordgrootte, deaktiveer herleidings, en verwerp nie-HTTP(S)-skemas.
+- **AMD `amd-smi` leesalleen-ontleder** (`lib/AmdSmiParser.php`). Normaliseer `amd-smi` JSON/SNMP-extend-uitvoer (benutting, VRAM, krag, aansluitings-/randtemperatuur, ECC, partisiemetadata, en aparte smoorakkumulators via `Reading::$vendorExtensions`) na die algemene metriekmodel onder `Vendor::Amd`.
+- **MIG-instansienasporing en Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`). Volg MIG-instansie-UUID's (`MIG-<uuid>` en `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid` en `partition_info` saam met ouer-GPU's, terwyl onveranderlike identiteitsleutels (`vendor`, `uuid`, `parent_uuid`) op opdaterings beskerm en voor databasisnavrae gevalideer word.
+- **Afgeleë dataversamelaars** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`). Verklaar `remote_collect:1, remote_poller:1` in `INFO`, ondersteun peiler-omvangde uitvoering via `php plugins/gpu/poller_gpu.php --poller=N`, slaan Cacti-objekvoorsiening op nie-hoofpeilers oor, repliseer peiler-omvangde tabelle deur `replicate_out`, en antwoord op leesalleen `gpu_health`- en `gpu_inventory`-aksies deur `remote_agent`.
+- **Operateur- en CasC-CLI** (`cli/gpu.php`, `lib/CascProvider.php`). Loop op PHP 8.2+ (ontleed op PHP 8.0) met geen eksterne Composer-afhanklikhede nie: `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`, en `health [--format=text|json]`. Planne bereken 'n deterministiese SHA-256-bevestigingshutsmiddel, `apply` misluk geslote by 'n hutsmiddelwanpassing, en XML-ontleding verwerp `DOCTYPE`- en `ENTITY`-verklarings.
+- **Ekosisteem-integrasiehake** (`lib/EcosystemIntegration.php`, `setup.php`). Registreer `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; leesalleen, beperk tot die `GPU View`-domein en Cacti-toesteltoestemmings), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`), en `casc_register_providers`.
+- **Smoorredes en ECC as waarskuwingswaardes** ([docs/metrics.md](../../metrics.md)). Dekodeer klokgebeurtenismaskers in 0/1-aanwysers en bereken nuwe gekorrigeerde/ongekorrigeerde ECC-foute per interval as meters sodat Thold 1.8.2 en Maint 1.3 waarsku en onderdruk sonder negatiewe tellers of herstelspitse ([docs/alerting.md](../../alerting.md)).
+- **GPU Health, toestemmings, mislukking/herstel, en skaal.** GPU Health (GPU View) wys gestoorde varsheid, laaste insamelingsuitkoms, Maint-toestand, agterkant, weergawes en rou smoormaskers sonder om nodusse te kontak. Geskripeerde end-tot-end-toetse verifieer toestemmings, agent/DB/RRD-mislukkingsherstel ([docs/backup.md](../../backup.md)), en 'n 100-GPU-skaallopie in CI ([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md)).
 
 ## Wat mylpaal 3 byvoeg
 
@@ -60,7 +60,7 @@ Buite omvang: enige opdrag wat 'n GPU of nodus verander (klokspoed, kraglimiete,
 - **Toesteltoestemmings op GPU Nodes.** 'n GPU Admin sien, verander, voer uit en skuif slegs nodusse en GPU's op toestelle wat hulle in Cacti mag sien; 'n GPU-skuif vereis albei nodusse. 'n Nodus waarvan die toestel geskrap is, kan gedeaktiveer of geskrap word.
 - **Die algemene metriekmodel** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)). Geheue is in grepe, die klokgebeurtenismasker word in `thr_*`-aanwysers gedekodeer, en `age` is die ouderdom van die GPU se eie monstertyd, of `U` wanneer onbekend.
 
-Die installerende (webbediener-) gebruiker moet na `<cacti>/resource/script_server/` kan skryf, waar die inprop sy datanavraag-XML plaas; installasie en opgradering stop andersins met 'n boodskap en probeer weer met die volgende poging. Deïnstallasie verwyder die sjablone en die XML slegs wanneer *Remove the plugin's Cacti objects on uninstall* gemerk is, en skrap nooit RRD-lêers, toestelle, grafieke of databronne nie ([docs/operations.md](../../operations.md#uninstall)). Nodusse op afgeleë dataversamelaars word nie voor fase 3 ingesamel nie.
+Die installerende (webbediener-) gebruiker moet na `<cacti>/resource/script_server/` kan skryf, waar die inprop sy datanavraag-XML plaas; installasie en opgradering stop andersins met 'n boodskap en probeer weer met die volgende poging. Deïnstallasie verwyder die sjablone en die XML slegs wanneer *Remove the plugin's Cacti objects on uninstall* gemerk is, en skrap nooit RRD-lêers, toestelle, grafieke of databronne nie ([docs/operations.md](../../operations.md#uninstall)). Nodusse op afgeleë dataversamelaars loop binne die omvang van hul toegewysde `poller_id`.
 
 ## Wat mylpaal 2 vrystel
 
@@ -103,9 +103,10 @@ Besluit [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) het SNMP
 
 ```mermaid
 flowchart LR
-    NODE[GPU-nodus: snmpd extend wat nvidia-smi uitvoer] -->|SNMP-lesings, v3 aanbeveel| C[Versamelaar]
-    C --> CACHE[(Inpropkas volgens GPU-UUID)]
+    NODE["GPU-nodus: snmpd extend / DCGM Exporter / amd-smi"] -->|Leesalleen SNMPv3 of toegelate HTTPS| C[Peiler-omvangde versamelaar]
+    C --> CACHE[("Inpropkas volgens vervaardiger + GPU/MIG-UUID")]
     CACHE --> SS[Skripbediener-datanavraaginvoer]
+    CACHE --> ECO["CasC-CLI, MCP-vermoëns, Doctor-kontroles"]
     SS --> RRD[(Cacti RRD-lêers, een databron per GPU)]
     SS -->|poller_output| T[Thold en Maint]
     RRD --> G[Cacti-grafieke en -toestemmings]

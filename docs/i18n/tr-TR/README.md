@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-NVIDIA araçlarından alınan GPU başına kullanım, bellek, sıcaklık, güç, ECC hataları ve kısma (throttling) nedenlerini Cacti'ye aktaran bir Cacti 1.2 eklentisi. AMD desteği ve XID hata toplama planlanmıştır, henüz uygulanmamıştır. Her GPU, düğümünün cihazında bir veri sorgusunun (data query) dizini haline gelir; böylece GPU grafikleri Cacti izinleri altında düğümün diğer grafiklerinin yanında yer alır ve Thold ile Maint bunlar üzerinde uyarı verip uyarıları bastırabilir.
+NVIDIA ve AMD araçlarından alınan GPU başına kullanım, bellek, sıcaklık, güç, ECC hataları ve kısma (throttling) nedenlerini Cacti'ye aktaran bir Cacti 1.2 eklentisi. Her GPU (veya MIG örneği), düğümünün cihazında bir veri sorgusunun (data query) dizini haline gelir; böylece GPU grafikleri Cacti izinleri altında düğümün diğer grafiklerinin yanında yer alır ve Thold ile Maint bunlar üzerinde uyarı verip uyarıları bastırabilir.
 
-> **Durum: geliştirme aşamasında, henüz yayınlanmadı.** Kilometre taşı 4, faz 1'i (SNMP extend üzerinden NVIDIA) kod açısından tamamlar: veri toplama, kimlik, grafikler, kısma ve ECC sinyalleri, Thold ve Maint uyarıları, sağlık sayfası ve operatör dokümantasyonu. Yalnızca sentetik çıktı yazdıran sahte bir `nvidia-smi` ile gerçek bir `snmpd` üzerinde çalıştırılmıştır; gerçek GPU donanımında hiç denenmemiştir. Sürüm öncesinde hâlâ açık olan konular: gerçek donanımda pilot uygulamalar ([docs/pilot-plan.md](../../pilot-plan.md), #54), harici bir güvenlik incelemesi ([docs/security-review.md](../../security-review.md)), gerçek araçlardan yakalanmış test verileri (#14) ve üretim boyutundaki donanımda ölçülmüş ölçek ([docs/performance.md](../../performance.md)). XID hataları #8 numaralı kararı beklemektedir. Üretim ortamında çalıştırmayın.
+> **Durum: 1'den 3'e kadar olan fazlar kodda uygulandı, henüz yayınlanmadı.** Faz 1 (SNMP extend üzerinden NVIDIA `nvidia-smi`, kimlik takibi, grafikler, kısma ve ECC sinyalleri, Thold ve Maint uyarıları, sağlık sayfası), Faz 2 (salt okunur NVIDIA DCGM Exporter HTTP(S) ayrıştırıcı/istemci ve AMD `amd-smi` ayrıştırıcı), Faz 3 (MIG örneği kimlik takibi, Schema v4 sütunları, poller kapsamlı uzak toplayıcı yürütmesi, `replicate_out` ve `remote_agent` kancaları), CasC operatör CLI (`cli/gpu.php`) ve ekosistem kancaları (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) uygulanmış olup birim, güvenlik ve tek kullanımlık Cacti entegrasyon testleriyle kapsanmaktadır. Şu ana kadarki canlı çalıştırmalarda fiziksel GPU donanımı yerine sentetik `snmpd` ve test verisi yükleri kullanılmıştır. Sürüm etiketi oluşturulmadan önce hâlâ açık olan konular: gerçek donanımda pilot uygulamalar ([docs/pilot-plan.md](../../pilot-plan.md), #54), harici bir güvenlik incelemesi ([docs/security-review.md](../../security-review.md)), gerçek araçlardan yakalanmış test verileri (#14) ve üretim boyutundaki donanımda ölçülmüş ölçek ([docs/performance.md](../../performance.md)). XID hata toplama #8 numaralı karar kapsamında açık kalmaya devam etmektedir.
 
 ## Erişim rolleri
 
@@ -32,25 +32,25 @@ Eklenti, üretici aracı çıktılarını konumu yerine her GPU'nun kimliğiyle 
 
 ## Planlanan kapsam
 
-| Faz | Kapsam | Kilometre Taşları |
-|---|---|---|
-| 0, araştırma | Üretici aracı çıktıları, XID ve kısma sinyalleri, GPU kimliği, ayrıcalıklar, toplama yolu kararı | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | `nvidia-smi` ile toplama, UUID'ye göre envanter, grafikler, kısma, ECC ve XID sinyalleri, Thold ve Maint, sağlık sayfası | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, arka uçlar | DCGM arka ucu, `amd-smi` arka ucu | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, mig ve uzak | MIG örnekleri, Cacti uzak veri toplayıcıları | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| Faz | Kapsam | Durum | Kilometre Taşları |
+|---|---|---|---|
+| 0, araştırma | Üretici aracı çıktıları, XID ve kısma sinyalleri, GPU kimliği, ayrıcalıklar, toplama yolu kararı | Tamamlandı | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | `nvidia-smi` ile toplama, UUID'ye göre envanter, grafikler, kısma ve ECC sinyalleri, Thold ve Maint, sağlık sayfası | Uygulandı (test verisiyle sınandı) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, arka uçlar | Salt okunur DCGM Exporter HTTP(S) ayrıştırıcı/istemci (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), AMD `amd-smi` ayrıştırıcı (`lib/AmdSmiParser.php`) | Uygulandı (birim testinden geçti) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig, uzak ve ekosistem | MIG örneği kimlik takibi, uzak veri toplayıcıları (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC CLI (`cli/gpu.php`), MCP/Doctor/CasC kancaları | Uygulandı (birim ve CI entegrasyon testinden geçti) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 Kapsam dışı olanlar: bir GPU'yu veya düğümü değiştiren herhangi bir komut (saat hızları, güç limitleri, sıfırlamalar, MIG düzeni), eklentiye özgü bir uyarı motoru, özel bir arka plan servisi (daemon) veya ağ protokolü ve zamanlayıcı veya iş muhasebesi (job accounting). Araştırma iş listesi için plana bakın.
 
 ## Kilometre taşı 4 neler ekliyor
 
-- **Uyarı değeri olarak kısma nedenleri.** Saat olayı maskesi (clock event mask), her neden için 0 veya 1 olan bir göstergeye çözülür; bilinmeyen bir maske hiçbir zaman sıfır değil bilinmeyen göstergeler verir ve göstergesi olmayan bitler GPU Health sayfasının gösterdiği ham maskede kalır.
-- **Uyarı değeri olarak ECC** ([docs/metrics.md](../../metrics.md)). Önceki örnekten bu yana oluşan yeni düzeltilmiş ve düzeltilmemiş hatalar, eklenti tarafından ardışık iki toplamdan hesaplanır ve gauge olarak saklanır: ilk örnek, kaçırılan bir okuma veya sürücü yeniden yüklemesi durumunda bilinmeyen değer alır, böylece bir sıfırlama hiçbir zaman sıfır veya negatif bir sayı olarak okunmaz. Emekliye ayrılmış (retired) tek bit ve çift bit sayfa sayıları ile ECC modu da okunur. GPU başına iki ek ECC grafiği Cacti'nin bunları saklamasını sağlar; Power Percent ile birlikte toplam on bir grafik vardır. XID toplanmaz: sabit `nvidia-smi` komutlarına uyan bir kaynak yoktur (#8).
-- **Thold ve Maint** ([docs/alerting.md](../../alerting.md)). Sıcaklık, limitine göre güç, kısma göstergeleri, yeni düzeltilmemiş ECC hataları, bekleyen sayfa emekliliği (pending page retirement) ve örnek yaşı için hazır Thold şablonları. Thold 1.8.2 bilinmeyen bir sayaçta (counter) başarısız olduğu için her değer bir gauge'dur. Değiştirilmemiş Thold 1.8.2 ve Maint 1.3 ile yapılan uçtan uca bir test, bir ECC sıfırlaması boyunca her eşiğin tetiklenip düzeldiğini ve Maint'in bunu bastırdığını gösterir.
-- **GPU Health** (GPU View). Düğüm başına: güncellik (freshness), son toplamanın nasıl sonuçlandığı, Maint durumu, arka uç, araç ve sürücü sürümleri ile GPU sayıları; GPU başına: mevcut olma durumu, örnek yaşı, ECC durumu ve ham maske. Yalnızca depolanmış kayıtları okur.
-- **İzinler.** İzin test paketi her sayfa dosyasını ve eylemi, bir sonraki istekte yetki geri alımını ve hiçbir bilgi sızdırmayan ret yanıtlarını kapsar.
-- **Arıza ve geri yükleme doğrulaması.** Betikli uçtan uca çalıştırmalar aracıyı, kimlik bilgilerini, aracı, çıktısını, veritabanı bağlantısını ve RRD yazma işlemlerini bozar ve RRD dosyalarından daha eski bir yedek de dahil olmak üzere veritabanını bir dökümden geri yükler; yeni bir GPU hiçbir zaman başka bir GPU'nun RRD dosyasını devralmaz ([docs/backup.md](../../backup.md)).
-- **Ölçek** ([docs/performance.md](../../performance.md)). Bir ölçek testi belirli bir GPU sayısında toplama, script server girdisi, Cacti nesnesi oluşturma, bir poller döngüsü ve sağlık sayfası sürelerini ölçer; CI bunu 100 GPU ile çalıştırır. 1.000 ve 8.000 GPU ölçümleri henüz kaydedilmediğinden desteklenen bir GPU sayısı belirtilmemektedir.
-- **Operatör dokümantasyonu** ([docs/operations.md](../../operations.md)): kurulum, yükseltme, kaldırma, en az ayrıcalık, kullanılamayan değerler ve sorun giderme. Değişiklikler [CHANGELOG.md](../../../CHANGELOG.md) dosyasında listelenmiştir.
+- **NVIDIA DCGM Exporter salt okunur toplayıcı** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`). Prometheus metin serim metriklerini (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS` ve MIG etiketleri `GPU_I_ID` ile `GPU_I_PROFILE`) ayrıştırır. HTTP(S) istemcisi açık bir uç nokta ana bilgisayar/CIDR izin listesi uygular, varsayılan olarak TLS eş sertifikalarını doğrular, zaman aşımlarını ve yanıt boyutunu sınırlar, yönlendirmeleri devre dışı bırakır ve HTTP(S) olmayan şemaları reddeder.
+- **AMD `amd-smi` salt okunur ayrıştırıcı** (`lib/AmdSmiParser.php`). `amd-smi` JSON/SNMP-extend çıktısını (kullanım, VRAM, güç, bağlantı/kenar sıcaklığı, ECC, bölüm meta verileri ve `Reading::$vendorExtensions` üzerinden ayrı kısma biriktiricileri) `Vendor::Amd` altında ortak metrik modeline normalleştirir.
+- **MIG örneği takibi ve Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`). Üst GPU'ların yanında MIG örneği UUID'lerini (`MIG-<uuid>` ve `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid` ve `partition_info` bilgilerini takip ederken, değişmez kimlik anahtarlarını (`vendor`, `uuid`, `parent_uuid`) güncellemeler sırasında korur ve veritabanı sorgularından önce doğrular.
+- **Uzak veri toplayıcıları** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`). `INFO` içinde `remote_collect:1, remote_poller:1` bildirir, `php plugins/gpu/poller_gpu.php --poller=N` aracılığıyla poller kapsamlı yürütmeyi destekler, ana olmayan poller'larda Cacti nesnesi oluşturmayı atlar, `replicate_out` aracılığıyla poller kapsamlı tabloları çoğaltır ve `remote_agent` üzerinden salt okunur `gpu_health` ve `gpu_inventory` eylemlerini yanıtlar.
+- **Operatör ve CasC CLI** (`cli/gpu.php`, `lib/CascProvider.php`). Sıfır harici Composer bağımlılığıyla PHP 8.2+ üzerinde çalışır (PHP 8.0 üzerinde ayrıştırılır): `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]` ve `health [--format=text|json]`. Planlar deterministik bir SHA-256 onay özeti hesaplar, hash uyuşmazlığında `apply` güvenli biçimde başarısız olur ve XML ayrıştırma `DOCTYPE` ve `ENTITY` bildirimlerini reddeder.
+- **Ekosistem entegrasyon kancaları** (`lib/EcosystemIntegration.php`, `setup.php`). `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; salt okunur, `GPU View` yetki alanı ve Cacti cihaz izinleriyle denetlenir), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`) ve `casc_register_providers` kancalarını kaydeder.
+- **Uyarı değerleri olarak kısma nedenleri ve ECC** ([docs/metrics.md](../../metrics.md)). Saat olayı maskelerini 0/1 göstergelerine çözer ve aralık başına yeni düzeltilmiş/düzeltilmemiş ECC hatalarını gauge olarak hesaplar; böylece Thold 1.8.2 ve Maint 1.3 negatif sayaçlar veya sıfırlama sıçramaları olmadan uyarı verir ve bastırır ([docs/alerting.md](../../alerting.md)).
+- **GPU Health, izinler, arıza/geri yükleme ve ölçek.** GPU Health (GPU View) düğümlere bağlanmadan depolanmış güncelliği, son toplama sonucunu, Maint durumunu, arka ucu, sürümleri ve ham kısma maskelerini gösterir. Betikli uçtan uca testler izinleri, aracı/DB/RRD arıza kurtarmasını ([docs/backup.md](../../backup.md)) ve CI'da 100-GPU ölçek çalıştırmasını ([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md)) doğrular.
 
 ## Kilometre taşı 3 neler ekliyor
 
@@ -62,7 +62,7 @@ Kapsam dışı olanlar: bir GPU'yu veya düğümü değiştiren herhangi bir kom
 - **GPU Nodes üzerinde cihaz izinleri.** Bir GPU Admin, yalnızca Cacti'de görme yetkisine sahip olduğu cihazlardaki düğümleri ve GPU'ları görür, değiştirir, dışa aktarır ve taşır; bir GPU taşıma işlemi her iki düğüm için de yetki gerektirir. Cihazı silinmiş bir düğüm devre dışı bırakılabilir veya silinebilir.
 - **Ortak metrik modeli** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)). Bellek bayt cinsindendir, saat olayı maskesi `thr_*` göstergelerine çözülür ve `age` GPU'nun kendi örnek zamanının yaşıdır veya bilinmediğinde `U` olur.
 
-Kurulumu yapan (web sunucusu) kullanıcı, eklentinin veri sorgusu XML'ini yerleştirdiği `<cacti>/resource/script_server/` dizinine yazabilmelidir; aksi takdirde kurulum ve yükseltme bir mesajla durur ve bir sonraki denemede yeniden dener. Kaldırma işlemi, şablonları ve XML'i yalnızca *Remove the plugin's Cacti objects on uninstall* işaretliyse siler; RRD dosyalarını, cihazları, grafikleri veya veri kaynaklarını hiçbir zaman silmez ([docs/operations.md](../../operations.md#uninstall)). Uzak veri toplayıcılar üzerindeki düğümler faz 3'e kadar toplanmaz.
+Kurulumu yapan (web sunucusu) kullanıcı, eklentinin veri sorgusu XML'ini yerleştirdiği `<cacti>/resource/script_server/` dizinine yazabilmelidir; aksi takdirde kurulum ve yükseltme bir mesajla durur ve bir sonraki denemede yeniden dener. Kaldırma işlemi, şablonları ve XML'i yalnızca *Remove the plugin's Cacti objects on uninstall* işaretliyse siler; RRD dosyalarını, cihazları, grafikleri veya veri kaynaklarını hiçbir zaman silmez ([docs/operations.md](../../operations.md#uninstall)). Uzak veri toplayıcılar üzerindeki düğümler kendilerine atanan `poller_id` kapsamına göre çalışır.
 
 ## Kilometre taşı 2 neler sunuyor
 
@@ -105,12 +105,13 @@ Bu adımlar denemek amacıyla mevcut kodu kurar; tam operatör kılavuzu [docs/o
 
 ```mermaid
 flowchart LR
-    NODE[GPU düğümü: nvidia-smi çalıştıran snmpd extend] -->|SNMP okumaları, v3 önerilir| C[Toplayıcı]
-    C --> CACHE[(GPU UUID ile anahtarlanmış eklenti önbelleği)]
-    CACHE --> SS[Script server veri sorgusu girdisi]
-    SS --> RRD[(Cacti RRD dosyaları, GPU başına bir veri kaynağı)]
-    SS -->|poller_output| T[Thold ve Maint]
-    RRD --> G[Cacti grafikleri ve izinleri]
+    NODE["GPU düğümü: snmpd extend / DCGM Exporter / amd-smi"] -->|"Salt okunur SNMPv3 veya izin verilen HTTPS"| C["Poller kapsamlı toplayıcı"]
+    C --> CACHE[("Üretici + GPU/MIG UUID ile anahtarlanmış eklenti önbelleği")]
+    CACHE --> SS["Script server veri sorgusu girdisi"]
+    CACHE --> ECO["CasC CLI, MCP yetenekleri, Doctor kontrolleri"]
+    SS --> RRD[("Cacti RRD dosyaları, GPU başına bir veri kaynağı")]
+    SS -->|poller_output| T["Thold ve Maint"]
+    RRD --> G["Cacti grafikleri ve izinleri"]
 ```
 
 ## İş takibi nasıl yapılır

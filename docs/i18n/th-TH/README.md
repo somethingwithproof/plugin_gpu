@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-ปลั๊กอินสำหรับ Cacti 1.2 ที่นำข้อมูลการใช้งานต่อ GPU, หน่วยความจำ, อุณหภูมิ, พลังงาน, ข้อผิดพลาด ECC และสาเหตุการลดความเร็ว (throttling) จากเครื่องมือของ NVIDIA เข้าสู่ Cacti ส่วนการรองรับ AMD และการรวบรวมข้อผิดพลาด XID อยู่ในแผนงานแต่ยังไม่ได้พัฒนา GPU แต่ละตัวจะกลายเป็นดัชนีของ Data Query บนอุปกรณ์ของโหนดนั้นๆ ทำให้กราฟ GPU อยู่เคียงข้างกราฟอื่นๆ ของโหนดภายใต้ระบบสิทธิ์ของ Cacti และ Thold กับ Maint สามารถแจ้งเตือนและระงับการแจ้งเตือนได้
+ปลั๊กอินสำหรับ Cacti 1.2 ที่นำข้อมูลการใช้งานต่อ GPU, หน่วยความจำ, อุณหภูมิ, พลังงาน, ข้อผิดพลาด ECC และสาเหตุการลดความเร็ว (throttling) จากเครื่องมือของ NVIDIA และ AMD เข้าสู่ Cacti GPU แต่ละตัว (หรืออินสแตนซ์ MIG) จะกลายเป็นดัชนีของ Data Query บนอุปกรณ์ของโหนดนั้นๆ ทำให้กราฟ GPU อยู่เคียงข้างกราฟอื่นๆ ของโหนดภายใต้ระบบสิทธิ์ของ Cacti และ Thold กับ Maint สามารถแจ้งเตือนและระงับการแจ้งเตือนได้
 
-> **สถานะ: อยู่ระหว่างการพัฒนา ยังไม่เผยแพร่เวอร์ชันใช้งานจริง** Milestone 4 ทำให้ระยะที่ 1 (NVIDIA ผ่าน SNMP extend) มีโค้ดครบถ้วนแล้ว ได้แก่ การรวบรวมข้อมูล, การระบุตัวตน, กราฟ, สัญญาณ throttle และ ECC, การแจ้งเตือนด้วย Thold และ Maint, หน้าสถานะสุขภาพ (Health) และเอกสารสำหรับผู้ดูแลระบบ ทั้งนี้ระบบเพิ่งถูกทดสอบกับ `snmpd` จริงร่วมกับ `nvidia-smi` จำลองที่พิมพ์ผลลัพธ์สังเคราะห์เท่านั้น ยังไม่เคยรันบนฮาร์ดแวร์ GPU จริง สิ่งที่ยังต้องดำเนินการก่อนเผยแพร่ ได้แก่ การทดสอบนำร่องบนฮาร์ดแวร์จริง ([docs/pilot-plan.md](../../pilot-plan.md), #54), การตรวจสอบความปลอดภัยจากภายนอก ([docs/security-review.md](../../security-review.md)), ชุดข้อมูลตัวอย่างที่เก็บจากเครื่องมือจริง (#14) และการวัดความสามารถในการรองรับขนาดบนฮาร์ดแวร์ระดับใช้งานจริง ([docs/performance.md](../../performance.md)) ส่วนข้อผิดพลาด XID ยังรอการตัดสินใจ #8 ห้ามนำไปใช้งานในสภาพแวดล้อมจริง
+> **สถานะ: ระยะที่ 1 ถึง 3 ดำเนินการในโค้ดแล้ว ยังไม่เผยแพร่เวอร์ชันใช้งานจริง** ระยะที่ 1 (`nvidia-smi` ของ NVIDIA ผ่าน SNMP extend, การติดตามตัวตน, กราฟ, สัญญาณ throttle และ ECC, การแจ้งเตือนด้วย Thold และ Maint, หน้าสถานะสุขภาพ), ระยะที่ 2 (ตัวแยกวิเคราะห์และไคลเอนต์ NVIDIA DCGM Exporter HTTP(S) แบบอ่านอย่างเดียว และตัวแยกวิเคราะห์ AMD `amd-smi`), ระยะที่ 3 (การติดตามตัวตนอินสแตนซ์ MIG, คอลัมน์ Schema v4, การทำงานของตัวรวบรวมข้อมูลระยะไกลตามขอบเขต poller, ฮุก `replicate_out` และ `remote_agent`), CasC operator CLI (`cli/gpu.php`) และฮุกระบบนิเวศ (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) ได้รับการพัฒนาและครอบคลุมด้วยการทดสอบยูนิต ความปลอดภัย และการบูรณาการกับ Cacti แบบใช้แล้วทิ้งแล้ว การรันจริงจนถึงขณะนี้ยังใช้ `snmpd` สังเคราะห์และข้อมูลจำลองแทนฮาร์ดแวร์ GPU จริง สิ่งที่ยังเปิดค้างไว้ก่อนติดแท็กเผยแพร่ ได้แก่ การทดสอบนำร่องบนฮาร์ดแวร์จริง ([docs/pilot-plan.md](../../pilot-plan.md), #54), การตรวจสอบความปลอดภัยจากภายนอก ([docs/security-review.md](../../security-review.md)), ชุดข้อมูลตัวอย่างที่เก็บจากเครื่องมือจริง (#14) และการวัดความสามารถในการรองรับขนาดบนฮาร์ดแวร์ระดับใช้งานจริง ([docs/performance.md](../../performance.md)) การรวบรวมข้อผิดพลาด XID ยังเปิดค้างไว้ภายใต้การตัดสินใจ #8
 
 ## บทบาทการเข้าถึง
 
@@ -32,25 +32,25 @@
 
 ## ขอบเขตตามแผนงาน
 
-| ระยะ | ขอบเขต | Milestones |
-|---|---|---|
-| 0, การวิจัย | ผลลัพธ์จากเครื่องมือผู้ผลิต, สัญญาณ XID และ throttle, ตัวตนของ GPU, สิทธิ์การใช้งาน, การตัดสินใจเลือกเส้นทางการรวบรวมข้อมูล | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | การรวบรวมข้อมูลด้วย `nvidia-smi`, รายการอุปกรณ์ตาม UUID, กราฟ, สัญญาณ throttle, ECC และ XID, Thold และ Maint, หน้าสถานะสุขภาพ | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, backends | แบ็กเอนด์ DCGM, แบ็กเอนด์ `amd-smi` | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, mig และ remote | อินสแตนซ์ MIG, ตัวรวบรวมข้อมูลระยะไกลของ Cacti | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| ระยะ | ขอบเขต | สถานะ | Milestones |
+|---|---|---|---|
+| 0, การวิจัย | ผลลัพธ์จากเครื่องมือผู้ผลิต, สัญญาณ XID และ throttle, ตัวตนของ GPU, สิทธิ์การใช้งาน, การตัดสินใจเลือกเส้นทางการรวบรวมข้อมูล | เสร็จสมบูรณ์ | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | การรวบรวมข้อมูลด้วย `nvidia-smi`, รายการอุปกรณ์ตาม UUID, กราฟ, สัญญาณ throttle และ ECC, Thold และ Maint, หน้าสถานะสุขภาพ | พัฒนาแล้ว (ทดสอบด้วยข้อมูลจำลอง) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, backends | ตัวแยกวิเคราะห์/ไคลเอนต์ DCGM Exporter HTTP(S) แบบอ่านอย่างเดียว (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), ตัวแยกวิเคราะห์ AMD `amd-smi` (`lib/AmdSmiParser.php`) | พัฒนาแล้ว (ทดสอบยูนิตแล้ว) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig, remote และระบบนิเวศ | การติดตามตัวตนอินสแตนซ์ MIG, ตัวรวบรวมข้อมูลระยะไกล (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC CLI (`cli/gpu.php`), ฮุก MCP/Doctor/CasC | พัฒนาแล้ว (ทดสอบยูนิตและการบูรณาการใน CI แล้ว) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 สิ่งที่อยู่นอกขอบเขต: คำสั่งใดๆ ที่เปลี่ยนแปลงค่าของ GPU หรือโหนด (คล็อก, ขีดจำกัดพลังงาน, การรีเซ็ต, เลย์เอาต์ MIG), ระบบแจ้งเตือนที่เป็นของปลั๊กอินเอง, daemon หรือโปรโตคอลเครือข่ายแบบกำหนดเอง และการบัญชีงานหรือตัวจัดตารางงาน โปรดดูรายละเอียดงานวิจัยคงค้างในแผนงาน
 
 ## สิ่งที่เพิ่มเข้ามาใน Milestone 4
 
-- **สาเหตุการลดความเร็วในรูปแบบค่าแจ้งเตือน** มาสก์เหตุการณ์คล็อกจะถูกถอดรหัสเป็นตัวบ่งชี้ค่า 0 หรือ 1 แยกตามแต่ละสาเหตุ หากเป็นมาสก์ที่ไม่รู้จัก ตัวบ่งชี้จะเป็นค่าไม่ทราบ (unknown) ไม่ใช่ศูนย์ และบิตที่ไม่มีตัวบ่งชี้จะยังคงอยู่ในมาสก์ดิบซึ่งหน้า GPU Health จะแสดงให้เห็น
-- **ECC ในรูปแบบค่าแจ้งเตือน** ([docs/metrics.md](../../metrics.md)) ข้อผิดพลาดแบบแก้ไขได้ (corrected) และแก้ไขไม่ได้ (uncorrected) ที่เกิดขึ้นใหม่นับจากตัวอย่างก่อนหน้าจะถูกคำนวณโดยปลั๊กอินจากผลรวมสะสมสองค่าต่อเนื่องกันและจัดเก็บเป็นค่าเกจ: ค่าจะเป็น unknown สำหรับตัวอย่างแรก การอ่านที่พลาด หรือการโหลดไดรเวอร์ใหม่ เพื่อไม่ให้การรีเซ็ตถูกอ่านเป็นศูนย์หรือเป็นค่าติดลบ นอกจากนี้ยังมีการอ่านจำนวนหน้าที่ถูกปลดระวางแบบ single-bit และ double-bit รวมถึงโหมด ECC ด้วย กราฟ ECC เพิ่มเติมอีกสองกราฟต่อ GPU ช่วยให้ Cacti จัดเก็บค่าเหล่านี้ได้ เมื่อรวมกับ Power Percent แล้วจะมีกราฟทั้งหมดสิบเอ็ดกราฟ ทั้งนี้ยังไม่รวบรวม XID เนื่องจากยังไม่มีแหล่งข้อมูลที่เข้ากับคำสั่ง `nvidia-smi` แบบคงที่ได้ (#8)
-- **Thold และ Maint** ([docs/alerting.md](../../alerting.md)) เทมเพลต Thold ที่ให้มาพร้อมปลั๊กอินสำหรับอุณหภูมิ, พลังงานเทียบกับขีดจำกัด, ตัวบ่งชี้การลดความเร็ว, ข้อผิดพลาด ECC แบบแก้ไขไม่ได้ที่เกิดขึ้นใหม่, การปลดระวางหน้าหน่วยความจำที่รอดำเนินการ และอายุของตัวอย่างข้อมูล ทุกค่าเป็นเกจเนื่องจาก Thold 1.8.2 ล้มเหลวเมื่อพบค่า counter ที่เป็น unknown การทดสอบแบบครบวงจรกับ Thold 1.8.2 และ Maint 1.3 ที่ไม่ได้ดัดแปลงแสดงให้เห็นว่าแต่ละเกณฑ์แจ้งเตือนทำงานและคืนค่าปกติได้แม้ข้ามการรีเซ็ต ECC และ Maint สามารถระงับการแจ้งเตือนได้
-- **GPU Health** (GPU View) ข้อมูลต่อโหนด: ความสดใหม่ของข้อมูล, ผลลัพธ์ของการรวบรวมครั้งล่าสุด, สถานะ Maint, แบ็กเอนด์, เวอร์ชันของเครื่องมือและไดรเวอร์ และจำนวน GPU; ข้อมูลต่อ GPU: การมีอยู่, อายุของตัวอย่าง, สถานะ ECC และมาสก์ดิบ โดยอ่านจากข้อมูลที่จัดเก็บไว้เท่านั้น
-- **สิทธิ์การใช้งาน** ชุดทดสอบสิทธิ์ครอบคลุมไฟล์หน้าเว็บและการดำเนินการทุกอย่าง การเพิกถอนสิทธิ์ในคำขอถัดไป และการปฏิเสธสิทธิ์ที่ไม่เปิดเผยข้อมูลใดๆ
-- **การรับรองความทนทานต่อความล้มเหลวและการกู้คืน** การรันทดสอบแบบครบวงจรด้วยสคริปต์จะจำลองความล้มเหลวของเอเจนต์, ข้อมูลรับรอง, เครื่องมือ, ผลลัพธ์ของเครื่องมือ, การเชื่อมต่อฐานข้อมูล และการเขียน RRD รวมถึงการกู้คืนฐานข้อมูลจากไฟล์ dump แม้แต่ไฟล์ที่เก่ากว่าไฟล์ RRD; GPU ใหม่จะไม่สืบทอดไฟล์ RRD ของ GPU อื่นเด็ดขาด ([docs/backup.md](../../backup.md))
-- **การรองรับขนาด** ([docs/performance.md](../../performance.md)) การทดสอบความสามารถในการรองรับขนาดจะจับเวลาการรวบรวมข้อมูล, อินพุตของ script server, การสร้างออบเจกต์ของ Cacti, รอบการทำงานของ poller และหน้าสถานะสุขภาพที่จำนวน GPU ที่กำหนด โดย CI รันทดสอบที่ 100 GPU ยังไม่มีการบันทึกผลการวัดที่ 1,000 และ 8,000 GPU จึงยังไม่ได้ระบุจำนวน GPU สูงสุดที่รองรับ
-- **เอกสารสำหรับผู้ดูแลระบบ** ([docs/operations.md](../../operations.md)): การติดตั้ง, การอัปเกรด, การถอนการติดตั้ง, หลักสิทธิ์น้อยที่สุด, ค่าที่ไม่พร้อมใช้งาน และการแก้ไขปัญหา รายการเปลี่ยนแปลงแสดงอยู่ใน [CHANGELOG.md](../../../CHANGELOG.md)
+- **ตัวรวบรวมข้อมูล NVIDIA DCGM Exporter แบบอ่านอย่างเดียว** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`) แยกวิเคราะห์เมตริกข้อความรูปแบบ Prometheus (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS` และป้ายกำกับ MIG `GPU_I_ID` กับ `GPU_I_PROFILE`) ไคลเอนต์ HTTP(S) บังคับใช้รายการโฮสต์/CIDR ที่อนุญาตอย่างชัดเจน ตรวจสอบใบรับรอง TLS ของฝั่งตรงข้ามตามค่าเริ่มต้น จำกัดเวลาหมดอายุและขนาดการตอบกลับ ปิดการเปลี่ยนเส้นทาง (redirects) และปฏิเสธสคีมที่ไม่ใช่ HTTP(S)
+- **ตัวแยกวิเคราะห์ AMD `amd-smi` แบบอ่านอย่างเดียว** (`lib/AmdSmiParser.php`) ปรับรูปแบบผลลัพธ์ JSON/SNMP-extend ของ `amd-smi` (การใช้งาน, VRAM, พลังงาน, อุณหภูมิ junction/edge, ECC, เมทาดาตาของพาร์ติชัน และตัวสะสม throttle แยกส่วนผ่าน `Reading::$vendorExtensions`) ให้เข้าสู่โมเดลเมตริกกลางภายใต้ `Vendor::Amd`
+- **การติดตามอินสแตนซ์ MIG และ Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`) ติดตาม UUID ของอินสแตนซ์ MIG (`MIG-<uuid>` และ `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid` และ `partition_info` ควบคู่ไปกับ GPU หลัก พร้อมป้องกันคีย์ระบุตัวตนที่ไม่เปลี่ยนแปลง (`vendor`, `uuid`, `parent_uuid`) ระหว่างการอัปเดตและตรวจสอบก่อนส่งคำสั่งฐานข้อมูล
+- **ตัวรวบรวมข้อมูลระยะไกล** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`) ประกาศ `remote_collect:1, remote_poller:1` ใน `INFO`, รองรับการทำงานตามขอบเขต poller ผ่าน `php plugins/gpu/poller_gpu.php --poller=N`, ข้ามการสร้างออบเจกต์ Cacti บน poller ที่ไม่ใช่ตัวหลัก, ทำสำเนาตารางตามขอบเขต poller ผ่าน `replicate_out` และตอบสนองการดำเนินการอ่านอย่างเดียว `gpu_health` และ `gpu_inventory` ผ่าน `remote_agent`
+- **CLI สำหรับผู้ดูแลระบบและ CasC** (`cli/gpu.php`, `lib/CascProvider.php`) ทำงานบน PHP 8.2+ (parse บน PHP 8.0 ได้) โดยไม่มี Composer dependencies ภายนอก: `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]` และ `health [--format=text|json]` คำสั่ง `plan` คำนวณแฮชยืนยัน SHA-256 แบบคงที่, `apply` จะล้มเหลวทันทีเมื่อแฮชไม่ตรงกัน และการแยกวิเคราะห์ XML ปฏิเสธการประกาศ `DOCTYPE` และ `ENTITY`
+- **ฮุกการบูรณาการระบบนิเวศ** (`lib/EcosystemIntegration.php`, `setup.php`) ลงทะเบียน `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; แบบอ่านอย่างเดียว ควบคุมด้วยสิทธิ์ `GPU View` Realm และสิทธิ์ระดับอุปกรณ์ของ Cacti), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`) และ `casc_register_providers`
+- **สาเหตุการลดความเร็วและ ECC ในรูปแบบค่าแจ้งเตือน** ([docs/metrics.md](../../metrics.md)) ถอดรหัสมาสก์เหตุการณ์คล็อกเป็นตัวบ่งชี้ 0/1 และคำนวณข้อผิดพลาด ECC แบบแก้ไขได้/แก้ไขไม่ได้ที่เกิดขึ้นใหม่ต่อช่วงเวลาเป็นค่าเกจ เพื่อให้ Thold 1.8.2 และ Maint 1.3 แจ้งเตือนและระงับการแจ้งเตือนได้โดยไม่เกิดค่าเคาน์เตอร์ติดลบหรือค่าพุ่งสูงจากการรีเซ็ต ([docs/alerting.md](../../alerting.md))
+- **GPU Health, สิทธิ์การใช้งาน, ความล้มเหลว/การกู้คืน และการรองรับขนาด** GPU Health (GPU View) แสดงความสดใหม่ของข้อมูลที่เก็บไว้ ผลลัพธ์การรวบรวมครั้งล่าสุด สถานะ Maint แบ็กเอนด์ เวอร์ชัน และมาสก์การลดความเร็วดิบโดยไม่ต้องติดต่อไปยังโหนด การทดสอบแบบครบวงจรด้วยสคริปต์ตรวจสอบสิทธิ์การใช้งาน การกู้คืนความล้มเหลวของเอเจนต์/DB/RRD ([docs/backup.md](../../backup.md)) และการทดสอบรองรับขนาด 100 GPU ใน CI ([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md))
 
 ## สิ่งที่เพิ่มเข้ามาใน Milestone 3
 
@@ -62,7 +62,7 @@
 - **สิทธิ์ระดับอุปกรณ์บนหน้า GPU Nodes** ผู้ใช้ที่มีสิทธิ์ GPU Admin จะมองเห็น เปลี่ยนแปลง ส่งออก และย้ายได้เฉพาะโหนดและ GPU บนอุปกรณ์ที่ตนมีสิทธิ์มองเห็นใน Cacti เท่านั้น โดยการย้าย GPU ต้องมีสิทธิ์ทั้งสองโหนด ส่วนโหนดที่อุปกรณ์ถูกลบไปแล้วสามารถปิดใช้งานหรือลบออกได้
 - **โมเดลเมตริกกลาง** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)) หน่วยความจำมีหน่วยเป็นไบต์ มาสก์เหตุการณ์คล็อกถูกถอดรหัสเป็นตัวบ่งชี้ `thr_*` และ `age` คืออายุของเวลาตัวอย่างข้อมูลของ GPU เอง หรือ `U` เมื่อไม่ทราบค่า
 
-ผู้ใช้ที่ทำการติดตั้งต้องสามารถเขียนลงใน `<cacti>/resource/script_server/` ซึ่งเป็นตำแหน่งที่ปลั๊กอินวางไฟล์ XML ของ Data Query ไว้ มิฉะนั้นการติดตั้งและการอัปเกรดจะหยุดลงพร้อมข้อความแจ้งเตือนและลองใหม่ในการดำเนินการครั้งถัดไป การถอนการติดตั้งจะลบเทมเพลตและไฟล์ XML เฉพาะเมื่อเลือกตัวเลือก *Remove the plugin's Cacti objects on uninstall* เท่านั้น และจะไม่ลบไฟล์ RRD, อุปกรณ์, กราฟ หรือ Data Source เด็ดขาด ([docs/operations.md](../../operations.md#uninstall)) สำหรับโหนดบนตัวรวบรวมข้อมูลระยะไกลจะยังไม่ถูกรวบรวมข้อมูลจนกว่าจะถึงระยะที่ 3
+ผู้ใช้ที่ทำการติดตั้งต้องสามารถเขียนลงใน `<cacti>/resource/script_server/` ซึ่งเป็นตำแหน่งที่ปลั๊กอินวางไฟล์ XML ของ Data Query ไว้ มิฉะนั้นการติดตั้งและการอัปเกรดจะหยุดลงพร้อมข้อความแจ้งเตือนและลองใหม่ในการดำเนินการครั้งถัดไป การถอนการติดตั้งจะลบเทมเพลตและไฟล์ XML เฉพาะเมื่อเลือกตัวเลือก *Remove the plugin's Cacti objects on uninstall* เท่านั้น และจะไม่ลบไฟล์ RRD, อุปกรณ์, กราฟ หรือ Data Source เด็ดขาด ([docs/operations.md](../../operations.md#uninstall)) โหนดบนตัวรวบรวมข้อมูลระยะไกลจะทำงานตามขอบเขต `poller_id` ที่ได้รับมอบหมาย
 
 ## สิ่งที่รวมอยู่ใน Milestone 2
 
@@ -105,12 +105,13 @@
 
 ```mermaid
 flowchart LR
-    NODE[โหนด GPU: snmpd extend ที่รัน nvidia-smi] -->|การอ่าน SNMP แนะนำ v3| C[ตัวรวบรวมข้อมูล]
-    C --> CACHE[(แคชของปลั๊กอินที่ใช้ GPU UUID เป็นคีย์)]
-    CACHE --> SS[อินพุต Data Query ของ Script Server]
-    SS --> RRD[(ไฟล์ RRD ของ Cacti หนึ่ง Data Source ต่อหนึ่ง GPU)]
-    SS -->|poller_output| T[Thold และ Maint]
-    RRD --> G[กราฟและสิทธิ์ของ Cacti]
+    NODE["โหนด GPU: snmpd extend / DCGM Exporter / amd-smi"] -->|"SNMPv3 แบบอ่านอย่างเดียวหรือ HTTPS ที่อนุญาต"| C["ตัวรวบรวมข้อมูลตามขอบเขต poller"]
+    C --> CACHE[("แคชของปลั๊กอินที่ใช้ผู้ผลิต + UUID ของ GPU/MIG เป็นคีย์")]
+    CACHE --> SS["อินพุต Data Query ของ Script Server"]
+    CACHE --> ECO["CasC CLI, ความสามารถ MCP, การตรวจสอบ Doctor"]
+    SS --> RRD[("ไฟล์ RRD ของ Cacti หนึ่ง Data Source ต่อหนึ่ง GPU")]
+    SS -->|poller_output| T["Thold และ Maint"]
+    RRD --> G["กราฟและสิทธิ์ของ Cacti"]
 ```
 
 ## วิธีติดตามงาน

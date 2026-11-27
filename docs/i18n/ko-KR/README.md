@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-NVIDIA 도구에서 가져온 GPU별 사용률, 메모리, 온도, 전력, ECC 오류 및 스로틀링 원인을 Cacti로 수집하는 Cacti 1.2 플러그인입니다. AMD 지원 및 XID 오류 수집은 계획되어 있으나 아직 구현되지 않았습니다. 각 GPU는 해당 노드 장치의 데이터 쿼리 인덱스가 되므로, GPU 그래프는 Cacti의 권한 체계 아래에서 노드의 다른 그래프와 함께 표시되며 Thold와 Maint에서 알림을 보내고 알림을 억제할 수 있습니다.
+NVIDIA 및 AMD 도구에서 가져온 GPU별 사용률, 메모리, 온도, 전력, ECC 오류 및 스로틀링 원인을 Cacti로 수집하는 Cacti 1.2 플러그인입니다. 각 GPU(또는 MIG 인스턴스)는 해당 노드 장치의 데이터 쿼리 인덱스가 되므로, GPU 그래프는 Cacti의 권한 체계 아래에서 노드의 다른 그래프와 함께 표시되며 Thold와 Maint에서 알림을 보내고 알림을 억제할 수 있습니다.
 
-> **상태: 개발 중이며 정식 릴리스되지 않았습니다.** 마일스톤 4를 통해 1단계(SNMP extend를 통한 NVIDIA 수집)의 코드 구현이 완료되었습니다. 수집, 식별, 그래프, 스로틀 및 ECC 신호, Thold 및 Maint 알림, 상태 페이지, 운영자 문서가 포함됩니다. 실제 GPU 하드웨어에서는 한 번도 실행되지 않았으며, 가상 출력을 인쇄하는 가짜 `nvidia-smi`와 실제 `snmpd`를 연동해서만 실행해 보았습니다. 릴리스 전에 남은 과제는 실제 하드웨어 파일럿 테스트([docs/pilot-plan.md](../../pilot-plan.md), #54), 외부 보안 검토([docs/security-review.md](../../security-review.md)), 실제 도구에서 캡처한 픽스처(#14), 프로덕션 규모 하드웨어에서의 확장성 측정([docs/performance.md](../../performance.md))입니다. XID 오류는 결정 사항 #8을 기다리고 있습니다. 프로덕션 환경에서 실행하지 마세요.
+> **상태: 1단계부터 3단계까지 코드 구현 완료, 아직 정식 릴리스되지 않음.** 1단계(SNMP extend를 통한 NVIDIA `nvidia-smi`, 식별자 추적, 그래프, 스로틀 및 ECC 신호, Thold 및 Maint 알림, 상태 페이지), 2단계(읽기 전용 NVIDIA DCGM Exporter HTTP(S) 파서/클라이언트 및 AMD `amd-smi` 파서), 3단계(MIG 인스턴스 식별자 추적, Schema v4 열, 폴러 범위 기반 원격 수집기 실행, `replicate_out` 및 `remote_agent` 훅), CasC 운영자 CLI(`cli/gpu.php`), 생태계 통합 훅(`abilities_register`, `doctor_register_checks`, `casc_register_providers`)이 구현되어 단위 테스트, 보안 테스트 및 일회용 Cacti 통합 테스트로 검증되었습니다. 지금까지의 실제 실행은 물리적 GPU 하드웨어가 아닌 합성 `snmpd`와 픽스처 페이로드를 사용했습니다. 릴리스 태그 지정 전에 아직 남은 과제는 실제 하드웨어 파일럿 테스트([docs/pilot-plan.md](../../pilot-plan.md), #54), 외부 보안 검토([docs/security-review.md](../../security-review.md)), 실제 도구에서 캡처한 픽스처(#14), 프로덕션 규모 하드웨어에서의 확장성 측정([docs/performance.md](../../performance.md))입니다. XID 오류 수집은 결정 사항 #8에 따라 미결 상태로 남아 있습니다.
 
 ## 액세스 역할
 
@@ -32,25 +32,25 @@ GPU 노드는 일반적으로 CPU, 메모리, 인터페이스를 모니터링하
 
 ## 계획된 범위
 
-| 단계 | 범위 | 마일스톤 |
-|---|---|---|
-| 0, 조사 | 벤더 도구 출력, XID 및 스로틀 신호, GPU 식별자, 권한, 수집 경로 결정 | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | `nvidia-smi` 수집, UUID 기준 인벤토리, 그래프, 스로틀, ECC 및 XID 신호, Thold 및 Maint, 상태 페이지 | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, 백엔드 | DCGM 백엔드, `amd-smi` 백엔드 | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, mig 및 원격 | MIG 인스턴스, Cacti 원격 데이터 수집기 | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| 단계 | 범위 | 상태 | 마일스톤 |
+|---|---|---|---|
+| 0, 조사 | 벤더 도구 출력, XID 및 스로틀 신호, GPU 식별자, 권한, 수집 경로 결정 | 완료 | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | `nvidia-smi` 수집, UUID 기준 인벤토리, 그래프, 스로틀 및 ECC 신호, Thold 및 Maint, 상태 페이지 | 구현됨(픽스처 테스트 완료) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, 백엔드 | 읽기 전용 DCGM Exporter HTTP(S) 파서/클라이언트(`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), AMD `amd-smi` 파서(`lib/AmdSmiParser.php`) | 구현됨(단위 테스트 완료) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig, 원격 및 생태계 | MIG 인스턴스 식별자 추적, 원격 데이터 수집기(`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC CLI(`cli/gpu.php`), MCP/Doctor/CasC 훅 | 구현됨(단위 및 CI 통합 테스트 완료) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 범위 제외 항목: GPU나 노드의 상태를 변경하는 모든 명령(클럭, 전력 제한, 재설정, MIG 레이아웃), 플러그인 자체 알림 엔진, 사용자 지정 데몬 또는 네트워크 프로토콜, 스케줄러 또는 작업 회계(job accounting). 조사 백로그는 계획 문서를 참조하세요.
 
 ## 마일스톤 4에 추가된 내용
 
-- **알림 값으로서의 스로틀 원인.** 클럭 이벤트 마스크를 원인별 0 또는 1 표시기로 디코딩합니다. 알 수 없는 마스크는 0이 아니라 알 수 없음 표시기로 처리되며, 표시기가 없는 비트는 원시 마스크에 남아 GPU Health에 표시됩니다.
-- **알림 값으로서의 ECC** ([docs/metrics.md](../../metrics.md)). 이전 샘플 이후 새로 발생한 수정 가능(corrected) 오류와 수정 불가능(uncorrected) 오류를 플러그인이 연속된 두 총계에서 계산하여 게이지(gauge)로 저장합니다. 첫 번째 샘플, 누락된 읽기 또는 드라이버 재로드 시에는 알 수 없음으로 처리되므로, 재설정 시에도 값이 0이나 음수 카운트로 표시되지 않습니다. 회수 예정(retired) 단일 비트 및 이중 비트 페이지 수와 ECC 모드도 함께 읽습니다. GPU당 두 개의 추가 ECC 그래프를 통해 Cacti가 이를 저장하며, Power Percent를 포함해 총 11개의 그래프가 제공됩니다. XID는 수집되지 않습니다. 고정된 `nvidia-smi` 명령에 적합한 소스가 없습니다(#8).
-- **Thold 및 Maint** ([docs/alerting.md](../../alerting.md)). 온도, 전력 제한 대비 전력, 스로틀 표시기, 새로운 수정 불가능 ECC 오류, 대기 중인 페이지 회수, 샘플 경과 시간에 대한 기본 Thold 템플릿을 제공합니다. Thold 1.8.2는 알 수 없는 카운터 값에서 실패하므로 모든 값은 게이지입니다. 수정하지 않은 Thold 1.8.2 및 Maint 1.3을 사용한 엔드투엔드 테스트에서 ECC 재설정을 포함해 각 임계값이 알림을 발생시키고 복구하며 Maint가 이를 억제함을 확인했습니다.
-- **GPU Health** (GPU View). 노드별 항목: 최신성, 마지막 수집 종료 상태, Maint 상태, 백엔드, 도구 및 드라이버 버전, GPU 수. GPU별 항목: 존재 여부, 샘플 경과 시간, ECC 상태, 원시 마스크. 저장된 레코드만 읽습니다.
-- **권한.** 권한 테스트 스위트는 모든 페이지 파일과 작업, 다음 요청에서의 권한 회수, 아무 정보도 노출하지 않는 거부 응답을 다룹니다.
-- **장애 및 복원 검증.** 스크립트 기반 엔드투엔드 실행을 통해 에이전트, 자격 증명, 도구, 출력, 데이터베이스 연결, RRD 쓰기를 의도적으로 중단시키고, RRD 파일보다 오래된 덤프를 포함하여 데이터베이스를 덤프에서 복원하는 테스트를 수행합니다. 새 GPU는 다른 GPU의 RRD 파일을 절대 이어받지 않습니다([docs/backup.md](../../backup.md)).
-- **확장성** ([docs/performance.md](../../performance.md)). 확장성 테스트는 지정된 GPU 수에서 수집, 스크립트 서버 입력, Cacti 개체 생성, 폴러 주기, 상태 페이지의 소요 시간을 측정하며, CI에서는 100개 GPU 기준으로 실행됩니다. 1,000개 및 8,000개 GPU 측정값은 아직 기록되지 않았으므로 지원되는 GPU 수는 명시하지 않았습니다.
-- **운영자 문서** ([docs/operations.md](../../operations.md)): 설치, 업그레이드, 제거, 최소 권한, 사용할 수 없는 값, 문제 해결을 다룹니다. 변경 사항은 [CHANGELOG.md](../../../CHANGELOG.md)에 나열되어 있습니다.
+- **NVIDIA DCGM Exporter 읽기 전용 수집기** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`). Prometheus 텍스트 노출 메트릭(`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`, MIG 레이블 `GPU_I_ID` 및 `GPU_I_PROFILE`)을 파싱합니다. HTTP(S) 클라이언트는 명시적 엔드포인트 호스트/CIDR 허용 목록을 적용하고, 기본적으로 TLS 피어 인증서를 검증하며, 시간 초과와 응답 크기를 제한하고, 리디렉션을 비활성화하며, HTTP(S)가 아닌 스킴을 거부합니다.
+- **AMD `amd-smi` 읽기 전용 파서** (`lib/AmdSmiParser.php`). `amd-smi` JSON/SNMP-extend 출력(사용률, VRAM, 전력, 접합부/엣지 온도, ECC, 파티션 메타데이터, `Reading::$vendorExtensions`를 통한 별도 스로틀 누산기)을 `Vendor::Amd` 아래의 공통 메트릭 모델로 정규화합니다.
+- **MIG 인스턴스 추적 및 Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`). 상위 GPU와 함께 MIG 인스턴스 UUID(`MIG-<uuid>` 및 `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid`, `partition_info`를 추적하며, 업데이트 시 불변 식별자 키(`vendor`, `uuid`, `parent_uuid`)를 보호하고 데이터베이스 쿼리 전에 검증합니다.
+- **원격 데이터 수집기** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`). `INFO`에 `remote_collect:1, remote_poller:1`을 선언하고, `php plugins/gpu/poller_gpu.php --poller=N`을 통한 폴러 범위 기반 실행을 지원하며, 기본 폴러가 아닌 경우 Cacti 개체 프로비저닝을 건너뛰고, `replicate_out`을 통해 폴러 범위 테이블을 복제하며, `remote_agent`를 통해 읽기 전용 `gpu_health` 및 `gpu_inventory` 작업에 응답합니다.
+- **운영자 및 CasC CLI** (`cli/gpu.php`, `lib/CascProvider.php`). 외부 Composer 종속성 없이 PHP 8.2 이상에서 실행됩니다(PHP 8.0에서 구문 분석 가능): `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`, `health [--format=text|json]`. 계획(plan)은 결정론적 SHA-256 확인 해시를 계산하며, 적용(apply)은 해시가 일치하지 않으면 실패로 중단되고, XML 파싱은 `DOCTYPE` 및 `ENTITY` 선언을 거부합니다.
+- **생태계 통합 훅** (`lib/EcosystemIntegration.php`, `setup.php`). `abilities_register`(`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; 읽기 전용이며 `GPU View` 영역 및 Cacti 장치 권한으로 제한됨), `doctor_register_checks`(`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`), `casc_register_providers`를 등록합니다.
+- **알림 값으로서의 스로틀 원인 및 ECC** ([docs/metrics.md](../../metrics.md)). 클럭 이벤트 마스크를 0/1 표시기로 디코딩하고, Thold 1.8.2 및 Maint 1.3이 음수 카운터나 재설정 스파이크 없이 알림을 보내고 억제할 수 있도록 구간별 새 수정 가능/수정 불가능 ECC 오류를 게이지로 계산합니다([docs/alerting.md](../../alerting.md)).
+- **GPU Health, 권한, 장애/복구 및 확장성.** GPU Health(GPU View)는 노드에 접속하지 않고 저장된 최신성, 마지막 수집 결과, Maint 상태, 백엔드, 버전 및 원시 스로틀 마스크를 표시합니다. 스크립트 기반 엔드투엔드 테스트로 권한, 에이전트/DB/RRD 장애 복구([docs/backup.md](../../backup.md)), CI 환경에서의 100개 GPU 규모 실행([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md))을 검증합니다.
 
 ## 마일스톤 3에 추가된 내용
 
@@ -62,7 +62,7 @@ GPU 노드는 일반적으로 CPU, 메모리, 인터페이스를 모니터링하
 - **GPU Nodes의 장치 권한.** GPU Admin은 Cacti에서 자신이 볼 수 있는 장치의 노드와 GPU만 조회, 변경, 내보내기 및 이동할 수 있으며, GPU 이동에는 양쪽 노드 모두에 대한 권한이 필요합니다. 장치가 삭제된 노드는 비활성화하거나 삭제할 수 있습니다.
 - **공통 메트릭 모델** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)). 메모리는 바이트 단위이고, 클럭 이벤트 마스크는 `thr_*` 표시기로 디코딩되며, `age`는 GPU 자체 샘플 시간의 경과 시간(알 수 없는 경우 `U`)입니다.
 
-설치하는(웹 서버) 사용자는 플러그인이 데이터 쿼리 XML을 배치하는 `<cacti>/resource/script_server/` 경로에 쓰기 권한이 있어야 합니다. 그렇지 않으면 설치 및 업그레이드가 메시지와 함께 중지되고 다음 시도 시 다시 시도합니다. 제거 시에는 *Remove the plugin's Cacti objects on uninstall*이 선택된 경우에만 템플릿과 XML을 삭제하며, RRD 파일, 장치, 그래프 또는 데이터 소스는 절대 삭제하지 않습니다([docs/operations.md](../../operations.md#uninstall)). 원격 데이터 수집기의 노드는 3단계 전까지 수집되지 않습니다.
+설치하는(웹 서버) 사용자는 플러그인이 데이터 쿼리 XML을 배치하는 `<cacti>/resource/script_server/` 경로에 쓰기 권한이 있어야 합니다. 그렇지 않으면 설치 및 업그레이드가 메시지와 함께 중지되고 다음 시도 시 다시 시도합니다. 제거 시에는 *Remove the plugin's Cacti objects on uninstall*이 선택된 경우에만 템플릿과 XML을 삭제하며, RRD 파일, 장치, 그래프 또는 데이터 소스는 절대 삭제하지 않습니다([docs/operations.md](../../operations.md#uninstall)). 원격 데이터 수집기의 노드는 할당된 `poller_id` 범위에 따라 실행됩니다.
 
 ## 마일스톤 2에서 제공하는 기능
 
@@ -105,9 +105,10 @@ GPU 노드는 일반적으로 CPU, 메모리, 인터페이스를 모니터링하
 
 ```mermaid
 flowchart LR
-    NODE[GPU 노드: nvidia-smi를 실행하는 snmpd extend] -->|SNMP 읽기, v3 권장| C[수집기]
-    C --> CACHE[(GPU UUID 기준 플러그인 캐시)]
+    NODE["GPU 노드: snmpd extend / DCGM Exporter / amd-smi"] -->|읽기 전용 SNMPv3 또는 허용 목록 HTTPS| C[폴러 범위 수집기]
+    C --> CACHE[(벤더 + GPU/MIG UUID 기준 플러그인 캐시)]
     CACHE --> SS[스크립트 서버 데이터 쿼리 입력]
+    CACHE --> ECO[CasC CLI, MCP abilities, Doctor 검사]
     SS --> RRD[(Cacti RRD 파일, GPU당 데이터 소스 1개)]
     SS -->|poller_output| T[Thold 및 Maint]
     RRD --> G[Cacti 그래프 및 권한]

@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-Àfikún Cacti 1.2 kan tí ó ń mú ìlò fún GPU kọ̀ọ̀kan, ìrántí, ìwọ̀n ooru, agbára, àṣìṣe ECC, àti àwọn ìdí ìdínkù iyára láti inú àwọn irinṣẹ́ NVIDIA wọ inú Cacti. Àtìlẹ́yìn AMD àti ìkójọpọ̀ àṣìṣe XID wà nínú ètò, a kò tíì ṣe wọ́n. GPU kọ̀ọ̀kan di àtọ́ka ìbéèrè dátà lórí ẹ̀rọ nóòdù rẹ̀, nítorí náà àwọn àwòrán ìṣirò GPU jókòó lẹ́gbẹ̀ẹ́ àwọn àwòrán ìṣirò mìíràn ti nóòdù náà lábẹ́ àwọn ìyọ̀ǹda Cacti, bẹ́ẹ̀ sì ni Thold àti Maint lè fi ìkìlọ̀ ránṣẹ́ lórí wọn kí wọ́n sì dá wọn dúró.
+Àfikún Cacti 1.2 kan tí ó ń mú ìlò fún GPU kọ̀ọ̀kan, ìrántí, ìwọ̀n ooru, agbára, àṣìṣe ECC, àti àwọn ìdí ìdínkù iyára láti inú àwọn irinṣẹ́ NVIDIA àti AMD wọ inú Cacti. GPU kọ̀ọ̀kan (tàbí ẹ̀ka MIG) di àtọ́ka ìbéèrè dátà lórí ẹ̀rọ nóòdù rẹ̀, nítorí náà àwọn àwòrán ìṣirò GPU jókòó lẹ́gbẹ̀ẹ́ àwọn àwòrán ìṣirò mìíràn ti nóòdù náà lábẹ́ àwọn ìyọ̀ǹda Cacti, bẹ́ẹ̀ sì ni Thold àti Maint lè fi ìkìlọ̀ ránṣẹ́ lórí wọn kí wọ́n sì dá wọn dúró.
 
-> **Ipò: ó ń lọ lọ́wọ́ nínú ìdàgbàsókè, a kò tíì tú u jáde.** Àṣeyọrí 4 mú kí ìpele 1 (NVIDIA nípasẹ̀ SNMP extend) parí ní ti kóòdù: ìkójọpọ̀, ìdánimọ̀, àwọn àwòrán ìṣirò, àmì ìdínkù iyára àti ECC, ìfitọ́nilétí Thold àti Maint, ojú-ewé ìlera, àti ìwé ìtọ́nisọ́nà olùṣiṣẹ́. A ti ṣiṣẹ́ rẹ̀ pẹ̀lú `snmpd` gidi nìkan tí ó ní `nvidia-smi` àdáyébá tí ó ń tẹ àbájáde àtọwọ́dá jáde, a kò tíì dán an wò lórí ohun èlò GPU gidi rí. Ohun tí ó ṣì kù kí a tó tú u jáde: àyẹ̀wò àkọ́ṣe lórí ohun èlò gidi ([docs/pilot-plan.md](../../pilot-plan.md), #54), àyẹ̀wò ààbò láti òde ([docs/security-review.md](../../security-review.md)), àwọn àpẹẹrẹ dátà tí a mú láti inú àwọn irinṣẹ́ gidi (#14), àti ìwọ̀n agbára ìṣiṣẹ́ tí a díwọ̀n lórí ohun èlò tó tóbi bíi ti ìṣelọ́pọ̀ ([docs/performance.md](../../performance.md)). Àwọn àṣìṣe XID ń dúró de ìpinnu #8. Má ṣe lò ó nínú ètò ìṣiṣẹ́ gidi.
+> **Ipò: ìpele 1 dé 3 ni a ti ṣe àgbékalẹ̀ rẹ̀ nínú kóòdù, a kò tíì tú u jáde.** Ìpele 1 (`nvidia-smi` NVIDIA nípasẹ̀ SNMP extend, ìtọpinpin ìdánimọ̀, àwọn àwòrán ìṣirò, àmì ìdínkù iyára àti ECC, ìfitọ́nilétí Thold àti Maint, ojú-ewé ìlera), Ìpele 2 (olùtúpalẹ̀/oníbàárà kíkà-nìkan ti NVIDIA DCGM Exporter HTTP(S) àti olùtúpalẹ̀ AMD `amd-smi`), Ìpele 3 (ìtọpinpin ìdánimọ̀ ẹ̀ka MIG, àwọn òpó Schema v4, ṣíṣe olùkó-dátà òkèèrè ní ààlà poller, àwọn ìkọ́ `replicate_out` àti `remote_agent`), CLI olùṣiṣẹ́ CasC (`cli/gpu.php`), àti àwọn ìkọ́ ètò ìṣiṣẹ́ (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) ni a ti ṣe àgbékalẹ̀ wọn tí a sì ti fi àyẹ̀wò ẹyọkan, ààbò, àti ìdàpọ̀ Cacti àlòkù bo wọ́n. Àwọn ìṣiṣẹ́ gidi títí di ìsinsìnyí lo `snmpd` àtọwọ́dá àti àwọn àpẹẹrẹ dátà dípò ohun èlò GPU gidi. Ohun tí ó ṣì wà ní ṣíṣí kí a tó fi àmì ìtújáde sí i: àyẹ̀wò àkọ́ṣe lórí ohun èlò gidi ([docs/pilot-plan.md](../../pilot-plan.md), #54), àyẹ̀wò ààbò láti òde ([docs/security-review.md](../../security-review.md)), àwọn àpẹẹrẹ dátà tí a mú láti inú àwọn irinṣẹ́ gidi (#14), àti ìwọ̀n agbára ìṣiṣẹ́ tí a díwọ̀n lórí ohun èlò tó tóbi bíi ti ìṣelọ́pọ̀ ([docs/performance.md](../../performance.md)). Ìkójọpọ̀ àṣìṣe XID ṣì wà ní ṣíṣí lábẹ́ ìpinnu #8.
 
 ## Àwọn ipa ìwọlé
 
@@ -40,25 +40,25 @@ tuntun. Àwọn àkíyèsí tuntun tàbí tí ó yípadà máa ń sọ wọ́n d
 
 ## Ààlà iṣẹ́ tí a gbèrò
 
-| Ìpele | Ààlà iṣẹ́ | Àwọn Àṣeyọrí |
-|---|---|---|
-| 0, ìwádìí | Àbájáde irinṣẹ́ olùtajà, àwọn àmì XID àti ìdínkù iyára, ìdánimọ̀ GPU, àwọn àǹfààní ìwọlé, ìpinnu ọ̀nà ìkójọpọ̀ | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | Ìkójọpọ̀ `nvidia-smi`, àkójọpọ̀ nípasẹ̀ UUID, àwọn àwòrán ìṣirò, ìdínkù iyára, àwọn àmì ECC àti XID, Thold àti Maint, ojú-ewé ìlera | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, àwọn ẹ̀rọ ìpìlẹ̀ | Ẹ̀rọ ìpìlẹ̀ DCGM, ẹ̀rọ ìpìlẹ̀ `amd-smi` | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, mig àti òkèèrè | Àwọn ẹ̀ka MIG, àwọn olùkó-dátà òkèèrè Cacti | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| Ìpele | Ààlà iṣẹ́ | Ipò | Àwọn Àṣeyọrí |
+|---|---|---|---|
+| 0, ìwádìí | Àbájáde irinṣẹ́ olùtajà, àwọn àmì XID àti ìdínkù iyára, ìdánimọ̀ GPU, àwọn àǹfààní ìwọlé, ìpinnu ọ̀nà ìkójọpọ̀ | Ti parí | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | Ìkójọpọ̀ `nvidia-smi`, àkójọpọ̀ nípasẹ̀ UUID, àwọn àwòrán ìṣirò, àwọn àmì ìdínkù iyára àti ECC, Thold àti Maint, ojú-ewé ìlera | Ti ṣàgbékalẹ̀ (a dán wò pẹ̀lú àpẹẹrẹ) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, àwọn ẹ̀rọ ìpìlẹ̀ | Olùtúpalẹ̀/oníbàárà kíkà-nìkan DCGM Exporter HTTP(S) (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), olùtúpalẹ̀ AMD `amd-smi` (`lib/AmdSmiParser.php`) | Ti ṣàgbékalẹ̀ (a dán wò ní ẹyọkan) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig, òkèèrè, àti ètò ìṣiṣẹ́ | Ìtọpinpin ìdánimọ̀ ẹ̀ka MIG, àwọn olùkó-dátà òkèèrè (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC CLI (`cli/gpu.php`), àwọn ìkọ́ MCP/Doctor/CasC | Ti ṣàgbékalẹ̀ (a dán wò ní ẹyọkan àti ìdàpọ̀ CI) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 Ó wà lóde ààlà iṣẹ́: èyíkéyìí àṣẹ tí ó ń yí GPU tàbí nóòdù padà (àwọn aago ìṣiṣẹ́, ààlà agbára, àtúntò, ìṣètò MIG), ẹ̀rọ ìfitọ́nilétí tí àfikún ní, daemon àdáni tàbí ìlànà nẹ́tíwọ́ọ̀kì, àti ìṣirò olùṣètò tàbí iṣẹ́. Wo ètò náà fún àkójọ iṣẹ́ ìwádìí tí ó ṣẹ́kù.
 
 ## Ohun tí àṣeyọrí 4 fi kún un
 
-- **Àwọn ìdí ìdínkù iyára gẹ́gẹ́ bí ìwọ̀n ìkìlọ̀.** A túmọ̀ ibòjú ìṣẹ̀lẹ̀ aago sí àtọ́ka 0 tàbí 1 kan fún ìdí kọ̀ọ̀kan; ibòjú tí a kò mọ̀ ń fúnni ní àwọn àtọ́ka àìmọ̀, kì í ṣe òdo rí, àti pé àwọn bit tí kò ní àtọ́ka ń dúró nínú ibòjú aise, èyí tí Ìlera GPU ń fihàn.
-- **ECC gẹ́gẹ́ bí ìwọ̀n ìkìlọ̀** ([docs/metrics.md](../../metrics.md)). Àfikún náà ń ṣírò àwọn àṣìṣe tuntun tí a túnṣe àti èyí tí a kò túnṣe láti ìgbà àpẹẹrẹ ìṣaájú láti inú àpapọ̀ méjì tí ó tẹ̀lé ara wọn, ó sì ń tọ́jú wọn gẹ́gẹ́ bí òṣùwọ̀n: àìmọ̀ fún àpẹẹrẹ àkọ́kọ́, kíkà tí ó pàdánù, tàbí àtúngbé-ẹ̀rọ awakọ̀, kí àtúntò má baà kà á sí òdo tàbí sí iye òdì rí. A tún ń ka iye ojú-ewé bit-kan àti bit-méjì tí ó fẹ̀yìntì àti ipò ECC. Àwọn àwòrán ìṣirò ECC méjì mìíràn fún GPU kọ̀ọ̀kan jẹ́ kí Cacti tọ́jú wọn; pẹ̀lú Ìdá-ọgọ́rùn-ún Agbára, àwọn àwòrán ìṣirò mọ́kànlá ni ó wà lápapọ̀. A kò kó XID jọ: kò sí orísun tí ó bá àwọn àṣẹ `nvidia-smi` tí a ti yàn mu (#8).
-- **Thold àti Maint** ([docs/alerting.md](../../alerting.md)). Àwọn àdàkọ Thold tí a fi ránṣẹ́ fún ìwọ̀n ooru, agbára lòdì sí ààlà rẹ̀, àwọn àtọ́ka ìdínkù iyára, àwọn àṣìṣe ECC tuntun tí a kò túnṣe, ìfẹ̀yìntì ojú-ewé tí ó ń dúró, àti ọjọ́-orí àpẹẹrẹ. Gbogbo ìwọ̀n jẹ́ òṣùwọ̀n, nítorí pé Thold 1.8.2 máa ń kùnà lórí òǹkà àìmọ̀. Àyẹ̀wò láti ìbẹ̀rẹ̀ dé òpin pẹ̀lú Thold 1.8.2 àti Maint 1.3 tí a kò yípadà fihàn pé ààlà kọ̀ọ̀kan ń ta kìlọ̀ tí ó sì ń padà sípò, kọjá àtúntò ECC kan, àti pé Maint ń dá a dúró.
-- **Ìlera GPU** (Ìwòye GPU). Fún nóòdù kọ̀ọ̀kan: ìgbà tuntun, bí ìkójọpọ̀ tí ó kẹ́yìn ṣe parí, ipò Maint, ẹ̀rọ ìpìlẹ̀, àwọn ẹ̀ya irinṣẹ́ àti awakọ̀, àti iye GPU; fún GPU kọ̀ọ̀kan: wíwà níbẹ̀, ọjọ́-orí àpẹẹrẹ, ipò ECC, àti ibòjú aise. Ó ń ka àwọn àkọsílẹ̀ tí a tọ́jú nìkan.
-- **Àwọn ìyọ̀ǹda.** Àkójọ àyẹ̀wò ìyọ̀ǹda bo gbogbo fáìlì ojú-ewé àti ìgbésẹ̀, ìfagilé lórí ìbéèrè tí ó tẹ̀lé e, àti àwọn ìkọ̀sílẹ̀ tí kò ṣí ohunkóhun payá.
-- **Ìjẹ́rìísí ìkùnà àti ìmúpadàbọ̀sípò.** Àwọn ìṣiṣẹ́ àkọsílẹ̀ láti ìbẹ̀rẹ̀ dé òpin ń ba aṣojú, àwọn ìwé-ẹ̀rí ìwọlé, irinṣẹ́, àbájáde rẹ̀, ìsopọ̀ ibi ìpamọ́ dátà, àti kíkọ RRD jẹ́, wọ́n sì ń mú ibi ìpamọ́ dátà padà bọ̀ sípò láti inú àkọ́jọ àṣẹ́kù, títí kan èyí tí ó ti pẹ́ ju àwọn fáìlì RRD lọ; GPU tuntun kì í jogún fáìlì RRD ti òmíràn rí ([docs/backup.md](../../backup.md)).
-- **Ìwọ̀n agbára ìṣiṣẹ́** ([docs/performance.md](../../performance.md)). Àyẹ̀wò ìwọ̀n agbára ìṣiṣẹ́ ń díwọ̀n àkókò ìkójọpọ̀, ìtẹ̀wọlé script server, ṣíṣẹ̀dá ohun Cacti, ìyípo poller kan, àti ojú-ewé ìlera ní iye GPU kan pàtó; CI ń ṣiṣẹ́ rẹ̀ pẹ̀lú GPU 100. A kò tíì kọ àwọn ìwọ̀n GPU 1,000 àti 8,000 sílẹ̀ síbẹ̀, nítorí náà a kò sọ iye GPU tí a ṣe àtìlẹ́yìn fún.
-- **Ìwé ìtọ́nisọ́nà olùṣiṣẹ́** ([docs/operations.md](../../operations.md)): ìfisílẹ̀, ìgbéga, ìyọkúrò, àǹfààní tó kéré jùlọ, àwọn ìwọ̀n tí kò sí, àti ṣíṣàtúnṣe ìṣòro. A ṣe àkójọ àwọn àyípadà nínú [CHANGELOG.md](../../../CHANGELOG.md).
+- **Olùkó-dátà kíkà-nìkan ti NVIDIA DCGM Exporter** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`). Ó ń túpalẹ̀ àwọn ìwọ̀n ọ̀rọ̀ Prometheus (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`, àti àwọn àmì MIG `GPU_I_ID` àti `GPU_I_PROFILE`). Oníbàárà HTTP(S) ń fi àtòjọ olùpèsè/CIDR tí a gbà láyè ní pàtó múlẹ̀, ó ń ṣàyẹ̀wò àwọn ìwé-ẹ̀rí TLS ní àìyípadà, ó ń fi ààlà sí àkókò ìdádúró àti ìwọ̀n ìdáhùn, ó ń pa àtúndarí, ó sì ń kọ̀ àwọn ìlànà tí kì í ṣe HTTP(S).
+- **Olùtúpalẹ̀ kíkà-nìkan ti AMD `amd-smi`** (`lib/AmdSmiParser.php`). Ó ń ṣètò àbájáde JSON/SNMP-extend ti `amd-smi` (ìlò, VRAM, agbára, ìwọ̀n ooru junction/edge, ECC, dátà ìpín, àti àwọn olùkójọ ìdínkù iyára ọ̀tọ̀ọ̀tọ̀ nípasẹ̀ `Reading::$vendorExtensions`) sínú àpẹẹrẹ ìwọ̀n wọ́pọ̀ lábẹ́ `Vendor::Amd`.
+- **Ìtọpinpin ẹ̀ka MIG àti Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`). Ó ń tọpinpin àwọn UUID ẹ̀ka MIG (`MIG-<uuid>` àti `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid`, àti `partition_info` lẹ́gbẹ̀ẹ́ àwọn GPU òbí nígbà tí ó ń dáàbò bo àwọn kọ́kọ́rọ́ ìdánimọ̀ tí kì í yípadà (`vendor`, `uuid`, `parent_uuid`) lórí àwọn àtúnṣe tí ó sì ń fìdí wọn múlẹ̀ ṣáájú àwọn ìbéèrè ibi ìpamọ́ dátà.
+- **Àwọn olùkó-dátà òkèèrè** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`). Ó ń kéde `remote_collect:1, remote_poller:1` nínú `INFO`, ó ń ṣe àtìlẹ́yìn fún ṣíṣe ní ààlà poller nípasẹ̀ `php plugins/gpu/poller_gpu.php --poller=N`, ó ń fò ṣíṣẹ̀dá ohun Cacti lórí àwọn poller tí kì í ṣe olórí, ó ń ṣe àdàkọ àwọn tábìlì ààlà poller nípasẹ̀ `replicate_out`, ó sì ń dáhùn àwọn ìgbésẹ̀ kíkà-nìkan `gpu_health` àti `gpu_inventory` nípasẹ̀ `remote_agent`.
+- **CLI Olùṣiṣẹ́ àti CasC** (`cli/gpu.php`, `lib/CascProvider.php`). Ó ń ṣiṣẹ́ lórí PHP 8.2+ (ó ń túpalẹ̀ lórí PHP 8.0) láìsí ìgbẹ́kẹ̀lé Composer láti òde: `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`, àti `health [--format=text|json]`. Àwọn ètò ń ṣírò hash ìjẹ́rìísí SHA-256 tí ó dúró déédé, `apply` ń kùnà ní ààbò tí hash kò bá bára mu, bẹ́ẹ̀ sì ni ìtúpalẹ̀ XML ń kọ̀ àwọn ìkéde `DOCTYPE` àti `ENTITY`.
+- **Àwọn ìkọ́ ìdàpọ̀ ètò ìṣiṣẹ́** (`lib/EcosystemIntegration.php`, `setup.php`). Ó ń forúkọsílẹ̀ `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; kíkà-nìkan, tí agbègbè ìwọlé `GPU View` àti àwọn ìyọ̀ǹda ẹ̀rọ Cacti ṣe ààbò rẹ̀), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`), àti `casc_register_providers`.
+- **Àwọn ìdí ìdínkù iyára àti ECC gẹ́gẹ́ bí ìwọ̀n ìkìlọ̀** ([docs/metrics.md](../../metrics.md)). Ó ń túmọ̀ àwọn ibòjú ìṣẹ̀lẹ̀ aago sí àwọn àtọ́ka 0/1 ó sì ń ṣírò àwọn àṣìṣe ECC tuntun tí a túnṣe/tí a kò túnṣe fún àkókò kọ̀ọ̀kan gẹ́gẹ́ bí òṣùwọ̀n kí Thold 1.8.2 àti Maint 1.3 lè ta kìlọ̀ kí wọ́n sì dá a dúró láìsí òǹkà òdì tàbí ìfòkè àtúntò ([docs/alerting.md](../../alerting.md)).
+- **Ìlera GPU, àwọn ìyọ̀ǹda, ìkùnà/ìmúpadàbọ̀sípò, àti ìwọ̀n agbára ìṣiṣẹ́.** Ìlera GPU (Ìwòye GPU) ń fi ìgbà tuntun tí a tọ́jú, àbájáde ìkójọpọ̀ tí ó kẹ́yìn, ipò Maint, ẹ̀rọ ìpìlẹ̀, àwọn ẹ̀ya, àti àwọn ibòjú ìdínkù iyára aise hàn láìkàn sí àwọn nóòdù. Àwọn àyẹ̀wò àkọsílẹ̀ láti ìbẹ̀rẹ̀ dé òpin ń fìdí àwọn ìyọ̀ǹda, ìmúpadàbọ̀sípò ìkùnà aṣojú/DB/RRD ([docs/backup.md](../../backup.md)), àti ìṣiṣẹ́ ìwọ̀n agbára GPU 100 nínú CI ([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md)) múlẹ̀.
 
 ## Ohun tí àṣeyọrí 3 fi kún un
 
@@ -70,7 +70,7 @@ tuntun. Àwọn àkíyèsí tuntun tàbí tí ó yípadà máa ń sọ wọ́n d
 - **Àwọn ìyọ̀ǹda ẹ̀rọ lórí Àwọn Nóòdù GPU.** Alámòójútó GPU ń rí, ń yípadà, ń kó jáde, ó sì ń gbé àwọn nóòdù àti GPU tí ó wà lórí àwọn ẹ̀rọ tí wọ́n lè rí nínú Cacti nìkan; gbígbé GPU kan nílò àwọn nóòdù méjèèjì. A lè mú nóòdù tí a ti pa ẹ̀rọ rẹ̀ rẹ́ kúrò ní ṣíṣẹ́ tàbí kí a pa á rẹ́.
 - **Àpẹẹrẹ ìwọ̀n wọ́pọ̀** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)). Ìrántí wà ní bytes, a túmọ̀ ibòjú ìṣẹ̀lẹ̀ aago sí àwọn àtọ́ka `thr_*`, bẹ́ẹ̀ sì ni `age` jẹ́ ọjọ́-orí àkókò àpẹẹrẹ ti GPU fúnra rẹ̀, tàbí `U` nígbà tí a kò bá mọ̀ ọ́n.
 
-Olùlò tí ó ń fi sórí ẹ̀rọ (olùpèsè wẹ́ẹ̀bù) gbọ́dọ̀ lè kọ sí `<cacti>/resource/script_server/`, níbi tí àfikún náà ti ń gbé XML ìbéèrè dátà rẹ̀ sí; bí bẹ́ẹ̀ kọ́, ìfisílẹ̀ àti ìgbéga yóò dúró pẹ̀lú ìfiránṣẹ́, yóò sì tún gbìyànjú ní ìgbìyànjú tí ó tẹ̀lé e. Ìyọkúrò ń yọ àwọn àdàkọ àti XML kúrò nígbà tí a bá fi àmì sí *Yọ àwọn ohun Cacti ti àfikún kúrò nígbà ìyọkúrò* nìkan, kì í sì í pa àwọn fáìlì RRD, àwọn ẹ̀rọ, àwọn àwòrán ìṣirò, tàbí àwọn orísun dátà rẹ́ rí ([docs/operations.md](../../operations.md#uninstall)). A kì í kó àwọn nóòdù lórí àwọn olùkó-dátà òkèèrè jọ títí di ìpele 3.
+Olùlò tí ó ń fi sórí ẹ̀rọ (olùpèsè wẹ́ẹ̀bù) gbọ́dọ̀ lè kọ sí `<cacti>/resource/script_server/`, níbi tí àfikún náà ti ń gbé XML ìbéèrè dátà rẹ̀ sí; bí bẹ́ẹ̀ kọ́, ìfisílẹ̀ àti ìgbéga yóò dúró pẹ̀lú ìfiránṣẹ́, yóò sì tún gbìyànjú ní ìgbìyànjú tí ó tẹ̀lé e. Ìyọkúrò ń yọ àwọn àdàkọ àti XML kúrò nígbà tí a bá fi àmì sí *Yọ àwọn ohun Cacti ti àfikún kúrò nígbà ìyọkúrò* nìkan, kì í sì í pa àwọn fáìlì RRD, àwọn ẹ̀rọ, àwọn àwòrán ìṣirò, tàbí àwọn orísun dátà rẹ́ rí ([docs/operations.md](../../operations.md#uninstall)). Àwọn nóòdù lórí àwọn olùkó-dátà òkèèrè ń ṣiṣẹ́ ní ààlà `poller_id` tí a yàn fún wọn.
 
 ## Ohun tí àṣeyọrí 2 mú wá
 
@@ -113,12 +113,13 @@ Olùlò tí ó ń fi sórí ẹ̀rọ (olùpèsè wẹ́ẹ̀bù) gbọ́dọ̀ 
 
 ```mermaid
 flowchart LR
-    NODE[Nóòdù GPU: snmpd extend tó ń ṣiṣẹ́ nvidia-smi] -->|Ìkàwé SNMP, a gbani nímọ̀ràn v3| C[Olùkó-dátà]
-    C --> CACHE[(Ibi ìpamọ́ ìgbà díẹ̀ àfikún tí a fi GPU UUID ṣe kọ́kọ́rọ́)]
-    CACHE --> SS[Ìtẹ̀wọlé ìbéèrè dátà script server]
-    SS --> RRD[(Àwọn fáìlì RRD Cacti, orísun dátà kan fún GPU kọ̀ọ̀kan)]
-    SS -->|poller_output| T[Thold àti Maint]
-    RRD --> G[Àwọn àwòrán ìṣirò àti àwọn ìyọ̀ǹda Cacti]
+    NODE["Nóòdù GPU: snmpd extend / DCGM Exporter / amd-smi"] -->|"SNMPv3 kíkà-nìkan tàbí HTTPS tí a gbà láyè"| C["Olùkó-dátà ní ààlà poller"]
+    C --> CACHE[("Ibi ìpamọ́ ìgbà díẹ̀ àfikún tí a fi olùtajà + UUID GPU/MIG ṣe kọ́kọ́rọ́")]
+    CACHE --> SS["Ìtẹ̀wọlé ìbéèrè dátà script server"]
+    CACHE --> ECO["CasC CLI, àwọn agbára MCP, àwọn àyẹ̀wò Doctor"]
+    SS --> RRD[("Àwọn fáìlì RRD Cacti, orísun dátà kan fún GPU kọ̀ọ̀kan")]
+    SS -->|poller_output| T["Thold àti Maint"]
+    RRD --> G["Àwọn àwòrán ìṣirò àti àwọn ìyọ̀ǹda Cacti"]
 ```
 
 ## Bí a ṣe ń tọpinpin iṣẹ́

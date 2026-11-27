@@ -6,9 +6,9 @@
 
 # plugin_gpu
 
-একটি Cacti 1.2 প্লাগইন যা NVIDIA টুল থেকে প্রতি-জিপিইউ (per-GPU) ব্যবহার, মেমোরি, তাপমাত্রা, বিদ্যুৎ খরচ (power), ECC ত্রুটি এবং থ্রটলিংয়ের কারণসমূহ Cacti-তে নিয়ে আসে। AMD সমর্থন এবং XID ত্রুটি সংগ্রহের কাজ পরিকল্পিত রয়েছে, এখনো বাস্তবায়ন করা হয়নি। প্রতিটি জিপিইউ তার নোডের ডিভাইসে একটি ডেটা কোয়েরির সূচক (index) হিসেবে যুক্ত হয়, ফলে জিপিইউ গ্রাফগুলো Cacti-র অনুমতির আওতায় নোডের অন্যান্য গ্রাফের পাশেই অবস্থান করে এবং Thold ও Maint সেগুলোর ওপর সতর্কতা জারি ও দমন করতে পারে।
+একটি Cacti 1.2 প্লাগইন যা NVIDIA এবং AMD টুল থেকে প্রতি-জিপিইউ (per-GPU) ব্যবহার, মেমোরি, তাপমাত্রা, বিদ্যুৎ খরচ (power), ECC ত্রুটি এবং থ্রটলিংয়ের কারণসমূহ Cacti-তে নিয়ে আসে। প্রতিটি জিপিইউ (অথবা MIG ইনস্ট্যান্স) তার নোডের ডিভাইসে একটি ডেটা কোয়েরির সূচক (index) হিসেবে যুক্ত হয়, ফলে জিপিইউ গ্রাফগুলো Cacti-র অনুমতির আওতায় নোডের অন্যান্য গ্রাফের পাশেই অবস্থান করে এবং Thold ও Maint সেগুলোর ওপর সতর্কতা জারি ও দমন করতে পারে।
 
-> **অবস্থা: উন্নয়নশীল পর্যায়ে রয়েছে, এখনো প্রকাশিত হয়নি।** মাইলস্টোন ৪-এর মাধ্যমে প্রথম ধাপ (SNMP extend-এর মাধ্যমে NVIDIA) কোডের দিক থেকে সম্পূর্ণ হয়েছে: সংগ্রহ, পরিচিতি, গ্রাফ, থ্রটল ও ECC সংকেত, Thold ও Maint সতর্কতা, হেলথ পেজ এবং অপারেটর ডকুমেন্টেশন। এটি কেবল কৃত্রিম আউটপুট প্রিন্ট করা একটি নকল `nvidia-smi` এবং একটি বাস্তব `snmpd`-এর বিপরীতে চালানো হয়েছে, প্রকৃত জিপিইউ হার্ডওয়্যারে কখনো চালানো হয়নি। প্রকাশের আগে এখনো যা বাকি রয়েছে: বাস্তব হার্ডওয়্যারে পাইলট পরীক্ষা ([docs/pilot-plan.md](../../pilot-plan.md), #54), একটি বাহ্যিক নিরাপত্তা পর্যালোচনা ([docs/security-review.md](../../security-review.md)), বাস্তব টুল থেকে সংগৃহীত ফিক্সচার (#14), এবং প্রোডাকশন-আকারের হার্ডওয়্যারে পরিমাপকৃত স্কেল ([docs/performance.md](../../performance.md))। XID ত্রুটিগুলো সিদ্ধান্ত #8-এর অপেক্ষায় রয়েছে। এটি প্রোডাকশনে চালাবেন না।
+> **অবস্থা: ধাপ ১ থেকে ৩ কোডে বাস্তবায়িত হয়েছে, এখনো প্রকাশিত হয়নি।** ধাপ ১ (SNMP extend-এর মাধ্যমে NVIDIA `nvidia-smi`, পরিচিতি ট্র্যাকিং, গ্রাফ, থ্রটল ও ECC সংকেত, Thold ও Maint সতর্কতা, হেলথ পেজ), ধাপ ২ (শুধু-পঠনযোগ্য NVIDIA DCGM Exporter HTTP(S) পার্সার/ক্লায়েন্ট এবং AMD `amd-smi` পার্সার), ধাপ ৩ (MIG ইনস্ট্যান্স পরিচিতি ট্র্যাকিং, Schema v4 কলাম, পোলার-স্কোপড রিমোট কালেক্টর এক্সিকিউশন, `replicate_out` এবং `remote_agent` হুক), CasC অপারেটর CLI (`cli/gpu.php`), এবং ইকোসিস্টেম হুক (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) বাস্তবায়িত হয়েছে এবং ইউনিট, নিরাপত্তা ও ডিসপোজেবল-Cacti ইন্টিগ্রেশন পরীক্ষার মাধ্যমে যাচাইকৃত। এ পর্যন্ত লাইভ রানগুলোতে প্রকৃত জিপিইউ হার্ডওয়্যারের পরিবর্তে কৃত্রিম `snmpd` এবং ফিক্সচার পেলোড ব্যবহৃত হয়েছে। রিলিজ ট্যাগ করার আগে এখনো যা বাকি রয়েছে: বাস্তব হার্ডওয়্যারে পাইলট পরীক্ষা ([docs/pilot-plan.md](../../pilot-plan.md), #54), একটি বাহ্যিক নিরাপত্তা পর্যালোচনা ([docs/security-review.md](../../security-review.md)), বাস্তব টুল থেকে সংগৃহীত ফিক্সচার (#14), এবং প্রোডাকশন-আকারের হার্ডওয়্যারে পরিমাপকৃত স্কেল ([docs/performance.md](../../performance.md))। সিদ্ধান্ত #8-এর অধীনে XID ত্রুটি সংগ্রহ এখনো উন্মুক্ত রয়েছে।
 
 ## প্রবেশাধিকারের ভূমিকা
 
@@ -30,25 +30,25 @@ CPU, মেমোরি এবং ইন্টারফেস পর্যবে
 
 ## পরিকল্পিত পরিধি
 
-| ধাপ | পরিধি | মাইলস্টোন |
-|---|---|---|
-| ০, গবেষণা | ভেন্ডর টুল আউটপুট, XID ও থ্রটল সংকেত, জিপিইউ পরিচিতি, অধিকার (privileges), সংগ্রহের পথ সংক্রান্ত সিদ্ধান্ত | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| ১, এনভিডিয়া (nvidia) | `nvidia-smi` সংগ্রহ, UUID অনুযায়ী ইনভেন্টরি, গ্রাফ, থ্রটল, ECC ও XID সংকেত, Thold ও Maint, হেলথ পেজ | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| ২, ব্যাকএন্ড | DCGM ব্যাকএন্ড, `amd-smi` ব্যাকএন্ড | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| ৩, মিগ ও রিমোট | MIG ইনস্ট্যান্স, Cacti রিমোট ডেটা কালেক্টর | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| ধাপ | পরিধি | অবস্থা | মাইলস্টোন |
+|---|---|---|---|
+| ০, গবেষণা | ভেন্ডর টুল আউটপুট, XID ও থ্রটল সংকেত, জিপিইউ পরিচিতি, অধিকার (privileges), সংগ্রহের পথ সংক্রান্ত সিদ্ধান্ত | সম্পূর্ণ | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| ১, এনভিডিয়া (nvidia) | `nvidia-smi` সংগ্রহ, UUID অনুযায়ী ইনভেন্টরি, গ্রাফ, থ্রটল ও ECC সংকেত, Thold ও Maint, হেলথ পেজ | বাস্তবায়িত (ফিক্সচার-পরীক্ষিত) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| ২, ব্যাকএন্ড | শুধু-পঠনযোগ্য DCGM Exporter HTTP(S) পার্সার/ক্লায়েন্ট (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), AMD `amd-smi` পার্সার (`lib/AmdSmiParser.php`) | বাস্তবায়িত (ইউনিট-পরীক্ষিত) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| ৩, মিগ, রিমোট ও ইকোসিস্টেম | MIG ইনস্ট্যান্স পরিচিতি ট্র্যাকিং, রিমোট ডেটা কালেক্টর (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC CLI (`cli/gpu.php`), MCP/Doctor/CasC হুক | বাস্তবায়িত (ইউনিট ও CI ইন্টিগ্রেশন পরীক্ষিত) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 পরিকল্পনার বাইরে থাকা বিষয়সমূহ: জিপিইউ বা নোডে পরিবর্তন আনে এমন কোনো কমান্ড (ক্লক, পাওয়ার লিমিট, রিসেট, MIG লেআউট), প্লাগইনের নিজস্ব সতর্কতা ইঞ্জিন, কাস্টম ডেমন বা নেটওয়ার্ক প্রোটোকল, এবং শিডিউলার বা জব অ্যাকাউন্টিং। গবেষণার ব্যাকলগের জন্য পরিকল্পনাটি দেখুন।
 
 ## মাইলস্টোন ৪-এ যা যুক্ত হয়েছে
 
-- **সতর্কতা মান হিসেবে থ্রটল কারণসমূহ।** ক্লক ইভেন্ট মাস্ককে প্রতিটি কারণের জন্য ০ অথবা ১ নির্দেশকে ডিকোড করা হয়; অজানা মাস্ক কখনো শূন্য দেয় না বরং অজানা নির্দেশক দেয়, এবং নির্দেশকবিহীন বিটগুলো মূল (raw) মাস্কে থেকে যায়, যা GPU Health প্রদর্শন করে।
-- **সতর্কতা মান হিসেবে ECC** ([docs/metrics.md](../../metrics.md))। পূর্ববর্তী নমুনার পর থেকে নতুন সংশোধিত (corrected) এবং অসংশোধিত (uncorrected) ত্রুটিগুলো প্লাগইন পরপর দুটি মোট সংখ্যা থেকে হিসাব করে এবং গেজ (gauge) হিসেবে সংরক্ষণ করে: প্রথম নমুনা, মিস হওয়া পাঠ বা ড্রাইভার রিলোডের ক্ষেত্রে মান অজানা থাকে, যাতে রিসেট কখনো শূন্য বা ঋণাত্মক সংখ্যা হিসেবে পঠিত না হয়। অবসরপ্রাপ্ত (retired) সিঙ্গেল-বিট ও ডাবল-বিট পেজের সংখ্যা এবং ECC মোডও পঠিত হয়। প্রতি জিপিইউ-র জন্য দুটি অতিরিক্ত ECC গ্রাফ Cacti-তে এগুলো সংরক্ষণের সুযোগ দেয়; Power Percent-সহ মোট এগারোটি গ্রাফ রয়েছে। XID সংগ্রহ করা হয় না: নির্ধারিত `nvidia-smi` কমান্ডগুলোর সাথে কোনো উৎস মানানসই নয় (#8)।
-- **Thold এবং Maint** ([docs/alerting.md](../../alerting.md))। তাপমাত্রা, সীমার বিপরীতে পাওয়ার, থ্রটল নির্দেশক, নতুন অসংশোধিত ECC ত্রুটি, অপেক্ষমাণ পেজ রিটায়ারমেন্ট এবং নমুনার বয়সের (sample age) জন্য প্রস্তুতকৃত Thold টেমপ্লেট। প্রতিটি মান একটি গেজ, কারণ Thold 1.8.2 অজানা কাউন্টারে ব্যর্থ হয়। অপরিবর্তিত Thold 1.8.2 এবং Maint 1.3-এর সাথে একটি এন্ড-টু-এন্ড পরীক্ষায় দেখা গেছে যে একটি ECC রিসেটের পরেও প্রতিটি থ্রেশহোল্ড সক্রিয় হয় ও পুনরুদ্ধার হয় এবং Maint তা দমন করে।
-- **GPU Health** (GPU View)। প্রতি নোডের জন্য: সতেজতা, সর্বশেষ সংগ্রহ কীভাবে শেষ হয়েছে, Maint-এর অবস্থা, ব্যাকএন্ড, টুল ও ড্রাইভার সংস্করণ এবং জিপিইউ সংখ্যা; প্রতি জিপিইউ-র জন্য: উপস্থিতি, নমুনার বয়স, ECC অবস্থা এবং মূল মাস্ক। এটি কেবল সংরক্ষিত রেকর্ডগুলো পড়ে।
-- **অনুমতিসমূহ।** পারমিশন স্যুট প্রতিটি পেজ ফাইল ও অ্যাকশন, পরবর্তী অনুরোধে অধিকার বাতিল হওয়া এবং কোনো তথ্য প্রকাশ না করেই প্রত্যাখ্যান করার বিষয়টি যাচাই করে।
-- **ব্যর্থতা এবং পুনরুদ্ধার যোগ্যতা যাচাই।** স্ক্রিপ্টেড এন্ড-টু-এন্ড রান এজেন্ট, ক্রেডেনশিয়াল, টুল, এর আউটপুট, ডেটাবেস সংযোগ এবং RRD রাইট ভেঙে দিয়ে পরীক্ষা করে এবং RRD ফাইলের চেয়ে পুরোনো ডাম্পসহ একটি ডাম্প থেকে ডেটাবেস পুনরুদ্ধার করে; একটি নতুন জিপিইউ কখনোই অন্যটির RRD ফাইল উত্তরাধিকারসূত্রে পায় না ([docs/backup.md](../../backup.md))।
-- **স্কেল** ([docs/performance.md](../../performance.md))। একটি স্কেল পরীক্ষা নির্দিষ্ট জিপিইউ সংখ্যায় সংগ্রহ, স্ক্রিপ্ট সার্ভার ইনপুট, Cacti অবজেক্ট তৈরি, একটি পোলার চক্র এবং হেলথ পেজের সময় পরিমাপ করে; CI এটি ১০০টি জিপিইউ-তে চালায়। ১,০০০ এবং ৮,০০০ জিপিইউ-র পরিমাপ এখনো নথিভুক্ত করা হয়নি, তাই সমর্থিত জিপিইউ সংখ্যা উল্লেখ করা হয়নি।
-- **অপারেটর ডকুমেন্টেশন** ([docs/operations.md](../../operations.md)): ইনস্টল, আপগ্রেড, আনইনস্টল, ন্যূনতম অধিকার (least privilege), অনুপলব্ধ মান এবং সমস্যা সমাধান। পরিবর্তনগুলো [CHANGELOG.md](../../../CHANGELOG.md)-এ তালিকাভুক্ত রয়েছে।
+- **NVIDIA DCGM Exporter শুধু-পঠনযোগ্য কালেক্টর** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`)। Prometheus টেক্সট এক্সপোজিশন মেট্রিক্স (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`, এবং MIG লেবেল `GPU_I_ID` ও `GPU_I_PROFILE`) পার্স করে। HTTP(S) ক্লায়েন্ট একটি সুস্পষ্ট এন্ডপয়েন্ট হোস্ট/CIDR অনুমোদন তালিকা (allowlist) প্রয়োগ করে, ডিফল্টভাবে TLS পিয়ার সার্টিফিকেট যাচাই করে, টাইমআউট ও রেসপন্সের আকার সীমাবদ্ধ করে, রিডাইরেক্ট নিষ্ক্রিয় করে এবং HTTP(S) ছাড়া অন্য স্কিম প্রত্যাখ্যান করে।
+- **AMD `amd-smi` শুধু-পঠনযোগ্য পার্সার** (`lib/AmdSmiParser.php`)। `amd-smi` JSON/SNMP-extend আউটপুট (ব্যবহার, VRAM, পাওয়ার, জাংশন/এজ তাপমাত্রা, ECC, পার্টিশন মেটাডেটা, এবং `Reading::$vendorExtensions`-এর মাধ্যমে পৃথক থ্রটল অ্যাকিউমুলেটর) `Vendor::Amd`-এর অধীনে সাধারণ মেট্রিক মডেলে স্বাভাবিকীকরণ (normalize) করে।
+- **MIG ইনস্ট্যান্স ট্র্যাকিং এবং Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`)। আপডেটের সময় অপরিবর্তনীয় পরিচিতি কীগুলো (`vendor`, `uuid`, `parent_uuid`) সুরক্ষিত রেখে এবং ডেটাবেস কোয়েরির আগে যাচাই করে প্যারেন্ট জিপিইউ-র পাশাপাশি MIG ইনস্ট্যান্স UUID (`MIG-<uuid>` এবং `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid` এবং `partition_info` ট্র্যাক করে।
+- **রিমোট ডেটা কালেক্টর** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`)। `INFO`-তে `remote_collect:1, remote_poller:1` ঘোষণা করে, `php plugins/gpu/poller_gpu.php --poller=N`-এর মাধ্যমে পোলার-স্কোপড এক্সিকিউশন সমর্থন করে, মূল নয় এমন পোলারে Cacti অবজেক্ট প্রভিশনিং এড়িয়ে যায়, `replicate_out`-এর মাধ্যমে পোলার-স্কোপড টেবিলগুলো প্রতিলিপি (replicate) করে এবং `remote_agent`-এর মাধ্যমে শুধু-পঠনযোগ্য `gpu_health` ও `gpu_inventory` অ্যাকশনের উত্তর দেয়।
+- **অপারেটর এবং CasC CLI** (`cli/gpu.php`, `lib/CascProvider.php`)। কোনো বাহ্যিক Composer নির্ভরতা ছাড়াই PHP 8.2+-এ চলে (PHP 8.0-তে পার্স হয়): `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`, এবং `health [--format=text|json]`। প্ল্যানগুলো একটি নির্ধারণযোগ্য (deterministic) SHA-256 নিশ্চিতকরণ হ্যাশ গণনা করে, হ্যাশ না মিললে `apply` নিরাপদে ব্যর্থ (fail closed) হয় এবং XML পার্সিং `DOCTYPE` ও `ENTITY` ঘোষণা প্রত্যাখ্যান করে।
+- **ইকোসিস্টেম ইন্টিগ্রেশন হুক** (`lib/EcosystemIntegration.php`, `setup.php`)। `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; শুধু-পঠনযোগ্য, `GPU View` রিয়েলম ও Cacti ডিভাইস অনুমতির ওপর সীমাবদ্ধ), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`) এবং `casc_register_providers` নিবন্ধন করে।
+- **সতর্কতা মান হিসেবে থ্রটল কারণ ও ECC** ([docs/metrics.md](../../metrics.md))। ক্লক ইভেন্ট মাস্ককে ০/১ নির্দেশকে ডিকোড করে এবং প্রতি বিরতিতে নতুন সংশোধিত/অসংশোধিত ECC ত্রুটি গেজ হিসেবে গণনা করে যাতে Thold 1.8.2 ও Maint 1.3 ঋণাত্মক কাউন্টার বা রিসেট স্পাইক ছাড়াই সতর্কতা জারি ও দমন করতে পারে ([docs/alerting.md](../../alerting.md))।
+- **GPU Health, অনুমতি, ব্যর্থতা/পুনরুদ্ধার এবং স্কেল।** GPU Health (GPU View) নোডের সাথে যোগাযোগ না করেই সংরক্ষিত সতেজতা, সর্বশেষ সংগ্রহের ফলাফল, Maint অবস্থা, ব্যাকএন্ড, সংস্করণ এবং মূল থ্রটল মাস্ক দেখায়। স্ক্রিপ্টেড এন্ড-টু-এন্ড পরীক্ষাগুলো অনুমতি, এজেন্ট/DB/RRD ব্যর্থতা পুনরুদ্ধার ([docs/backup.md](../../backup.md)) এবং CI-তে ১০০-জিপিইউ স্কেল রান যাচাই করে ([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md))।
 
 ## মাইলস্টোন ৩-এ যা যুক্ত হয়েছে
 
@@ -60,7 +60,7 @@ CPU, মেমোরি এবং ইন্টারফেস পর্যবে
 - **GPU Nodes-এ ডিভাইস অনুমতি।** একজন GPU Admin কেবল Cacti-তে দেখার অনুমতিপ্রাপ্ত ডিভাইসগুলোর নোড এবং জিপিইউ দেখতে, পরিবর্তন করতে, এক্সপোর্ট করতে এবং স্থানান্তর করতে পারেন; জিপিইউ স্থানান্তরের জন্য দুটি নোডেরই অনুমতি প্রয়োজন। যে নোডের ডিভাইস মুছে ফেলা হয়েছে সেটি নিষ্ক্রিয় বা মুছে ফেলা যায়।
 - **সাধারণ মেট্রিক মডেল** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md))। মেমোরি বাইটে হিসাব করা হয়, ক্লক ইভেন্ট মাস্ককে `thr_*` নির্দেশকে ডিকোড করা হয় এবং `age` হলো জিপিইউ-র নিজস্ব নমুনার সময়ের বয়স, অথবা অজানা হলে `U`।
 
-ইনস্টলকারী (ওয়েব সার্ভার) ব্যবহারকারীর অবশ্যই `<cacti>/resource/script_server/`-এ লেখার অনুমতি থাকতে হবে, যেখানে প্লাগইনটি তার ডেটা কোয়েরি XML রাখে; অন্যথায় একটি বার্তা দিয়ে ইনস্টল ও আপগ্রেড থেমে যায় এবং পরবর্তী প্রচেষ্টায় পুনরায় চেষ্টা করে। কেবল *Remove the plugin's Cacti objects on uninstall* টিক দেওয়া থাকলেই আনইনস্টল টেমপ্লেট ও XML মুছে ফেলে, এবং এটি কখনোই RRD ফাইল, ডিভাইস, গ্রাফ বা ডেটা সোর্স মুছে ফেলে না ([docs/operations.md](../../operations.md#uninstall))। রিমোট ডেটা কালেক্টরে থাকা নোডগুলো তৃতীয় ধাপের আগ পর্যন্ত সংগ্রহ করা হয় না।
+ইনস্টলকারী (ওয়েব সার্ভার) ব্যবহারকারীর অবশ্যই `<cacti>/resource/script_server/`-এ লেখার অনুমতি থাকতে হবে, যেখানে প্লাগইনটি তার ডেটা কোয়েরি XML রাখে; অন্যথায় একটি বার্তা দিয়ে ইনস্টল ও আপগ্রেড থেমে যায় এবং পরবর্তী প্রচেষ্টায় পুনরায় চেষ্টা করে। কেবল *Remove the plugin's Cacti objects on uninstall* টিক দেওয়া থাকলেই আনইনস্টল টেমপ্লেট ও XML মুছে ফেলে, এবং এটি কখনোই RRD ফাইল, ডিভাইস, গ্রাফ বা ডেটা সোর্স মুছে ফেলে না ([docs/operations.md](../../operations.md#uninstall))। রিমোট ডেটা কালেক্টরে থাকা নোডগুলো তাদের নির্ধারিত `poller_id`-এর আওতায় পরিচালিত হয়।
 
 ## মাইলস্টোন ২-এ যা রয়েছে
 
@@ -103,9 +103,10 @@ CPU, মেমোরি এবং ইন্টারফেস পর্যবে
 
 ```mermaid
 flowchart LR
-    NODE[GPU node: snmpd extend running nvidia-smi] -->|SNMP reads, v3 recommended| C[Collector]
-    C --> CACHE[(Plugin cache keyed by GPU UUID)]
+    NODE[GPU node: snmpd extend / DCGM Exporter / amd-smi] -->|Read-only SNMPv3 or allowlisted HTTPS| C[Poller-scoped collector]
+    C --> CACHE[(Plugin cache keyed by vendor + GPU/MIG UUID)]
     CACHE --> SS[Script server data query input]
+    CACHE --> ECO[CasC CLI, MCP abilities, Doctor checks]
     SS --> RRD[(Cacti RRD files, one data source per GPU)]
     SS -->|poller_output| T[Thold and Maint]
     RRD --> G[Cacti graphs and permissions]
