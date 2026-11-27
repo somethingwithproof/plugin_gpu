@@ -129,6 +129,17 @@ switch ($action) {
 		db_execute_prepared("INSERT INTO plugin_gpu_observation (gpu_id, node_id, observed_at, ingested_at, reported_at, backend, tool_version, temp_gpu) SELECT id, node_id, 1, 1, 1, 'nvidia-smi', '580.95.05', 40 FROM plugin_gpu_gpu LIMIT 1");
 
 		break;
+	case 'drop_gpu_columns_4':
+		// As a version 3 schema (prior main) had it: plugin_gpu_gpu without the
+		// five MIG and partition columns migration 4 adds.
+		include_once($config['base_path'] . '/plugins/gpu/setup.php');
+		gpu_boot();
+
+		foreach (array('mig_mode', 'mig_instance_id', 'mig_profile', 'parent_uuid', 'partition_info') as $column) {
+			db_execute('ALTER TABLE plugin_gpu_gpu DROP COLUMN `' . $column . '`');
+		}
+
+		break;
 	case 'seed':
 		// A node and a GPU record, so table drops and keeps are visible.
 		db_execute("INSERT INTO plugin_gpu_node (host_id, admin_state) VALUES (9001, 'enabled')");
@@ -303,6 +314,7 @@ print json_encode(array(
 	'tracked' => array_column(db_fetch_assoc("SELECT `table` FROM plugin_db_changes WHERE plugin = 'gpu' AND method = 'create' ORDER BY `table`"), 'table'),
 	'tables'  => $tables,
 	'observation_columns' => array_column(db_fetch_assoc("SELECT COLUMN_NAME AS c FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plugin_gpu_observation' ORDER BY ORDINAL_POSITION"), 'c'),
+	'gpu_columns' => array_column(db_fetch_assoc("SELECT COLUMN_NAME AS c FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plugin_gpu_gpu' ORDER BY ORDINAL_POSITION"), 'c'),
 	// The shipped Cacti objects, by kind, so a test sees duplicates.
 	'objects' => array(
 		'data_query'      => (int) db_fetch_cell("SELECT COUNT(*) FROM snmp_query WHERE name = 'GPU - Devices'"),

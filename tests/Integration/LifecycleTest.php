@@ -29,7 +29,7 @@ const GPU_TABLES = ['plugin_gpu_collection', 'plugin_gpu_gpu', 'plugin_gpu_node'
 // Row counts after the seed action: one node and one GPU record.
 const GPU_SEEDED = ['plugin_gpu_collection' => 0, 'plugin_gpu_gpu' => 1, 'plugin_gpu_node' => 1, 'plugin_gpu_observation' => 0, 'plugin_gpu_reindex' => 0, 'plugin_gpu_retired' => 0];
 
-const GPU_HOOKS = ['abilities_register', 'api_device_new', 'auth_alternate_realms', 'casc_register_providers', 'config_arrays', 'config_settings', 'device_remove', 'doctor_register_checks', 'draw_navigation_text', 'poller_bottom', 'remote_agent', 'replicate_out'];
+const GPU_HOOKS = ['abilities_register', 'api_device_new', 'api_register_resources', 'auth_alternate_realms', 'casc_register_providers', 'config_arrays', 'config_settings', 'device_remove', 'doctor_register_checks', 'doctor_register_debug_info', 'draw_navigation_text', 'poller_bottom', 'remote_agent', 'replicate_out'];
 
 beforeEach(function () {
 	lifecycle('reset');
@@ -198,6 +198,30 @@ it('upgrades a version 2 schema by adding the ECC columns and keeping the stored
 		->and($state['observation_columns'])->toContain('retired_dbe')
 		->and($state['observation_columns'])->toContain('ecc_mode')
 		->and($state['tables']['plugin_gpu_observation'])->toBe(1);
+});
+
+it('upgrades a version 3 schema by adding MIG and partition columns and keeping existing GPU records', function () {
+	lifecycle('install');
+	lifecycle('seed');
+	lifecycle('drop_gpu_columns_4');
+	lifecycle('set_schema', '3');
+
+	$state = lifecycle('upgrade');
+
+	expect($state['result'])->toBeTrue()
+		->and($state['schema'])->toEqual(GPU_SCHEMA)
+		->and($state['gpu_columns'])->toContain('mig_mode')
+		->and($state['gpu_columns'])->toContain('mig_instance_id')
+		->and($state['gpu_columns'])->toContain('mig_profile')
+		->and($state['gpu_columns'])->toContain('parent_uuid')
+		->and($state['gpu_columns'])->toContain('partition_info')
+		->and($state['tables']['plugin_gpu_gpu'])->toBe(1)
+		->and(array_keys($state['hooks']))->toBe(GPU_HOOKS);
+
+	$repeat = lifecycle('upgrade');
+	expect($repeat['result'])->toBeTrue()
+		->and($repeat['schema'])->toEqual(GPU_SCHEMA)
+		->and($repeat['tables']['plugin_gpu_gpu'])->toBe(1);
 });
 
 it('refuses a schema newer than the code and leaves the recorded version alone', function () {

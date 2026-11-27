@@ -19,6 +19,14 @@
 
 namespace Somethingwithproof\Gpu;
 
+/**
+ * Time source abstraction for deterministic clock testing.
+ */
 interface Clock {
+		/**
+	 * Now.
+	 *
+	 * @return int
+	 */
 	public function now(): int;
 }

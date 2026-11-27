@@ -32,6 +32,22 @@ final readonly class Metric {
 	public const GAUGE     = 'gauge';
 	public const INDICATOR = 'indicator';
 
+		/**
+	 * Construct a Metric instance.
+	 *
+	 * @param string $name
+	 * @param string $label
+	 * @param string $unit
+	 * @param string $kind
+	 * @param ?float $min
+	 * @param ?float $max
+	 * @param ?string $nvidiaField
+	 * @param float $nvidiaScale
+	 * @param ?int $maskBit
+	 * @param string $dcgm
+	 * @param float $dcgmScale
+	 * @param string $amd
+	 */
 	public function __construct(
 		// Data source item name: Cacti allows ^[a-zA-Z0-9_]{1,19}$.
 		public string $name,
@@ -55,6 +71,9 @@ final readonly class Metric {
 
 	/**
 	 * A source value converted to the model unit; null stays unknown.
+	 * @param ?float $value
+	 * @param float $factor
+	 * @return ?float
 	 */
 	public static function scale(?float $value, float $factor): ?float {
 		return $value === null ? null : $value * $factor;
@@ -62,15 +81,27 @@ final readonly class Metric {
 
 	/**
 	 * The range as RRDtool takes it: a number, or U for unbounded.
+	 * @return string
 	 */
 	public function rrdMin(): string {
 		return $this->min === null ? 'U' : self::number($this->min);
 	}
 
+		/**
+	 * Rrd max.
+	 *
+	 * @return string
+	 */
 	public function rrdMax(): string {
 		return $this->max === null ? 'U' : self::number($this->max);
 	}
 
+		/**
+	 * Number.
+	 *
+	 * @param float $value
+	 * @return string
+	 */
 	private static function number(float $value): string {
 		return rtrim(rtrim(sprintf('%.6F', $value), '0'), '.');
 	}

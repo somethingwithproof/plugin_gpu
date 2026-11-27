@@ -32,6 +32,8 @@ enum EccMode: string {
 	/**
 	 * nvidia-smi's ecc.mode.current: "Enabled", "Disabled", or a bracketed
 	 * placeholder such as "[N/A]" on a GPU without ECC.
+	 * @param string $raw
+	 * @return self
 	 */
 	public static function fromNvidia(string $raw): self {
 		return match (strtolower(trim($raw))) {
@@ -44,6 +46,7 @@ enum EccMode: string {
 
 	/**
 	 * Why the GPU's ECC values are unknown, or '' when ECC is on.
+	 * @return string
 	 */
 	public function reason(): string {
 		return match ($this) {

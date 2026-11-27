@@ -141,15 +141,29 @@ final class TemplateXml {
 
 	/**
 	 * A Cacti hash: type code, version code, and the md5 of a fixed name.
+	 * @param string $type
+	 * @param string $name
+	 * @return string
 	 */
 	public static function hash(string $type, string $name): string {
 		return 'hash_' . $type . self::VERSION . md5('plugin_gpu:' . $type . ':' . $name);
 	}
 
+		/**
+	 * Title.
+	 *
+	 * @param string $graph
+	 * @return string
+	 */
 	public static function title(string $graph): string {
 		return '|host_description| - GPU |query_gpuIndex| |query_gpuName| - ' . substr($graph, strlen('GPU - '));
 	}
 
+		/**
+	 * Data query.
+	 *
+	 * @return string
+	 */
 	public static function dataQuery(): string {
 		$fields = [];
 
@@ -183,6 +197,11 @@ final class TemplateXml {
 		], 1) . "\t<fields>\n" . implode('', $fields) . "\t</fields>\n</interface>\n";
 	}
 
+		/**
+	 * Templates.
+	 *
+	 * @return string
+	 */
 	public static function templates(): string {
 		$dataTemplate = self::hash('01', self::DATA_TEMPLATE);
 		$dataQuery    = self::hash('04', self::DATA_QUERY);
@@ -207,6 +226,9 @@ final class TemplateXml {
 
 	/**
 	 * @param array{label: string, base: int, upper: string, items: list<array{0: string, 1: int, 2: string, 3: string}>} $graph
+	 * @param string $name
+	 * @param string $dataTemplate
+	 * @return string
 	 */
 	private static function graphTemplate(string $name, array $graph, string $dataTemplate): string {
 		$settings = [
@@ -265,6 +287,12 @@ final class TemplateXml {
 			. "\t</" . self::hash('00', $name) . ">\n";
 	}
 
+		/**
+	 * Data template.
+	 *
+	 * @param string $hash
+	 * @return string
+	 */
 	private static function dataTemplate(string $hash): string {
 		$ds = self::lines([
 			't_name' => '', 'name' => '|host_description| - GPU |query_gpuIndex| |query_gpuName|', 'data_source_path' => '',
@@ -295,6 +323,13 @@ final class TemplateXml {
 			. "\t</$hash>\n";
 	}
 
+		/**
+	 * Query export.
+	 *
+	 * @param string $hash
+	 * @param string $dataTemplate
+	 * @return string
+	 */
 	private static function queryExport(string $hash, string $dataTemplate): string {
 		$graphs = '';
 
@@ -329,6 +364,9 @@ final class TemplateXml {
 
 	/**
 	 * @param array<string, string> $children
+	 * @param string $name
+	 * @param int $depth
+	 * @return string
 	 */
 	private static function element(string $name, array $children, int $depth): string {
 		$tabs = str_repeat("\t", $depth);
@@ -338,6 +376,8 @@ final class TemplateXml {
 
 	/**
 	 * @param array<string, string> $children
+	 * @param int $depth
+	 * @return string
 	 */
 	private static function lines(array $children, int $depth): string {
 		$out = '';
@@ -349,6 +389,14 @@ final class TemplateXml {
 		return $out;
 	}
 
+		/**
+	 * Line.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @param int $depth
+	 * @return string
+	 */
 	private static function line(string $name, string $value, int $depth): string {
 		return str_repeat("\t", $depth) . "<$name>" . htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8') . "</$name>\n";
 	}

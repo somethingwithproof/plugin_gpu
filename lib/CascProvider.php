@@ -30,6 +30,17 @@ final class CascProvider {
 	public const SCHEMA_VERSION = 1;
 	public const FORMATS        = ['yaml', 'xml'];
 
+		/**
+	 * Construct a CascProvider instance.
+	 *
+	 * @param SettingsRepository $settings
+	 * @param NodeRepository $nodes
+	 * @param GpuRepository $gpus
+	 * @param CollectionRepository $collections
+	 * @param ObservationRepository $observations
+	 * @param Clock $clock
+	 * @param int $pollerInterval
+	 */
 	public function __construct(
 		private readonly SettingsRepository $settings,
 		private readonly NodeRepository $nodes,
@@ -75,6 +86,9 @@ final class CascProvider {
 
 	/**
 	 * Export current configuration as deterministic YAML or XML.
+	 * @param string $format
+	 * @return string
+	 * @throws \InvalidArgumentException
 	 */
 	public function export(string $format = 'yaml'): string {
 		$format = strtolower(trim($format));
@@ -91,6 +105,9 @@ final class CascProvider {
 	 * Parse a YAML or XML configuration document safely (LIBXML_NONET, no DTD/XXE).
 	 *
 	 * @return array<string, mixed>
+	 * @param string $content
+	 * @param string $format
+	 * @throws \InvalidArgumentException
 	 */
 	public static function parse(string $content, string $format = 'yaml'): array {
 		$format = strtolower(trim($format));
@@ -268,6 +285,7 @@ final class CascProvider {
 	 * @param array<string, mixed> $desired
 	 *
 	 * @return array{applied: bool, plan_hash: string, settings_updated: int, nodes_created: int, nodes_updated: int, errors: list<string>}
+	 * @param string $confirmHash
 	 */
 	public function apply(array $desired, string $confirmHash): array {
 		$plan = $this->plan($desired);
@@ -444,6 +462,8 @@ final class CascProvider {
 
 	/**
 	 * Render health report as plain text or JSON.
+	 * @param string $format
+	 * @return string
 	 */
 	public function formatHealth(string $format = 'text'): string {
 		$report = $this->health();
@@ -478,6 +498,7 @@ final class CascProvider {
 
 	/**
 	 * @param array{schema_version: int, plugin: string, settings: array<string, int|bool>, nodes: list<array{host_id: int, description: string, admin_state: string}>} $data
+	 * @return string
 	 */
 	private static function encodeYaml(array $data): string {
 		$lines = [
@@ -505,6 +526,12 @@ final class CascProvider {
 		return implode("\n", $lines) . "\n";
 	}
 
+		/**
+	 * Yaml scalar.
+	 *
+	 * @param int|bool|string $value
+	 * @return string
+	 */
 	private static function yamlScalar(int|bool|string $value): string {
 		if (is_bool($value)) {
 			return $value ? 'true' : 'false';
@@ -525,6 +552,8 @@ final class CascProvider {
 	 * Minimal, strict YAML subset parser matching export() output without external dependencies.
 	 *
 	 * @return array<string, mixed>
+	 * @param string $content
+	 * @throws \InvalidArgumentException
 	 */
 	private static function decodeYaml(string $content): array {
 		$result  = [];
@@ -594,6 +623,12 @@ final class CascProvider {
 		return $result;
 	}
 
+		/**
+	 * Parse yaml value.
+	 *
+	 * @param string $raw
+	 * @return int|bool|string
+	 */
 	private static function parseYamlValue(string $raw): int|bool|string {
 		if ($raw === 'true') {
 			return true;
@@ -620,6 +655,7 @@ final class CascProvider {
 
 	/**
 	 * @param array{schema_version: int, plugin: string, settings: array<string, int|bool>, nodes: list<array{host_id: int, description: string, admin_state: string}>} $data
+	 * @return string
 	 */
 	private static function encodeXml(array $data): string {
 		$doc               = new \DOMDocument('1.0', 'UTF-8');
@@ -660,6 +696,8 @@ final class CascProvider {
 
 	/**
 	 * @return array<string, mixed>
+	 * @param string $content
+	 * @throws \InvalidArgumentException
 	 */
 	private static function decodeXml(string $content): array {
 		if (stripos($content, '<!DOCTYPE') !== false || stripos($content, '<!ENTITY') !== false) {

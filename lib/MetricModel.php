@@ -64,13 +64,22 @@ final class MetricModel {
 	];
 
 	/**
+	 * Return every metric in the unified GPU model (cached because Metric is immutable).
+	 *
 	 * @return list<Metric>
 	 */
 	public static function all(): array {
+		/** @var list<Metric>|null $cached */
+		static $cached = null;
+
+		if ($cached !== null) {
+			return $cached;
+		}
+
 		$gauge = Metric::GAUGE;
 		$flag  = Metric::INDICATOR;
 
-		return [
+		$cached = [
 			new Metric('util_gpu', 'GPU utilization', 'percent', $gauge, 0.0, 100.0, 'utilization.gpu', 1.0, null, '1613 (ratio 0.0 to 1.0, times 100), or 203 (percent, deprecated)', 100.0, '`metric --usage` `gfx_activity` (#18)'),
 			new Metric('util_mem', 'Memory controller utilization', 'percent', $gauge, 0.0, 100.0, 'utilization.memory', 1.0, null, '1614 (ratio 0.0 to 1.0, times 100), or 204 (unit not stated, #15)', 100.0, '`metric --usage` `umc_activity` (#18)'),
 			new Metric('mem_used', 'Frame buffer memory used', 'bytes', $gauge, 0.0, null, 'memory.used', self::MIB, null, '1627 (used, bytes), or 252 (MiB, deprecated)', 1.0, '`metric --mem-usage` `used_vram` (MiB, #18)'),
@@ -99,8 +108,17 @@ final class MetricModel {
 			new Metric('thr_hw_power_brake', 'Hardware power brake', '0 or 1', $flag, 0.0, 1.0, null, 1.0, self::BITS['thr_hw_power_brake'], 'field 112, bit 0x80', 1.0, 'not applicable'),
 			new Metric('age', 'Seconds since the tool took the sample', 'seconds', $gauge, 0.0, null, null, 1.0, null, 'computed from the sample timestamp', 1.0, 'computed from the sample timestamp'),
 		];
+
+		return $cached;
 	}
 
+	/**
+	 * Look up one metric definition by its model field name.
+	 *
+	 * @param string $name model field name
+	 *
+	 * @return ?Metric
+	 */
 	public static function find(string $name): ?Metric {
 		foreach (self::all() as $metric) {
 			if ($metric->name === $name) {
@@ -129,6 +147,7 @@ final class MetricModel {
 	 * the same position.
 	 *
 	 * @return list<string>
+	 * @param bool $legacy
 	 */
 	public static function nvidiaFields(bool $legacy = false): array {
 		$fields = ['timestamp', 'uuid', 'index', 'pci.bus_id', 'driver_version', self::ECC_MODE_FIELD];
@@ -153,6 +172,7 @@ final class MetricModel {
 
 	/**
 	 * The model as the Markdown table in docs/metrics.md.
+	 * @return string
 	 */
 	public static function table(): string {
 		$rows = ['| Field | Meaning | Unit | Kind | Range | nvidia-smi source | DCGM source | AMD source |', '|---|---|---|---|---|---|---|---|'];

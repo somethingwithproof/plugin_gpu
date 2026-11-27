@@ -537,6 +537,65 @@ jobs:
     - name: Lint licensing metadata
       run: pipx run --spec 'reuse[charset-normalizer]==6.3.0' reuse lint
 
+  coverage:
+    name: PHP 8.4 unit coverage (pcov >= 85%)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - name: Checkout plugin
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Install PHP 8.4 with pcov
+      uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+      with:
+        php-version: '8.4'
+        tools: composer:2.10.3
+        extensions: xml, json, mbstring, openssl
+        ini-values: "opcache.enable=0, opcache.jit_buffer_size=0, pcov.enabled=1, date.timezone=UTC"
+        coverage: pcov
+
+    - name: Checkout shared CI tooling
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: Cacti/cacti
+        ref: f3ff777992875740e4665fedfe2eff8335f5b894
+        persist-credentials: false
+        path: ci-tools
+        sparse-checkout: |
+          tests/tools/plugin-harness
+
+    - name: Install the locked Pest harness
+      run: |
+        set -euo pipefail
+        harness="$RUNNER_TEMP/cacti-plugin-harness"
+        mkdir -p "$harness"
+        cp ci-tools/tests/tools/plugin-harness/composer.json ci-tools/tests/tools/plugin-harness/composer.lock "$harness/"
+        composer --working-dir="$harness" validate --strict
+        composer --working-dir="$harness" install --no-interaction --no-progress --prefer-dist
+        echo "CACTI_PEST_BIN=$harness/vendor/bin/pest" >> "$GITHUB_ENV"
+
+    - name: Run unit suite with pcov and enforce 85.00% line coverage
+      run: |
+        set -euo pipefail
+        mkdir -p coverage
+        php -d opcache.enable=0 -d opcache.jit_buffer_size=0 -d pcov.enabled=1 -d "pcov.directory=$PWD/lib" \
+          "$CACTI_PEST_BIN" --configuration=phpunit.xml --coverage --coverage-clover=coverage/clover.xml
+        php <<'PHP'
+        <?php
+        $xml = new SimpleXMLElement((string) file_get_contents('coverage/clover.xml'));
+        $metrics = $xml->project->metrics;
+        $total = (int) $metrics['statements'];
+        $covered = (int) $metrics['coveredstatements'];
+        $pct = $total > 0 ? ($covered / $total) * 100.0 : 0.0;
+        printf("Measured pcov line coverage: %.2f%% (%d / %d statements)\n", $pct, $covered, $total);
+        if ($pct < 85.0) {
+            fwrite(STDERR, "ERROR: Line coverage is below the 85.00% gate.\n");
+            exit(1);
+        }
+        PHP
+
   ci-ok:
     name: ci-ok
     if: ${{ always() }}
@@ -546,6 +605,7 @@ jobs:
       - php-guard
       - workflow-lint
       - reuse
+      - coverage
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}

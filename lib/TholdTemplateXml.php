@@ -73,6 +73,8 @@ final class TholdTemplateXml {
 
 	/**
 	 * The Thold template hash: 32 hex digits, fixed per template name.
+	 * @param string $name
+	 * @return string
 	 */
 	public static function hash(string $name): string {
 		return md5('plugin_gpu:thold_template:' . $name);
@@ -80,6 +82,8 @@ final class TholdTemplateXml {
 
 	/**
 	 * The file Thold's import reads, in the shape Thold's own export writes.
+	 * @return string
+	 * @throws \LogicException
 	 */
 	public static function xml(): string {
 		$out      = "<templates>\n";

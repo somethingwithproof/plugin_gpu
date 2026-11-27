@@ -26,6 +26,11 @@ enum Vendor: string {
 	case Nvidia = 'nvidia';
 	case Amd    = 'amd';
 
+		/**
+	 * Label.
+	 *
+	 * @return string
+	 */
 	public function label(): string {
 		return match ($this) {
 			self::Nvidia => 'NVIDIA',

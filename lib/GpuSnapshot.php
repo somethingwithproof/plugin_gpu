@@ -25,17 +25,29 @@ namespace Somethingwithproof\Gpu;
  */
 final readonly class GpuSnapshot {
 	/**
-	 * @param list<GpuReport> $reports
+	 * Construct a validated GPU collection snapshot.
+	 *
+	 * @param string               $tool        collector tool name
+	 * @param string               $toolVersion collector or driver version
+	 * @param list<GpuReport>      $reports     validated GPU reports in this snapshot
+	 * @param array<string, true>  $keys        O(1) identity key index mirroring $reports
 	 */
 	private function __construct(
 		public string $tool,
 		public string $toolVersion,
 		public array $reports,
+		private readonly array $keys,
 	) {
 	}
 
 	/**
-	 * @param list<GpuReport> $reports
+	 * Create a validated snapshot, refusing duplicate UUIDs or physical PCI bus IDs.
+	 *
+	 * @param string          $tool        collector tool name
+	 * @param string          $toolVersion collector or driver version
+	 * @param list<GpuReport> $reports     GPU reports from one collection
+	 *
+	 * @return self
 	 *
 	 * @throws \InvalidArgumentException when two reports share a UUID or a bus
 	 *                                   ID, which no real node produces; the
@@ -62,20 +74,23 @@ final readonly class GpuSnapshot {
 			$keys[$report->key()] = true;
 		}
 
-		return new self(GpuReport::clean($tool, 32), GpuReport::clean($toolVersion, 64), $reports);
-	}
-
-	public function has(string $key): bool {
-		foreach ($this->reports as $report) {
-			if ($report->key() === $key) {
-				return true;
-			}
-		}
-
-		return false;
+		return new self(GpuReport::clean($tool, 32), GpuReport::clean($toolVersion, 64), $reports, $keys);
 	}
 
 	/**
+	 * Whether this snapshot reported the given vendor/UUID identity key in O(1) time.
+	 *
+	 * @param string $key vendor/UUID key from GpuRecord::key() or GpuReport::key()
+	 *
+	 * @return bool
+	 */
+	public function has(string $key): bool {
+		return isset($this->keys[$key]);
+	}
+
+	/**
+	 * List every reported GPU UUID in snapshot order.
+	 *
 	 * @return list<string>
 	 */
 	public function uuids(): array {

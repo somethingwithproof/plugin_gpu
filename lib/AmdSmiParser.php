@@ -29,9 +29,12 @@ namespace Somethingwithproof\Gpu;
  * - Utilization: gfx_activity -> util_gpu, umc_activity -> util_mem
  * - VRAM: used_vram / total_vram -> mem_used / mem_total (unit-aware -> bytes)
  * - Power: socket_power -> power, power_limit -> power_limit (watts)
- * - Temperature: edge (fallback hotspot/junction) -> temp_gpu (degrees C)
+ * - Temperature: edge (fallback hotspot/junction) -> temp_gpu (degrees C);
+ *   mem (HBM) and hotspot/junction preserved in Reading::$vendorExtensions
  * - Clocks: gfx / sclk -> clock_sm, mem / mclk -> clock_mem (MHz)
  * - ECC: total_correctable_count / total_uncorrectable_count -> ecc_corr / ecc_uncorr
+ * - Interconnect and cooling: XGMI TX/RX & errors, PCIe TX/RX & replay errors,
+ *   and fan speed % captured in Reading::$vendorExtensions
  * - Throttling: MI300+ violation status flags mapped to common throttle indicators;
  *   raw accumulators preserved separately in Reading::$vendorExtensions and NEVER
  *   presented as the NVIDIA clock event bitmask (REQ-AMDM-003).
@@ -41,7 +44,13 @@ final class AmdSmiParser {
 	public const BACKEND = 'amd-smi';
 
 	/**
-	 * Parse amd-smi list and metric JSON payloads (e.g. from SNMP extend entries).
+	 * Parse amd-smi list and metric JSON payloads (for example from SNMP extend entries).
+	 *
+	 * @param ExtendOutput $listOutput   SNMP extend output for amd-smi list --json
+	 * @param ExtendOutput $metricOutput SNMP extend output for amd-smi metric --json
+	 * @param int          $observedAt   Unix timestamp when the sample was collected
+	 *
+	 * @return Collection
 	 *
 	 * @throws CollectionError
 	 */
@@ -56,15 +65,22 @@ final class AmdSmiParser {
 	 * Parse amd-smi JSON output from separate list and metric invocations,
 	 * matching entries on stable GPU identity and rejecting mismatches (REQ-AMD-002).
 	 *
+	 * @param string $listJson    JSON payload from amd-smi list --json
+	 * @param string $metricJson  JSON payload from amd-smi metric --json
+	 * @param int    $observedAt  Unix timestamp when the sample was collected
+	 * @param string $toolVersion optional amd-smi version override
+	 *
+	 * @return Collection
+	 *
 	 * @throws CollectionError
 	 */
 	public function parseJson(string $listJson, string $metricJson, int $observedAt, string $toolVersion = ''): Collection {
 		$listData   = $this->decodeList($listJson, 'AMD list');
 		$metricData = $this->decodeList($metricJson, 'AMD metric');
 
-		/** @var array<string, array<string, mixed>> $identityByKey */
+		/** @var array<string, array<array-key, mixed>> $identityByKey */
 		$identityByKey = [];
-		/** @var array<int|string, array<string, mixed>> $identityByGpu */
+		/** @var array<int|string, array<array-key, mixed>> $identityByGpu */
 		$identityByGpu = [];
 
 		foreach ($listData as $index => $entry) {
@@ -95,10 +111,10 @@ final class AmdSmiParser {
 		foreach ($metricData as $index => $entry) {
 			$matched = $this->matchIdentity($entry, $identityByKey, $identityByGpu, $index + 1);
 
-			$uuid       = $this->stringField($matched, ['uuid', 'gpu_uuid', 'hip_uuid']);
-			$bdf        = $this->stringField($matched, ['bdf', 'gpu_bdf', 'pci_bus_id']);
-			$gpuIndex   = $this->intField($matched, ['gpu', 'gpu_index']);
-			$name       = $this->stringField($matched, ['market_name', 'product_name', 'asic_name', 'name']);
+			$uuid        = $this->stringField($matched, ['uuid', 'gpu_uuid', 'hip_uuid']);
+			$bdf         = $this->stringField($matched, ['bdf', 'gpu_bdf', 'pci_bus_id']);
+			$gpuIndex    = $this->intField($matched, ['gpu', 'gpu_index']);
+			$name        = $this->stringField($matched, ['market_name', 'product_name', 'asic_name', 'name']);
 			$entryDriver = $this->stringField($matched, ['driver_version', 'rocm_version']);
 
 			if ($name === '' && isset($entry['asic']) && is_array($entry['asic'])) {
@@ -126,9 +142,9 @@ final class AmdSmiParser {
 				throw new CollectionError(ExecutionState::InvalidOutput, sprintf('AMD metric entry %d: %s', $index + 1, $e->getMessage()), 1);
 			}
 
-			$values = $this->extractMetrics($entry);
-			$accumulators = $this->extractThrottleAccumulators($entry);
-			$eccMode = $this->extractEccMode($entry, $values);
+			$values     = $this->extractMetrics($entry);
+			$extensions = $this->extractVendorExtensions($entry);
+			$eccMode    = $this->extractEccMode($entry, $values);
 
 			if ($driver === '' && $report->driverVersion !== '') {
 				$driver = $report->driverVersion;
@@ -136,7 +152,7 @@ final class AmdSmiParser {
 
 			$reports[]  = $report;
 			// Mask stays null for AMD; throttle accumulators are never coerced into NVIDIA's bitmask (REQ-AMDM-003).
-			$readings[] = new Reading($report, $observedAt, $values, null, $eccMode, $accumulators);
+			$readings[] = new Reading($report, $observedAt, $values, null, $eccMode, $extensions);
 		}
 
 		try {
@@ -149,6 +165,13 @@ final class AmdSmiParser {
 	}
 
 	/**
+	 * Verify that an SNMP extend output succeeded and was not truncated.
+	 *
+	 * @param ExtendOutput $output SNMP extend command result
+	 * @param string       $what   human-readable label for error reporting
+	 *
+	 * @return void
+	 *
 	 * @throws CollectionError
 	 */
 	private function checkExtend(ExtendOutput $output, string $what): void {
@@ -162,7 +185,12 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * @return list<array<string, mixed>>
+	 * Decode an amd-smi JSON payload into a list of GPU associative arrays.
+	 *
+	 * @param string $json  raw JSON string
+	 * @param string $label human-readable source name for error messages
+	 *
+	 * @return list<array<array-key, mixed>>
 	 *
 	 * @throws CollectionError
 	 */
@@ -198,13 +226,7 @@ final class AmdSmiParser {
 				throw new CollectionError(ExecutionState::InvalidOutput, sprintf('%s item %d is not an object', $label, $i + 1), 1);
 			}
 
-			$normalized = [];
-
-			foreach ($item as $k => $v) {
-				$normalized[(string) $k] = $v;
-			}
-
-			$items[] = $normalized;
+			$items[] = $item;
 		}
 
 		return $items;
@@ -214,11 +236,12 @@ final class AmdSmiParser {
 	 * Match a metric entry to its identity record from amd-smi list and reject
 	 * any BDF or UUID mismatch (REQ-AMD-002).
 	 *
-	 * @param array<string, mixed>                    $entry
-	 * @param array<string, array<string, mixed>>     $identityByKey
-	 * @param array<int|string, array<string, mixed>> $identityByGpu
+	 * @param array<array-key, mixed>                    $entry         metric record
+	 * @param array<string, array<array-key, mixed>>     $identityByKey lowercased UUID => list entry
+	 * @param array<int|string, array<array-key, mixed>> $identityByGpu GPU index => list entry
+	 * @param int                                        $position      1-based entry index for errors
 	 *
-	 * @return array<string, mixed>
+	 * @return array<array-key, mixed>
 	 *
 	 * @throws CollectionError
 	 */
@@ -253,7 +276,9 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * @param array<string, mixed> $entry
+	 * Extract unified MetricModel fields from one amd-smi metric entry.
+	 *
+	 * @param array<array-key, mixed> $entry decoded amd-smi metric object
 	 *
 	 * @return array<string, ?float>
 	 */
@@ -272,9 +297,9 @@ final class AmdSmiParser {
 		$gfxClock = $this->extractClockMhz($clock, ['gfx_0', 'gfx', 'sclk']);
 		$memClock = $this->extractClockMhz($clock, ['mem_0', 'mem', 'mclk']);
 
-		$pptViolation  = $this->extractViolationFlag($throttle, ['ppt_violation_status', 'ppt_accumulated']);
-		$swThermFlag   = $this->extractViolationFlag($throttle, ['socket_thermal_violation_status']);
-		$hwThermFlag   = $this->maxFlag(
+		$pptViolation = $this->extractViolationFlag($throttle, ['ppt_violation_status', 'ppt_accumulated']);
+		$swThermFlag  = $this->extractViolationFlag($throttle, ['socket_thermal_violation_status']);
+		$hwThermFlag  = $this->maxFlag(
 			$this->extractViolationFlag($throttle, ['hbm_thermal_violation_status']),
 			$this->extractViolationFlag($throttle, ['vr_thermal_violation_status']),
 		);
@@ -303,13 +328,16 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * Store AMD throttle accumulators separately from the NVIDIA bitmask (REQ-AMDM-003).
+	 * Extract AMD throttle accumulators (REQ-AMDM-003) alongside extended
+	 * enterprise telemetry (HBM/hotspot temperatures, XGMI and PCIe link
+	 * throughput and errors, and fan speed) into Reading::$vendorExtensions.
 	 *
-	 * @param array<string, mixed> $entry
+	 * @param array<array-key, mixed> $entry decoded amd-smi metric object
 	 *
 	 * @return array<string, ?float>
 	 */
-	private function extractThrottleAccumulators(array $entry): array {
+	private function extractVendorExtensions(array $entry): array {
+		$out      = [];
 		$throttle = $this->subArray($entry, 'throttle');
 		$keys     = [
 			'accumulation_counter',
@@ -321,20 +349,70 @@ final class AmdSmiParser {
 			'low_utilization_accumulated',
 		];
 
-		$out = [];
-
 		foreach ($keys as $key) {
 			if (array_key_exists($key, $throttle)) {
 				$out[$key] = $this->unwrapNumber($throttle[$key]);
 			}
 		}
 
+		$temp = $this->subArray($entry, 'temperature');
+
+		if (array_key_exists('mem', $temp) || array_key_exists('hbm', $temp)) {
+			$out[ExtendedGpuTelemetry::KEY_TEMP_MEMORY] = $this->unwrapNumber($temp['mem'] ?? $temp['hbm'] ?? null);
+		}
+
+		if (array_key_exists('hotspot', $temp) || array_key_exists('junction', $temp)) {
+			$out[ExtendedGpuTelemetry::KEY_TEMP_HOTSPOT] = $this->unwrapNumber($temp['hotspot'] ?? $temp['junction'] ?? null);
+		}
+
+		$fan = $this->subArray($entry, 'fan');
+
+		if (array_key_exists('usage', $fan) || array_key_exists('speed', $fan)) {
+			$out[ExtendedGpuTelemetry::KEY_FAN_SPEED_PCT] = $this->unwrapNumber($fan['usage'] ?? $fan['speed'] ?? null);
+		}
+
+		$pcie = $this->subArray($entry, 'pcie');
+
+		if (array_key_exists('tx', $pcie) || array_key_exists('tx_bytes', $pcie) || array_key_exists('bandwidth_tx', $pcie)) {
+			$out[ExtendedGpuTelemetry::KEY_PCIE_TX_BYTES] = $this->unwrapThroughputBytes($pcie['tx_bytes'] ?? $pcie['tx'] ?? $pcie['bandwidth_tx'] ?? null);
+		}
+
+		if (array_key_exists('rx', $pcie) || array_key_exists('rx_bytes', $pcie) || array_key_exists('bandwidth_rx', $pcie)) {
+			$out[ExtendedGpuTelemetry::KEY_PCIE_RX_BYTES] = $this->unwrapThroughputBytes($pcie['rx_bytes'] ?? $pcie['rx'] ?? $pcie['bandwidth_rx'] ?? null);
+		}
+
+		if (array_key_exists('replay_count', $pcie)) {
+			$out[ExtendedGpuTelemetry::KEY_PCIE_REPLAY_ERRORS] = $this->unwrapNumber($pcie['replay_count']);
+		}
+
+		$xgmi = $this->subArray($entry, 'xgmi');
+
+		if (array_key_exists('tx', $xgmi) || array_key_exists('tx_bytes', $xgmi) || array_key_exists('write_bytes', $xgmi)) {
+			$out[ExtendedGpuTelemetry::KEY_NVLINK_TX_BYTES] = $this->unwrapThroughputBytes($xgmi['tx_bytes'] ?? $xgmi['tx'] ?? $xgmi['write_bytes'] ?? null);
+		}
+
+		if (array_key_exists('rx', $xgmi) || array_key_exists('rx_bytes', $xgmi) || array_key_exists('read_bytes', $xgmi)) {
+			$out[ExtendedGpuTelemetry::KEY_NVLINK_RX_BYTES] = $this->unwrapThroughputBytes($xgmi['rx_bytes'] ?? $xgmi['rx'] ?? $xgmi['read_bytes'] ?? null);
+		}
+
+		if (array_key_exists('crc_errors', $xgmi)) {
+			$out[ExtendedGpuTelemetry::KEY_NVLINK_CRC_ERRORS] = $this->unwrapNumber($xgmi['crc_errors']);
+		}
+
+		if (array_key_exists('replay_errors', $xgmi) || array_key_exists('error_count', $xgmi)) {
+			$out[ExtendedGpuTelemetry::KEY_NVLINK_REPLAY_ERRORS] = $this->unwrapNumber($xgmi['replay_errors'] ?? $xgmi['error_count'] ?? null);
+		}
+
 		return $out;
 	}
 
 	/**
-	 * @param array<string, mixed>  $entry
-	 * @param array<string, ?float> $values
+	 * Derive the EccMode value from ECC counters or the explicit enabled flag.
+	 *
+	 * @param array<array-key, mixed> $entry  decoded amd-smi metric object
+	 * @param array<string, ?float>   $values extracted core metric values
+	 *
+	 * @return string
 	 */
 	private function extractEccMode(array $entry, array $values): string {
 		if ($values['ecc_corr'] !== null || $values['ecc_uncorr'] !== null) {
@@ -351,11 +429,15 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * @param array<string, mixed> $matched
-	 * @param array<string, mixed> $entry
+	 * Build a normalized AMD partition attribute string from list and metric entries.
+	 *
+	 * @param array<array-key, mixed> $matched list entry for the GPU
+	 * @param array<array-key, mixed> $entry   metric entry for the GPU
+	 *
+	 * @return string
 	 */
 	private function partitionString(array $matched, array $entry): string {
-		$parts = [];
+		$parts       = [];
 		$partitionId = $this->stringField($matched, ['partition_id']);
 
 		if ($partitionId !== '' && strtoupper($partitionId) !== 'N/A') {
@@ -382,8 +464,12 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * @param array<string, mixed> $clock
-	 * @param list<string>         $keys
+	 * Extract a clock frequency normalized to MHz.
+	 *
+	 * @param array<array-key, mixed> $clock clock sub-object
+	 * @param list<string>            $keys  candidate clock field names in priority order
+	 *
+	 * @return ?float
 	 */
 	private function extractClockMhz(array $clock, array $keys): ?float {
 		foreach ($keys as $key) {
@@ -415,8 +501,12 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * @param array<string, mixed> $throttle
-	 * @param list<string>         $keys
+	 * Extract a boolean or numeric violation status flag as 0.0, 1.0, or null.
+	 *
+	 * @param array<array-key, mixed> $throttle throttle sub-object
+	 * @param list<string>            $keys     candidate violation status keys
+	 *
+	 * @return ?float
 	 */
 	private function extractViolationFlag(array $throttle, array $keys): ?float {
 		foreach ($keys as $key) {
@@ -462,6 +552,14 @@ final class AmdSmiParser {
 		return null;
 	}
 
+	/**
+	 * Combine two nullable indicator flags using max semantics.
+	 *
+	 * @param ?float $a first indicator
+	 * @param ?float $b second indicator
+	 *
+	 * @return ?float
+	 */
 	private function maxFlag(?float $a, ?float $b): ?float {
 		if ($a === null) {
 			return $b;
@@ -476,6 +574,10 @@ final class AmdSmiParser {
 
 	/**
 	 * Unwrap amd-smi's {"value": ..., "unit": ...} wrapper or bare scalar, returning null for "N/A".
+	 *
+	 * @param mixed $raw wrapped or scalar JSON value
+	 *
+	 * @return ?float
 	 */
 	private function unwrapNumber(mixed $raw): ?float {
 		if (is_array($raw)) {
@@ -487,17 +589,19 @@ final class AmdSmiParser {
 		}
 
 		if (is_int($raw) || is_float($raw)) {
-			return is_finite((float) $raw) ? (float) $raw : null;
+			$val = (float) $raw;
+
+			return is_finite($val) ? $val : null;
 		}
 
 		if (is_string($raw)) {
 			$trimmed = trim($raw);
 
-			if ($trimmed === '' || strtoupper($trimmed) === 'N/A') {
+			if ($trimmed === '' || strcasecmp($trimmed, 'N/A') === 0) {
 				return null;
 			}
 
-			if (preg_match('/^-?[0-9]+(?:\.[0-9]+)?$/', $trimmed) === 1) {
+			if (is_numeric($trimmed)) {
 				$val = (float) $trimmed;
 
 				return is_finite($val) ? $val : null;
@@ -507,6 +611,13 @@ final class AmdSmiParser {
 		return null;
 	}
 
+	/**
+	 * Unwrap a VRAM measurement into bytes, defaulting to MiB per amd-smi conventions.
+	 *
+	 * @param mixed $raw wrapped or bare numeric VRAM value
+	 *
+	 * @return ?float
+	 */
 	private function unwrapBytes(mixed $raw): ?float {
 		$value = $this->unwrapNumber($raw);
 
@@ -530,27 +641,52 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * @param array<string, mixed> $entry
+	 * Unwrap an interconnect throughput or byte counter into bytes.
 	 *
-	 * @return array<string, mixed>
+	 * @param mixed $raw wrapped or bare numeric interconnect value
+	 *
+	 * @return ?float
 	 */
-	private function subArray(array $entry, string $key): array {
-		if (!isset($entry[$key]) || !is_array($entry[$key])) {
-			return [];
+	private function unwrapThroughputBytes(mixed $raw): ?float {
+		$value = $this->unwrapNumber($raw);
+
+		if ($value === null) {
+			return null;
 		}
 
-		$out = [];
+		$unit = 'b';
 
-		foreach ($entry[$key] as $k => $v) {
-			$out[(string) $k] = $v;
+		if (is_array($raw) && isset($raw['unit']) && is_string($raw['unit'])) {
+			$unit = strtolower(trim($raw['unit']));
 		}
 
-		return $out;
+		return match ($unit) {
+			'kb', 'kib', 'kb/s', 'kib/s' => $value * 1024.0,
+			'mb', 'mib', 'mb/s', 'mib/s' => $value * MetricModel::MIB,
+			'gb', 'gib', 'gb/s', 'gib/s' => $value * MetricModel::MIB * 1024.0,
+			default                      => $value,
+		};
 	}
 
 	/**
-	 * @param array<array-key, mixed> $entry
-	 * @param list<string>            $keys
+	 * Return a nested array sub-object directly without cloning its elements.
+	 *
+	 * @param array<array-key, mixed> $entry parent entry
+	 * @param string                  $key   child key
+	 *
+	 * @return array<array-key, mixed>
+	 */
+	private function subArray(array $entry, string $key): array {
+		return isset($entry[$key]) && is_array($entry[$key]) ? $entry[$key] : [];
+	}
+
+	/**
+	 * Read the first non-empty scalar string matching any candidate key.
+	 *
+	 * @param array<array-key, mixed> $entry source map
+	 * @param list<string>            $keys  candidate keys in priority order
+	 *
+	 * @return string
 	 */
 	private function stringField(array $entry, array $keys): string {
 		foreach ($keys as $key) {
@@ -567,12 +703,16 @@ final class AmdSmiParser {
 	}
 
 	/**
-	 * @param array<string, mixed> $entry
-	 * @param list<string>         $keys
+	 * Read the first non-negative integer matching any candidate key.
+	 *
+	 * @param array<array-key, mixed> $entry source map
+	 * @param list<string>            $keys  candidate keys in priority order
+	 *
+	 * @return ?int
 	 */
 	private function intField(array $entry, array $keys): ?int {
 		foreach ($keys as $key) {
-			if (isset($entry[$key]) && (is_int($entry[$key]) || (is_string($entry[$key]) && preg_match('/^[0-9]+$/', $entry[$key]) === 1))) {
+			if (isset($entry[$key]) && (is_int($entry[$key]) || (is_string($entry[$key]) && ctype_digit($entry[$key])))) {
 				return (int) $entry[$key];
 			}
 		}

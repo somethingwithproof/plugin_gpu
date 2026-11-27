@@ -41,18 +41,47 @@ namespace Somethingwithproof\Gpu;
  */
 final class IdentityReconciler {
 	/**
-	 * @param list<GpuRecord> $known every record at this node, plus any record
-	 *                               elsewhere whose UUID the snapshot reports
+	 * Compute identity record inserts and updates for one node snapshot in O(R + K) time.
+	 *
+	 * @param Node            $node        target GPU node
+	 * @param list<GpuRecord> $known       every record at this node, plus any record
+	 *                                     elsewhere whose UUID the snapshot reports
+	 * @param GpuSnapshot     $snapshot    validated GPU snapshot from the latest collection
+	 * @param int             $absentAfter consecutive misses before marking a GPU absent
+	 * @param int             $now         current Unix timestamp
+	 *
+	 * @return Reconciliation
 	 */
 	public function reconcile(Node $node, array $known, GpuSnapshot $snapshot, int $absentAfter, int $now): Reconciliation {
 		if (!$node->enabled() || $snapshot->reports === []) {
 			return new Reconciliation();
 		}
 
-		$byKey = [];
+		$byKey        = [];
+		$read         = [];
+		$unreported   = [];
+		/** @var array<string, GpuRecord> $replacedBySlot */
+		$replacedBySlot = [];
 
 		foreach ($known as $record) {
-			$byKey[$record->key()] = $record;
+			$key               = $record->key();
+			$byKey[$key]       = $record;
+			$read[$record->id] = $record;
+
+			if ($record->nodeId === $node->id && !$snapshot->has($key)) {
+				if ($record->presence !== Presence::Absent) {
+					$unreported[] = $record;
+				}
+
+				// Track the most recently seen absent/unreported card per (vendor, PCI slot)
+				// so new UUIDs resolve possible replacements in O(1) instead of scanning $known.
+				$slot      = $record->vendor->value . '/' . $record->pciBusId;
+				$candidate = $replacedBySlot[$slot] ?? null;
+
+				if ($candidate === null || [$record->lastSeen, $record->id] > [$candidate->lastSeen, $candidate->id]) {
+					$replacedBySlot[$slot] = $record;
+				}
+			}
 		}
 
 		$created = [];
@@ -62,7 +91,9 @@ final class IdentityReconciler {
 			$record = $byKey[$report->key()] ?? null;
 
 			if ($record === null) {
-				$created[] = GpuRecord::discovered($report, $snapshot, $node->id, $this->replaced($node, $known, $snapshot, $report), $now);
+				$slot       = $report->vendor->value . '/' . $report->pciBusId;
+				$replacesId = isset($replacedBySlot[$slot]) ? $replacedBySlot[$slot]->id : 0;
+				$created[]  = GpuRecord::discovered($report, $snapshot, $node->id, $replacesId, $now);
 			} elseif ($record->nodeId === $node->id) {
 				$updated[] = $record->seen($report, $snapshot, $now);
 			} else {
@@ -74,40 +105,10 @@ final class IdentityReconciler {
 			}
 		}
 
-		foreach ($known as $record) {
-			if ($record->nodeId === $node->id && !$snapshot->has($record->key()) && $record->presence !== Presence::Absent) {
-				$updated[] = $record->missed($absentAfter);
-			}
-		}
-
-		$read = [];
-
-		foreach ($known as $record) {
-			$read[$record->id] = $record;
+		foreach ($unreported as $record) {
+			$updated[] = $record->missed($absentAfter);
 		}
 
 		return new Reconciliation($created, $updated, $read);
-	}
-
-	/**
-	 * The id of the record a new GPU may have replaced, or 0. When several
-	 * earlier cards sat on that bus ID, the one seen last is named.
-	 *
-	 * @param list<GpuRecord> $known
-	 */
-	private function replaced(Node $node, array $known, GpuSnapshot $snapshot, GpuReport $report): int {
-		$candidate = null;
-
-		foreach ($known as $record) {
-			if ($record->nodeId !== $node->id || $record->vendor !== $report->vendor || $record->pciBusId !== $report->pciBusId || $snapshot->has($record->key())) {
-				continue;
-			}
-
-			if ($candidate === null || [$record->lastSeen, $record->id] > [$candidate->lastSeen, $candidate->id]) {
-				$candidate = $record;
-			}
-		}
-
-		return $candidate->id ?? 0;
 	}
 }

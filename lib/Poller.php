@@ -33,6 +33,16 @@ namespace Somethingwithproof\Gpu;
 final class Poller {
 	public const MAIN_POLLER = 1;
 
+		/**
+	 * Construct a Poller instance.
+	 *
+	 * @param NodeRepository $nodes
+	 * @param CollectionRepository $collections
+	 * @param Collector $collector
+	 * @param Provisioner $provisioner
+	 * @param ReindexRepository $reindex
+	 * @param Clock $clock
+	 */
 	public function __construct(
 		private readonly NodeRepository $nodes,
 		private readonly CollectionRepository $collections,
@@ -53,6 +63,9 @@ final class Poller {
 	 * remote collectors write to their local cache (REQ-REM-003).
 	 *
 	 * @return array{nodes: int, ok: int, failed: int, skipped: int, remote: int, reindexed: int, deferred: int, graphs: int, left: int, stopped_early: bool}
+	 * @param Settings $settings
+	 * @param int $budget
+	 * @param int $pollerId
 	 */
 	public function run(Settings $settings, int $budget, int $pollerId = self::MAIN_POLLER): array {
 		$pollerId = max(1, $pollerId);
@@ -100,8 +113,9 @@ final class Poller {
 			$stats[$state->succeeded() ? 'ok' : 'failed']++;
 
 			if ($pollerId === self::MAIN_POLLER) {
-				// Read after the collection, which may have asked for one.
-				$request = $this->reindex->pending()[$node->id] ?? null;
+				// Read after the collection, which may have asked for one, using
+				// a single primary-key lookup rather than scanning all pending rows.
+				$request = $this->reindex->find($node->id);
 				$done    = $this->provisioner->provision($node, $device, $request);
 
 				$stats['reindexed'] += $done['reindexed'] ? 1 : 0;

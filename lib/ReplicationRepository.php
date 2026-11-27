@@ -25,6 +25,11 @@ namespace Somethingwithproof\Gpu;
  * (REQ-REM-002, REQ-REM-004).
  */
 final class ReplicationRepository {
+		/**
+	 * Construct a ReplicationRepository instance.
+	 *
+	 * @param \PDO|false $connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -32,6 +37,7 @@ final class ReplicationRepository {
 	 * Rows for every replicated plugin table belonging to $pollerId.
 	 *
 	 * @return array<string, list<array<array-key, mixed>>>
+	 * @param int $pollerId
 	 */
 	public function tablesForPoller(int $pollerId): array {
 		if ($pollerId < 1) {

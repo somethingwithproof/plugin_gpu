@@ -25,6 +25,11 @@ namespace Somethingwithproof\Gpu;
  * if two writers race.
  */
 final class GpuRepository {
+		/**
+	 * Construct a GpuRepository instance.
+	 *
+	 * @param \PDO|false $connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -36,6 +41,8 @@ final class GpuRepository {
 	 * look new and lose the replacement link a stored record provides.
 	 *
 	 * @return list<GpuRecord>|null
+	 * @param Node $node
+	 * @param GpuSnapshot $snapshot
 	 */
 	public function forReconcile(Node $node, GpuSnapshot $snapshot): ?array {
 		$uuids = $snapshot->uuids();
@@ -63,6 +70,8 @@ final class GpuRepository {
 	 * between this run's read and its write can cause; that refusal is
 	 * reported as such, and the next collection reconciles from what is
 	 * stored. Any other failure is an error.
+	 * @param GpuRecord $record
+	 * @return bool
 	 */
 	private function insert(GpuRecord $record): bool {
 		$row = $record->toRow();
@@ -100,6 +109,8 @@ final class GpuRepository {
 	 * move between the read and the write changes one of them, and the stale
 	 * update then matches no row instead of undoing the operator's choice;
 	 * the next collection recomputes from the stored state.
+	 * @param Reconciliation $changes
+	 * @return bool
 	 */
 	public function apply(Reconciliation $changes): bool {
 		$ok = true;
@@ -145,6 +156,10 @@ final class GpuRepository {
 	 * Move a GPU to the node it was seen at. Only the move the operator was
 	 * shown and authorized is applied: if a collection changed the record's
 	 * node or pending node since, nothing changes.
+	 * @param int $id
+	 * @param int $fromNodeId
+	 * @param int $toNodeId
+	 * @return bool
 	 */
 	public function confirmMove(int $id, int $fromNodeId, int $toNodeId): bool {
 		$ok = db_execute_prepared("UPDATE plugin_gpu_gpu SET node_id = pending_node_id, pending_node_id = 0, pending_since = 0, missing_count = 0, presence = 'present' WHERE id = ? AND node_id = ? AND pending_node_id = ? AND pending_node_id > 0", [$id, $fromNodeId, $toNodeId], true, $this->connection);
@@ -152,6 +167,14 @@ final class GpuRepository {
 		return $ok && db_affected_rows($this->connection) === 1;
 	}
 
+		/**
+	 * Reject move.
+	 *
+	 * @param int $id
+	 * @param int $fromNodeId
+	 * @param int $toNodeId
+	 * @return bool
+	 */
 	public function rejectMove(int $id, int $fromNodeId, int $toNodeId): bool {
 		$ok = db_execute_prepared('UPDATE plugin_gpu_gpu SET pending_node_id = 0, pending_since = 0 WHERE id = ? AND node_id = ? AND pending_node_id = ? AND pending_node_id > 0', [$id, $fromNodeId, $toNodeId], true, $this->connection);
 
@@ -162,6 +185,11 @@ final class GpuRepository {
 	 * Remove an absent GPU from its node's data query, on an operator's
 	 * request (REQ-INDEX-005). A present GPU is refused: the next collection
 	 * would only return it.
+	 * @param int $id
+	 * @param int $nodeId
+	 * @param int $userId
+	 * @param int $now
+	 * @return bool
 	 */
 	public function retire(int $id, int $nodeId, int $userId, int $now): bool {
 		$ok = db_execute_prepared("INSERT IGNORE INTO plugin_gpu_retired (gpu_id, retired_at, retired_by) SELECT id, ?, ? FROM plugin_gpu_gpu WHERE id = ? AND node_id = ? AND presence = 'absent'", [$now, $userId, $id, $nodeId], true, $this->connection);
@@ -176,6 +204,12 @@ final class GpuRepository {
 		return array_map(static fn (array $row): int => Row::int($row, 'gpu_id'), Row::rows(db_fetch_assoc_prepared('SELECT gpu_id FROM plugin_gpu_retired ORDER BY gpu_id', [], true, $this->connection)));
 	}
 
+		/**
+	 * Find.
+	 *
+	 * @param int $id
+	 * @return ?GpuRecord
+	 */
 	public function find(int $id): ?GpuRecord {
 		$row = db_fetch_row_prepared('SELECT * FROM plugin_gpu_gpu WHERE id = ?', [$id], true, $this->connection);
 
@@ -202,6 +236,7 @@ final class GpuRepository {
 
 	/**
 	 * @return list<GpuRecord>
+	 * @param mixed $rows
 	 */
 	private function records(mixed $rows): array {
 		$records = [];

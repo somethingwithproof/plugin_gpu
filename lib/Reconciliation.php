@@ -38,6 +38,11 @@ final readonly class Reconciliation {
 	) {
 	}
 
+		/**
+	 * Is empty.
+	 *
+	 * @return bool
+	 */
 	public function isEmpty(): bool {
 		return $this->created === [] && $this->updated === [];
 	}

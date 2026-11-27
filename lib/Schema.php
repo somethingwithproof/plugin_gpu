@@ -38,18 +38,20 @@ final class Schema {
 	public const VERSION = 4;
 
 	public const HOOKS = [
-		'auth_alternate_realms'  => 'gpu_auth_alternate_realms',
-		'config_arrays'          => 'gpu_config_arrays',
-		'config_settings'        => 'gpu_config_settings',
-		'draw_navigation_text'   => 'gpu_draw_navigation_text',
-		'poller_bottom'          => 'gpu_poller_bottom',
-		'device_remove'          => 'gpu_device_remove',
-		'api_device_new'         => 'gpu_api_device_new',
-		'replicate_out'          => 'gpu_replicate_out',
-		'remote_agent'           => 'gpu_remote_agent',
-		'abilities_register'     => 'gpu_abilities_register',
-		'doctor_register_checks' => 'gpu_doctor_register_checks',
-		'casc_register_providers' => 'gpu_casc_register_providers',
+		'auth_alternate_realms'      => 'gpu_auth_alternate_realms',
+		'config_arrays'              => 'gpu_config_arrays',
+		'config_settings'            => 'gpu_config_settings',
+		'draw_navigation_text'       => 'gpu_draw_navigation_text',
+		'poller_bottom'              => 'gpu_poller_bottom',
+		'device_remove'              => 'gpu_device_remove',
+		'api_device_new'             => 'gpu_api_device_new',
+		'replicate_out'              => 'gpu_replicate_out',
+		'remote_agent'               => 'gpu_remote_agent',
+		'abilities_register'         => 'gpu_abilities_register',
+		'doctor_register_checks'     => 'gpu_doctor_register_checks',
+		'doctor_register_debug_info' => 'gpu_doctor_register_debug_info',
+		'casc_register_providers'    => 'gpu_casc_register_providers',
+		'api_register_resources'     => 'gpu_api_register_resources',
 	];
 
 	// The metric columns of plugin_gpu_observation, as migration 2 created
@@ -69,15 +71,30 @@ final class Schema {
 	private const PLUGIN  = 'gpu';
 	private const SETTING = 'gpu_schema_version';
 
+		/**
+	 * Construct a Schema instance.
+	 *
+	 * @param \PDO|false $connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
+		/**
+	 * Stored version.
+	 *
+	 * @return int
+	 */
 	public function storedVersion(): int {
 		$value = db_fetch_cell_prepared('SELECT value FROM settings WHERE name = ?', [self::SETTING], '', true, $this->connection);
 
 		return is_numeric($value) ? (int) $value : 0;
 	}
 
+		/**
+	 * Is current.
+	 *
+	 * @return bool
+	 */
 	public function isCurrent(): bool {
 		return $this->storedVersion() === self::VERSION;
 	}
@@ -87,6 +104,7 @@ final class Schema {
 	 *
 	 * @param int $through the last migration to run; tests pass a lower
 	 *                     number to leave an upgrade interrupted
+	 * @return bool
 	 */
 	public function migrate(int $through = self::VERSION): bool {
 		$from = $this->storedVersion();
@@ -116,21 +134,39 @@ final class Schema {
 		return true;
 	}
 
+		/**
+	 * Recorded plugin version.
+	 *
+	 * @return string
+	 */
 	public function recordedPluginVersion(): string {
 		return (string) db_fetch_cell_prepared('SELECT version FROM plugin_config WHERE directory = ?', [self::PLUGIN], '', true, $this->connection);
 	}
 
+		/**
+	 * Record plugin version.
+	 *
+	 * @param string $version
+	 * @param string $author
+	 * @param string $homepage
+	 */
 	public function recordPluginVersion(string $version, string $author, string $homepage): void {
 		db_execute_prepared('UPDATE plugin_config SET version = ?, author = ?, webpage = ? WHERE directory = ?', [$version, $author, $homepage, self::PLUGIN], true, $this->connection);
 	}
 
 	/**
 	 * Whether core has the plugin enabled (plugin_config status 1).
+	 * @return bool
 	 */
 	public function pluginEnabled(): bool {
 		return (int) db_fetch_cell_prepared('SELECT status FROM plugin_config WHERE directory = ?', [self::PLUGIN], '', true, $this->connection) === 1;
 	}
 
+		/**
+	 * Hooks registered.
+	 *
+	 * @return bool
+	 */
 	public function hooksRegistered(): bool {
 		$placeholders = implode(', ', array_fill(0, count(self::HOOKS), '?'));
 
@@ -144,6 +180,7 @@ final class Schema {
 	 * Stop Cacti from dropping the plugin tables on uninstall, and keep the
 	 * schema version so a reinstall reuses them. True only when no table is
 	 * still tracked afterwards, because core drops every tracked table.
+	 * @return bool
 	 */
 	public function untrackTables(): bool {
 		$ok = db_execute_prepared("DELETE FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", [self::PLUGIN], true, $this->connection);
@@ -151,6 +188,9 @@ final class Schema {
 		return $ok !== false && (int) db_fetch_cell_prepared("SELECT COUNT(*) FROM plugin_db_changes WHERE plugin = ? AND method = 'create'", [self::PLUGIN], '', true, $this->connection) === 0;
 	}
 
+		/**
+	 * Forget version.
+	 */
 	public function forgetVersion(): void {
 		db_execute_prepared('DELETE FROM settings WHERE name = ?', [self::SETTING], true, $this->connection);
 	}
@@ -205,6 +245,8 @@ final class Schema {
 
 	/**
 	 * @param list<array<string, mixed>> $columns
+	 * @param string $table
+	 * @return bool
 	 */
 	private function addColumns(string $table, array $columns): bool {
 		foreach ($columns as $column) {
@@ -238,6 +280,7 @@ final class Schema {
 
 	/**
 	 * @param array<string, array<string, mixed>> $tables
+	 * @return bool
 	 */
 	private function createTables(array $tables): bool {
 		foreach ($tables as $table => $definition) {
@@ -253,6 +296,12 @@ final class Schema {
 		return true;
 	}
 
+		/**
+	 * Table exists.
+	 *
+	 * @param string $table
+	 * @return bool
+	 */
 	private function tableExists(string $table): bool {
 		return db_fetch_cell_prepared('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?', [$table], '', true, $this->connection) > 0;
 	}

@@ -29,6 +29,13 @@ namespace Somethingwithproof\Gpu;
  * or a failed read prints an empty listing or U, never 0.
  */
 final class ScriptServer {
+		/**
+	 * Construct a ScriptServer instance.
+	 *
+	 * @param CacheRepository $cache
+	 * @param Clock $clock
+	 * @param int $staleAfter
+	 */
 	public function __construct(
 		private readonly CacheRepository $cache,
 		private readonly Clock $clock,
@@ -36,6 +43,15 @@ final class ScriptServer {
 	) {
 	}
 
+		/**
+	 * Call.
+	 *
+	 * @param string $hostId
+	 * @param string $command
+	 * @param string $field
+	 * @param string $index
+	 * @return string
+	 */
 	public function call(string $hostId, string $command, string $field = '', string $index = ''): string {
 		if (preg_match('/^[1-9][0-9]{0,9}$/', $hostId) !== 1) {
 			return $command === 'get' ? 'U' : '';
@@ -50,16 +66,35 @@ final class ScriptServer {
 		};
 	}
 
+		/**
+	 * Index.
+	 *
+	 * @param int $hostId
+	 * @return string
+	 */
 	private function index(int $hostId): string {
 		return implode("\n", array_map(self::key(...), $this->cache->listed($hostId) ?? []));
 	}
 
+		/**
+	 * Count.
+	 *
+	 * @param int $hostId
+	 * @return string
+	 */
 	private function count(int $hostId): string {
 		$rows = $this->cache->listed($hostId);
 
 		return $rows === null ? '' : (string) count($rows);
 	}
 
+		/**
+	 * Query.
+	 *
+	 * @param int $hostId
+	 * @param string $field
+	 * @return string
+	 */
 	private function query(int $hostId, string $field): string {
 		$input = self::input($field);
 
@@ -79,6 +114,14 @@ final class ScriptServer {
 		return implode("\n", $out);
 	}
 
+		/**
+	 * Get.
+	 *
+	 * @param int $hostId
+	 * @param string $field
+	 * @param string $index
+	 * @return string
+	 */
 	private function get(int $hostId, string $field, string $index): string {
 		if (MetricModel::find($field) === null) {
 			$input = self::input($field);
@@ -108,6 +151,13 @@ final class ScriptServer {
 		return $row === null ? 'U' : Freshness::format(Freshness::value($field, $row, $this->clock->now(), $this->staleAfter));
 	}
 
+		/**
+	 * Valid uuid.
+	 *
+	 * @param Vendor $vendor
+	 * @param string $uuid
+	 * @return bool
+	 */
 	private static function validUuid(Vendor $vendor, string $uuid): bool {
 		if ($vendor === Vendor::Nvidia) {
 			return preg_match('/^(?:GPU-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|MIG-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|MIG-GPU-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9]{1,4}\/[0-9]{1,4})$/', $uuid) === 1;
@@ -118,6 +168,8 @@ final class ScriptServer {
 
 	/**
 	 * The record column an input field's query name reads, or null.
+	 * @param string $queryName
+	 * @return ?string
 	 */
 	private static function input(string $queryName): ?string {
 		return match ($queryName) {
@@ -152,6 +204,7 @@ final class ScriptServer {
 
 	/**
 	 * @param array<array-key, mixed> $row
+	 * @return string
 	 */
 	public static function key(array $row): string {
 		return Row::string($row, 'vendor') . '/' . Row::string($row, 'uuid');
@@ -162,6 +215,8 @@ final class ScriptServer {
 	 * listing Cacti parses.
 	 *
 	 * @param array<array-key, mixed> $row
+	 * @param string $column
+	 * @return string
 	 */
 	private static function text(array $row, string $column): string {
 		$text = $column === 'key' ? self::key($row) : Row::string($row, $column);

@@ -25,6 +25,32 @@ namespace Somethingwithproof\Gpu;
  * through the transitions below, which IdentityReconciler chooses.
  */
 final readonly class GpuRecord {
+		/**
+	 * Construct a GpuRecord instance.
+	 *
+	 * @param int $id
+	 * @param Vendor $vendor
+	 * @param string $uuid
+	 * @param int $nodeId
+	 * @param ?int $index
+	 * @param string $pciBusId
+	 * @param string $name
+	 * @param string $driverVersion
+	 * @param string $tool
+	 * @param string $toolVersion
+	 * @param Presence $presence
+	 * @param int $missingCount
+	 * @param int $replacesGpuId
+	 * @param int $pendingNodeId
+	 * @param int $pendingSince
+	 * @param int $firstSeen
+	 * @param int $lastSeen
+	 * @param string $migMode
+	 * @param string $migInstanceId
+	 * @param string $migProfile
+	 * @param string $parentUuid
+	 * @param string $partitionInfo
+	 */
 	public function __construct(
 		// 0 until the record is first stored.
 		public int $id,
@@ -55,6 +81,7 @@ final readonly class GpuRecord {
 
 	/**
 	 * @param array<array-key, mixed> $row a plugin_gpu_gpu row
+	 * @return ?self
 	 */
 	public static function fromRow(array $row): ?self {
 		$vendor = Vendor::tryFrom(Row::string($row, 'vendor'));
@@ -122,10 +149,20 @@ final readonly class GpuRecord {
 		];
 	}
 
+		/**
+	 * Key.
+	 *
+	 * @return string
+	 */
 	public function key(): string {
 		return $this->vendor->value . '/' . $this->uuid;
 	}
 
+		/**
+	 * Is mig.
+	 *
+	 * @return bool
+	 */
 	public function isMig(): bool {
 		return $this->parentUuid !== '';
 	}
@@ -133,6 +170,12 @@ final readonly class GpuRecord {
 	/**
 	 * A UUID no record holds: a new GPU with its own history. $replacesGpuId
 	 * names the record it may have replaced, but nothing is inherited from it.
+	 * @param GpuReport $report
+	 * @param GpuSnapshot $snapshot
+	 * @param int $nodeId
+	 * @param int $replacesGpuId
+	 * @param int $now
+	 * @return self
 	 */
 	public static function discovered(GpuReport $report, GpuSnapshot $snapshot, int $nodeId, int $replacesGpuId, int $now): self {
 		return new self(
@@ -164,6 +207,10 @@ final readonly class GpuRecord {
 	/**
 	 * Reported at its own node: attributes take the reported values, and a
 	 * pending move elsewhere is dropped because the GPU is back home.
+	 * @param GpuReport $report
+	 * @param GpuSnapshot $snapshot
+	 * @param int $now
+	 * @return self
 	 */
 	public function seen(GpuReport $report, GpuSnapshot $snapshot, int $now): self {
 		return new self(
@@ -195,6 +242,9 @@ final readonly class GpuRecord {
 	/**
 	 * Reported at a different node. The record stays with its node until an
 	 * operator confirms the move (REQ-ID-004); only the pending node changes.
+	 * @param int $nodeId
+	 * @param int $now
+	 * @return self
 	 */
 	public function seenElsewhere(int $nodeId, int $now): self {
 		$since = $this->pendingNodeId === $nodeId ? $this->pendingSince : $now;
@@ -228,6 +278,8 @@ final readonly class GpuRecord {
 	/**
 	 * Not reported by a successful collection at its node. Absent after
 	 * $absentAfter misses in a row; never deleted (REQ-ID-005).
+	 * @param int $absentAfter
+	 * @return self
 	 */
 	public function missed(int $absentAfter): self {
 		$missing = $this->missingCount + 1;
@@ -258,10 +310,20 @@ final readonly class GpuRecord {
 		);
 	}
 
+		/**
+	 * Possible replacement.
+	 *
+	 * @return bool
+	 */
 	public function possibleReplacement(): bool {
 		return $this->replacesGpuId > 0;
 	}
 
+		/**
+	 * Move pending.
+	 *
+	 * @return bool
+	 */
 	public function movePending(): bool {
 		return $this->pendingNodeId > 0;
 	}

@@ -46,6 +46,7 @@ if (!isset($called_by_script_server)) {
  * @param int|string $cmd
  * @param int|string $arg1
  * @param int|string $arg2
+ * @return string
  */
 function ss_gpu($host_id = '', $cmd = '', $arg1 = '', $arg2 = ''): string {
 	$fallback = $cmd === 'get' ? 'U' : '';

@@ -27,6 +27,12 @@ namespace Somethingwithproof\Gpu;
  * 0x prefix is hexadecimal and must not be taken for an unknown value.
  */
 final class ThrottleMask {
+		/**
+	 * Parse.
+	 *
+	 * @param string $raw
+	 * @return ?int
+	 */
 	public static function parse(string $raw): ?int {
 		$raw = trim($raw);
 
@@ -47,6 +53,7 @@ final class ThrottleMask {
 	 * unknown when the mask is.
 	 *
 	 * @return array<string, ?float>
+	 * @param ?int $mask
 	 */
 	public static function indicators(?int $mask): array {
 		$out = [];
@@ -62,6 +69,8 @@ final class ThrottleMask {
 	 * The raw mask as the health page shows it: 16 hexadecimal digits, and
 	 * the bits that have no indicator, so a reason the decoder does not know
 	 * stays visible (REQ-THR-005).
+	 * @param ?int $mask
+	 * @return string
 	 */
 	public static function describe(?int $mask): string {
 		if ($mask === null) {

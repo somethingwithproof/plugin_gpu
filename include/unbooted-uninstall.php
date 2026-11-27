@@ -27,6 +27,9 @@
  * run both paths.
  */
 
+/**
+ * Gpu uninstall unbooted.
+ */
 function gpu_uninstall_unbooted(): void {
 	$row  = db_fetch_row_prepared('SELECT value FROM settings WHERE name = ?', array('gpu_uninstall_keep_tables'));
 	$keep = !is_array($row) || $row === array() || (isset($row['value']) && $row['value'] === 'on');

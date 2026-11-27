@@ -21,7 +21,15 @@ namespace Somethingwithproof\Gpu;
 
 /** Personal triage of current observations. It never changes measured health. */
 final class OperatorPage {
-	/** @param list<string> $actions */
+	/**
+	 * @param list<string> $actions
+	 *
+	 * @param bool $allowed
+	 * @param string $action
+	 * @param string $method
+	 * @param bool $csrf
+	 * @return int
+	 */
 	public static function actionStatus(bool $allowed, string $action, string $method, bool $csrf, array $actions): int {
 		if (!$allowed) {
 			return 403;
@@ -38,12 +46,21 @@ final class OperatorPage {
 		return $csrf ? 200 : 403;
 	}
 
-	/** @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row */
+	/**
+	 * @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row
+	 *
+	 * @return string
+	 */
 	public static function fingerprint(array $row): string {
 		return hash('sha256', (string) json_encode($row));
 	}
 
-	/** @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row */
+	/**
+	 * @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row
+	 *
+	 * @param int $now
+	 * @return bool
+	 */
 	public static function fresh(array $row, int $now): bool {
 		return $row['observed'] > 0 && $row['observed'] <= $now && $now - $row['observed'] <= max(60, $row['interval']) * 2;
 	}
@@ -53,6 +70,10 @@ final class OperatorPage {
 	 * Only rows reloaded within the current user's device scope may be supplied.
 	 * @param array<string, mixed>                                                                         $session
 	 * @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row
+	 * @param string $fingerprint
+	 * @param int $user
+	 * @param int $now
+	 * @return bool
 	 */
 	public static function acknowledge(array &$session, array $row, string $fingerprint, int $user, int $now): bool {
 		if ($user <= 0 || !self::fresh($row, $now) || !hash_equals(self::fingerprint($row), $fingerprint)) {
@@ -75,6 +96,9 @@ final class OperatorPage {
 	/**
 	 * @param array<string, mixed>                                                                         $session
 	 * @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row
+	 * @param int $user
+	 * @param int $now
+	 * @return bool
 	 */
 	public static function acknowledged(array $session, array $row, int $user, int $now): bool {
 		$entries = $session['entries'] ?? [];
@@ -86,7 +110,12 @@ final class OperatorPage {
 			&& self::fresh($row, $now) && hash_equals(self::fingerprint($row), $entry['fingerprint']);
 	}
 
-	/** @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row */
+	/**
+	 * @param array{id: string, name: string, state: string, observed: int, interval: int, detail: string} $row
+	 *
+	 * @param string $action
+	 * @param string $label
+	 */
 	public static function form(array $row, string $action, string $label): void {
 		form_start('gpu_operator.php');
 		print '<input type="hidden" name="action" value="' . html_escape($action) . '">';
@@ -100,6 +129,8 @@ final class OperatorPage {
 	 * @param list<array{id: string, name: string, state: string, observed: int, interval: int, detail: string}> $rows
 	 * @param array<string, mixed>                                                                               $session
 	 * @param array<string, string>                                                                              $actions
+	 * @param int $user
+	 * @param int $now
 	 */
 	public static function render(array $rows, array $session, int $user, int $now, array $actions): void {
 		print '<p>' . html_escape(__('Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health.', 'gpu')) . '</p>';

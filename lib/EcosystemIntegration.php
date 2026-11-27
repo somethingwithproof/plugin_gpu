@@ -38,6 +38,14 @@ final class EcosystemIntegration {
 	/**
 	 * @param \Closure(int): bool      $hasViewRealm  whether a user holds GPU View realm
 	 * @param \Closure(int, int): bool $deviceAllowed whether a user may view a Cacti host_id
+	 * @param Schema $schema
+	 * @param SettingsRepository $settings
+	 * @param NodeRepository $nodes
+	 * @param GpuRepository $gpus
+	 * @param CollectionRepository $collections
+	 * @param ObservationRepository $observations
+	 * @param Clock $clock
+	 * @param int $pollerInterval
 	 */
 	public function __construct(
 		private readonly Schema $schema,
@@ -423,6 +431,185 @@ final class EcosystemIntegration {
 	}
 
 	/**
+	 * Build a decoupled plain-array debug info section for Cacti Doctor
+	 * (doctor_register_debug_info). Reads stored records only, never contacts a
+	 * GPU node, and never exposes secrets or credentials.
+	 *
+	 * @param string $pluginVersion plugin version from INFO
+	 *
+	 * @return array{label: string, description: string, fields: array<string, array{label: string, value: int|string|bool}>}
+	 */
+	public function doctorDebugInfo(string $pluginVersion = ''): array {
+		$settings = $this->settings->load();
+		$health   = $this->casc()->health();
+		$summary  = $health['summary'];
+
+		return [
+			'label'       => 'GPU Plugin',
+			'description' => 'Schema currency, bounds, and stored GPU inventory summary (read-only).',
+			'fields'      => [
+				'plugin_version' => [
+					'label' => 'Plugin version',
+					'value' => $pluginVersion !== '' ? $pluginVersion : 'unknown',
+				],
+				'schema_version' => [
+					'label' => 'Stored schema version',
+					'value' => $this->schema->storedVersion(),
+				],
+				'expected_schema_version' => [
+					'label' => 'Expected schema version',
+					'value' => Schema::VERSION,
+				],
+				'php_version' => [
+					'label' => 'PHP runtime',
+					'value' => PHP_VERSION,
+				],
+				'absent_after' => [
+					'label' => 'Absent threshold (polls)',
+					'value' => $settings->absentAfter,
+				],
+				'stale_after' => [
+					'label' => 'Stale threshold (seconds)',
+					'value' => $settings->staleAfter,
+				],
+				'nodes_total' => [
+					'label' => 'Registered GPU nodes',
+					'value' => $summary['nodes_total'],
+				],
+				'nodes_enabled' => [
+					'label' => 'Enabled GPU nodes',
+					'value' => $summary['nodes_enabled'],
+				],
+				'gpus_present' => [
+					'label' => 'Present GPUs',
+					'value' => $summary['gpus_present'],
+				],
+				'gpus_absent' => [
+					'label' => 'Absent GPUs',
+					'value' => $summary['gpus_absent'],
+				],
+				'mig_instances' => [
+					'label' => 'Tracked MIG instances',
+					'value' => $summary['mig_instances'],
+				],
+				'pending_moves' => [
+					'label' => 'Pending GPU moves',
+					'value' => $summary['pending_moves'],
+				],
+			],
+		];
+	}
+
+	/**
+	 * Build decoupled plain-array read-only API resource descriptors for
+	 * api_register_resources without importing any external API plugin class.
+	 *
+	 * @return array<string, array{
+	 *     plugin: string,
+	 *     methods: list<string>,
+	 *     read_only: bool,
+	 *     realm: string,
+	 *     description: string,
+	 *     permission: \Closure(int): bool,
+	 *     handler: \Closure(int, array<string, mixed>): array<string, mixed>
+	 * }>
+	 */
+	public function apiResources(): array {
+		$abilities  = $this->abilities();
+		$permission = fn (int $userId): bool => ($this->hasViewRealm)($userId);
+
+		return [
+			'gpu/nodes' => [
+				'plugin'      => 'gpu',
+				'methods'     => ['GET'],
+				'read_only'   => true,
+				'realm'       => 'GPU View',
+				'description' => 'List registered GPU nodes permitted for the authenticated user.',
+				'permission'  => $permission,
+				'handler'     => static function (int $userId, array $params) use ($abilities): array {
+					$args = new \stdClass();
+
+					if (isset($params['adminState']) && is_string($params['adminState'])) {
+						$args->adminState = $params['adminState'];
+					}
+
+					/** @var \Closure(int, \stdClass): array<string, mixed> $exec */
+					$exec = $abilities['gpu-list-nodes']['execute'];
+
+					return $exec($userId, $args);
+				},
+			],
+			'gpu/devices' => [
+				'plugin'      => 'gpu',
+				'methods'     => ['GET'],
+				'read_only'   => true,
+				'realm'       => 'GPU View',
+				'description' => 'List normalized GPU and MIG instance inventory records permitted for the user.',
+				'permission'  => $permission,
+				'handler'     => static function (int $userId, array $params) use ($abilities): array {
+					$args = new \stdClass();
+
+					if (isset($params['vendor']) && is_string($params['vendor'])) {
+						$args->vendor = $params['vendor'];
+					}
+
+					if (isset($params['nodeId']) && is_int($params['nodeId'])) {
+						$args->nodeId = $params['nodeId'];
+					}
+
+					/** @var \Closure(int, \stdClass): array<string, mixed> $exec */
+					$exec = $abilities['gpu-list-devices']['execute'];
+
+					return $exec($userId, $args);
+				},
+			],
+			'gpu/health' => [
+				'plugin'      => 'gpu',
+				'methods'     => ['GET'],
+				'read_only'   => true,
+				'realm'       => 'GPU View',
+				'description' => 'Read stored GPU collection freshness, status, and anomaly counts.',
+				'permission'  => $permission,
+				'handler'     => static function (int $userId, array $params) use ($abilities): array {
+					/** @var \Closure(int, \stdClass): array<string, mixed> $exec */
+					$exec = $abilities['gpu-get-health']['execute'];
+
+					return $exec($userId, new \stdClass());
+				},
+			],
+			'gpu/cluster-utilization' => [
+				'plugin'      => 'gpu',
+				'methods'     => ['GET'],
+				'read_only'   => true,
+				'realm'       => 'GPU View',
+				'description' => 'Analyze GPU/MIG locality fragmentation, allocated-but-idle ratio, and fault correlations.',
+				'permission'  => $permission,
+				'handler'     => function (int $userId, array $params): array {
+					$allowedNodes = [];
+
+					foreach ($this->nodes->all() as $node) {
+						if (($this->deviceAllowed)($userId, $node->hostId)) {
+							$allowedNodes[$node->id] = true;
+						}
+					}
+
+					$permittedGpus = [];
+
+					foreach ($this->gpus->all() as $gpu) {
+						if (isset($allowedNodes[$gpu->nodeId])) {
+							$permittedGpus[] = $gpu;
+						}
+					}
+
+					$gangSize = isset($params['gang_size']) && is_int($params['gang_size']) ? $params['gang_size'] : GpuClusterUtilizationAnalyzer::DEFAULT_GANG_SIZE;
+
+					return (new GpuClusterUtilizationAnalyzer())->analyze($permittedGpus, $this->observations->summaries(), $gangSize);
+				},
+			],
+		];
+	}
+
+	/**
 	 * CasC provider registration descriptor (casc_register_providers).
 	 *
 	 * @return array<string, mixed>
@@ -448,6 +635,7 @@ final class EcosystemIntegration {
 	 * commands, paths, or URLs.
 	 *
 	 * @return array<string, mixed>|null null when $action is not owned by plugin_gpu
+	 * @param string $action
 	 */
 	public function handleRemoteAgent(string $action): ?array {
 		return match ($action) {
@@ -465,6 +653,11 @@ final class EcosystemIntegration {
 		};
 	}
 
+		/**
+	 * Casc.
+	 *
+	 * @return CascProvider
+	 */
 	private function casc(): CascProvider {
 		return new CascProvider($this->settings, $this->nodes, $this->gpus, $this->collections, $this->observations, $this->clock, $this->pollerInterval);
 	}

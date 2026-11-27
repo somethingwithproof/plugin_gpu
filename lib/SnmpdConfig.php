@@ -97,6 +97,10 @@ final class SnmpdConfig {
 	/**
 	 * @param list<string> $env
 	 * @param list<string> $fields
+	 * @param string $name
+	 * @param int $cache
+	 * @param string $format
+	 * @return string
 	 */
 	private static function line(string $name, int $cache, array $env, array $fields, string $format): string {
 		return implode(' ', array_merge(

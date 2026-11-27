@@ -45,15 +45,31 @@ final class NvidiaSmiParser {
 	private const TIMESTAMP = '/^[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,6})?$/';
 
 	/**
+	 * Parse the nvidia-smi metrics and names SNMP extend outputs into a Collection.
+	 *
+	 * @param ExtendOutput $metrics CSV metrics extend output
+	 * @param ExtendOutput $names   CSV uuid,name extend output
+	 *
+	 * @return Collection
+	 *
 	 * @throws CollectionError
 	 */
 	public function parse(ExtendOutput $metrics, ExtendOutput $names): Collection {
 		$this->check($metrics, 'GPU metrics');
 		$this->check($names, 'GPU names');
 
-		$fields   = MetricModel::nvidiaFields();
-		$position = array_flip($fields);
-		$labels   = $this->names($names);
+		$fields        = MetricModel::nvidiaFields();
+		$fieldCount    = count($fields);
+		$position      = array_flip($fields);
+		$labels        = $this->names($names);
+		$nvidiaMetrics = [];
+
+		foreach (MetricModel::all() as $metric) {
+			if ($metric->nvidiaField !== null) {
+				$nvidiaMetrics[] = [$metric->name, $position[$metric->nvidiaField], $metric->kind === Metric::INDICATOR, $metric->nvidiaScale];
+			}
+		}
+
 		$reports  = [];
 		$readings = [];
 		$version  = '';
@@ -61,8 +77,8 @@ final class NvidiaSmiParser {
 		foreach ($this->lines($metrics) as $number => $line) {
 			$values = array_map('trim', explode(',', $line));
 
-			if (count($values) !== count($fields)) {
-				throw new CollectionError(ExecutionState::InvalidOutput, sprintf('GPU metrics line %d has %d fields where %d were requested', $number + 1, count($values), count($fields)), 1);
+			if (count($values) !== $fieldCount) {
+				throw new CollectionError(ExecutionState::InvalidOutput, sprintf('GPU metrics line %d has %d fields where %d were requested', $number + 1, count($values), $fieldCount), 1);
 			}
 
 			$observed = $this->timestamp($values[$position['timestamp']]);
@@ -88,16 +104,12 @@ final class NvidiaSmiParser {
 			$mask = ThrottleMask::parse($values[$position[MetricModel::MASK_FIELD]]);
 			$read = ThrottleMask::indicators($mask);
 
-			foreach (MetricModel::all() as $metric) {
-				if ($metric->nvidiaField === null) {
-					continue;
-				}
+			foreach ($nvidiaMetrics as [$metricName, $colIdx, $isIndicator, $scale]) {
+				$raw = $values[$colIdx];
 
-				$raw = $values[$position[$metric->nvidiaField]];
-
-				$read[$metric->name] = $metric->kind === Metric::INDICATOR
+				$read[$metricName] = $isIndicator
 					? $this->flag($raw)
-					: Metric::scale($this->number($raw), $metric->nvidiaScale);
+					: Metric::scale($this->number($raw), $scale);
 			}
 
 			$version    = $version === '' ? $report->driverVersion : $version;
@@ -114,6 +126,16 @@ final class NvidiaSmiParser {
 		return new Collection($snapshot, $readings, self::BACKEND);
 	}
 
+	/**
+	 * Verify that an SNMP extend output succeeded and was not truncated.
+	 *
+	 * @param ExtendOutput $output extend command result
+	 * @param string       $what   human-readable label for errors
+	 *
+	 * @return void
+	 *
+	 * @throws CollectionError
+	 */
 	private function check(ExtendOutput $output, string $what): void {
 		if ($output->result !== 0) {
 			throw new CollectionError(ExecutionState::fromExitStatus($output->result), sprintf('The %s command exited with status %d', $what, $output->result));
@@ -125,6 +147,10 @@ final class NvidiaSmiParser {
 	}
 
 	/**
+	 * Return non-empty output lines, dropping a trailing blank line if present.
+	 *
+	 * @param ExtendOutput $output extend command output
+	 *
 	 * @return list<string> the output lines; a trailing empty line is dropped
 	 */
 	private function lines(ExtendOutput $output): array {
@@ -138,7 +164,13 @@ final class NvidiaSmiParser {
 	}
 
 	/**
+	 * Parse the uuid,name extend output into a lower-cased UUID lookup map.
+	 *
+	 * @param ExtendOutput $names extend command output for GPU names
+	 *
 	 * @return array<string, string> lower-cased UUID => name
+	 *
+	 * @throws CollectionError
 	 */
 	private function names(ExtendOutput $names): array {
 		$out = [];
@@ -156,12 +188,25 @@ final class NvidiaSmiParser {
 		return $out;
 	}
 
+	/**
+	 * Parse a UTC nvidia-smi timestamp into Unix seconds, rejecting calendar rollovers.
+	 *
+	 * @param string $raw timestamp field in YYYY/MM/DD HH:MM:SS[.mmm] format
+	 *
+	 * @return ?int
+	 */
 	private function timestamp(string $raw): ?int {
+		static $utc = null;
+
+		if ($utc === null) {
+			$utc = new \DateTimeZone('UTC');
+		}
+
 		if (preg_match(self::TIMESTAMP, $raw) !== 1) {
 			return null;
 		}
 
-		$time   = \DateTimeImmutable::createFromFormat('!Y/m/d H:i:s', substr($raw, 0, 19), new \DateTimeZone('UTC'));
+		$time   = \DateTimeImmutable::createFromFormat('!Y/m/d H:i:s', substr($raw, 0, 19), $utc);
 		$errors = \DateTimeImmutable::getLastErrors();
 
 		// A date such as 2026/02/30 parses with a warning and rolls over.
@@ -172,6 +217,13 @@ final class NvidiaSmiParser {
 		return $time->getTimestamp();
 	}
 
+	/**
+	 * Parse an integer GPU index or return null when unavailable.
+	 *
+	 * @param string $raw index field string
+	 *
+	 * @return ?int
+	 */
 	private function index(string $raw): ?int {
 		if (preg_match('/^-?[0-9]+$/', $raw) === 1) {
 			return (int) $raw;
@@ -180,10 +232,24 @@ final class NvidiaSmiParser {
 		return null;
 	}
 
+	/**
+	 * Parse a decimal number or return null for N/A or unsupported text.
+	 *
+	 * @param string $raw numeric field string
+	 *
+	 * @return ?float
+	 */
 	private function number(string $raw): ?float {
 		return preg_match(self::NUMBER, $raw) === 1 ? (float) $raw : null;
 	}
 
+	/**
+	 * Parse a yes/no or 1/0 boolean indicator into 1.0, 0.0, or null.
+	 *
+	 * @param string $raw flag field string
+	 *
+	 * @return ?float
+	 */
 	private function flag(string $raw): ?float {
 		return match (strtolower($raw)) {
 			'yes', '1' => 1.0,

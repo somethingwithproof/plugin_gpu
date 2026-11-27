@@ -27,6 +27,28 @@ namespace Somethingwithproof\Gpu;
 final readonly class NodeDevice {
 	public const HOST_DOWN = 1;
 
+		/**
+	 * Construct a NodeDevice instance.
+	 *
+	 * @param int $id
+	 * @param string $description
+	 * @param string $hostname
+	 * @param int $pollerId
+	 * @param int $status
+	 * @param bool $disabled
+	 * @param int $snmpVersion
+	 * @param string $snmpCommunity
+	 * @param string $snmpUsername
+	 * @param string $snmpPassword
+	 * @param string $snmpAuthProtocol
+	 * @param string $snmpPrivPassphrase
+	 * @param string $snmpPrivProtocol
+	 * @param string $snmpContext
+	 * @param string $snmpEngineId
+	 * @param int $snmpPort
+	 * @param int $snmpTimeout
+	 * @param int $maxOids
+	 */
 	public function __construct(
 		public int $id,
 		public string $description,
@@ -51,6 +73,7 @@ final readonly class NodeDevice {
 
 	/**
 	 * @param array<array-key, mixed> $row a host row
+	 * @return self
 	 */
 	public static function fromRow(array $row): self {
 		return new self(
@@ -80,6 +103,7 @@ final readonly class NodeDevice {
 	/**
 	 * Cacti's run_data_query() returns true without reindexing a device in
 	 * this state, even when forced (research/cacti-core.md).
+	 * @return bool
 	 */
 	public function reindexBlocked(): bool {
 		return $this->status === self::HOST_DOWN || $this->disabled;

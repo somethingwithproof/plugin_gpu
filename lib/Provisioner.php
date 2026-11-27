@@ -39,6 +39,14 @@ final class Provisioner {
 	// Cacti's DATA_QUERY_AUTOINDEX_NONE.
 	public const REINDEX_NONE = 0;
 
+		/**
+	 * Construct a Provisioner instance.
+	 *
+	 * @param CactiObjectRepository $cacti
+	 * @param CacheRepository $cache
+	 * @param ReindexRepository $reindex
+	 * @param Clock $clock
+	 */
 	public function __construct(
 		private readonly CactiObjectRepository $cacti,
 		private readonly CacheRepository $cache,
@@ -47,6 +55,11 @@ final class Provisioner {
 	) {
 	}
 
+		/**
+	 * Data query id.
+	 *
+	 * @return int
+	 */
 	public function dataQueryId(): int {
 		return $this->cacti->idByHash('snmp_query', TemplateXml::hash('04', TemplateXml::DATA_QUERY));
 	}
@@ -55,6 +68,8 @@ final class Provisioner {
 	 * Attach the GPU data query to the node's device, or reset its reindex
 	 * method to None after a device template change set another. A new
 	 * attachment asks for a reindex, which the next poller cycle verifies.
+	 * @param Node $node
+	 * @return bool
 	 */
 	public function attach(Node $node): bool {
 		$query = $this->dataQueryId();
@@ -85,6 +100,8 @@ final class Provisioner {
 	 * @param array{requested_at: int, reason: string, attempts: int, detail: string, generation: int}|null $request
 	 *
 	 * @return array{reindexed: bool, deferred: bool, graphs: int}
+	 * @param Node $node
+	 * @param NodeDevice $device
 	 */
 	public function provision(Node $node, NodeDevice $device, ?array $request): array {
 		$result = ['reindexed' => false, 'deferred' => false, 'graphs' => 0];
@@ -116,6 +133,15 @@ final class Provisioner {
 		return $result;
 	}
 
+		/**
+	 * Reindex node.
+	 *
+	 * @param Node $node
+	 * @param NodeDevice $device
+	 * @param int $query
+	 * @param int $generation
+	 * @return bool
+	 */
 	private function reindexNode(Node $node, NodeDevice $device, int $query, int $generation): bool {
 		$now = $this->clock->now();
 
@@ -190,6 +216,7 @@ final class Provisioner {
 	 * or bus ID that Cacti has not cached is found without a request.
 	 *
 	 * @return array<string, array<string, string>>|null
+	 * @param Node $node
 	 */
 	private function expected(Node $node): ?array {
 		$listed = $this->cache->listed($node->hostId);
@@ -211,6 +238,8 @@ final class Provisioner {
 
 	/**
 	 * @return array<string, array<string, string>>|null what Cacti has cached, in the same form
+	 * @param Node $node
+	 * @param int $query
 	 */
 	private function cached(Node $node, int $query): ?array {
 		$cached = $this->cacti->cachedFields($node->hostId, $query, array_keys(TemplateXml::INPUT_FIELDS));
@@ -227,6 +256,9 @@ final class Provisioner {
 	 * that has none yet. A GPU's graphs share one data source, which
 	 * create_complete_graph_from_template() reuses once it exists. Absent
 	 * GPUs get no new graphs; the graphs they have stay.
+	 * @param Node $node
+	 * @param int $query
+	 * @return int
 	 */
 	private function createGraphs(Node $node, int $query): int {
 		$pending = $this->cacti->inheritedRrds($node->hostId, $query);
@@ -253,8 +285,9 @@ final class Provisioner {
 
 		$sources = array_flip($sources);
 
-		$cachedSet = array_flip($cached);
-		$created   = 0;
+		$cachedSet   = array_flip($cached);
+		$queryGraphs = $this->cacti->queryGraphs($query);
+		$created     = 0;
 
 		foreach ($listed as $row) {
 			$index = Row::string($row, 'vendor') . '/' . Row::string($row, 'uuid');
@@ -263,7 +296,7 @@ final class Provisioner {
 				continue;
 			}
 
-			foreach ($this->cacti->queryGraphs($query) as $queryGraph => $template) {
+			foreach ($queryGraphs as $queryGraph => $template) {
 				if (isset($graphed[$queryGraph . ':' . $index])) {
 					continue;
 				}
@@ -321,6 +354,10 @@ final class Provisioner {
 	 * values into that file. The file is renamed instead, kept for the
 	 * operator, and a warning names the data source but not the path,
 	 * which contains the device description (REQ-BACKUP-003).
+	 * @param Node $node
+	 * @param int $dataSource
+	 * @param bool $pending
+	 * @return bool
 	 */
 	private function setAsideInherited(Node $node, int $dataSource, bool $pending = false): bool {
 		$path = (string) get_data_source_path($dataSource, true);
@@ -357,6 +394,13 @@ final class Provisioner {
 		return $this->enableRecovered($node, $dataSource);
 	}
 
+		/**
+	 * Enable recovered.
+	 *
+	 * @param Node $node
+	 * @param int $dataSource
+	 * @return bool
+	 */
 	private function enableRecovered(Node $node, int $dataSource): bool {
 		api_data_source_enable($dataSource);
 		if (!$this->cacti->dataSourceReady($dataSource)) {

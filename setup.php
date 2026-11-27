@@ -26,10 +26,20 @@
  * down the whole Cacti UI.
  */
 
+/**
+ * Gpu php supported.
+ *
+ * @return bool
+ */
 function gpu_php_supported(): bool {
 	return version_compare(PHP_VERSION, '8.2.0', '>=');
 }
 
+/**
+ * Gpu boot.
+ *
+ * @return bool
+ */
 function gpu_boot(): bool {
 	if (!gpu_php_supported()) {
 		return false;
@@ -45,6 +55,7 @@ function gpu_boot(): bool {
  *
  * Used by the lifecycle functions only. Hook shims return silently instead,
  * because they run on every page and a refused plugin must not flood the log.
+ * @return bool
  */
 function gpu_refuse_unsupported(): bool {
 	if (gpu_php_supported()) {
@@ -83,6 +94,9 @@ function plugin_gpu_version(): array {
 	return $version;
 }
 
+/**
+ * Plugin gpu install.
+ */
 function plugin_gpu_install(): void {
 	if (gpu_refuse_unsupported()) {
 		return;
@@ -91,6 +105,11 @@ function plugin_gpu_install(): void {
 	plugin_gpu_upgrade(true);
 }
 
+/**
+ * Plugin gpu check config.
+ *
+ * @return bool
+ */
 function plugin_gpu_check_config(): bool {
 	if (gpu_refuse_unsupported()) {
 		return false;
@@ -103,6 +122,7 @@ function plugin_gpu_check_config(): bool {
  * Common start after include/auth.php establishes the user. Recheck the
  * realm here because cookie and Basic login restore the user after the
  * alternate-realms hook. Disabled plugins and unsupported runtimes refuse.
+ * @return bool
  */
 function gpu_page_start(): bool {
 	if (gpu_boot() && api_plugin_is_enabled('gpu')) {
@@ -133,6 +153,7 @@ function gpu_page_start(): bool {
  * without effect.
  *
  * @param list<string> $actions
+ * @param string $page
  */
 function gpu_require_post(string $page, array $actions): void {
 	$action = (string) get_nfilter_request_var('action');
@@ -143,18 +164,38 @@ function gpu_require_post(string $page, array $actions): void {
 	}
 }
 
+/**
+ * Gpu settings.
+ *
+ * @return \Somethingwithproof\Gpu\Settings
+ */
 function gpu_settings(): \Somethingwithproof\Gpu\Settings {
 	return (new \Somethingwithproof\Gpu\SettingsRepository(false))->load();
 }
 
+/**
+ * Gpu nodes.
+ *
+ * @return \Somethingwithproof\Gpu\NodeRepository
+ */
 function gpu_nodes(): \Somethingwithproof\Gpu\NodeRepository {
 	return new \Somethingwithproof\Gpu\NodeRepository(false, new \Somethingwithproof\Gpu\SystemClock());
 }
 
+/**
+ * Gpu gpus.
+ *
+ * @return \Somethingwithproof\Gpu\GpuRepository
+ */
 function gpu_gpus(): \Somethingwithproof\Gpu\GpuRepository {
 	return new \Somethingwithproof\Gpu\GpuRepository(false);
 }
 
+/**
+ * Gpu poller.
+ *
+ * @return \Somethingwithproof\Gpu\Poller
+ */
 function gpu_poller(): \Somethingwithproof\Gpu\Poller {
 	$clock       = new \Somethingwithproof\Gpu\SystemClock();
 	$gpus        = gpu_gpus();
@@ -178,6 +219,7 @@ function gpu_poller(): \Somethingwithproof\Gpu\Poller {
 
 /**
  * The provisioner, with the core libraries its API calls need loaded.
+ * @return \Somethingwithproof\Gpu\Provisioner
  */
 function gpu_provisioner(): \Somethingwithproof\Gpu\Provisioner {
 	global $config;
@@ -189,6 +231,11 @@ function gpu_provisioner(): \Somethingwithproof\Gpu\Provisioner {
 	return new \Somethingwithproof\Gpu\Provisioner(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\CacheRepository(false), new \Somethingwithproof\Gpu\ReindexRepository(false), new \Somethingwithproof\Gpu\SystemClock());
 }
 
+/**
+ * Gpu templates.
+ *
+ * @return \Somethingwithproof\Gpu\TemplateInstaller
+ */
 function gpu_templates(): \Somethingwithproof\Gpu\TemplateInstaller {
 	global $config;
 
@@ -201,6 +248,11 @@ function gpu_templates(): \Somethingwithproof\Gpu\TemplateInstaller {
 	return new \Somethingwithproof\Gpu\TemplateInstaller(new \Somethingwithproof\Gpu\CactiObjectRepository(false), new \Somethingwithproof\Gpu\LockRepository(false), __DIR__, rtrim((string) $config['base_path'], '/'));
 }
 
+/**
+ * Gpu script server.
+ *
+ * @return \Somethingwithproof\Gpu\ScriptServer
+ */
 function gpu_script_server(): \Somethingwithproof\Gpu\ScriptServer {
 	return new \Somethingwithproof\Gpu\ScriptServer(new \Somethingwithproof\Gpu\CacheRepository(false), new \Somethingwithproof\Gpu\SystemClock(), gpu_settings()->staleAfter);
 }
@@ -217,6 +269,8 @@ function gpu_script_server(): \Somethingwithproof\Gpu\ScriptServer {
  * check_config pass it: both run from the Plugins page, which needs plugin
  * management. A repair triggered from config_arrays can run for anyone who
  * opens a plugin page, so it must never grant anything.
+ * @param bool $grant
+ * @return bool
  */
 function plugin_gpu_upgrade(bool $grant = false): bool {
 	if (!gpu_boot()) {
@@ -255,6 +309,7 @@ function plugin_gpu_upgrade(bool $grant = false): bool {
  * Kept procedural and named *_setup_* because api_plugin_register_hook() and
  * api_plugin_register_realm() refuse callers whose function name does not
  * contain install, upgrade, or setup.
+ * @param bool $grant
  */
 function gpu_setup_hooks(bool $grant = false): void {
 	global $config;
@@ -283,6 +338,7 @@ function gpu_setup_hooks(bool $grant = false): void {
  * and ignores its result, so only stopping the request keeps the tables; the
  * plugin then stays installed and the uninstall can be retried. PHP 8.0
  * syntax, because the unbooted path uses it too.
+ * @throws RuntimeException
  */
 function gpu_uninstall_stop(): void {
 	cacti_log('ERROR: Uninstall stopped: the plugin tables could not be untracked, so Cacti would have dropped the tables it was told to keep', false, 'GPU');
@@ -330,6 +386,10 @@ function plugin_gpu_uninstall(): void {
  * Create a Cacti device for a node that has none, through Cacti's own
  * api_device_save() with the site's device defaults (ADR 0010). Returns the
  * new device id, or 0.
+ * @param string $description
+ * @param string $hostname
+ * @param int $template
+ * @return int
  */
 function gpu_create_device(string $description, string $hostname, int $template): int {
 	global $config;
@@ -355,6 +415,8 @@ function gpu_create_device(string $description, string $hostname, int $template)
 /**
  * Remove a device through Cacti's API, which also calls the device_remove
  * hooks.
+ * @param int $id
+ * @return bool
  */
 function gpu_remove_device(int $id): bool {
 	global $config;
@@ -370,6 +432,8 @@ function gpu_remove_device(int $id): bool {
  * Whether Maint holds a device in maintenance, or null when Maint is not
  * enabled. It asks Maint's own check, guarded, because core has no caller
  * of the is_device_in_maintenance hook (PLAN, Measurement state).
+ * @param int $host_id
+ * @return ?bool
  */
 function gpu_in_maintenance(int $host_id): ?bool {
 	global $config;
@@ -415,6 +479,11 @@ function gpu_poller_bottom(): void {
 	exec_background($php, $args);
 }
 
+/**
+ * Gpu casc.
+ *
+ * @return \Somethingwithproof\Gpu\CascProvider
+ */
 function gpu_casc(): \Somethingwithproof\Gpu\CascProvider {
 	$clock    = new \Somethingwithproof\Gpu\SystemClock();
 	$interval = max(60, (int) read_config_option('poller_interval'));
@@ -430,6 +499,11 @@ function gpu_casc(): \Somethingwithproof\Gpu\CascProvider {
 	);
 }
 
+/**
+ * Gpu ecosystem.
+ *
+ * @return \Somethingwithproof\Gpu\EcosystemIntegration
+ */
 function gpu_ecosystem(): \Somethingwithproof\Gpu\EcosystemIntegration {
 	$clock    = new \Somethingwithproof\Gpu\SystemClock();
 	$interval = max(60, (int) read_config_option('poller_interval'));
@@ -537,6 +611,53 @@ function gpu_doctor_register_checks($checks) {
 }
 
 /**
+ * doctor_register_debug_info hook: register read-only GPU diagnostic summary
+ * fields with Cacti Doctor as a plain array without cross-plugin imports.
+ *
+ * @param mixed $info existing debug info sections
+ *
+ * @return mixed
+ */
+function gpu_doctor_register_debug_info($info) {
+	if (!gpu_boot()) {
+		return $info;
+	}
+
+	$version = plugin_gpu_version();
+	$section = gpu_ecosystem()->doctorDebugInfo($version['version'] ?? '');
+
+	if (is_array($info)) {
+		$info['gpu'] = $section;
+
+		return $info;
+	}
+
+	return array('gpu' => $section);
+}
+
+/**
+ * api_register_resources hook: register read-only GPU REST API resources as
+ * plain arrays without cross-plugin PHP imports.
+ *
+ * @param mixed $resources existing API resource descriptors
+ *
+ * @return mixed
+ */
+function gpu_api_register_resources($resources) {
+	if (!gpu_boot()) {
+		return $resources;
+	}
+
+	$registered = gpu_ecosystem()->apiResources();
+
+	if (is_array($resources)) {
+		return array_merge($resources, $registered);
+	}
+
+	return $registered;
+}
+
+/**
  * casc_register_providers hook: register the GPU CasC provider.
  *
  * @param mixed $providers
@@ -609,6 +730,9 @@ function gpu_api_device_new($save) {
 	return $save;
 }
 
+/**
+ * Gpu config arrays.
+ */
 function gpu_config_arrays(): void {
 	global $menu;
 
@@ -634,6 +758,9 @@ function gpu_config_arrays(): void {
 	}
 }
 
+/**
+ * Gpu config settings.
+ */
 function gpu_config_settings(): void {
 	global $tabs, $settings;
 
@@ -712,7 +839,11 @@ function gpu_auth_alternate_realms(): void {
 	}
 }
 
-/** Recheck the authenticated user before a plugin page reads data or acts. */
+/**
+ * Recheck the authenticated user before a plugin page reads data or acts.
+ *
+ * @return bool
+ */
 function gpu_page_allowed(): bool {
 	global $current_user;
 

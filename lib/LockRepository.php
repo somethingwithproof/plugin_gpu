@@ -30,17 +30,29 @@ final class LockRepository {
 	// lock names to 64 characters and a database name alone may be longer.
 	private const NAME = "SHA2(CONCAT(DATABASE(), '.plugin_gpu.', ?), 256)";
 
+		/**
+	 * Construct a LockRepository instance.
+	 *
+	 * @param \PDO|false $connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
 	/**
 	 * Take a lock without waiting. False when another connection holds it or
 	 * the server could not be asked.
+	 * @param string $name
+	 * @return bool
 	 */
 	public function acquire(string $name): bool {
 		return (int) db_fetch_cell_prepared('SELECT GET_LOCK(' . self::NAME . ', 0)', [$name], '', true, $this->connection) === 1;
 	}
 
+		/**
+	 * Release.
+	 *
+	 * @param string $name
+	 */
 	public function release(string $name): void {
 		db_fetch_cell_prepared('SELECT RELEASE_LOCK(' . self::NAME . ')', [$name], '', true, $this->connection);
 	}

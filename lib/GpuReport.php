@@ -42,6 +42,21 @@ final readonly class GpuReport {
 	// domain, DCGM and the kernel four.
 	private const PCI_BUS_ID = '/^([0-9a-f]{4,8}):([0-9a-f]{2}):([0-9a-f]{2})\.([0-7])$/';
 
+		/**
+	 * Construct a GpuReport instance.
+	 *
+	 * @param Vendor $vendor
+	 * @param string $uuid
+	 * @param ?int $index
+	 * @param string $pciBusId
+	 * @param string $name
+	 * @param string $driverVersion
+	 * @param string $migMode
+	 * @param string $migInstanceId
+	 * @param string $migProfile
+	 * @param string $parentUuid
+	 * @param string $partitionInfo
+	 */
 	private function __construct(
 		public Vendor $vendor,
 		public string $uuid,
@@ -61,6 +76,14 @@ final readonly class GpuReport {
 	 * @param ?int $index null when the tool reported the index as unavailable
 	 *
 	 * @throws \InvalidArgumentException naming the field, never echoing its value
+	 * @param Vendor $vendor
+	 * @param string $uuid
+	 * @param string $pciBusId
+	 * @param string $name
+	 * @param string $driverVersion
+	 * @param string $migMode
+	 * @param string $partitionInfo
+	 * @return self
 	 */
 	public static function create(
 		Vendor $vendor,
@@ -89,6 +112,15 @@ final readonly class GpuReport {
 	 * Keyed by its globally unique MIG UUID, never by instance number alone.
 	 *
 	 * @throws \InvalidArgumentException naming the field, never echoing its value
+	 * @param string $migUuid
+	 * @param string $parentUuid
+	 * @param string $migInstanceId
+	 * @param string $migProfile
+	 * @param string $pciBusId
+	 * @param string $name
+	 * @param string $driverVersion
+	 * @param ?int $index
+	 * @return self
 	 */
 	public static function createMig(
 		string $migUuid,
@@ -122,6 +154,11 @@ final readonly class GpuReport {
 		);
 	}
 
+		/**
+	 * Is mig.
+	 *
+	 * @return bool
+	 */
 	public function isMig(): bool {
 		return $this->parentUuid !== '';
 	}
@@ -129,6 +166,10 @@ final readonly class GpuReport {
 	/**
 	 * The identity key (REQ-ID-001). Only a whole-GPU UUID qualifies here;
 	 * MIG instances must use createMig().
+	 * @param Vendor $vendor
+	 * @param string $uuid
+	 * @return string
+	 * @throws \InvalidArgumentException
 	 */
 	private static function uuid(Vendor $vendor, string $uuid): string {
 		$uuid = trim($uuid);
@@ -157,6 +198,13 @@ final readonly class GpuReport {
 		return $m[1];
 	}
 
+		/**
+	 * Mig uuid.
+	 *
+	 * @param string $uuid
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
 	private static function migUuid(string $uuid): string {
 		$uuid = trim($uuid);
 
@@ -175,6 +223,12 @@ final readonly class GpuReport {
 		return $key;
 	}
 
+		/**
+	 * Clean mig mode.
+	 *
+	 * @param string $mode
+	 * @return string
+	 */
 	private static function cleanMigMode(string $mode): string {
 		return match (strtolower(trim($mode))) {
 			'enabled', '1', 'on', 'true'   => 'enabled',
@@ -186,6 +240,9 @@ final readonly class GpuReport {
 	/**
 	 * Normalized to nvidia-smi's spelling, an eight-digit domain in upper
 	 * case, so the same slot compares equal whichever tool reported it.
+	 * @param string $busId
+	 * @return string
+	 * @throws \InvalidArgumentException
 	 */
 	private static function busId(string $busId): string {
 		if (preg_match(self::PCI_BUS_ID, strtolower(trim($busId)), $parts) !== 1) {
@@ -198,6 +255,9 @@ final readonly class GpuReport {
 	/**
 	 * Free text from a tool: control characters removed, whitespace trimmed,
 	 * and cut to the column width. Escaping happens where it is printed.
+	 * @param string $text
+	 * @param int $length
+	 * @return string
 	 */
 	public static function clean(string $text, int $length): string {
 		$text = (string) preg_replace('/[\x00-\x1F\x7F]+/', ' ', $text);
@@ -209,6 +269,11 @@ final readonly class GpuReport {
 		return mb_substr(trim($text), 0, $length);
 	}
 
+		/**
+	 * Key.
+	 *
+	 * @return string
+	 */
 	public function key(): string {
 		return $this->vendor->value . '/' . $this->uuid;
 	}

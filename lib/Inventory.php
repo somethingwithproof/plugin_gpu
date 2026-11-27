@@ -25,6 +25,13 @@ namespace Somethingwithproof\Gpu;
  * once per successful collection and never for a failed one.
  */
 final class Inventory {
+		/**
+	 * Construct a Inventory instance.
+	 *
+	 * @param GpuRepository $gpus
+	 * @param IdentityReconciler $reconciler
+	 * @param Clock $clock
+	 */
 	public function __construct(
 		private readonly GpuRepository $gpus,
 		private readonly IdentityReconciler $reconciler,
@@ -32,6 +39,14 @@ final class Inventory {
 	) {
 	}
 
+		/**
+	 * Record.
+	 *
+	 * @param Node $node
+	 * @param GpuSnapshot $snapshot
+	 * @param int $absentAfter
+	 * @return Reconciliation
+	 */
 	public function record(Node $node, GpuSnapshot $snapshot, int $absentAfter): Reconciliation {
 		$known = $this->gpus->forReconcile($node, $snapshot);
 

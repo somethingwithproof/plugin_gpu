@@ -33,6 +33,8 @@ final readonly class ExtendOutput {
 
 	/**
 	 * @param list<string> $lines
+	 * @param int $result
+	 * @param int $declaredLines
 	 */
 	public function __construct(
 		public int $result,
@@ -41,6 +43,11 @@ final readonly class ExtendOutput {
 	) {
 	}
 
+		/**
+	 * Truncated.
+	 *
+	 * @return bool
+	 */
 	public function truncated(): bool {
 		$bytes = 0;
 

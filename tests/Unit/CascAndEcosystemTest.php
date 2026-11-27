@@ -200,4 +200,49 @@ it('registers read-only View-realm-gated MCP abilities, Doctor checks, CasC prov
 	expect($eco->handleRemoteAgent('gpu_health')['status'])->toBe('ok')
 		->and($eco->handleRemoteAgent('gpu_inventory')['plugin'])->toBe('gpu')
 		->and($eco->handleRemoteAgent('exec_shell'))->toBeNull();
+
+	// Decoupled Doctor debug info (plain array, no secrets, no cross-plugin imports).
+	$debugInfo = $eco->doctorDebugInfo('0.1.0');
+	expect($debugInfo['label'])->toBe('GPU Plugin')
+		->and($debugInfo['fields']['plugin_version']['value'])->toBe('0.1.0')
+		->and($debugInfo['fields']['schema_version']['value'])->toBe(Schema::VERSION)
+		->and($debugInfo['fields']['mig_instances']['value'])->toBe(1);
+
+	$mergedDebug = gpu_doctor_register_debug_info(['core' => ['label' => 'Core']]);
+	expect($mergedDebug)->toHaveKey('core')
+		->and($mergedDebug)->toHaveKey('gpu');
+
+	// Decoupled REST/API resource descriptors (plain array, read-only GET, View realm gated).
+	$resources = $eco->apiResources();
+	expect(array_keys($resources))->toBe(['gpu/nodes', 'gpu/devices', 'gpu/health', 'gpu/cluster-utilization']);
+
+	foreach ($resources as $resource) {
+		expect($resource['methods'])->toBe(['GET'])
+			->and($resource['read_only'])->toBeTrue()
+			->and($resource['realm'])->toBe('GPU View')
+			->and(($resource['permission'])(1))->toBeTrue();
+	}
+
+	expect(($resources['gpu/nodes']['handler'])(1, [])['nodes'])->toHaveCount(1)
+		->and(($resources['gpu/devices']['handler'])(1, ['vendor' => 'nvidia'])['devices'])->toHaveCount(2)
+		->and(($resources['gpu/health']['handler'])(1, [])['status'])->toBe('ok')
+		->and(($resources['gpu/cluster-utilization']['handler'])(1, ['gang_size' => 8])['totals']['gpus_present'])->toBe(2);
+
+	$mergedResources = gpu_api_register_resources(['existing/resource' => ['plugin' => 'other']]);
+	expect($mergedResources)->toHaveKey('existing/resource')
+		->and($mergedResources)->toHaveKey('gpu/cluster-utilization');
+});
+
+it('ships schema/gpu.schema.yaml with strict Config vs State separation and SPDX metadata', function () {
+	$path = dirname(__DIR__, 2) . '/schema/gpu.schema.yaml';
+	expect(is_file($path))->toBeTrue();
+
+	$yaml = (string) file_get_contents($path);
+	expect($yaml)->toContain('SPDX-License-Identifier: GPL-2.0-or-later')
+		->and($yaml)->toContain('config:')
+		->and($yaml)->toContain('state:')
+		->and($yaml)->toContain('read_only_in_casc: true')
+		->and($yaml)->toContain('cross_plugin_php_imports: false')
+		->and($yaml)->toContain('doctor_register_debug_info')
+		->and($yaml)->toContain('api_register_resources');
 });

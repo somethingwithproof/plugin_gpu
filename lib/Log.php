@@ -26,18 +26,38 @@ namespace Somethingwithproof\Gpu;
  * by hostname, serial number, or raw tool output.
  */
 final class Log {
+		/**
+	 * Debug.
+	 *
+	 * @param string $message
+	 */
 	public static function debug(string $message): void {
 		cacti_log('DEBUG: ' . $message, false, 'GPU', POLLER_VERBOSITY_DEBUG);
 	}
 
+		/**
+	 * Info.
+	 *
+	 * @param string $message
+	 */
 	public static function info(string $message): void {
 		cacti_log('NOTE: ' . $message, false, 'GPU', POLLER_VERBOSITY_MEDIUM);
 	}
 
+		/**
+	 * Warning.
+	 *
+	 * @param string $message
+	 */
 	public static function warning(string $message): void {
 		cacti_log('WARNING: ' . $message, false, 'GPU');
 	}
 
+		/**
+	 * Error.
+	 *
+	 * @param string $message
+	 */
 	public static function error(string $message): void {
 		cacti_log('ERROR: ' . $message, false, 'GPU');
 	}

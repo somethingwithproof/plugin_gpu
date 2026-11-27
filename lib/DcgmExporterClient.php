@@ -82,6 +82,7 @@ final class DcgmExporterClient {
 	 * @return array{scheme: string, host: string, port: int, path: string, normalized: string}
 	 *
 	 * @throws CollectionError
+	 * @param string $endpoint
 	 */
 	public function validateEndpoint(string $endpoint): array {
 		$endpoint = trim($endpoint);
@@ -179,6 +180,8 @@ final class DcgmExporterClient {
 	 * Fetch Prometheus metrics text from a validated, allowlisted DCGM Exporter endpoint.
 	 *
 	 * @throws CollectionError
+	 * @param string $endpoint
+	 * @return string
 	 */
 	public function fetch(string $endpoint): string {
 		$validated = $this->validateEndpoint($endpoint);
@@ -207,6 +210,13 @@ final class DcgmExporterClient {
 		return $result['body'];
 	}
 
+		/**
+	 * Is host allowed.
+	 *
+	 * @param string $host
+	 * @param int $port
+	 * @return bool
+	 */
 	private function isHostAllowed(string $host, int $port): bool {
 		if ($this->allowlist === []) {
 			return false;
@@ -229,6 +239,7 @@ final class DcgmExporterClient {
 	 * @return array{status: int, body: string, truncated: bool}
 	 *
 	 * @throws CollectionError
+	 * @param string $url
 	 */
 	private function performStreamRequest(string $url, array $options): array {
 		$context = stream_context_create($options);

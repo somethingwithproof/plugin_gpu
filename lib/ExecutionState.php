@@ -44,6 +44,11 @@ enum ExecutionState: string {
 	// The tool output was good but the plugin could not store the result.
 	case NotStored        = 'not_stored';
 
+		/**
+	 * Succeeded.
+	 *
+	 * @return bool
+	 */
 	public function succeeded(): bool {
 		return $this === self::Ok || $this === self::Empty;
 	}
@@ -53,6 +58,8 @@ enum ExecutionState: string {
 	 * as no permission and 9 as driver not loaded; timeout(1) exits 124 when
 	 * it stops the command and 137 when it has to kill it; 126 and 127 are
 	 * the shell convention env(1) follows for a program it cannot run.
+	 * @param int $status
+	 * @return self
 	 */
 	public static function fromExitStatus(int $status): self {
 		return match ($status) {
@@ -70,6 +77,7 @@ enum ExecutionState: string {
 	 * error, permission denied, timed out, or unknown. Every failure that is
 	 * not a permission or a timeout is a tool error, with label() saying
 	 * which; a skipped run says nothing about the node, so it is unknown.
+	 * @return string
 	 */
 	public function outcome(): string {
 		return match ($this) {
@@ -81,6 +89,11 @@ enum ExecutionState: string {
 		};
 	}
 
+		/**
+	 * Label.
+	 *
+	 * @return string
+	 */
 	public function label(): string {
 		return match ($this) {
 			self::Ok               => __('Collected', 'gpu'),

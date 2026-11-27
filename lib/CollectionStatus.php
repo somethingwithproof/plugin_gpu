@@ -24,6 +24,21 @@ namespace Somethingwithproof\Gpu;
  * no status.
  */
 final readonly class CollectionStatus {
+		/**
+	 * Construct a CollectionStatus instance.
+	 *
+	 * @param int $nodeId
+	 * @param ?ExecutionState $state
+	 * @param string $detail
+	 * @param int $startedAt
+	 * @param int $finishedAt
+	 * @param int $observedAt
+	 * @param int $gpus
+	 * @param int $newGpus
+	 * @param int $rejectedLines
+	 * @param int $skipped
+	 * @param int $lastOkAt
+	 */
 	public function __construct(
 		public int $nodeId,
 		// Null while the first collection is still running.
@@ -42,6 +57,7 @@ final readonly class CollectionStatus {
 
 	/**
 	 * @param array<array-key, mixed> $row a plugin_gpu_collection row
+	 * @return self
 	 */
 	public static function fromRow(array $row): self {
 		$state = Row::string($row, 'state');
@@ -64,6 +80,7 @@ final readonly class CollectionStatus {
 	/**
 	 * Whether the latest finished collection succeeded. A run that started
 	 * after it and has not finished does not change the answer.
+	 * @return bool
 	 */
 	public function succeeded(): bool {
 		return $this->state !== null && $this->state->succeeded();

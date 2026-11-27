@@ -19,6 +19,9 @@
 
 namespace Somethingwithproof\Gpu;
 
+/**
+ * Administrative enabled/disabled state for a registered GPU node.
+ */
 enum AdminState: string {
 	case Enabled  = 'enabled';
 	case Disabled = 'disabled';
