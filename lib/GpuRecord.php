@@ -45,6 +45,11 @@ final readonly class GpuRecord {
 		public int $pendingSince,
 		public int $firstSeen,
 		public int $lastSeen,
+		public string $migMode = '',
+		public string $migInstanceId = '',
+		public string $migProfile = '',
+		public string $parentUuid = '',
+		public string $partitionInfo = '',
 	) {
 	}
 
@@ -78,6 +83,11 @@ final readonly class GpuRecord {
 			pendingSince: Row::int($row, 'pending_since', 0, 0),
 			firstSeen: Row::int($row, 'first_seen', 0, 0),
 			lastSeen: Row::int($row, 'last_seen', 0, 0),
+			migMode: Row::string($row, 'mig_mode'),
+			migInstanceId: Row::string($row, 'mig_instance_id'),
+			migProfile: Row::string($row, 'mig_profile'),
+			parentUuid: Row::string($row, 'parent_uuid'),
+			partitionInfo: Row::string($row, 'partition_info'),
 		);
 	}
 
@@ -104,6 +114,11 @@ final readonly class GpuRecord {
 			'pending_since'   => $this->pendingSince,
 			'first_seen'      => $this->firstSeen,
 			'last_seen'       => $this->lastSeen,
+			'mig_mode'        => $this->migMode,
+			'mig_instance_id' => $this->migInstanceId,
+			'mig_profile'     => $this->migProfile,
+			'parent_uuid'     => $this->parentUuid,
+			'partition_info'  => $this->partitionInfo,
 		];
 	}
 
@@ -111,12 +126,39 @@ final readonly class GpuRecord {
 		return $this->vendor->value . '/' . $this->uuid;
 	}
 
+	public function isMig(): bool {
+		return $this->parentUuid !== '';
+	}
+
 	/**
 	 * A UUID no record holds: a new GPU with its own history. $replacesGpuId
 	 * names the record it may have replaced, but nothing is inherited from it.
 	 */
 	public static function discovered(GpuReport $report, GpuSnapshot $snapshot, int $nodeId, int $replacesGpuId, int $now): self {
-		return new self(0, $report->vendor, $report->uuid, $nodeId, $report->index, $report->pciBusId, $report->name, $report->driverVersion, $snapshot->tool, $snapshot->toolVersion, Presence::Present, 0, $replacesGpuId, 0, 0, $now, $now);
+		return new self(
+			0,
+			$report->vendor,
+			$report->uuid,
+			$nodeId,
+			$report->index,
+			$report->pciBusId,
+			$report->name,
+			$report->driverVersion,
+			$snapshot->tool,
+			$snapshot->toolVersion,
+			Presence::Present,
+			0,
+			$replacesGpuId,
+			0,
+			0,
+			$now,
+			$now,
+			$report->migMode,
+			$report->migInstanceId,
+			$report->migProfile,
+			$report->parentUuid,
+			$report->partitionInfo,
+		);
 	}
 
 	/**
@@ -124,7 +166,30 @@ final readonly class GpuRecord {
 	 * pending move elsewhere is dropped because the GPU is back home.
 	 */
 	public function seen(GpuReport $report, GpuSnapshot $snapshot, int $now): self {
-		return new self($this->id, $this->vendor, $this->uuid, $this->nodeId, $report->index, $report->pciBusId, $report->name, $report->driverVersion, $snapshot->tool, $snapshot->toolVersion, Presence::Present, 0, $this->replacesGpuId, 0, 0, $this->firstSeen, $now);
+		return new self(
+			$this->id,
+			$this->vendor,
+			$this->uuid,
+			$this->nodeId,
+			$report->index,
+			$report->pciBusId,
+			$report->name,
+			$report->driverVersion,
+			$snapshot->tool,
+			$snapshot->toolVersion,
+			Presence::Present,
+			0,
+			$this->replacesGpuId,
+			0,
+			0,
+			$this->firstSeen,
+			$now,
+			$report->migMode !== '' ? $report->migMode : $this->migMode,
+			$report->migInstanceId !== '' ? $report->migInstanceId : $this->migInstanceId,
+			$report->migProfile !== '' ? $report->migProfile : $this->migProfile,
+			$report->parentUuid !== '' ? $report->parentUuid : $this->parentUuid,
+			$report->partitionInfo !== '' ? $report->partitionInfo : $this->partitionInfo,
+		);
 	}
 
 	/**
@@ -134,7 +199,30 @@ final readonly class GpuRecord {
 	public function seenElsewhere(int $nodeId, int $now): self {
 		$since = $this->pendingNodeId === $nodeId ? $this->pendingSince : $now;
 
-		return new self($this->id, $this->vendor, $this->uuid, $this->nodeId, $this->index, $this->pciBusId, $this->name, $this->driverVersion, $this->tool, $this->toolVersion, $this->presence, $this->missingCount, $this->replacesGpuId, $nodeId, $since, $this->firstSeen, $this->lastSeen);
+		return new self(
+			$this->id,
+			$this->vendor,
+			$this->uuid,
+			$this->nodeId,
+			$this->index,
+			$this->pciBusId,
+			$this->name,
+			$this->driverVersion,
+			$this->tool,
+			$this->toolVersion,
+			$this->presence,
+			$this->missingCount,
+			$this->replacesGpuId,
+			$nodeId,
+			$since,
+			$this->firstSeen,
+			$this->lastSeen,
+			$this->migMode,
+			$this->migInstanceId,
+			$this->migProfile,
+			$this->parentUuid,
+			$this->partitionInfo,
+		);
 	}
 
 	/**
@@ -144,7 +232,30 @@ final readonly class GpuRecord {
 	public function missed(int $absentAfter): self {
 		$missing = $this->missingCount + 1;
 
-		return new self($this->id, $this->vendor, $this->uuid, $this->nodeId, $this->index, $this->pciBusId, $this->name, $this->driverVersion, $this->tool, $this->toolVersion, $missing >= $absentAfter ? Presence::Absent : $this->presence, $missing, $this->replacesGpuId, $this->pendingNodeId, $this->pendingSince, $this->firstSeen, $this->lastSeen);
+		return new self(
+			$this->id,
+			$this->vendor,
+			$this->uuid,
+			$this->nodeId,
+			$this->index,
+			$this->pciBusId,
+			$this->name,
+			$this->driverVersion,
+			$this->tool,
+			$this->toolVersion,
+			$missing >= $absentAfter ? Presence::Absent : $this->presence,
+			$missing,
+			$this->replacesGpuId,
+			$this->pendingNodeId,
+			$this->pendingSince,
+			$this->firstSeen,
+			$this->lastSeen,
+			$this->migMode,
+			$this->migInstanceId,
+			$this->migProfile,
+			$this->parentUuid,
+			$this->partitionInfo,
+		);
 	}
 
 	public function possibleReplacement(): bool {

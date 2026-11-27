@@ -395,11 +395,6 @@ function gpu_poller_bottom(): void {
 		return;
 	}
 
-	// Remote data collectors are phase 3; only the main poller collects.
-	if ((int) $config['poller_id'] !== \Somethingwithproof\Gpu\Poller::MAIN_POLLER) {
-		return;
-	}
-
 	if (!function_exists('exec_background')) {
 		include_once($config['library_path'] . '/poller.php');
 	}
@@ -418,6 +413,149 @@ function gpu_poller_bottom(): void {
 	$args = '-q ' . cacti_escapeshellarg(__DIR__ . '/poller_gpu.php');
 
 	exec_background($php, $args);
+}
+
+function gpu_casc(): \Somethingwithproof\Gpu\CascProvider {
+	$clock    = new \Somethingwithproof\Gpu\SystemClock();
+	$interval = max(60, (int) read_config_option('poller_interval'));
+
+	return new \Somethingwithproof\Gpu\CascProvider(
+		new \Somethingwithproof\Gpu\SettingsRepository(false),
+		new \Somethingwithproof\Gpu\NodeRepository(false, $clock),
+		new \Somethingwithproof\Gpu\GpuRepository(false),
+		new \Somethingwithproof\Gpu\CollectionRepository(false),
+		new \Somethingwithproof\Gpu\ObservationRepository(false),
+		$clock,
+		$interval,
+	);
+}
+
+function gpu_ecosystem(): \Somethingwithproof\Gpu\EcosystemIntegration {
+	$clock    = new \Somethingwithproof\Gpu\SystemClock();
+	$interval = max(60, (int) read_config_option('poller_interval'));
+
+	return new \Somethingwithproof\Gpu\EcosystemIntegration(
+		new \Somethingwithproof\Gpu\Schema(false),
+		new \Somethingwithproof\Gpu\SettingsRepository(false),
+		new \Somethingwithproof\Gpu\NodeRepository(false, $clock),
+		new \Somethingwithproof\Gpu\GpuRepository(false),
+		new \Somethingwithproof\Gpu\CollectionRepository(false),
+		new \Somethingwithproof\Gpu\ObservationRepository(false),
+		$clock,
+		function (int $userId): bool {
+			return api_plugin_user_realm_auth('gpu_inventory.php') || api_plugin_user_realm_auth('gpu_health.php');
+		},
+		function (int $userId, int $hostId): bool {
+			return is_device_allowed($hostId, $userId);
+		},
+		$interval,
+	);
+}
+
+/**
+ * replicate_out hook: push plugin configuration tables scoped to the target
+ * remote data collector (REQ-REM-002).
+ *
+ * @param mixed $data
+ * @return mixed
+ */
+function gpu_replicate_out($data) {
+	if (!gpu_boot() || !is_array($data)) {
+		return $data;
+	}
+
+	$pollerId = isset($data['remote_poller_id']) && is_numeric($data['remote_poller_id']) ? (int) $data['remote_poller_id'] : 0;
+	$rcnnId   = $data['rcnn_id'] ?? false;
+
+	if ($pollerId < 1 || !is_object($rcnnId) || !function_exists('replicate_out_table')) {
+		return $data;
+	}
+
+	$repo = new \Somethingwithproof\Gpu\ReplicationRepository(false);
+
+	foreach ($repo->tablesForPoller($pollerId) as $table => $rows) {
+		replicate_out_table($rcnnId, $rows, $table, $pollerId);
+	}
+
+	return $data;
+}
+
+/**
+ * remote_agent hook: serve read-only inventory and health actions on a remote
+ * data collector (REQ-AGENT-001, REQ-AGENT-002).
+ *
+ * @param mixed $data
+ * @return mixed
+ */
+function gpu_remote_agent($data) {
+	if (!gpu_boot() || !is_array($data)) {
+		return $data;
+	}
+
+	$action = isset($data['action']) && is_string($data['action']) ? $data['action'] : '';
+	$result = gpu_ecosystem()->handleRemoteAgent($action);
+
+	if ($result !== null) {
+		$data['result'] = $result;
+	}
+
+	return $data;
+}
+
+/**
+ * abilities_register hook: expose read-only GPU abilities gated by GPU View realm.
+ *
+ * @param mixed $registrar
+ * @return mixed
+ */
+function gpu_abilities_register($registrar) {
+	if (!gpu_boot()) {
+		return $registrar;
+	}
+
+	return gpu_ecosystem()->registerAbilities($registrar);
+}
+
+/**
+ * doctor_register_checks hook: register GPU diagnostic checks with Cacti Doctor.
+ *
+ * @param mixed $checks
+ * @return mixed
+ */
+function gpu_doctor_register_checks($checks) {
+	if (!gpu_boot()) {
+		return $checks;
+	}
+
+	$registered = gpu_ecosystem()->doctorChecks();
+
+	if (is_array($checks)) {
+		return array_merge($checks, $registered);
+	}
+
+	return $registered;
+}
+
+/**
+ * casc_register_providers hook: register the GPU CasC provider.
+ *
+ * @param mixed $providers
+ * @return mixed
+ */
+function gpu_casc_register_providers($providers) {
+	if (!gpu_boot()) {
+		return $providers;
+	}
+
+	$descriptor = gpu_ecosystem()->cascDescriptor();
+
+	if (is_array($providers)) {
+		$providers['gpu'] = $descriptor;
+
+		return $providers;
+	}
+
+	return array('gpu' => $descriptor);
 }
 
 /**

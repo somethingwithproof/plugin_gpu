@@ -99,13 +99,21 @@ final class ScriptServer {
 		$parts  = explode('/', $index, 2);
 		$vendor = Vendor::tryFrom($parts[0]);
 
-		if ($vendor === null || count($parts) !== 2 || preg_match('/^[A-Za-z0-9-]{1,96}$/', $parts[1]) !== 1) {
+		if ($vendor === null || count($parts) !== 2 || !self::validUuid($vendor, $parts[1])) {
 			return 'U';
 		}
 
 		$row = $this->cache->sample($hostId, $vendor, $parts[1]);
 
 		return $row === null ? 'U' : Freshness::format(Freshness::value($field, $row, $this->clock->now(), $this->staleAfter));
+	}
+
+	private static function validUuid(Vendor $vendor, string $uuid): bool {
+		if ($vendor === Vendor::Nvidia) {
+			return preg_match('/^(?:GPU-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|MIG-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|MIG-GPU-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9]{1,4}\/[0-9]{1,4})$/', $uuid) === 1;
+		}
+
+		return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $uuid) === 1;
 	}
 
 	/**

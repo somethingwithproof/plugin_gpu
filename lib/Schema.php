@@ -35,16 +35,21 @@ namespace Somethingwithproof\Gpu;
  * RRD file, or contacts a GPU node (REQ-LIFE-003, REQ-LIFE-005).
  */
 final class Schema {
-	public const VERSION = 3;
+	public const VERSION = 4;
 
 	public const HOOKS = [
-		'auth_alternate_realms' => 'gpu_auth_alternate_realms',
-		'config_arrays'        => 'gpu_config_arrays',
-		'config_settings'      => 'gpu_config_settings',
-		'draw_navigation_text' => 'gpu_draw_navigation_text',
-		'poller_bottom'        => 'gpu_poller_bottom',
-		'device_remove'        => 'gpu_device_remove',
-		'api_device_new'       => 'gpu_api_device_new',
+		'auth_alternate_realms'  => 'gpu_auth_alternate_realms',
+		'config_arrays'          => 'gpu_config_arrays',
+		'config_settings'        => 'gpu_config_settings',
+		'draw_navigation_text'   => 'gpu_draw_navigation_text',
+		'poller_bottom'          => 'gpu_poller_bottom',
+		'device_remove'          => 'gpu_device_remove',
+		'api_device_new'         => 'gpu_api_device_new',
+		'replicate_out'          => 'gpu_replicate_out',
+		'remote_agent'           => 'gpu_remote_agent',
+		'abilities_register'     => 'gpu_abilities_register',
+		'doctor_register_checks' => 'gpu_doctor_register_checks',
+		'casc_register_providers' => 'gpu_casc_register_providers',
 	];
 
 	// The metric columns of plugin_gpu_observation, as migration 2 created
@@ -160,6 +165,9 @@ final class Schema {
 			// ECC delta, retired-page, and ECC mode columns (#45). A fresh
 			// install created them in migration 2, from the current table.
 			3 => fn (): bool => $this->addColumns('plugin_gpu_observation', self::observationColumns3()),
+			// MIG instance identity and AMD partition attributes (#56, #59).
+			// A fresh install created them in migration 1, from the current table.
+			4 => fn (): bool => $this->addColumns('plugin_gpu_gpu', self::gpuColumns4()),
 		];
 	}
 
@@ -180,6 +188,19 @@ final class Schema {
 			array_map(static fn (string $name): array => ['name' => $name, 'type' => 'double', 'NULL' => true], self::OBSERVATION_METRICS_3),
 			[['name' => 'ecc_mode', 'type' => 'varchar(16)', 'NULL' => false, 'default' => '']],
 		);
+	}
+
+	/**
+	 * @return list<array<string, mixed>>
+	 */
+	private static function gpuColumns4(): array {
+		return [
+			['name' => 'mig_mode', 'type' => 'varchar(16)', 'NULL' => false, 'default' => ''],
+			['name' => 'mig_instance_id', 'type' => 'varchar(32)', 'NULL' => false, 'default' => ''],
+			['name' => 'mig_profile', 'type' => 'varchar(64)', 'NULL' => false, 'default' => ''],
+			['name' => 'parent_uuid', 'type' => 'varchar(96)', 'NULL' => false, 'default' => ''],
+			['name' => 'partition_info', 'type' => 'varchar(128)', 'NULL' => false, 'default' => ''],
+		];
 	}
 
 	/**
@@ -296,6 +317,11 @@ final class Schema {
 					$time('pending_since'),
 					$time('first_seen'),
 					$time('last_seen'),
+					$text('mig_mode', 16),
+					$text('mig_instance_id', 32),
+					$text('mig_profile', 64),
+					$text('parent_uuid', 96),
+					$text('partition_info', 128),
 				],
 				'primary'     => 'id',
 				'unique_keys' => [['name' => 'vendor_uuid', 'columns' => ['vendor', 'uuid']]],

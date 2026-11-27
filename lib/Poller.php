@@ -48,9 +48,14 @@ final class Poller {
 	 * holding the node); left counts the nodes a run stopped by its budget
 	 * never reached, so stopped_early is true exactly when left is above 0.
 	 *
+	 * Each poller handles only nodes whose Cacti device has a matching
+	 * poller_id (REQ-REM-001). Provisioning runs on the main poller only;
+	 * remote collectors write to their local cache (REQ-REM-003).
+	 *
 	 * @return array{nodes: int, ok: int, failed: int, skipped: int, remote: int, reindexed: int, deferred: int, graphs: int, left: int, stopped_early: bool}
 	 */
-	public function run(Settings $settings, int $budget): array {
+	public function run(Settings $settings, int $budget, int $pollerId = self::MAIN_POLLER): array {
+		$pollerId = max(1, $pollerId);
 		$stats    = ['nodes' => 0, 'ok' => 0, 'failed' => 0, 'skipped' => 0, 'remote' => 0, 'reindexed' => 0, 'deferred' => 0, 'graphs' => 0, 'left' => 0, 'stopped_early' => false];
 		$started  = $this->clock->now();
 		$statuses = $this->collections->all();
@@ -76,7 +81,7 @@ final class Poller {
 				continue;
 			}
 
-			if ($device->pollerId !== self::MAIN_POLLER) {
+			if ($device->pollerId !== $pollerId) {
 				$stats['remote']++;
 
 				continue;
@@ -94,13 +99,15 @@ final class Poller {
 
 			$stats[$state->succeeded() ? 'ok' : 'failed']++;
 
-			// Read after the collection, which may have asked for one.
-			$request = $this->reindex->pending()[$node->id] ?? null;
-			$done    = $this->provisioner->provision($node, $device, $request);
+			if ($pollerId === self::MAIN_POLLER) {
+				// Read after the collection, which may have asked for one.
+				$request = $this->reindex->pending()[$node->id] ?? null;
+				$done    = $this->provisioner->provision($node, $device, $request);
 
-			$stats['reindexed'] += $done['reindexed'] ? 1 : 0;
-			$stats['deferred']  += $done['deferred'] ? 1 : 0;
-			$stats['graphs']    += $done['graphs'];
+				$stats['reindexed'] += $done['reindexed'] ? 1 : 0;
+				$stats['deferred']  += $done['deferred'] ? 1 : 0;
+				$stats['graphs']    += $done['graphs'];
+			}
 		}
 
 		return $stats;

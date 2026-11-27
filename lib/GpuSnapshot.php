@@ -50,12 +50,16 @@ final readonly class GpuSnapshot {
 				throw new \InvalidArgumentException('Two GPUs in one collection report the same UUID');
 			}
 
-			if (isset($buses[$report->pciBusId])) {
-				throw new \InvalidArgumentException('Two GPUs in one collection report the same PCI bus ID');
+			// MIG instances share their parent GPU's PCI bus ID; physical GPUs must be unique per bus ID.
+			if (!$report->isMig()) {
+				if (isset($buses[$report->pciBusId])) {
+					throw new \InvalidArgumentException('Two GPUs in one collection report the same PCI bus ID');
+				}
+
+				$buses[$report->pciBusId] = true;
 			}
 
-			$keys[$report->key()]     = true;
-			$buses[$report->pciBusId] = true;
+			$keys[$report->key()] = true;
 		}
 
 		return new self(GpuReport::clean($tool, 32), GpuReport::clean($toolVersion, 64), $reports);

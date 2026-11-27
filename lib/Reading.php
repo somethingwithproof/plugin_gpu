@@ -25,8 +25,10 @@ namespace Somethingwithproof\Gpu;
  */
 final readonly class Reading {
 	/**
-	 * @param array<string, ?float> $values metric name => value, for every
-	 *                                      model field the backend reads
+	 * @param array<string, ?float> $values           metric name => value, for every
+	 *                                                model field the backend reads
+	 * @param array<string, ?float> $vendorExtensions vendor-specific fields such as
+	 *                                                AMD throttle accumulators (REQ-AMDM-003)
 	 */
 	public function __construct(
 		public GpuReport $report,
@@ -35,6 +37,7 @@ final readonly class Reading {
 		public ?int $mask,
 		// EccMode value, or '' when the backend does not report it.
 		public string $eccMode = '',
+		public array $vendorExtensions = [],
 	) {
 	}
 }

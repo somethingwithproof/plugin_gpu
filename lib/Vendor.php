@@ -20,16 +20,16 @@
 namespace Somethingwithproof\Gpu;
 
 /**
- * GPU vendors whose identity rule is settled. ADR 0003 is accepted for NVIDIA
- * only; AMD joins when research #19 shows its UUIDs are stable, so no AMD
- * record can be created before then.
+ * GPU vendors whose identity rule is implemented.
  */
 enum Vendor: string {
 	case Nvidia = 'nvidia';
+	case Amd    = 'amd';
 
 	public function label(): string {
 		return match ($this) {
 			self::Nvidia => 'NVIDIA',
+			self::Amd    => 'AMD',
 		};
 	}
 }

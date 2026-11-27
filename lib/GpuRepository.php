@@ -121,8 +121,8 @@ final class GpuRepository {
 
 			$row = $record->toRow();
 
-			// Vendor and UUID are the key; an update never rewrites them.
-			unset($row['vendor'], $row['uuid']);
+			// Vendor, UUID, and MIG parent UUID are immutable identity keys; an update never rewrites them.
+			unset($row['vendor'], $row['uuid'], $row['parent_uuid']);
 
 			$set     = implode(', ', array_map(static fn (string $column): string => "$column = ?", array_keys($row)));
 			$written = db_execute_prepared("UPDATE plugin_gpu_gpu SET $set WHERE id = ? AND node_id = ? AND pending_node_id = ?", array_merge(array_values($row), [$record->id, $read->nodeId, $read->pendingNodeId]), true, $this->connection);
