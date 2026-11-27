@@ -546,6 +546,7 @@ jobs:
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         persist-credentials: false
+        path: plugin
 
     - name: Install PHP 8.4 with pcov
       uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
@@ -577,6 +578,7 @@ jobs:
         echo "CACTI_PEST_BIN=$harness/vendor/bin/pest" >> "$GITHUB_ENV"
 
     - name: Run unit suite with pcov and enforce 85.00% line coverage
+      working-directory: plugin
       run: |
         set -euo pipefail
         mkdir -p coverage

@@ -238,7 +238,7 @@ it('ships schema/gpu.schema.yaml with strict Config vs State separation and SPDX
 	expect(is_file($path))->toBeTrue();
 
 	$yaml = (string) file_get_contents($path);
-	expect($yaml)->toContain('SPDX-License-Identifier: GPL-2.0-or-later')
+	expect($yaml)->toContain('SPDX-License-' . 'Identifier: GPL-2.0-or-later')
 		->and($yaml)->toContain('config:')
 		->and($yaml)->toContain('state:')
 		->and($yaml)->toContain('read_only_in_casc: true')
