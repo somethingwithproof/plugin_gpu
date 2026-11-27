@@ -4,9 +4,9 @@
 
 # plugin_gpu
 
-A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, and throttling reasons from NVIDIA tools into Cacti. AMD support and XID error collection are planned, not implemented. Each GPU becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
+A Cacti 1.2 plugin that brings per-GPU utilization, memory, temperature, power, ECC errors, and throttling reasons from NVIDIA and AMD tools into Cacti. Each GPU (or MIG instance) becomes an index of a data query on its node's device, so GPU graphs sit next to the node's other graphs under Cacti's permissions, and Thold and Maint can alert on and suppress them.
 
-> **Status: in development, not released.** Milestone 4 makes phase 1 (NVIDIA through SNMP extend) code complete: collection, identity, graphs, throttle and ECC signals, Thold and Maint alerting, the health page, and the operator documentation. It has been run only against a real `snmpd` with a fake `nvidia-smi` printing synthetic output, never on GPU hardware. Still open before a release: pilots on real hardware ([docs/pilot-plan.md](docs/pilot-plan.md), #54), an external security review ([docs/security-review.md](docs/security-review.md)), fixtures captured from real tools (#14), and scale measured on production-sized hardware ([docs/performance.md](docs/performance.md)). XID errors wait on decision #8. Do not run it in production.
+> **Status: phases 1 through 3 implemented in code, not yet released.** Phase 1 (NVIDIA `nvidia-smi` via SNMP extend, identity tracking, graphs, throttle and ECC signals, Thold and Maint alerting, health page), Phase 2 (read-only NVIDIA DCGM Exporter HTTP(S) parser/client and AMD `amd-smi` parser), Phase 3 (MIG instance identity tracking, Schema v4 columns, poller-scoped remote collector execution, `replicate_out` and `remote_agent` hooks), the CasC operator CLI (`cli/gpu.php`), and ecosystem hooks (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) are implemented and covered by unit, security, and disposable-Cacti integration tests. Live runs so far use synthetic `snmpd` and fixture payloads rather than physical GPU hardware. Still open before tagging a release: pilots on real hardware ([docs/pilot-plan.md](docs/pilot-plan.md), #54), an external security review ([docs/security-review.md](docs/security-review.md)), fixtures captured from real tools (#14), and scale measurements on production-sized hardware ([docs/performance.md](docs/performance.md)). XID error collection remains open under decision #8.
 
 ## Access roles
 
@@ -38,25 +38,25 @@ The plugin closes that gap by turning vendor tool output into Cacti data sources
 
 ## Planned scope
 
-| Phase | Scope | Milestones |
-|---|---|---|
-| 0, research | Vendor tool output, XID and throttle signals, GPU identity, privileges, collection path decision | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | `nvidia-smi` collection, inventory by UUID, graphs, throttle, ECC and XID signals, Thold and Maint, health page | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, backends | DCGM backend, `amd-smi` backend | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, mig and remote | MIG instances, Cacti remote data collectors | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| Phase | Scope | Status | Milestones |
+|---|---|---|---|
+| 0, research | Vendor tool output, XID and throttle signals, GPU identity, privileges, collection path decision | Complete | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | `nvidia-smi` collection, inventory by UUID, graphs, throttle and ECC signals, Thold and Maint, health page | Implemented (fixture-tested) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, backends | Read-only DCGM Exporter HTTP(S) parser/client (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), AMD `amd-smi` parser (`lib/AmdSmiParser.php`) | Implemented (unit-tested) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, mig, remote, and ecosystem | MIG instance identity tracking, remote data collectors (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), CasC CLI (`cli/gpu.php`), MCP/Doctor/CasC hooks | Implemented (unit and CI integration tested) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 Out of scope: any command that changes a GPU or node (clocks, power limits, resets, MIG layout), a plugin-owned alerting engine, a custom daemon or network protocol, and scheduler or job accounting. See the plan for the research backlog.
 
 ## What milestone 4 adds
 
-- **Throttle reasons as alert values.** The clock event mask is decoded into one 0 or 1 indicator per reason; an unknown mask gives unknown indicators, never zeros, and bits without an indicator stay in the raw mask, which GPU Health shows.
-- **ECC as alert values** ([docs/metrics.md](docs/metrics.md)). New corrected and uncorrected errors since the previous sample are computed by the plugin from two consecutive totals and stored as gauges: unknown for a first sample, a missed read, or a driver reload, so a reset never reads as zero or as a negative count. Retired single-bit and double-bit page counts and the ECC mode are read too. Two additional ECC graphs per GPU let Cacti store them; with Power Percent, there are eleven graphs in all. XID is not collected: no source fits the fixed `nvidia-smi` commands (#8).
-- **Thold and Maint** ([docs/alerting.md](docs/alerting.md)). Shipped Thold templates for temperature, power against its limit, the throttle indicators, new uncorrected ECC errors, pending page retirement, and sample age. Every value is a gauge, because Thold 1.8.2 fails on an unknown counter. An end-to-end test with unchanged Thold 1.8.2 and Maint 1.3 shows each threshold fire and restore, across an ECC reset, and Maint suppress it.
-- **GPU Health** (GPU View). Per node: freshness, how the last collection ended, Maint state, backend, tool and driver versions, and GPU counts; per GPU: presence, sample age, ECC state, and the raw mask. It reads stored records only.
-- **Permissions.** The permission suite covers every page file and action, revocation on the next request, and refusals that disclose nothing.
-- **Failure and restore qualification.** Scripted end-to-end runs break the agent, the credentials, the tool, its output, the database connection, and RRD writes, and restore the database from a dump, including one older than the RRD files; a new GPU never inherits another's RRD file ([docs/backup.md](docs/backup.md)).
-- **Scale** ([docs/performance.md](docs/performance.md)). A scale test times collection, the script server input, Cacti object creation, a poller cycle, and the health page at a given GPU count; CI runs it at 100 GPUs. The 1,000 and 8,000 GPU measurements are not recorded yet, so no supported GPU count is stated.
-- **Operator documentation** ([docs/operations.md](docs/operations.md)): install, upgrade, uninstall, least privilege, unavailable values, and troubleshooting. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
+- **NVIDIA DCGM Exporter read-only collector** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`). Parses Prometheus text exposition metrics (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`, and MIG labels `GPU_I_ID` and `GPU_I_PROFILE`). The HTTP(S) client enforces an explicit endpoint host/CIDR allowlist, verifies TLS peer certificates by default, caps timeouts and response size, disables redirects, and rejects non-HTTP(S) schemes.
+- **AMD `amd-smi` read-only parser** (`lib/AmdSmiParser.php`). Normalizes `amd-smi` JSON/SNMP-extend output (utilization, VRAM, power, junction/edge temperature, ECC, partition metadata, and separate throttle accumulators via `Reading::$vendorExtensions`) into the common metric model under `Vendor::Amd`.
+- **MIG instance tracking and Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`). Tracks MIG instance UUIDs (`MIG-<uuid>` and `MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid`, and `partition_info` alongside parent GPUs while keeping immutable identity keys (`vendor`, `uuid`, `parent_uuid`) protected on updates and validated before database queries.
+- **Remote data collectors** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`). Declares `remote_collect:1, remote_poller:1` in `INFO`, supports poller-scoped execution via `php plugins/gpu/poller_gpu.php --poller=N`, skips Cacti object provisioning on non-main pollers, replicates poller-scoped tables through `replicate_out`, and answers read-only `gpu_health` and `gpu_inventory` actions through `remote_agent`.
+- **Operator and CasC CLI** (`cli/gpu.php`, `lib/CascProvider.php`). Runs on PHP 8.2+ (parses on PHP 8.0) with zero external Composer dependencies: `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`, and `health [--format=text|json]`. Plans compute a deterministic SHA-256 confirmation hash, apply fails closed on hash mismatch, and XML parsing rejects `DOCTYPE` and `ENTITY` declarations.
+- **Ecosystem integration hooks** (`lib/EcosystemIntegration.php`, `setup.php`). Registers `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; read-only, gated on the `GPU View` realm and Cacti device permissions), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`), and `casc_register_providers`.
+- **Throttle reasons and ECC as alert values** ([docs/metrics.md](docs/metrics.md)). Decodes clock event masks into 0/1 indicators and computes per-interval new corrected/uncorrected ECC errors as gauges so Thold 1.8.2 and Maint 1.3 alert and suppress without negative counters or reset spikes ([docs/alerting.md](docs/alerting.md)).
+- **GPU Health, permissions, failure/restore, and scale.** GPU Health (GPU View) shows stored freshness, last collection outcome, Maint state, backend, versions, and raw throttle masks without contacting nodes. Scripted end-to-end tests verify permissions, agent/DB/RRD failure recovery ([docs/backup.md](docs/backup.md)), and a 100-GPU scale run in CI ([docs/performance.md](docs/performance.md), [docs/operations.md](docs/operations.md), [CHANGELOG.md](CHANGELOG.md)).
 
 ## What milestone 3 adds
 
@@ -68,7 +68,7 @@ Out of scope: any command that changes a GPU or node (clocks, power limits, rese
 - **Device permissions on GPU Nodes.** A GPU Admin sees, changes, exports, and moves only nodes and GPUs on devices they may see in Cacti; a GPU move needs both nodes. A node whose device was deleted can be disabled or deleted.
 - **The common metric model** ([ADR 0009](docs/decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](docs/metrics.md)). Memory is in bytes, the clock event mask is decoded into `thr_*` indicators, and `age` is the age of the GPU's own sample time, or `U` when unknown.
 
-The installing (web server) user must be able to write `<cacti>/resource/script_server/`, where the plugin places its data query XML; install and upgrade stop with a message otherwise and retry on the next attempt. Uninstall removes the templates and the XML only when *Remove the plugin's Cacti objects on uninstall* is checked, and never deletes RRD files, devices, graphs, or data sources ([docs/operations.md](docs/operations.md#uninstall)). Nodes on remote data collectors are not collected until phase 3.
+The installing (web server) user must be able to write `<cacti>/resource/script_server/`, where the plugin places its data query XML; install and upgrade stop with a message otherwise and retry on the next attempt. Uninstall removes the templates and the XML only when *Remove the plugin's Cacti objects on uninstall* is checked, and never deletes RRD files, devices, graphs, or data sources ([docs/operations.md](docs/operations.md#uninstall)). Nodes on remote data collectors run scoped to their assigned `poller_id`.
 
 ## What milestone 2 ships
 
@@ -111,9 +111,10 @@ Decision [#7](https://github.com/somethingwithproof/plugin_gpu/issues/7) chose S
 
 ```mermaid
 flowchart LR
-    NODE[GPU node: snmpd extend running nvidia-smi] -->|SNMP reads, v3 recommended| C[Collector]
-    C --> CACHE[(Plugin cache keyed by GPU UUID)]
+    NODE[GPU node: snmpd extend / DCGM Exporter / amd-smi] -->|Read-only SNMPv3 or allowlisted HTTPS| C[Poller-scoped collector]
+    C --> CACHE[(Plugin cache keyed by vendor + GPU/MIG UUID)]
     CACHE --> SS[Script server data query input]
+    CACHE --> ECO[CasC CLI, MCP abilities, Doctor checks]
     SS --> RRD[(Cacti RRD files, one data source per GPU)]
     SS -->|poller_output| T[Thold and Maint]
     RRD --> G[Cacti graphs and permissions]
