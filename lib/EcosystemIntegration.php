@@ -360,84 +360,90 @@ final class EcosystemIntegration {
 	}
 
 	/**
-	 * Diagnostic checks for Cacti Doctor (doctor_register_checks).
+	 * Evaluated diagnostic checks for Cacti Doctor (doctor_register_checks).
 	 *
-	 * @return list<array{id: string, plugin: string, label: string, category: string, run: \Closure(): array{status: string, message: string, details: array<string, mixed>}}>
+	 * @return list<array{
+	 *   id: string,
+	 *   plugin: string,
+	 *   category: string,
+	 *   title: string,
+	 *   status: string,
+	 *   message: string,
+	 *   details: array<string, mixed>,
+	 *   remediation: string
+	 * }>
 	 */
 	public function doctorChecks(): array {
+		$stored  = $this->schema->storedVersion();
+		$current = Schema::VERSION;
+
+		$health          = $this->casc()->health();
+		$summary         = $health['summary'];
+		$freshnessStatus = ($summary['nodes_failed'] > 0 || $summary['nodes_stale'] > 0) ? 'warn' : 'ok';
+
+		$absent  = 0;
+		$pending = 0;
+		$mig     = 0;
+
+		foreach ($this->gpus->all() as $gpu) {
+			$absent  += $gpu->presence === Presence::Absent ? 1 : 0;
+			$pending += $gpu->movePending() ? 1 : 0;
+			$mig     += $gpu->isMig() ? 1 : 0;
+		}
+
+		$anomalyStatus = ($pending > 0 || $absent > 0) ? 'warn' : 'ok';
+
 		return [
 			[
-				'id'       => 'gpu_schema',
-				'plugin'   => 'gpu',
-				'label'    => 'GPU plugin schema currency',
-				'category' => 'database',
-				'run'      => function (): array {
-					$stored  = $this->schema->storedVersion();
-					$current = Schema::VERSION;
-
-					return [
-						'status'  => $stored === $current ? 'ok' : 'critical',
-						'message' => $stored === $current
-							? sprintf('GPU schema is current at version %d', $current)
-							: sprintf('GPU schema is at version %d; expected %d', $stored, $current),
-						'details' => ['stored_version' => $stored, 'expected_version' => $current],
-					];
-				},
+				'id'          => 'gpu.schema',
+				'plugin'      => 'gpu',
+				'category'    => 'database',
+				'title'       => 'GPU plugin schema currency',
+				'status'      => $stored === $current ? 'ok' : 'fail',
+				'message'     => $stored === $current
+					? sprintf('GPU schema is current at version %d', $current)
+					: sprintf('GPU schema is at version %d; expected %d', $stored, $current),
+				'details'     => ['stored_version' => $stored, 'expected_version' => $current],
+				'remediation' => $stored === $current ? '' : 'Re-run plugin upgrade to bring the plugin_gpu database schema to the current version.',
 			],
 			[
-				'id'       => 'gpu_collection_freshness',
-				'plugin'   => 'gpu',
-				'label'    => 'GPU node collection freshness',
-				'category' => 'polling',
-				'run'      => function (): array {
-					$health  = $this->casc()->health();
-					$summary = $health['summary'];
-
-					$status = ($summary['nodes_failed'] > 0 || $summary['nodes_stale'] > 0) ? 'warning' : 'ok';
-
-					return [
-						'status'  => $status,
-						'message' => sprintf('%d healthy, %d stale, %d failed across %d enabled GPU nodes', $summary['nodes_healthy'], $summary['nodes_stale'], $summary['nodes_failed'], $summary['nodes_enabled']),
-						'details' => $summary,
-					];
-				},
+				'id'          => 'gpu.collection_freshness',
+				'plugin'      => 'gpu',
+				'category'    => 'polling',
+				'title'       => 'GPU node collection freshness',
+				'status'      => $freshnessStatus,
+				'message'     => sprintf('%d healthy, %d stale, %d failed across %d enabled GPU nodes', $summary['nodes_healthy'], $summary['nodes_stale'], $summary['nodes_failed'], $summary['nodes_enabled']),
+				'details'     => $summary,
+				'remediation' => $freshnessStatus === 'ok' ? '' : 'Inspect poller_gpu.php execution and transport reachability on stale or failed GPU nodes.',
 			],
 			[
-				'id'       => 'gpu_identity_anomalies',
-				'plugin'   => 'gpu',
-				'label'    => 'GPU identity anomalies and MIG reconfigurations',
-				'category' => 'inventory',
-				'run'      => function (): array {
-					$absent  = 0;
-					$pending = 0;
-					$mig     = 0;
-
-					foreach ($this->gpus->all() as $gpu) {
-						$absent  += $gpu->presence === Presence::Absent ? 1 : 0;
-						$pending += $gpu->movePending() ? 1 : 0;
-						$mig     += $gpu->isMig() ? 1 : 0;
-					}
-
-					$status = ($pending > 0 || $absent > 0) ? 'warning' : 'ok';
-
-					return [
-						'status'  => $status,
-						'message' => sprintf('%d absent GPUs, %d pending node moves, %d MIG instances tracked', $absent, $pending, $mig),
-						'details' => ['absent' => $absent, 'pending_moves' => $pending, 'mig_instances' => $mig],
-					];
-				},
+				'id'          => 'gpu.identity_anomalies',
+				'plugin'      => 'gpu',
+				'category'    => 'inventory',
+				'title'       => 'GPU identity anomalies and MIG reconfigurations',
+				'status'      => $anomalyStatus,
+				'message'     => sprintf('%d absent GPUs, %d pending node moves, %d MIG instances tracked', $absent, $pending, $mig),
+				'details'     => ['absent' => $absent, 'pending_moves' => $pending, 'mig_instances' => $mig],
+				'remediation' => $anomalyStatus === 'ok' ? '' : 'Review absent GPUs and pending node moves on the GPU Health and Inventory pages.',
 			],
 		];
 	}
 
 	/**
-	 * Build a decoupled plain-array debug info section for Cacti Doctor
+	 * Build a decoupled plain-array debug info section list for Cacti Doctor
 	 * (doctor_register_debug_info). Reads stored records only, never contacts a
 	 * GPU node, and never exposes secrets or credentials.
 	 *
 	 * @param string $pluginVersion plugin version from INFO
 	 *
-	 * @return array{label: string, description: string, fields: array<string, array{label: string, value: int|string|bool}>}
+	 * @return list<array{
+	 *   id: string,
+	 *   plugin: string,
+	 *   label: string,
+	 *   description: string,
+	 *   private: bool,
+	 *   fields: array<string, array{label: string, value: int|string|bool}>
+	 * }>
 	 */
 	public function doctorDebugInfo(string $pluginVersion = ''): array {
 		$settings = $this->settings->load();
@@ -445,56 +451,61 @@ final class EcosystemIntegration {
 		$summary  = $health['summary'];
 
 		return [
-			'label'       => 'GPU Plugin',
-			'description' => 'Schema currency, bounds, and stored GPU inventory summary (read-only).',
-			'fields'      => [
-				'plugin_version' => [
-					'label' => 'Plugin version',
-					'value' => $pluginVersion !== '' ? $pluginVersion : 'unknown',
-				],
-				'schema_version' => [
-					'label' => 'Stored schema version',
-					'value' => $this->schema->storedVersion(),
-				],
-				'expected_schema_version' => [
-					'label' => 'Expected schema version',
-					'value' => Schema::VERSION,
-				],
-				'php_version' => [
-					'label' => 'PHP runtime',
-					'value' => PHP_VERSION,
-				],
-				'absent_after' => [
-					'label' => 'Absent threshold (polls)',
-					'value' => $settings->absentAfter,
-				],
-				'stale_after' => [
-					'label' => 'Stale threshold (seconds)',
-					'value' => $settings->staleAfter,
-				],
-				'nodes_total' => [
-					'label' => 'Registered GPU nodes',
-					'value' => $summary['nodes_total'],
-				],
-				'nodes_enabled' => [
-					'label' => 'Enabled GPU nodes',
-					'value' => $summary['nodes_enabled'],
-				],
-				'gpus_present' => [
-					'label' => 'Present GPUs',
-					'value' => $summary['gpus_present'],
-				],
-				'gpus_absent' => [
-					'label' => 'Absent GPUs',
-					'value' => $summary['gpus_absent'],
-				],
-				'mig_instances' => [
-					'label' => 'Tracked MIG instances',
-					'value' => $summary['mig_instances'],
-				],
-				'pending_moves' => [
-					'label' => 'Pending GPU moves',
-					'value' => $summary['pending_moves'],
+			[
+				'id'          => 'gpu.overview',
+				'plugin'      => 'gpu',
+				'label'       => 'GPU Plugin',
+				'description' => 'Schema currency, bounds, and stored GPU inventory summary (read-only).',
+				'private'     => false,
+				'fields'      => [
+					'plugin_version' => [
+						'label' => 'Plugin version',
+						'value' => $pluginVersion !== '' ? $pluginVersion : 'unknown',
+					],
+					'schema_version' => [
+						'label' => 'Stored schema version',
+						'value' => $this->schema->storedVersion(),
+					],
+					'expected_schema_version' => [
+						'label' => 'Expected schema version',
+						'value' => Schema::VERSION,
+					],
+					'php_version' => [
+						'label' => 'PHP runtime',
+						'value' => PHP_VERSION,
+					],
+					'absent_after' => [
+						'label' => 'Absent threshold (polls)',
+						'value' => $settings->absentAfter,
+					],
+					'stale_after' => [
+						'label' => 'Stale threshold (seconds)',
+						'value' => $settings->staleAfter,
+					],
+					'nodes_total' => [
+						'label' => 'Registered GPU nodes',
+						'value' => $summary['nodes_total'],
+					],
+					'nodes_enabled' => [
+						'label' => 'Enabled GPU nodes',
+						'value' => $summary['nodes_enabled'],
+					],
+					'gpus_present' => [
+						'label' => 'Present GPUs',
+						'value' => $summary['gpus_present'],
+					],
+					'gpus_absent' => [
+						'label' => 'Absent GPUs',
+						'value' => $summary['gpus_absent'],
+					],
+					'mig_instances' => [
+						'label' => 'Tracked MIG instances',
+						'value' => $summary['mig_instances'],
+					],
+					'pending_moves' => [
+						'label' => 'Pending GPU moves',
+						'value' => $summary['pending_moves'],
+					],
 				],
 			],
 		];
@@ -504,107 +515,195 @@ final class EcosystemIntegration {
 	 * Build decoupled plain-array read-only API resource descriptors for
 	 * api_register_resources without importing any external API plugin class.
 	 *
-	 * @return array<string, array{
-	 *     plugin: string,
-	 *     methods: list<string>,
-	 *     read_only: bool,
-	 *     realm: string,
-	 *     description: string,
-	 *     permission: \Closure(int): bool,
-	 *     handler: \Closure(int, array<string, mixed>): array<string, mixed>
-	 * }>
+	 * @return list<array<string, mixed>>
 	 */
 	public function apiResources(): array {
-		$abilities  = $this->abilities();
-		$permission = fn (int $userId): bool => ($this->hasViewRealm)($userId);
+		$serializeNode = static fn (Node $node): array => [
+			'name'          => 'gpuNodes/' . $node->id,
+			'id'            => $node->id,
+			'host_id'       => $node->hostId,
+			'description'   => $node->description,
+			'admin_state'   => $node->adminState->value,
+			'device_exists' => $node->deviceExists,
+		];
+
+		$serializeDevice = static fn (GpuRecord $gpu): array => [
+			'name'            => 'gpuDevices/' . $gpu->id,
+			'id'              => $gpu->id,
+			'vendor'          => $gpu->vendor->value,
+			'uuid'            => $gpu->uuid,
+			'node_id'         => $gpu->nodeId,
+			'gpu_index'       => $gpu->index,
+			'pci_bus_id'      => $gpu->pciBusId,
+			'display_name'    => $gpu->name,
+			'presence'        => $gpu->presence->value,
+			'mig_mode'        => $gpu->migMode,
+			'mig_instance_id' => $gpu->migInstanceId,
+			'mig_profile'     => $gpu->migProfile,
+			'parent_uuid'     => $gpu->parentUuid,
+			'partition_info'  => $gpu->partitionInfo,
+		];
 
 		return [
-			'gpu/nodes' => [
-				'plugin'      => 'gpu',
-				'methods'     => ['GET'],
-				'read_only'   => true,
-				'realm'       => 'GPU View',
-				'description' => 'List registered GPU nodes permitted for the authenticated user.',
-				'permission'  => $permission,
-				'handler'     => static function (int $userId, array $params) use ($abilities): array {
-					$args = new \stdClass();
+			[
+				'plugin'        => 'gpu',
+				'collection'    => 'gpuNodes',
+				'singleton'     => 'gpuNode',
+				'description'   => 'List registered GPU nodes permitted for the authenticated user.',
+				'realm_read'    => 'gpu_inventory.php',
+				'read_only'     => true,
+				'schema'        => 'schema/gpu.schema.yaml',
+				'filter_fields' => ['id', 'name', 'host_id', 'description', 'admin_state'],
+				'order_fields'  => ['id', 'name', 'host_id', 'description'],
+				'handlers'      => [
+					/**
+					 * @param array<string, mixed> $context
+					 *
+					 * @return list<array<string, mixed>>
+					 */
+					'list' => function (array $context = []) use ($serializeNode): array {
+						$userId = isset($context['user_id']) && is_int($context['user_id']) ? $context['user_id'] : 0;
 
-					if (isset($params['adminState']) && is_string($params['adminState'])) {
-						$args->adminState = $params['adminState'];
-					}
-
-					/** @var \Closure(int, \stdClass): array<string, mixed> $exec */
-					$exec = $abilities['gpu-list-nodes']['execute'];
-
-					return $exec($userId, $args);
-				},
-			],
-			'gpu/devices' => [
-				'plugin'      => 'gpu',
-				'methods'     => ['GET'],
-				'read_only'   => true,
-				'realm'       => 'GPU View',
-				'description' => 'List normalized GPU and MIG instance inventory records permitted for the user.',
-				'permission'  => $permission,
-				'handler'     => static function (int $userId, array $params) use ($abilities): array {
-					$args = new \stdClass();
-
-					if (isset($params['vendor']) && is_string($params['vendor'])) {
-						$args->vendor = $params['vendor'];
-					}
-
-					if (isset($params['nodeId']) && is_int($params['nodeId'])) {
-						$args->nodeId = $params['nodeId'];
-					}
-
-					/** @var \Closure(int, \stdClass): array<string, mixed> $exec */
-					$exec = $abilities['gpu-list-devices']['execute'];
-
-					return $exec($userId, $args);
-				},
-			],
-			'gpu/health' => [
-				'plugin'      => 'gpu',
-				'methods'     => ['GET'],
-				'read_only'   => true,
-				'realm'       => 'GPU View',
-				'description' => 'Read stored GPU collection freshness, status, and anomaly counts.',
-				'permission'  => $permission,
-				'handler'     => static function (int $userId, array $params) use ($abilities): array {
-					/** @var \Closure(int, \stdClass): array<string, mixed> $exec */
-					$exec = $abilities['gpu-get-health']['execute'];
-
-					return $exec($userId, new \stdClass());
-				},
-			],
-			'gpu/cluster-utilization' => [
-				'plugin'      => 'gpu',
-				'methods'     => ['GET'],
-				'read_only'   => true,
-				'realm'       => 'GPU View',
-				'description' => 'Analyze GPU/MIG locality fragmentation, allocated-but-idle ratio, and fault correlations.',
-				'permission'  => $permission,
-				'handler'     => function (int $userId, array $params): array {
-					$allowedNodes = [];
-
-					foreach ($this->nodes->all() as $node) {
-						if (($this->deviceAllowed)($userId, $node->hostId)) {
-							$allowedNodes[$node->id] = true;
+						if ($userId < 1 || !($this->hasViewRealm)($userId)) {
+							return [];
 						}
-					}
 
-					$permittedGpus = [];
+						$query       = isset($context['query']) && is_array($context['query']) ? $context['query'] : [];
+						$stateFilter = isset($query['adminState']) && is_string($query['adminState']) ? $query['adminState'] : null;
+						$items       = [];
 
-					foreach ($this->gpus->all() as $gpu) {
-						if (isset($allowedNodes[$gpu->nodeId])) {
-							$permittedGpus[] = $gpu;
+						foreach ($this->nodes->all() as $node) {
+							if (!($this->deviceAllowed)($userId, $node->hostId)) {
+								continue;
+							}
+
+							if ($stateFilter !== null && $node->adminState->value !== $stateFilter) {
+								continue;
+							}
+
+							$items[] = $serializeNode($node);
 						}
-					}
 
-					$gangSize = isset($params['gang_size']) && is_int($params['gang_size']) ? $params['gang_size'] : GpuClusterUtilizationAnalyzer::DEFAULT_GANG_SIZE;
+						return $items;
+					},
+					/**
+					 * @param string               $resourceId
+					 * @param array<string, mixed> $context
+					 *
+					 * @return array<string, mixed>|null
+					 */
+					'get' => function (string $resourceId, array $context = []) use ($serializeNode): ?array {
+						$userId = isset($context['user_id']) && is_int($context['user_id']) ? $context['user_id'] : 0;
 
-					return (new GpuClusterUtilizationAnalyzer())->analyze($permittedGpus, $this->observations->summaries(), $gangSize);
-				},
+						if ($userId < 1 || !($this->hasViewRealm)($userId)) {
+							return null;
+						}
+
+						$rawId = str_starts_with($resourceId, 'gpuNodes/') ? substr($resourceId, strlen('gpuNodes/')) : $resourceId;
+
+						if ($rawId === '' || !ctype_digit($rawId)) {
+							return null;
+						}
+
+						$targetId = (int) $rawId;
+
+						foreach ($this->nodes->all() as $node) {
+							if ($node->id === $targetId && ($this->deviceAllowed)($userId, $node->hostId)) {
+								return $serializeNode($node);
+							}
+						}
+
+						return null;
+					},
+				],
+			],
+			[
+				'plugin'        => 'gpu',
+				'collection'    => 'gpuDevices',
+				'singleton'     => 'gpuDevice',
+				'description'   => 'List normalized GPU and MIG instance inventory records permitted for the user.',
+				'realm_read'    => 'gpu_inventory.php',
+				'read_only'     => true,
+				'schema'        => 'schema/gpu.schema.yaml',
+				'filter_fields' => ['id', 'name', 'vendor', 'node_id', 'presence'],
+				'order_fields'  => ['id', 'name', 'vendor', 'node_id'],
+				'handlers'      => [
+					/**
+					 * @param array<string, mixed> $context
+					 *
+					 * @return list<array<string, mixed>>
+					 */
+					'list' => function (array $context = []) use ($serializeDevice): array {
+						$userId = isset($context['user_id']) && is_int($context['user_id']) ? $context['user_id'] : 0;
+
+						if ($userId < 1 || !($this->hasViewRealm)($userId)) {
+							return [];
+						}
+
+						$allowedNodes = [];
+
+						foreach ($this->nodes->all() as $node) {
+							if (($this->deviceAllowed)($userId, $node->hostId)) {
+								$allowedNodes[$node->id] = true;
+							}
+						}
+
+						$query        = isset($context['query']) && is_array($context['query']) ? $context['query'] : [];
+						$vendorFilter = isset($query['vendor']) && is_string($query['vendor']) ? $query['vendor'] : null;
+						$items        = [];
+
+						foreach ($this->gpus->all() as $gpu) {
+							if (!isset($allowedNodes[$gpu->nodeId])) {
+								continue;
+							}
+
+							if ($vendorFilter !== null && $gpu->vendor->value !== $vendorFilter) {
+								continue;
+							}
+
+							$items[] = $serializeDevice($gpu);
+						}
+
+						return $items;
+					},
+					/**
+					 * @param string               $resourceId
+					 * @param array<string, mixed> $context
+					 *
+					 * @return array<string, mixed>|null
+					 */
+					'get' => function (string $resourceId, array $context = []) use ($serializeDevice): ?array {
+						$userId = isset($context['user_id']) && is_int($context['user_id']) ? $context['user_id'] : 0;
+
+						if ($userId < 1 || !($this->hasViewRealm)($userId)) {
+							return null;
+						}
+
+						$rawId = str_starts_with($resourceId, 'gpuDevices/') ? substr($resourceId, strlen('gpuDevices/')) : $resourceId;
+
+						if ($rawId === '' || !ctype_digit($rawId)) {
+							return null;
+						}
+
+						$allowedNodes = [];
+
+						foreach ($this->nodes->all() as $node) {
+							if (($this->deviceAllowed)($userId, $node->hostId)) {
+								$allowedNodes[$node->id] = true;
+							}
+						}
+
+						$targetId = (int) $rawId;
+
+						foreach ($this->gpus->all() as $gpu) {
+							if ($gpu->id === $targetId && isset($allowedNodes[$gpu->nodeId])) {
+								return $serializeDevice($gpu);
+							}
+						}
+
+						return null;
+					},
+				],
 			],
 		];
 	}
@@ -618,15 +717,90 @@ final class EcosystemIntegration {
 		$casc = $this->casc();
 
 		return [
-			'id'             => 'gpu',
-			'plugin'         => 'gpu',
-			'schema_version' => CascProvider::SCHEMA_VERSION,
-			'formats'        => CascProvider::FORMATS,
-			'export'         => static fn (string $format = 'yaml'): string => $casc->export($format),
-			'validate'       => static fn (array $desired): array => $casc->validate($desired),
-			'plan'           => static fn (array $desired): array => $casc->plan($desired),
-			'apply'          => static fn (array $desired, string $confirmHash): array => $casc->apply($desired, $confirmHash),
+			'slug'          => 'gpu',
+			'schemaVersion' => '1.0',
+			/**
+			 * @param array<string, mixed> $options
+			 * @return array<string, mixed>
+			 */
+			'export'        => static fn (array $options = []): array => [
+				'config'    => $casc->snapshot(),
+				'reference' => [],
+			],
+			/**
+			 * @param array<string, mixed> $desired
+			 * @return list<string>
+			 */
+			'validate'      => static fn (array $desired): array => $casc->validate(self::unwrapCascConfig($desired)),
+			/**
+			 * @param array<string, mixed> $desired
+			 * @param array<string, mixed> $options
+			 * @return list<array{operation: string, key: string, message: string}>
+			 */
+			'plan'          => static function (array $desired, array $options = []) use ($casc): array {
+				$plan = $casc->plan(self::unwrapCascConfig($desired));
+
+				if (!$plan['valid']) {
+					return array_map(
+						static fn (string $err): array => ['operation' => 'error', 'key' => 'gpu', 'message' => $err],
+						$plan['errors'],
+					);
+				}
+
+				$items = [];
+
+				foreach ($plan['changes']['settings'] as $name => $change) {
+					$items[] = [
+						'operation' => 'update',
+						'key'       => 'settings.' . $name,
+						'message'   => sprintf('Update setting %s', $name),
+					];
+				}
+
+				foreach ($plan['changes']['nodes'] as $nodeChange) {
+					$items[] = [
+						'operation' => $nodeChange['action'] === 'create' ? 'create' : 'update',
+						'key'       => 'nodes.host_' . $nodeChange['host_id'],
+						'message'   => sprintf('%s GPU node for host %d', ucfirst($nodeChange['action']), $nodeChange['host_id']),
+					];
+				}
+
+				return $items;
+			},
+			/**
+			 * @param array<string, mixed> $desired
+			 * @param string               $confirm
+			 * @param array<string, mixed> $options
+			 * @return array<string, mixed>
+			 */
+			'apply'         => static function (array $desired, string $confirm = '', array $options = []) use ($casc): array {
+				$result = $casc->apply(self::unwrapCascConfig($desired), $confirm);
+
+				return ['ok' => $result['applied']] + $result;
+			},
 		];
+	}
+
+	/**
+	 * Unwrap an optional ['config' => ...] export envelope into a string-keyed
+	 * desired configuration map.
+	 *
+	 * @param array<array-key, mixed> $desired
+	 *
+	 * @return array<string, mixed>
+	 */
+	private static function unwrapCascConfig(array $desired): array {
+		$raw = (isset($desired['config']) && is_array($desired['config']) && !isset($desired['schema_version']))
+			? $desired['config']
+			: $desired;
+
+		$out = [];
+
+		foreach ($raw as $key => $value) {
+			$out[(string) $key] = $value;
+		}
+
+		return $out;
 	}
 
 	/**

@@ -182,55 +182,119 @@ it('registers read-only View-realm-gated MCP abilities, Doctor checks, CasC prov
 	$denied = gpu_test_ecosystem(hasView: false, allowedHosts: []);
 	expect(($denied->abilities()['gpu-list-nodes']['permission'])(99))->toBeFalse();
 
-	// Doctor checks.
+	// Doctor checks (evaluated canonical descriptors).
 	$checks = $eco->doctorChecks();
-	expect(array_column($checks, 'id'))->toBe(['gpu_schema', 'gpu_collection_freshness', 'gpu_identity_anomalies']);
+	expect(array_column($checks, 'id'))->toBe(['gpu.schema', 'gpu.collection_freshness', 'gpu.identity_anomalies']);
 
 	foreach ($checks as $check) {
-		expect(($check['run'])()['status'])->toBe('ok');
+		expect($check)->toHaveKeys(['id', 'plugin', 'category', 'title', 'status', 'message', 'details', 'remediation'])
+			->and($check['plugin'])->toBe('gpu')
+			->and(str_starts_with($check['id'], 'gpu.'))->toBeTrue()
+			->and(['ok', 'warn', 'fail', 'info'])->toContain($check['status'])
+			->and($check['status'])->toBe('ok')
+			->and($check['message'])->not->toBe('');
 	}
 
-	// CasC provider descriptor.
+	// setup.php doctor_register_checks must not echo $context.
+	$hookChecks = gpu_doctor_register_checks(['mode' => 'run', 'plugin' => 'gpu']);
+	expect(array_is_list($hookChecks))->toBeTrue()
+		->and(array_key_exists('mode', $hookChecks))->toBeFalse()
+		->and(array_column($hookChecks, 'id'))->toBe(['gpu.schema', 'gpu.collection_freshness', 'gpu.identity_anomalies']);
+
+	// CasC provider descriptor (canonical 1-arg ProviderRegistrar contract).
 	$cascDesc = $eco->cascDescriptor();
-	expect($cascDesc['id'])->toBe('gpu')
-		->and($cascDesc['formats'])->toBe(['yaml', 'xml'])
-		->and(($cascDesc['export'])('yaml'))->toContain('plugin: gpu');
+	expect($cascDesc['slug'])->toBe('gpu')
+		->and($cascDesc['schemaVersion'])->toBe('1.0');
+
+	$exported = ($cascDesc['export'])([]);
+	expect($exported)->toHaveKeys(['config', 'reference'])
+		->and($exported['config']['plugin'])->toBe('gpu')
+		->and(($cascDesc['validate'])($exported['config']))->toBe([])
+		->and(($cascDesc['validate'])($exported))->toBe([])
+		->and(($cascDesc['validate'])(['plugin' => 'other']))->not->toBeEmpty()
+		->and(($cascDesc['plan'])($exported['config'], []))->toBe([]);
+
+	$planErr = ($cascDesc['plan'])(['plugin' => 'other'], []);
+	expect($planErr[0]['operation'])->toBe('error');
+
+	$desired = $exported['config'];
+	$desired['settings']['gpu_stale_after'] = 900;
+	$desired['nodes'][]                     = ['host_id' => 103, 'description' => 'gpu-03', 'admin_state' => 'enabled'];
+	expect(count(($cascDesc['plan'])($desired, [])))->toBe(2)
+		->and(($cascDesc['apply'])($desired, 'wrong-hash', [])['ok'])->toBeFalse();
+
+	$cascRegistrar = new class {
+		/** @var list<array<string, mixed>> */
+		public array $registered = [];
+
+		/** @param array<string, mixed> $descriptor */
+		public function register(array $descriptor): void {
+			$this->registered[] = $descriptor;
+		}
+	};
+	expect(gpu_casc_register_providers($cascRegistrar))->toBe($cascRegistrar)
+		->and($cascRegistrar->registered)->toHaveCount(1)
+		->and($cascRegistrar->registered[0]['slug'])->toBe('gpu')
+		->and(gpu_casc_register_providers(null)['slug'])->toBe('gpu');
 
 	// Remote agent read-only actions.
 	expect($eco->handleRemoteAgent('gpu_health')['status'])->toBe('ok')
 		->and($eco->handleRemoteAgent('gpu_inventory')['plugin'])->toBe('gpu')
 		->and($eco->handleRemoteAgent('exec_shell'))->toBeNull();
 
-	// Decoupled Doctor debug info (plain array, no secrets, no cross-plugin imports).
+	// Decoupled Doctor debug info (plain list, no secrets, never echoing $context).
 	$debugInfo = $eco->doctorDebugInfo('0.1.0');
-	expect($debugInfo['label'])->toBe('GPU Plugin')
-		->and($debugInfo['fields']['plugin_version']['value'])->toBe('0.1.0')
-		->and($debugInfo['fields']['schema_version']['value'])->toBe(Schema::VERSION)
-		->and($debugInfo['fields']['mig_instances']['value'])->toBe(1);
+	expect(array_is_list($debugInfo))->toBeTrue()
+		->and($debugInfo)->toHaveCount(1)
+		->and($debugInfo[0]['id'])->toBe('gpu.overview')
+		->and($debugInfo[0]['plugin'])->toBe('gpu')
+		->and($debugInfo[0]['label'])->toBe('GPU Plugin')
+		->and($debugInfo[0]['fields']['plugin_version']['value'])->toBe('0.1.0')
+		->and($debugInfo[0]['fields']['schema_version']['value'])->toBe(Schema::VERSION)
+		->and($debugInfo[0]['fields']['mig_instances']['value'])->toBe(1);
 
-	$mergedDebug = gpu_doctor_register_debug_info(['core' => ['label' => 'Core']]);
-	expect($mergedDebug)->toHaveKey('core')
-		->and($mergedDebug)->toHaveKey('gpu');
+	$hookDebug = gpu_doctor_register_debug_info(['plugin' => 'gpu']);
+	expect(array_is_list($hookDebug))->toBeTrue()
+		->and(array_key_exists('plugin', $hookDebug))->toBeFalse()
+		->and($hookDebug[0]['id'])->toBe('gpu.overview');
 
-	// Decoupled REST/API resource descriptors (plain array, read-only GET, View realm gated).
+	// Decoupled REST/API resource descriptors (canonical lowerCamelCase collections, realm_read, handlers).
 	$resources = $eco->apiResources();
-	expect(array_keys($resources))->toBe(['gpu/nodes', 'gpu/devices', 'gpu/health', 'gpu/cluster-utilization']);
+	expect(array_is_list($resources))->toBeTrue()
+		->and(array_column($resources, 'collection'))->toBe(['gpuNodes', 'gpuDevices']);
 
 	foreach ($resources as $resource) {
-		expect($resource['methods'])->toBe(['GET'])
+		expect($resource['plugin'])->toBe('gpu')
+			->and($resource['collection'])->toMatch('/^[a-z][A-Za-z0-9]{2,63}$/')
+			->and($resource['realm_read'])->toBe('gpu_inventory.php')
 			->and($resource['read_only'])->toBeTrue()
-			->and($resource['realm'])->toBe('GPU View')
-			->and(($resource['permission'])(1))->toBeTrue();
+			->and(array_keys($resource['handlers']))->toBe(['list', 'get']);
 	}
 
-	expect(($resources['gpu/nodes']['handler'])(1, [])['nodes'])->toHaveCount(1)
-		->and(($resources['gpu/devices']['handler'])(1, ['vendor' => 'nvidia'])['devices'])->toHaveCount(2)
-		->and(($resources['gpu/health']['handler'])(1, [])['status'])->toBe('ok')
-		->and(($resources['gpu/cluster-utilization']['handler'])(1, ['gang_size' => 8])['totals']['gpus_present'])->toBe(2);
+	expect(($resources[0]['handlers']['list'])(['user_id' => 1, 'query' => []]))->toHaveCount(1)
+		->and(($resources[0]['handlers']['get'])('gpuNodes/1', ['user_id' => 1])['host_id'])->toBe(101)
+		->and(($resources[0]['handlers']['get'])('gpuNodes/2', ['user_id' => 1]))->toBeNull()
+		->and(($resources[0]['handlers']['get'])('bad', ['user_id' => 1]))->toBeNull()
+		->and(($resources[1]['handlers']['list'])(['user_id' => 1, 'query' => ['vendor' => 'nvidia']]))->toHaveCount(2)
+		->and(($resources[1]['handlers']['get'])('gpuDevices/1', ['user_id' => 1])['vendor'])->toBe('nvidia')
+		->and(($resources[1]['handlers']['get'])('gpuDevices/999', ['user_id' => 1]))->toBeNull();
 
-	$mergedResources = gpu_api_register_resources(['existing/resource' => ['plugin' => 'other']]);
-	expect($mergedResources)->toHaveKey('existing/resource')
-		->and($mergedResources)->toHaveKey('gpu/cluster-utilization');
+	// Denied user receives empty lists and null on get.
+	$deniedResources = $denied->apiResources();
+	expect(($deniedResources[0]['handlers']['list'])(['user_id' => 99, 'query' => []]))->toBe([])
+		->and(($deniedResources[0]['handlers']['get'])('1', ['user_id' => 99]))->toBeNull()
+		->and(($deniedResources[1]['handlers']['list'])(['user_id' => 99, 'query' => []]))->toBe([])
+		->and(($deniedResources[1]['handlers']['get'])('1', ['user_id' => 99]))->toBeNull();
+
+	$mergedResources = gpu_api_register_resources([['plugin' => 'other', 'collection' => 'otherItems']]);
+	expect($mergedResources)->toHaveCount(3)
+		->and($mergedResources[1]['collection'])->toBe('gpuNodes')
+		->and($mergedResources[2]['collection'])->toBe('gpuDevices');
+
+	// RealmRepository resolves plugin_realms IDs (+100 offset) for stateless auth.
+	$GLOBALS['__gpu_db_rows']['FROM plugin_realms'] = [['id' => 21], ['id' => 22]];
+	expect((new Somethingwithproof\Gpu\RealmRepository(false))->viewRealmIds())->toBe([121, 122])
+		->and(gpu_user_view_allowed(0))->toBeFalse();
 });
 
 it('ships schema/gpu.schema.yaml with strict Config vs State separation and SPDX metadata', function () {

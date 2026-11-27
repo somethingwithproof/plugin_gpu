@@ -500,6 +500,28 @@ function gpu_casc(): \Somethingwithproof\Gpu\CascProvider {
 }
 
 /**
+ * Check whether the given Cacti user holds a GPU View (or higher) realm.
+ * Uses user-scoped realm lookup so stateless token and CLI callers succeed
+ * without an active PHP web session.
+ *
+ * @param int $userId
+ * @return bool
+ */
+function gpu_user_view_allowed(int $userId): bool {
+	if ($userId < 1 || !function_exists('is_realm_allowed')) {
+		return false;
+	}
+
+	foreach ((new \Somethingwithproof\Gpu\RealmRepository(false))->viewRealmIds() as $realmId) {
+		if (is_realm_allowed($realmId, $userId)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Gpu ecosystem.
  *
  * @return \Somethingwithproof\Gpu\EcosystemIntegration
@@ -517,7 +539,7 @@ function gpu_ecosystem(): \Somethingwithproof\Gpu\EcosystemIntegration {
 		new \Somethingwithproof\Gpu\ObservationRepository(false),
 		$clock,
 		function (int $userId): bool {
-			return api_plugin_user_realm_auth('gpu_inventory.php') || api_plugin_user_realm_auth('gpu_health.php');
+			return gpu_user_view_allowed($userId);
 		},
 		function (int $userId, int $hostId): bool {
 			return is_device_allowed($hostId, $userId);
@@ -591,48 +613,34 @@ function gpu_abilities_register($registrar) {
 }
 
 /**
- * doctor_register_checks hook: register GPU diagnostic checks with Cacti Doctor.
+ * doctor_register_checks hook: return evaluated GPU diagnostic checks for Cacti Doctor.
  *
- * @param mixed $checks
- * @return mixed
+ * @param mixed $context
+ * @return list<array<string, mixed>>
  */
-function gpu_doctor_register_checks($checks) {
+function gpu_doctor_register_checks($context = array()) {
 	if (!gpu_boot()) {
-		return $checks;
+		return array();
 	}
 
-	$registered = gpu_ecosystem()->doctorChecks();
-
-	if (is_array($checks)) {
-		return array_merge($checks, $registered);
-	}
-
-	return $registered;
+	return gpu_ecosystem()->doctorChecks();
 }
 
 /**
- * doctor_register_debug_info hook: register read-only GPU diagnostic summary
- * fields with Cacti Doctor as a plain array without cross-plugin imports.
+ * doctor_register_debug_info hook: return read-only GPU diagnostic summary
+ * fields for Cacti Doctor as a plain list without cross-plugin imports.
  *
- * @param mixed $info existing debug info sections
- *
- * @return mixed
+ * @param mixed $context
+ * @return list<array<string, mixed>>
  */
-function gpu_doctor_register_debug_info($info) {
+function gpu_doctor_register_debug_info($context = array()) {
 	if (!gpu_boot()) {
-		return $info;
+		return array();
 	}
 
 	$version = plugin_gpu_version();
-	$section = gpu_ecosystem()->doctorDebugInfo($version['version'] ?? '');
 
-	if (is_array($info)) {
-		$info['gpu'] = $section;
-
-		return $info;
-	}
-
-	return array('gpu' => $section);
+	return gpu_ecosystem()->doctorDebugInfo($version['version'] ?? '');
 }
 
 /**
@@ -641,17 +649,17 @@ function gpu_doctor_register_debug_info($info) {
  *
  * @param mixed $resources existing API resource descriptors
  *
- * @return mixed
+ * @return list<mixed>
  */
-function gpu_api_register_resources($resources) {
+function gpu_api_register_resources($resources = array()) {
 	if (!gpu_boot()) {
-		return $resources;
+		return is_array($resources) ? array_values($resources) : array();
 	}
 
 	$registered = gpu_ecosystem()->apiResources();
 
-	if (is_array($resources)) {
-		return array_merge($resources, $registered);
+	if (is_array($resources) && $resources !== array()) {
+		return array_values(array_merge(array_values($resources), $registered));
 	}
 
 	return $registered;
@@ -663,20 +671,20 @@ function gpu_api_register_resources($resources) {
  * @param mixed $providers
  * @return mixed
  */
-function gpu_casc_register_providers($providers) {
+function gpu_casc_register_providers($providers = null) {
 	if (!gpu_boot()) {
 		return $providers;
 	}
 
 	$descriptor = gpu_ecosystem()->cascDescriptor();
 
-	if (is_array($providers)) {
-		$providers['gpu'] = $descriptor;
+	if (is_object($providers) && method_exists($providers, 'register')) {
+		$providers->register($descriptor);
 
 		return $providers;
 	}
 
-	return array('gpu' => $descriptor);
+	return $descriptor;
 }
 
 /**
