@@ -1,0 +1,656 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gpu 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/somethingwithproof/plugin_gpu/issues\n"
+"PO-Revision-Date: 2026-11-27 00:00+0000\n"
+"Last-Translator: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language-Team: Thomas Vincent <thomasvincent@gmail.com>\n"
+"Language: ka-GE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: gpu_nodes.php
+msgid "That GPU node or GPU does not exist, or is on a device you do not have access to."
+msgstr "ეს GPU კვანძი ან GPU არ არსებობს, ან ისეთ მოწყობილობაზეა, რომელზეც წვდომა არ გაქვთ."
+
+#: gpu_nodes.php
+msgid "The GPU data query could not be added to the device. Check that the plugin's templates are installed."
+msgstr "GPU მონაცემთა მოთხოვნის დამატება მოწყობილობაზე ვერ მოხერხდა. შეამოწმეთ, დაყენებულია თუ არა დანამატის შაბლონები."
+
+#: gpu_nodes.php
+msgid "Device: the node's device was deleted, so the node can only be disabled."
+msgstr "მოწყობილობა: კვანძის მოწყობილობა წაშლილია, ამიტომ კვანძის მხოლოდ გამორთვაა შესაძლებელი."
+
+#: gpu_nodes.php
+msgid "Device: choose an existing Cacti device."
+msgstr "მოწყობილობა: აირჩიეთ არსებული Cacti მოწყობილობა."
+
+#: gpu_nodes.php
+msgid "Device: this device is already a GPU node."
+msgstr "მოწყობილობა: ეს მოწყობილობა უკვე არის GPU კვანძი."
+
+#: gpu_nodes.php
+msgid "The GPU node was saved."
+msgstr "GPU კვანძი შენახულია."
+
+#: gpu_nodes.php
+msgid "The GPU node could not be saved."
+msgstr "GPU კვანძის შენახვა ვერ მოხერხდა."
+
+#: gpu_nodes.php
+msgid "The GPU node was removed. Its Cacti device was left in place."
+msgstr "GPU კვანძი ამოღებულია. მისი Cacti მოწყობილობა უცვლელად დარჩა."
+
+#: gpu_nodes.php
+msgid "The GPU node was not removed because GPU records belong to it. Disable it instead; GPU records are never deleted."
+msgstr "GPU კვანძი არ წაშლილა, რადგან მას ეკუთვნის GPU ჩანაწერები. ნაცვლად ამისა გამორთეთ იგი; GPU ჩანაწერები არასდროს იშლება."
+
+#: gpu_nodes.php
+msgid "The GPU now belongs to the node it was seen at, with its history."
+msgstr "GPU ახლა ეკუთვნის იმ კვანძს, სადაც დაფიქსირდა, მისი ისტორიითურთ."
+
+#: gpu_nodes.php
+msgid "The GPU stays with its recorded node."
+msgstr "GPU რჩება მის ჩაწერილ კვანძთან."
+
+#: gpu_nodes.php
+msgid "The GPU will leave the data query at the next reindex. Its graphs and RRD files are kept."
+msgstr "GPU ამოღებული იქნება მონაცემთა მოთხოვნიდან მომდევნო ხელახალი ინდექსაციისას. მისი გრაფიკები და RRD ფაილები შენახულია."
+
+#: gpu_nodes.php
+msgid "Only an absent GPU can be removed from the data query."
+msgstr "მონაცემთა მოთხოვნიდან მხოლოდ არმყოფი GPU-ს ამოღება შეიძლება."
+
+#: gpu_nodes.php
+msgid "Creating a device needs permission to manage Cacti devices."
+msgstr "მოწყობილობის შესაქმნელად საჭიროა Cacti მოწყობილობების მართვის უფლება."
+
+#: gpu_nodes.php
+msgid "Description: enter up to 150 printable characters."
+msgstr "აღწერა: შეიყვანეთ არაუმეტეს 150 ბეჭდვადი სიმბოლო."
+
+#: gpu_nodes.php
+msgid "Hostname: enter a host name or IP address."
+msgstr "ჰოსტის სახელი: შეიყვანეთ ჰოსტის სახელი ან IP მისამართი."
+
+#: gpu_nodes.php
+msgid "The GPU Node device template is not installed."
+msgstr "GPU კვანძის მოწყობილობის შაბლონი არ არის დაყენებული."
+
+#: gpu_nodes.php
+msgid "The device was not kept: your account may not see devices it creates. Ask an administrator to create it."
+msgstr "მოწყობილობა არ შენარჩუნდა: თქვენი ანგარიში ვერ ხედავს მის მიერ შექმნილ მოწყობილობებს. სთხოვეთ ადმინისტრატორს მისი შექმნა."
+
+#: gpu_nodes.php
+msgid "The device could not be removed after access was refused. Ask an administrator to remove it."
+msgstr "წვდომაზე უარის შემდეგ მოწყობილობის წაშლა ვერ მოხერხდა. სთხოვეთ ადმინისტრატორს მისი წაშლა."
+
+#: gpu_nodes.php
+msgid "The device and its GPU node were created. Set the device's SNMP settings on its device page."
+msgstr "მოწყობილობა და მისი GPU კვანძი შექმნილია. დააყენეთ მოწყობილობის SNMP პარამეტრები მოწყობილობის გვერდზე."
+
+#: gpu_nodes.php
+msgid "The device could not be created; see the Cacti log."
+msgstr "მოწყობილობის შექმნა ვერ მოხერხდა; იხილეთ Cacti-ს ჟურნალი."
+
+#: gpu_operator.php
+msgid "Monitoring view"
+msgstr "მონიტორინგის ხედი"
+
+#: gpu_operator.php
+msgid "Observations could not be read. Ask an administrator to check the plugin log."
+msgstr "დაკვირვებების წაკითხვა ვერ მოხერხდა. სთხოვეთ ადმინისტრატორს შეამოწმოს დანამატის ჟურნალი."
+
+#: include/operator.php lib/HealthPage.php lib/NodesPage.php
+msgid "Disabled"
+msgstr "გამორთულია"
+
+#: include/operator.php lib/InventoryPage.php lib/OperatorPage.php
+msgid "Never"
+msgstr "არასდროს"
+
+#: include/operator.php
+msgid "Compare sample age, ECC and throttle state on GPU Health with the device graphs. Escalate identity changes and node configuration to an administrator."
+msgstr "შეადარეთ სინჯის ასაკი, ECC და თროტლინგის მდგომარეობა GPU-ს მდგომარეობის გვერდზე მოწყობილობის გრაფიკებს. იდენტობის ცვლილებები და კვანძის კონფიგურაცია გადაეცით ადმინისტრატორს."
+
+#: lib/EccMode.php
+msgid "ECC is disabled on this GPU"
+msgstr "ამ GPU-ზე ECC გამორთულია"
+
+#: lib/EccMode.php
+msgid "This GPU does not report ECC"
+msgstr "ეს GPU არ გადმოსცემს ECC მონაცემებს"
+
+#: lib/EccMode.php
+msgid "ECC mode not reported"
+msgstr "ECC რეჟიმი არ არის გადმოცემული"
+
+#: lib/ExecutionState.php
+msgid "Completed"
+msgstr "დასრულებულია"
+
+#: lib/ExecutionState.php
+msgid "Permission denied"
+msgstr "წვდომა აკრძალულია"
+
+#: lib/ExecutionState.php
+msgid "Timed out"
+msgstr "დრო ამოიწურა"
+
+#: lib/ExecutionState.php lib/ThrottleMask.php
+msgid "Unknown"
+msgstr "უცნობი"
+
+#: lib/ExecutionState.php
+msgid "Tool error"
+msgstr "ხელსაწყოს შეცდომა"
+
+#: lib/ExecutionState.php
+msgid "Collected"
+msgstr "შეგროვებულია"
+
+#: lib/ExecutionState.php
+msgid "No GPUs reported"
+msgstr "GPU-ები არ არის გადმოცემული"
+
+#: lib/ExecutionState.php
+msgid "SNMP agent unreachable"
+msgstr "SNMP აგენტი მიუწვდომელია"
+
+#: lib/ExecutionState.php
+msgid "Extend entry missing"
+msgstr "Extend ჩანაწერი აკლია"
+
+#: lib/ExecutionState.php
+msgid "Driver not loaded"
+msgstr "დრაივერი არ არის ჩატვირთული"
+
+#: lib/ExecutionState.php
+msgid "Tool not found"
+msgstr "ხელსაწყო ვერ მოიძებნა"
+
+#: lib/ExecutionState.php
+msgid "Output truncated"
+msgstr "გამომავალი მოკვეცილია"
+
+#: lib/ExecutionState.php
+msgid "Output rejected"
+msgstr "გამომავალი უარყოფილია"
+
+#: lib/ExecutionState.php
+msgid "Skipped: already running"
+msgstr "გამოტოვებულია: უკვე გაშვებულია"
+
+#: lib/ExecutionState.php
+msgid "Result not stored"
+msgstr "შედეგი არ შენახულა"
+
+#: lib/FreshnessState.php
+msgid "Current"
+msgstr "აქტუალური"
+
+#: lib/FreshnessState.php
+msgid "Delayed"
+msgstr "დაგვიანებული"
+
+#: lib/FreshnessState.php
+msgid "Stale"
+msgstr "მოძველებული"
+
+#: lib/FreshnessState.php
+msgid "Never observed"
+msgstr "არასდროს დაფიქსირებულა"
+
+#: lib/FreshnessState.php
+msgid "Ahead of the Cacti server's clock"
+msgstr "Cacti სერვერის საათზე წინ არის"
+
+#: lib/HealthPage.php
+msgid "Admin State"
+msgstr "ადმინისტრაციული მდგომარეობა"
+
+#: lib/HealthPage.php
+msgid "Backend"
+msgstr "ბექენდი"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Driver"
+msgstr "დრაივერი"
+
+#: lib/HealthPage.php
+msgid "Freshness"
+msgstr "აქტუალობა"
+
+#: lib/HealthPage.php
+msgid "GPUs"
+msgstr "GPU-ები"
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Last Collection"
+msgstr "ბოლო შეგროვება"
+
+#: lib/HealthPage.php
+msgid "Maintenance"
+msgstr "ტექნიკური მომსახურება"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Node"
+msgstr "კვანძი"
+
+#: lib/HealthPage.php
+msgid "Tool"
+msgstr "ხელსაწყო"
+
+#: lib/HealthPage.php
+msgid "GPU Node Health"
+msgstr "GPU კვანძის მდგომარეობა"
+
+#: lib/HealthPage.php
+msgid "No GPU nodes you may see."
+msgstr "თქვენთვის ხილული GPU კვანძები არ არის."
+
+#: lib/HealthPage.php
+msgid "Clock Event Reasons"
+msgstr "ტაქტური სიხშირის მოვლენის მიზეზები"
+
+#: lib/HealthPage.php
+msgid "ECC"
+msgstr "ECC"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Index"
+msgstr "ინდექსი"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "Name"
+msgstr "სახელი"
+
+#: lib/HealthPage.php
+msgid "Sample"
+msgstr "სინჯი"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+#: lib/OperatorPage.php
+msgid "State"
+msgstr "მდგომარეობა"
+
+#: lib/HealthPage.php lib/InventoryPage.php lib/NodesPage.php
+msgid "UUID"
+msgstr "UUID"
+
+#: lib/HealthPage.php lib/Pages.php
+msgid "GPU Health"
+msgstr "GPU-ს მდგომარეობა"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "No GPUs recorded yet. GPUs appear here once a node's collection reports them."
+msgstr "GPU-ები ჯერ არ არის ჩაწერილი. GPU-ები აქ გამოჩნდება მას შემდეგ, რაც კვანძის შეგროვება მათ გადმოსცემს."
+
+#: lib/HealthPage.php lib/NodesPage.php
+msgid "Enabled"
+msgstr "ჩართულია"
+
+#: lib/HealthPage.php
+msgid "In maintenance"
+msgstr "ტექნიკურ მომსახურებაზეა"
+
+#: lib/HealthPage.php
+msgid "Maint not installed"
+msgstr "Maint არ არის დაყენებული"
+
+#: lib/HealthPage.php
+msgid "Not in maintenance"
+msgstr "არ არის ტექნიკურ მომსახურებაზე"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d present, %d absent, %d possible replacements"
+msgstr "%d არსებული, %d არმყოფი, %d შესაძლო ჩანაცვლება"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Absent"
+msgstr "არმყოფი"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+msgid "Present"
+msgstr "არსებული"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "possible replacement of GPU record %d"
+msgstr "GPU ჩანაწერის %d შესაძლო ჩანაცვლება"
+
+#: lib/HealthPage.php
+msgid "Unknown: not collected yet"
+msgstr "უცნობი: ჯერ არ შეგროვებულა"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d GPUs"
+msgstr "%d GPU"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "last completed %s"
+msgstr "ბოლოს დასრულდა %s"
+
+#: lib/HealthPage.php
+#, php-format
+msgid "%d later runs skipped while another run held the node"
+msgstr "გამოტოვებულია %d შემდგომი გაშვება, სანამ სხვა გაშვება იკავებდა კვანძს"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d seconds ago"
+msgstr "%d წამის წინ"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d minutes ago"
+msgstr "%d წუთის წინ"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d hours ago"
+msgstr "%d საათის წინ"
+
+#: lib/HealthPage.php lib/InventoryPage.php
+#, php-format
+msgid "%d days ago"
+msgstr "%d დღის წინ"
+
+#: lib/InventoryPage.php lib/NodesPage.php
+msgid "Last Seen"
+msgstr "ბოლო დაფიქსირება"
+
+#: lib/InventoryPage.php
+msgid "PCI Bus ID"
+msgstr "PCI სალტის ID"
+
+#: lib/InventoryPage.php
+msgid "Reported By"
+msgstr "გადმოცემულია"
+
+#: lib/InventoryPage.php lib/Pages.php
+msgid "GPU Inventory"
+msgstr "GPU ინვენტარი"
+
+#: lib/InventoryPage.php
+#, php-format
+msgid "seen at %s, move not confirmed"
+msgstr "დაფიქსირდა კვანძზე %s, გადატანა დაუდასტურებელია"
+
+#: lib/InventoryPage.php
+msgid "seen at another node, move not confirmed"
+msgstr "დაფიქსირდა სხვა კვანძზე, გადატანა დაუდასტურებელია"
+
+#: lib/NodesPage.php lib/Pages.php
+msgid "GPU Nodes"
+msgstr "GPU კვანძები"
+
+#: lib/NodesPage.php lib/OperatorPage.php
+msgid "Actions"
+msgstr "მოქმედებები"
+
+#: lib/NodesPage.php
+msgid "Device"
+msgstr "მოწყობილობა"
+
+#: lib/NodesPage.php
+msgid "GPUs Absent"
+msgstr "არმყოფი GPU-ები"
+
+#: lib/NodesPage.php
+msgid "GPUs Present"
+msgstr "არსებული GPU-ები"
+
+#: lib/NodesPage.php
+msgid "No GPU nodes yet. Add a Cacti device that has GPUs."
+msgstr "GPU კვანძები ჯერ არ არის. დაამატეთ Cacti მოწყობილობა, რომელსაც აქვს GPU-ები."
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device %d"
+msgstr "წაშლილი მოწყობილობა %d"
+
+#: lib/NodesPage.php
+msgid "Delete"
+msgstr "წაშლა"
+
+#: lib/NodesPage.php
+msgid "Export"
+msgstr "ექსპორტი"
+
+#: lib/NodesPage.php
+msgid "Download the node and GPU records of the devices you may see as JSON. Take an export before an uninstall that drops the plugin tables."
+msgstr "ჩამოტვირთეთ თქვენთვის ხილული მოწყობილობების კვანძებისა და GPU ჩანაწერები JSON ფორმატში. გააკეთეთ ექსპორტი დანამატის ცხრილების წამშლელ დეინსტალაციამდე."
+
+#: lib/NodesPage.php
+msgid "Export Records"
+msgstr "ჩანაწერების ექსპორტი"
+
+#: lib/NodesPage.php
+msgid "Not collected yet"
+msgstr "ჯერ არ შეგროვებულა"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%s: %d GPUs"
+msgstr "%s: %d GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d new GPUs recorded"
+msgstr "ჩაიწერა %d ახალი GPU"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d s ago"
+msgstr "%d წმ წინ"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "%d runs skipped while one was still running"
+msgstr "გამოტოვებულია %d გაშვება, სანამ ერთი ჯერ კიდევ მიმდინარეობდა"
+
+#: lib/NodesPage.php
+msgid "GPU Moves Awaiting Confirmation"
+msgstr "დადასტურების მოლოდინში მყოფი GPU გადატანები"
+
+#: lib/NodesPage.php
+msgid "Recorded At"
+msgstr "ჩაწერილია კვანძზე"
+
+#: lib/NodesPage.php
+msgid "Seen At"
+msgstr "დაფიქსირდა კვანძზე"
+
+#: lib/NodesPage.php
+msgid "Confirm Move"
+msgstr "გადატანის დადასტურება"
+
+#: lib/NodesPage.php
+msgid "Reject"
+msgstr "უარყოფა"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "GPU Node: %s"
+msgstr "GPU კვანძი: %s"
+
+#: lib/NodesPage.php
+msgid "New GPU Node"
+msgstr "ახალი GPU კვანძი"
+
+#: lib/NodesPage.php
+#, php-format
+msgid "Deleted device (ID %d)"
+msgstr "წაშლილი მოწყობილობა (ID %d)"
+
+#: lib/NodesPage.php
+msgid "Saving adds the GPU data query to the device, with Cacti's automatic reindex turned off: the plugin reindexes after every GPU change. Configure the device's SNMP agent first; see docs/node-setup.md."
+msgstr "შენახვა ამატებს GPU მონაცემთა მოთხოვნას მოწყობილობაზე Cacti-ს ავტომატური ხელახალი ინდექსაციის გამორთვით: დანამატი თავად აკეთებს ხელახალ ინდექსაციას GPU-ს ყოველი ცვლილების შემდეგ. ჯერ დააკონფიგურირეთ მოწყობილობის SNMP აგენტი; იხილეთ docs/node-setup.md."
+
+#: lib/NodesPage.php
+msgid "Save"
+msgstr "შენახვა"
+
+#: lib/NodesPage.php
+msgid "Absent GPUs"
+msgstr "არმყოფი GPU-ები"
+
+#: lib/NodesPage.php
+msgid "An absent GPU stays an index of the data query, so its graphs and RRD files stay attached and show a gap. Removing it from the data query stops that: at the next reindex Cacti no longer lists it, its graphs stop updating and its data sources show as orphaned, and its RRD files and graphs are kept until you delete them. The GPU record stays, and the GPU returns to the data query if it is reported again."
+msgstr "არმყოფი GPU რჩება მონაცემთა მოთხოვნის ინდექსად, ამიტომ მისი გრაფიკები და RRD ფაილები მიბმული რჩება და აჩვენებს წყვეტას. მისი ამოღება მონაცემთა მოთხოვნიდან ამას წყვეტს: მომდევნო ხელახალი ინდექსაციისას Cacti მას აღარ აჩვენებს, მისი გრაფიკები აღარ განახლდება, მონაცემთა წყაროები გამოჩნდება მიტოვებულად, ხოლო RRD ფაილები და გრაფიკები შენახული დარჩება თქვენ მიერ წაშლამდე. GPU ჩანაწერი რჩება და ხელახლა გადმოცემისას GPU დაბრუნდება მონაცემთა მოთხოვნაში."
+
+#: lib/NodesPage.php
+msgid "Remove from Data Query"
+msgstr "მონაცემთა მოთხოვნიდან ამოღება"
+
+#: lib/NodesPage.php
+msgid "Removed from the data query"
+msgstr "ამოღებულია მონაცემთა მოთხოვნიდან"
+
+#: lib/NodesPage.php
+msgid "Create a Device for a New Node"
+msgstr "მოწყობილობის შექმნა ახალი კვანძისთვის"
+
+#: lib/NodesPage.php
+msgid "Only when the node is not a Cacti device yet. The device uses the site's device defaults and the GPU Node device template; set its SNMP settings on the device page afterwards."
+msgstr "მხოლოდ მაშინ, თუ კვანძი ჯერ არ არის Cacti მოწყობილობა. მოწყობილობა იყენებს საიტის ნაგულისხმევ პარამეტრებს და GPU კვანძის მოწყობილობის შაბლონს; შემდეგ დააყენეთ მისი SNMP პარამეტრები მოწყობილობის გვერდზე."
+
+#: lib/NodesPage.php
+msgid "Description"
+msgstr "აღწერა"
+
+#: lib/NodesPage.php
+msgid "Hostname"
+msgstr "ჰოსტის სახელი"
+
+#: lib/NodesPage.php
+msgid "Create Device and Node"
+msgstr "მოწყობილობისა და კვანძის შექმნა"
+
+#: lib/OperatorPage.php
+msgid "Review the recorded observations below. Acknowledgments are personal to this session, expire when observations change, and never suppress alerts or change health."
+msgstr "ქვემოთ იხილეთ ჩაწერილი დაკვირვებები. დადასტურებები პერსონალურია მიმდინარე სესიისთვის, ძალას კარგავს დაკვირვების შეცვლისას და არასდროს თრგუნავს გაფრთხილებებს ან ცვლის მდგომარეობას."
+
+#: lib/OperatorPage.php lib/Pages.php
+msgid "GPU Operations"
+msgstr "GPU ოპერაციები"
+
+#: lib/OperatorPage.php
+msgid "Investigation"
+msgstr "გამოკვლევა"
+
+#: lib/OperatorPage.php
+msgid "Object"
+msgstr "ობიექტი"
+
+#: lib/OperatorPage.php
+msgid "Observed (UTC)"
+msgstr "დაფიქსირებულია (UTC)"
+
+#: lib/OperatorPage.php
+msgid "Unknown or stale"
+msgstr "უცნობი ან მოძველებული"
+
+#: lib/OperatorPage.php
+msgid "Acknowledged; health unchanged."
+msgstr "დადასტურებულია; მდგომარეობა უცვლელია."
+
+#: lib/OperatorPage.php
+msgid "Acknowledge"
+msgstr "დადასტურება"
+
+#: lib/OperatorPage.php
+msgid "No observations are available for devices you may access."
+msgstr "თქვენთვის ხელმისაწვდომ მოწყობილობებზე დაკვირვებები არ მოიპოვება."
+
+#: lib/Pages.php
+msgid "GPU Operator"
+msgstr "GPU ოპერატორი"
+
+#: lib/Pages.php
+msgid "GPU View"
+msgstr "GPU ხედი"
+
+#: lib/Pages.php
+msgid "GPU Admin"
+msgstr "GPU ადმინისტრატორი"
+
+#: lib/Settings.php
+msgid "GPU Identity"
+msgstr "GPU იდენტობა"
+
+#: lib/Settings.php
+msgid "Mark Absent After"
+msgstr "არმყოფად მონიშვნის ზღვარი"
+
+#: lib/Settings.php
+msgid "Consecutive successful collections that must miss a GPU before it is marked absent, from 1 to 100. A failed collection, or one that reports no GPUs, never counts. Absent GPUs keep their records and history and are never deleted automatically."
+msgstr "მიყოლებითი წარმატებული შეგროვებების რაოდენობა (1-დან 100-მდე), რომლებშიც GPU უნდა აკლდეს, სანამ იგი არმყოფად მოინიშნება. ჩაშლილი შეგროვება ან შეგროვება, რომელიც არც ერთ GPU-ს არ გადმოსცემს, არასდროს ითვლება. არმყოფი GPU-ები ინარჩუნებენ ჩანაწერებსა და ისტორიას და ავტომატურად არასდროს იშლება."
+
+#: lib/Settings.php
+msgid "GPU Collection"
+msgstr "GPU შეგროვება"
+
+#: lib/Settings.php
+msgid "Stale After"
+msgstr "მოძველების ზღვარი"
+
+#: lib/Settings.php
+msgid "Seconds after the tool took a sample that its values stop being graphed, from 60 to 86400. An older value is reported as unknown, so a stopped collection shows as a gap, never as a flat line. The GPU age value keeps counting so it can be alerted on."
+msgstr "წამები ხელსაწყოს მიერ სინჯის აღებიდან (60-დან 86400-მდე), რის შემდეგაც მისი მნიშვნელობები აღარ გამოისახება გრაფიკზე. უფრო ძველი მნიშვნელობა გადმოიცემა როგორც უცნობი, ამიტომ შეჩერებული შეგროვება ჩანს როგორც წყვეტა და არასდროს როგორც სწორი ხაზი. GPU ასაკის მნიშვნელობა განაგრძობს ათვლას, რათა მასზე გაფრთხილების დაყენება იყოს შესაძლებელი."
+
+#: lib/Settings.php
+msgid "Uninstall"
+msgstr "დეინსტალაცია"
+
+#: lib/Settings.php
+msgid "Keep Plugin Tables on Uninstall"
+msgstr "დანამატის ცხრილების შენახვა დეინსტალაციისას"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin keeps its node and GPU records. Clear it to have the uninstall drop them; export them first from GPU Nodes. Cacti devices, data sources, graphs, and RRD files are never touched either way."
+msgstr "მონიშვნის შემთხვევაში, დანამატის დეინსტალაცია შეინახავს მის კვანძებისა და GPU ჩანაწერებს. მონიშვნის მოხსნით დეინსტალაცია წაშლის მათ; წინასწარ გააკეთეთ ექსპორტი GPU კვანძების გვერდიდან. Cacti მოწყობილობებს, მონაცემთა წყაროებს, გრაფიკებსა და RRD ფაილებს არც ერთ შემთხვევაში არ ეხება."
+
+#: lib/Settings.php
+msgid "Remove the plugin's Cacti objects on uninstall"
+msgstr "დანამატის Cacti ობიექტების წაშლა დეინსტალაციისას"
+
+#: lib/Settings.php
+msgid "When checked, uninstalling the plugin also removes the GPU device template, data query, data template, and graph templates it imported, each only where nothing outside the plugin uses it, and the GPU data query XML it wrote, only if the file is unchanged. It never deletes RRD files, devices, graphs, or data sources; templates those still use are kept."
+msgstr "მონიშვნის შემთხვევაში, დანამატის დეინსტალაცია ასევე შლის მის მიერ იმპორტირებულ GPU მოწყობილობის შაბლონს, მონაცემთა მოთხოვნას, მონაცემთა შაბლონსა და გრაფიკის შაბლონებს — მხოლოდ მაშინ, თუ მათ დანამატის გარეთ არაფერი იყენებს — ასევე მის მიერ ჩაწერილ GPU მონაცემთა მოთხოვნის XML-ს, მხოლოდ თუ ფაილი უცვლელია. იგი არასდროს შლის RRD ფაილებს, მოწყობილობებს, გრაფიკებს ან მონაცემთა წყაროებს; მათ მიერ გამოყენებული შაბლონები შენახულია."
+
+#: lib/ThrottleMask.php
+#, php-format
+msgid "bits without an indicator: %s"
+msgstr "ბიტები ინდიკატორის გარეშე: %s"
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later. This server runs PHP %s, so the plugin was not installed or enabled."
+msgstr "GPU დანამატი მოითხოვს PHP %s ან უფრო ახალ ვერსიას. ამ სერვერზე გაშვებულია PHP %s, ამიტომ დანამატი არ დაყენდა ან არ ჩაირთო."
+
+#: setup.php
+msgid "GPU"
+msgstr "GPU"
+
+#: setup.php
+msgid "The GPU plugin is not enabled."
+msgstr "GPU დანამატი არ არის ჩართული."
+
+#: setup.php
+#, php-format
+msgid "The GPU plugin requires PHP %s or later."
+msgstr "GPU დანამატი მოითხოვს PHP %s ან უფრო ახალ ვერსიას."
+
+#: setup.php
+msgid "Management"
+msgstr "მართვა"

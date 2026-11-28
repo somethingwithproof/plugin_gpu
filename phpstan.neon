@@ -31,6 +31,7 @@ parameters:
         - gpu_inventory.php
         - poller_gpu.php
         - ss_gpu.php
+        - cli/gpu.php
     scanDirectories:
         - %env.CACTI_PATH%/lib
         - %env.CACTI_PATH%/include
@@ -54,11 +55,11 @@ parameters:
             path: gpu_operator.php
         -
             identifier: require.fileNotFound
-            path: poller_gpu.php
+            paths: [poller_gpu.php, cli/gpu.php]
         # $config comes from core's cli_check.php.
         -
             identifier: variable.undefined
-            path: poller_gpu.php
+            paths: [poller_gpu.php, cli/gpu.php]
         # csrf-magic is in include/vendor, which is not scanned.
         -
             message: '#^Function csrf_check not found\.$#'

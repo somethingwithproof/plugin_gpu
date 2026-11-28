@@ -26,6 +26,8 @@ namespace Somethingwithproof\Gpu;
 final readonly class Collection {
 	/**
 	 * @param list<Reading> $readings one per report, in the same order
+	 * @param GpuSnapshot $snapshot
+	 * @param string $backend
 	 */
 	public function __construct(
 		public GpuSnapshot $snapshot,
@@ -34,10 +36,20 @@ final readonly class Collection {
 	) {
 	}
 
+		/**
+	 * State.
+	 *
+	 * @return ExecutionState
+	 */
 	public function state(): ExecutionState {
 		return $this->readings === [] ? ExecutionState::Empty : ExecutionState::Ok;
 	}
 
+		/**
+	 * Newest sample.
+	 *
+	 * @return int
+	 */
 	public function newestSample(): int {
 		return $this->readings === [] ? 0 : max(array_map(static fn (Reading $reading): int => $reading->observedAt, $this->readings));
 	}

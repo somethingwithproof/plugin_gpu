@@ -38,15 +38,18 @@ require_once($config['base_path'] . '/plugins/gpu/setup.php');
 
 ini_set('max_execution_time', '0');
 
-$gpu_force = false;
+$gpu_force  = false;
+$gpu_poller = isset($config['poller_id']) && is_numeric($config['poller_id']) ? (int) $config['poller_id'] : 1;
 
 foreach (array_slice($argv, 1) as $gpu_arg) {
 	if ($gpu_arg === '--force') {
 		$gpu_force = true;
 	} elseif ($gpu_arg === '--debug') {
 		$debug = true;
+	} elseif (strpos($gpu_arg, '--poller=') === 0 && ctype_digit(substr($gpu_arg, 9))) {
+		$gpu_poller = (int) substr($gpu_arg, 9);
 	} else {
-		fwrite(STDERR, 'ERROR: Unknown argument ' . $gpu_arg . PHP_EOL . 'usage: poller_gpu.php [--force] [--debug]' . PHP_EOL);
+		fwrite(STDERR, 'ERROR: Unknown argument ' . $gpu_arg . PHP_EOL . 'usage: poller_gpu.php [--poller=N] [--force] [--debug]' . PHP_EOL);
 		exit(1);
 	}
 }
@@ -84,7 +87,7 @@ if (!$gpu_lock->acquire('collector') || !register_process_start('gpu', 'collecto
 $gpu_start = microtime(true);
 
 try {
-	$gpu_stats = gpu_poller()->run(gpu_settings(), $gpu_budget);
+	$gpu_stats = gpu_poller()->run(gpu_settings(), $gpu_budget, $gpu_poller);
 } finally {
 	unregister_process('gpu', 'collector', 0);
 	$gpu_lock->release('collector');

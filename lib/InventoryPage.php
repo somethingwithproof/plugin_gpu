@@ -30,6 +30,9 @@ final class InventoryPage {
 
 	/**
 	 * @param \Closure(int): bool $deviceAllowed Cacti's device permission check for the viewer
+	 * @param NodeRepository $nodes
+	 * @param GpuRepository $gpus
+	 * @param Clock $clock
 	 */
 	public function __construct(
 		private readonly NodeRepository $nodes,
@@ -39,6 +42,9 @@ final class InventoryPage {
 	) {
 	}
 
+		/**
+	 * Render.
+	 */
 	public function render(): void {
 		$nodes = [];
 
@@ -77,6 +83,7 @@ final class InventoryPage {
 	 *
 	 * @param array<int, Node> $nodes the nodes the viewer may see, by id
 	 * @return list<string>
+	 * @param GpuRecord $gpu
 	 */
 	public function row(GpuRecord $gpu, array $nodes): array {
 		$state = [$gpu->presence === Presence::Present ? __('Present', 'gpu') : __('Absent', 'gpu')];
@@ -103,6 +110,12 @@ final class InventoryPage {
 		];
 	}
 
+		/**
+	 * Age.
+	 *
+	 * @param int $time
+	 * @return string
+	 */
 	private function age(int $time): string {
 		$seconds = max(0, $this->clock->now() - $time);
 

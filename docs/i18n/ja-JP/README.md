@@ -1,14 +1,14 @@
-<!-- Source: README.md; SHA256: 126deef1783d64f878bf565f1433c10f31aef828eb9bc313aeff2b0335e54c7c -->
+<!-- Source: README.md; SHA256: 97ba37df4a883426d3984ed7d14547ad7367e973411a8abd930409ce259f545b -->
 
 <!-- translations:start -->
-[English](../../../README.md) | [简体中文](../zh-CN/README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [বাংলা](../bn-BD/README.md) | [Bosanski](../bs-BA/README.md) | [Deutsch](../de-DE/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](../he-IL/README.md) | [Hrvatski](../hr-HR/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](README.md) | [한국어](../ko-KR/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](../so-SO/README.md) | [Српски](../sr-RS/README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](../zh-TW/README.md) | [isiZulu](../zu-ZA/README.md)
+[English](../../../README.md) | [简体中文](../zh-CN/README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [Български](../bg-BG/README.md) | [বাংলা](../bn-BD/README.md) | [Bosanski](../bs-BA/README.md) | [Deutsch](../de-DE/README.md) | [Ελληνικά](../el-GR/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](../he-IL/README.md) | [Hrvatski](../hr-HR/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](README.md) | [ქართული](../ka-GE/README.md) | [한국어](../ko-KR/README.md) | [Latviešu](../lv-LV/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Português (Portugal)](../pt-PT/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](../so-SO/README.md) | [Српски](../sr-RS/README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](../zh-TW/README.md) | [isiZulu](../zu-ZA/README.md)
 <!-- translations:end -->
 
 # plugin_gpu
 
-NVIDIA ツールから取得した GPU ごとの使用率、メモリ、温度、消費電力、ECC エラー、およびスロットリング理由を Cacti に取り込む Cacti 1.2 プラグインです。AMD サポートおよび XID エラーの収集は計画中であり、まだ実装されていません。各 GPU はノードのデバイス上のデータクエリのインデックスとなるため、GPU グラフは Cacti の権限管理下でノードの他のグラフと並んで配置され、Thold や Maint によるアラート通知および抑制を利用できます。
+NVIDIA および AMD のツールから取得した GPU ごとの使用率、メモリ、温度、消費電力、ECC エラー、およびスロットリング理由を Cacti に取り込む Cacti 1.2 プラグインです。各 GPU（または MIG インスタンス）はノードのデバイス上のデータクエリのインデックスとなるため、GPU グラフは Cacti の権限管理下でノードの他のグラフと並んで配置され、Thold や Maint によるアラート通知および抑制を利用できます。
 
-> **ステータス: 開発中、未リリース。** マイルストーン 4 により、フェーズ 1（SNMP extend 経由の NVIDIA 対応）のコード実装が完了しました（収集、識別情報、グラフ、スロットルおよび ECC シグナル、Thold および Maint によるアラート、ヘルスページ、運用者向けドキュメント）。動作検証は、実際の `snmpd` に対して合成出力を行う擬似的な `nvidia-smi` を組み合わせて実行したのみで、実際の GPU ハードウェア上では一度も実行されていません。リリース前に残っている課題は、実機でのパイロットテスト（[docs/pilot-plan.md](../../pilot-plan.md)、#54）、外部セキュリティレビュー（[docs/security-review.md](../../security-review.md)）、実ツールから取得したフィクスチャ（#14）、および本番規模のハードウェアでのスケーラビリティ測定（[docs/performance.md](../../performance.md)）です。XID エラーは決定事項 #8 の結論待ちです。本番環境では実行しないでください。
+> **ステータス: フェーズ 1〜3 をコード実装済み、未リリース。** フェーズ 1（SNMP extend 経由の NVIDIA `nvidia-smi`、識別追跡、グラフ、スロットルおよび ECC シグナル、Thold および Maint によるアラート、ヘルスページ）、フェーズ 2（読み取り専用の NVIDIA DCGM Exporter HTTP(S) パーサー/クライアントおよび AMD `amd-smi` パーサー）、フェーズ 3（MIG インスタンス識別追跡、Schema v4 カラム、ポーラースコープのリモートコレクター実行、`replicate_out` および `remote_agent` フック）、CasC オペレーター CLI（`cli/gpu.php`）、およびエコシステムフック（`abilities_register`、`doctor_register_checks`、`casc_register_providers`）が実装され、単体テスト、セキュリティテスト、および使い捨て Cacti 統合テストでカバーされています。これまでのライブ実行は物理 GPU ハードウェアではなく合成 `snmpd` とフィクスチャペイロードを使用しています。リリースをタグ付けする前に残っている項目は、実機でのパイロットテスト（[docs/pilot-plan.md](../../pilot-plan.md)、#54）、外部セキュリティレビュー（[docs/security-review.md](../../security-review.md)）、実ツールから取得したフィクスチャ（#14）、および本番規模のハードウェアでのスケーラビリティ測定（[docs/performance.md](../../performance.md)）です。XID エラーの収集は決定事項 #8 の下で未決のままです。
 
 ## アクセスロール
 
@@ -32,25 +32,25 @@ GPU ノードは通常、CPU、メモリ、およびインターフェースの�
 
 ## 計画されているスコープ
 
-| フェーズ | スコープ | マイルストーン |
-|---|---|---|
-| 0, 調査 | ベンダーツール出力、XID およびスロットルシグナル、GPU 識別情報、権限、収集方式の決定 | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | `nvidia-smi` による収集、UUID ベースのインベントリ、グラフ、スロットル・ECC・XID シグナル、Thold および Maint 連携、ヘルスページ | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, バックエンド | DCGM バックエンド、`amd-smi` バックエンド | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, MIG およびリモート | MIG インスタンス、Cacti リモートデータコレクター | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| フェーズ | スコープ | ステータス | マイルストーン |
+|---|---|---|---|
+| 0, 調査 | ベンダーツール出力、XID およびスロットルシグナル、GPU 識別情報、権限、収集方式の決定 | 完了 | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | `nvidia-smi` による収集、UUID ベースのインベントリ、グラフ、スロットルおよび ECC シグナル、Thold および Maint 連携、ヘルスページ | 実装済み（フィクスチャでテスト済み） | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, バックエンド | 読み取り専用 DCGM Exporter HTTP(S) パーサー/クライアント（`lib/DcgmExporterParser.php`、`lib/DcgmExporterClient.php`）、AMD `amd-smi` パーサー（`lib/AmdSmiParser.php`） | 実装済み（単体テスト済み） | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, MIG、リモートおよびエコシステム | MIG インスタンス識別追跡、リモートデータコレクター（`INFO`、`poller_gpu.php --poller=N`、`replicate_out`、`remote_agent`）、CasC CLI（`cli/gpu.php`）、MCP/Doctor/CasC フック | 実装済み（単体および CI 統合テスト済み） | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 スコープ外: GPU やノードの状態を変更するコマンド（クロック、電力制限、リセット、MIG レイアウトの変更）、プラグイン独自のアラートエンジン、カスタムデーモンや独自ネットワークプロトコル、およびスケジューラやジョブアカウンティング。調査バックログについては計画書を参照してください。
 
 ## マイルストーン 4 での追加機能
 
-- **アラート値としてのスロットル理由。** クロックイベントマスクは理由ごとに 0 または 1 のインジケーターにデコードされます。未知のマスクの場合はゼロではなく不明値（unknown）となり、対応するインジケーターがないビットは生のマスク値に残され、GPU Health 画面に表示されます。
-- **アラート値としての ECC**（[docs/metrics.md](../../metrics.md)）。前回サンプル以降に新規発生した訂正済みエラーおよび未訂正エラーは、連続する 2 つの累計値からプラグインによって計算され、ゲージ値として保存されます。初回サンプル、読み取り欠損、またはドライバーのリロード時は不明値となり、リセット時にもゼロや負の値として解釈されることはありません。リタイア済みのシングルビットおよびダブルビットページ数と ECC モードも読み取ります。GPU ごとに 2 つの追加 ECC グラフを用意することで Cacti に保存できるようになり、Power Percent を含めて合計 11 個のグラフが提供されます。XID は収集されません（固定の `nvidia-smi` コマンドに適合するデータソースがないため、#8）。
-- **Thold および Maint**（[docs/alerting.md](../../alerting.md)）。温度、電力制限に対する消費電力、スロットルインジケーター、新規未訂正 ECC エラー、保留中のページリタイアメント、およびサンプル経過時間（sample age）用の Thold テンプレートが同梱されています。Thold 1.8.2 は未知のカウンター値で失敗するため、すべての値はゲージとして扱われます。無改変の Thold 1.8.2 および Maint 1.3 を用いたエンドツーエンドテストにより、ECC リセットを跨いだ場合も含めて各しきい値の発火と復旧、および Maint による抑制が確認されています。
-- **GPU Health**（GPU View）。ノードごとには鮮度、前回の収集結果、Maint の状態、バックエンド、ツールおよびドライバーのバージョン、GPU 数を表示し、GPU ごとには存在状態、サンプル経過時間、ECC 状態、および生のマスク値を表示します。この画面は保存済みのレコードのみを参照します。
-- **権限管理。** 権限テストスイートは、すべてのページファイルと操作、次のリクエストでの権限剥奪の反映、および情報を漏洩しない拒否応答を網羅しています。
-- **障害およびリストア検証。** スクリプト化されたエンドツーエンドの実行により、エージェント、認証情報、ツール、その出力、データベース接続、および RRD 書き込みに障害を発生させ、さらに RRD ファイルより古いダンプを含むデータベースダンプからのリストアを検証しています。新しい GPU が別の GPU の RRD ファイルを引き継ぐことはありません（[docs/backup.md](../../backup.md)）。
-- **スケーラビリティ**（[docs/performance.md](../../performance.md)）。スケーラビリティテストでは、指定した GPU 数において収集、スクリプトサーバー入力、Cacti オブジェクト作成、ポーラーサイクル、およびヘルスページの処理時間を計測します。CI では 100 GPU で実行されています。1,000 GPU および 8,000 GPU での計測結果はまだ記録されていないため、サポート対象の GPU 数は明記していません。
-- **運用者向けドキュメント**（[docs/operations.md](../../operations.md)）: インストール、アップグレード、アンインストール、最小権限、取得不可値（unavailable values）、およびトラブルシューティングについて記載しています。変更履歴は [CHANGELOG.md](../../../CHANGELOG.md) に記載されています。
+- **NVIDIA DCGM Exporter 読み取り専用コレクター**（`lib/DcgmExporterParser.php`、`lib/DcgmExporterClient.php`）。Prometheus テキスト公開形式のメトリクス（`DCGM_FI_DEV_GPU_UTIL`、`DCGM_FI_DEV_FB_USED`、`DCGM_FI_DEV_FB_FREE`、`DCGM_FI_DEV_POWER_USAGE`、`DCGM_FI_DEV_GPU_TEMP`、`DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`、`DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`、および MIG ラベル `GPU_I_ID` と `GPU_I_PROFILE`）をパースします。HTTP(S) クライアントは明示的なエンドポイントホスト/CIDR 許可リストを適用し、デフォルトで TLS ピア証明書を検証し、タイムアウトとレスポンスサイズに上限を設け、リダイレクトを無効化し、HTTP(S) 以外のスキームを拒否します。
+- **AMD `amd-smi` 読み取り専用パーサー**（`lib/AmdSmiParser.php`）。`amd-smi` の JSON/SNMP-extend 出力（使用率、VRAM、消費電力、ジャンクション/エッジ温度、ECC、パーティションメタデータ、および `Reading::$vendorExtensions` 経由の個別スロットル累積値）を `Vendor::Amd` 配下の共通メトリクスモデルに正規化します。
+- **MIG インスタンス追跡および Schema v4**（`lib/GpuReport.php`、`lib/GpuSnapshot.php`、`lib/GpuRecord.php`、`lib/Schema.php`、`lib/ScriptServer.php`）。親 GPU と並べて MIG インスタンス UUID（`MIG-<uuid>` および `MIG-GPU-<parent>/<gi>/<ci>`）、`mig_mode`、`mig_instance_id`、`mig_profile`、`parent_uuid`、および `partition_info` を追跡し、更新時には不変の識別キー（`vendor`、`uuid`、`parent_uuid`）を保護してデータベースクエリ前に検証します。
+- **リモートデータコレクター**（`INFO`、`poller_gpu.php`、`lib/Poller.php`、`lib/ReplicationRepository.php`、`setup.php`）。`INFO` で `remote_collect:1, remote_poller:1` を宣言し、`php plugins/gpu/poller_gpu.php --poller=N` によるポーラースコープ実行をサポートし、非メインポーラーでは Cacti オブジェクトのプロビジョニングをスキップし、`replicate_out` を通じてポーラースコープのテーブルをレプリケートし、`remote_agent` を通じて読み取り専用の `gpu_health` および `gpu_inventory` アクションに応答します。
+- **オペレーターおよび CasC CLI**（`cli/gpu.php`、`lib/CascProvider.php`）。外部の Composer 依存関係なしで PHP 8.2+ 上で動作し（PHP 8.0 で構文解析可能）、`php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`、`validate <file> [--format=yaml|xml]`、`plan <file> [--format=yaml|xml] [--output=text|json]`、`apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`、および `health [--format=text|json]` を提供します。`plan` は決定論的な SHA-256 確認ハッシュを計算し、`apply` はハッシュ不一致時にフェイルクローズで終了し、XML パースは `DOCTYPE` および `ENTITY` 宣言を拒否します。
+- **エコシステム統合フック**（`lib/EcosystemIntegration.php`、`setup.php`）。`abilities_register`（`gpu-list-nodes`、`gpu-list-devices`、`gpu-get-health`。読み取り専用、`GPU View` レルムと Cacti デバイス権限で制限）、`doctor_register_checks`（`gpu_schema`、`gpu_poller_freshness`、`gpu_node_health`）、および `casc_register_providers` を登録します。
+- **アラート値としてのスロットル理由および ECC**（[docs/metrics.md](../../metrics.md)）。クロックイベントマスクを 0/1 のインジケーターにデコードし、間隔ごとの新規訂正済み/未訂正 ECC エラーをゲージ値として算出することで、Thold 1.8.2 および Maint 1.3 が負のカウンター値やリセット時のスパイクなしにアラート通知と抑制を行えるようにします（[docs/alerting.md](../../alerting.md)）。
+- **GPU Health、権限管理、障害/リストア、およびスケーラビリティ。** GPU Health（GPU View）はノードへ問い合わせることなく、保存済みの鮮度、前回の収集結果、Maint 状態、バックエンド、バージョン、および生のスロットルマスクを表示します。スクリプト化されたエンドツーエンドテストにより、権限管理、エージェント/DB/RRD の障害復旧（[docs/backup.md](../../backup.md)）、および CI 上での 100 GPU スケール実行が検証されています（[docs/performance.md](../../performance.md)、[docs/operations.md](../../operations.md)、[CHANGELOG.md](../../../CHANGELOG.md)）。
 
 ## マイルストーン 3 での追加機能
 
@@ -62,7 +62,7 @@ GPU ノードは通常、CPU、メモリ、およびインターフェースの�
 - **GPU Nodes におけるデバイス権限。** GPU Admin は、Cacti 上で閲覧権限のあるデバイス上のノードおよび GPU のみを表示、変更、エクスポート、および移動できます（GPU の移動には移動元・移動先の両ノードへの権限が必要です）。デバイスが削除されたノードは、無効化または削除が可能です。
 - **共通メトリックモデル**（[ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md)、[docs/metrics.md](../../metrics.md)）。メモリ単位はバイトとし、クロックイベントマスクは `thr_*` インジケーターにデコードされ、`age` は GPU 自身のサンプル時刻からの経過時間（不明な場合は `U`）となります。
 
-インストールを実行する（Web サーバーの）ユーザーは、プラグインがデータクエリ XML を配置する `<cacti>/resource/script_server/` への書き込み権限を持っている必要があります。権限がない場合、インストールとアップグレードはメッセージを表示して停止し、次回の試行時に再実行されます。アンインストール時には、*Remove the plugin's Cacti objects on uninstall* がチェックされている場合のみテンプレートと XML が削除され、RRD ファイル、デバイス、グラフ、またはデータソースが削除されることはありません（[docs/operations.md](../../operations.md#uninstall)）。リモートデータコレクター上のノードの収集は、フェーズ 3 まで対応していません。
+インストールを実行する（Web サーバーの）ユーザーは、プラグインがデータクエリ XML を配置する `<cacti>/resource/script_server/` への書き込み権限を持っている必要があります。権限がない場合、インストールとアップグレードはメッセージを表示して停止し、次回の試行時に再実行されます。アンインストール時には、*Remove the plugin's Cacti objects on uninstall* がチェックされている場合のみテンプレートと XML が削除され、RRD ファイル、デバイス、グラフ、またはデータソースが削除されることはありません（[docs/operations.md](../../operations.md#uninstall)）。リモートデータコレクター上のノードは、割り当てられた `poller_id` のスコープで実行されます。
 
 ## マイルストーン 2 の実装内容
 
@@ -105,9 +105,10 @@ GPU ノードは通常、CPU、メモリ、およびインターフェースの�
 
 ```mermaid
 flowchart LR
-    NODE[GPU ノード: nvidia-smi を実行する snmpd extend] -->|SNMP 読み取り、v3 推奨| C[コレクター]
-    C --> CACHE[(GPU UUID をキーとするプラグインキャッシュ)]
+    NODE["GPU ノード: snmpd extend / DCGM Exporter / amd-smi"] -->|読み取り専用 SNMPv3 または許可リスト済み HTTPS| C[ポーラースコープのコレクター]
+    C --> CACHE[("ベンダー + GPU/MIG UUID をキーとするプラグインキャッシュ")]
     CACHE --> SS[スクリプトサーバー データクエリ入力]
+    CACHE --> ECO["CasC CLI、MCP アビリティ、Doctor チェック"]
     SS --> RRD[(Cacti RRD ファイル、GPU ごとに 1 つのデータソース)]
     SS -->|poller_output| T[Thold および Maint]
     RRD --> G[Cacti グラフと権限]

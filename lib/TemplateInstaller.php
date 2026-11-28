@@ -39,6 +39,14 @@ final class TemplateInstaller {
 
 	private const LOCK = 'templates';
 
+		/**
+	 * Construct a TemplateInstaller instance.
+	 *
+	 * @param CactiObjectRepository $cacti
+	 * @param LockRepository $locks
+	 * @param string $pluginPath
+	 * @param string $cactiPath
+	 */
 	public function __construct(
 		private readonly CactiObjectRepository $cacti,
 		private readonly LockRepository $locks,
@@ -47,6 +55,11 @@ final class TemplateInstaller {
 	) {
 	}
 
+		/**
+	 * Install.
+	 *
+	 * @return bool
+	 */
 	public function install(): bool {
 		if (!$this->locks->acquire(self::LOCK)) {
 			Log::info('Template import skipped because another upgrade is importing them');
@@ -61,10 +74,20 @@ final class TemplateInstaller {
 		}
 	}
 
+		/**
+	 * Data query target.
+	 *
+	 * @return string
+	 */
 	public function dataQueryTarget(): string {
 		return $this->cactiPath . '/resource/script_server/' . TemplateXml::DATA_QUERY_FILE;
 	}
 
+		/**
+	 * Place data query.
+	 *
+	 * @return bool
+	 */
 	private function placeDataQuery(): bool {
 		$source = (string) @file_get_contents($this->pluginPath . '/resource/script_server/' . TemplateXml::DATA_QUERY_FILE);
 		$target = $this->dataQueryTarget();
@@ -98,6 +121,11 @@ final class TemplateInstaller {
 		return $this->cacti->setting(self::SETTING_FILE) === $target || $this->cacti->saveSetting(self::SETTING_FILE, $target);
 	}
 
+		/**
+	 * Import templates.
+	 *
+	 * @return bool
+	 */
 	private function importTemplates(): bool {
 		$xml = (string) @file_get_contents($this->pluginPath . '/templates/' . TemplateXml::TEMPLATE_FILE);
 
@@ -139,6 +167,7 @@ final class TemplateInstaller {
 	 * Cacti's copy of the data query XML matches the plugin's: a Cacti
 	 * redeployment can remove the copy while the database objects stay, and
 	 * Cacti cannot run the query without it.
+	 * @return bool
 	 */
 	public function installed(): bool {
 		$source = (string) @file_get_contents($this->pluginPath . '/resource/script_server/' . TemplateXml::DATA_QUERY_FILE);
@@ -176,6 +205,7 @@ final class TemplateInstaller {
 	 * a missing part.
 	 *
 	 * @return array{removed: list<string>, kept: list<string>}
+	 * @param CactiTemplateRepository $templates
 	 */
 	public function remove(CactiTemplateRepository $templates): array {
 		$report = ['removed' => [], 'kept' => []];
@@ -230,6 +260,9 @@ final class TemplateInstaller {
 	 *
 	 * @param array{removed: list<string>, kept: list<string>} $report
 	 * @param \Closure(): bool                                  $remove
+	 * @param string $name
+	 * @param bool $free
+	 * @return bool
 	 */
 	private static function step(array &$report, string $name, bool $free, \Closure $remove): bool {
 		if ($free && $remove()) {
@@ -248,6 +281,7 @@ final class TemplateInstaller {
 	 * changed it since.
 	 *
 	 * @param array{removed: list<string>, kept: list<string>} $report
+	 * @param CactiTemplateRepository $templates
 	 */
 	private function removeDataQueryFile(array &$report, CactiTemplateRepository $templates): void {
 		$target = $this->dataQueryTarget();
@@ -271,6 +305,8 @@ final class TemplateInstaller {
 	/**
 	 * import_xml_data() returns false or a list of objects per type, each
 	 * with a result of success or fail.
+	 * @param mixed $result
+	 * @return bool
 	 */
 	private static function succeeded(mixed $result): bool {
 		if (!is_array($result) || $result === []) {

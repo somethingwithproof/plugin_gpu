@@ -24,6 +24,17 @@ namespace Somethingwithproof\Gpu;
  * the plugin only refers to it by id.
  */
 final readonly class Node {
+		/**
+	 * Construct a Node instance.
+	 *
+	 * @param int $id
+	 * @param int $hostId
+	 * @param AdminState $adminState
+	 * @param string $description
+	 * @param bool $deviceExists
+	 * @param int $createdAt
+	 * @param int $updatedAt
+	 */
 	public function __construct(
 		public int $id,
 		public int $hostId,
@@ -40,6 +51,7 @@ final readonly class Node {
 	/**
 	 * @param array<array-key, mixed> $row a plugin_gpu_node row, left joined to host as
 	 *                                     description and device_id
+	 * @return self
 	 */
 	public static function fromRow(array $row): self {
 		return new self(
@@ -53,6 +65,11 @@ final readonly class Node {
 		);
 	}
 
+		/**
+	 * Enabled.
+	 *
+	 * @return bool
+	 */
 	public function enabled(): bool {
 		return $this->adminState === AdminState::Enabled;
 	}

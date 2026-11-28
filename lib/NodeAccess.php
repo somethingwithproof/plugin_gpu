@@ -37,14 +37,32 @@ final class NodeAccess {
 	public function __construct(private readonly \Closure $deviceAllowed) {
 	}
 
+		/**
+	 * Device allowed.
+	 *
+	 * @param int $hostId
+	 * @return bool
+	 */
 	public function deviceAllowed(int $hostId): bool {
 		return $hostId > 0 && ($this->deviceAllowed)($hostId);
 	}
 
+		/**
+	 * Can manage.
+	 *
+	 * @param ?Node $node
+	 * @return bool
+	 */
 	public function canManage(?Node $node): bool {
 		return $node !== null && $node->deviceExists && $this->deviceAllowed($node->hostId);
 	}
 
+		/**
+	 * Can see.
+	 *
+	 * @param ?Node $node
+	 * @return bool
+	 */
 	public function canSee(?Node $node): bool {
 		return $node !== null && (!$node->deviceExists || $this->canManage($node));
 	}
@@ -52,6 +70,8 @@ final class NodeAccess {
 	/**
 	 * Whether the user may delete the node: a node they may manage, or one
 	 * whose device was deleted.
+	 * @param ?Node $node
+	 * @return bool
 	 */
 	public function canRemove(?Node $node): bool {
 		return $node !== null && (!$node->deviceExists || $this->canManage($node));
@@ -59,6 +79,8 @@ final class NodeAccess {
 
 	/**
 	 * @param array<int, Node> $nodes by id
+	 * @param GpuRecord $gpu
+	 * @return bool
 	 */
 	public function canManageGpu(GpuRecord $gpu, array $nodes): bool {
 		return $this->canManage($nodes[$gpu->nodeId] ?? null)

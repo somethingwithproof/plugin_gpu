@@ -1,14 +1,14 @@
-<!-- Source: README.md; SHA256: 126deef1783d64f878bf565f1433c10f31aef828eb9bc313aeff2b0335e54c7c -->
+<!-- Source: README.md; SHA256: 97ba37df4a883426d3984ed7d14547ad7367e973411a8abd930409ce259f545b -->
 
 <!-- translations:start -->
-[English](../../../README.md) | [简体中文](../zh-CN/README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [বাংলা](../bn-BD/README.md) | [Bosanski](../bs-BA/README.md) | [Deutsch](../de-DE/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](README.md) | [Hrvatski](../hr-HR/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](../ja-JP/README.md) | [한국어](../ko-KR/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](../so-SO/README.md) | [Српски](../sr-RS/README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](../zh-TW/README.md) | [isiZulu](../zu-ZA/README.md)
+[English](../../../README.md) | [简体中文](../zh-CN/README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [Български](../bg-BG/README.md) | [বাংলা](../bn-BD/README.md) | [Bosanski](../bs-BA/README.md) | [Deutsch](../de-DE/README.md) | [Ελληνικά](../el-GR/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](README.md) | [Hrvatski](../hr-HR/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](../ja-JP/README.md) | [ქართული](../ka-GE/README.md) | [한국어](../ko-KR/README.md) | [Latviešu](../lv-LV/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Português (Portugal)](../pt-PT/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](../so-SO/README.md) | [Српски](../sr-RS/README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](../zh-TW/README.md) | [isiZulu](../zu-ZA/README.md)
 <!-- translations:end -->
 
 # plugin_gpu
 
-תוסף עבור Cacti 1.2 המביא אל Cacti מדדי ניצולת, זיכרון, טמפרטורה, הספק, שגיאות ECC וסיבות האטה (throttling) לכל GPU מתוך כלי NVIDIA. תמיכה ב-AMD ואיסוף שגיאות XID מתוכננים אך טרם מומשו. כל GPU הופך לאינדקס של שאילתת נתונים בהתקן של הצומת שלו, כך שגרפי ה-GPU מוצבים לצד שאר הגרפים של הצומת תחת ההרשאות של Cacti, ו-Thold ו-Maint יכולים להתריע עליהם ולהשתיק אותם.
+תוסף עבור Cacti 1.2 המביא אל Cacti מדדי ניצולת, זיכרון, טמפרטורה, הספק, שגיאות ECC וסיבות האטה (throttling) לכל GPU מתוך כלי NVIDIA ו-AMD. כל GPU (או מופע MIG) הופך לאינדקס של שאילתת נתונים בהתקן של הצומת שלו, כך שגרפי ה-GPU מוצבים לצד שאר הגרפים של הצומת תחת ההרשאות של Cacti, ו-Thold ו-Maint יכולים להתריע עליהם ולהשתיק אותם.
 
-> **סטטוס: בפיתוח, טרם שוחרר.** אבן דרך 4 משלימה את הקוד של שלב 1 (NVIDIA דרך הרחבת SNMP): איסוף, זיהוי, גרפים, אותות האטה ו-ECC, התרעות Thold ו-Maint, דף התקינות ותיעוד המפעיל. התוסף הורץ עד כה רק מול `snmpd` אמיתי עם `nvidia-smi` מדומה המדפיס פלט סינתטי, ומעולם לא על חומרת GPU. פריטים שעדיין פתוחים לפני שחרור: פיילוטים על חומרה אמיתית ([docs/pilot-plan.md](../../pilot-plan.md), #54), סקירת אבטחה חיצונית ([docs/security-review.md](../../security-review.md)), דגימות פלט שנלכדו מכלים אמיתיים (#14), ומדידת מדרגיות על חומרה בגודל סביבת ייצור ([docs/performance.md](../../performance.md)). שגיאות XID ממתינות להחלטה #8. אין להריץ בסביבת ייצור.
+> **סטטוס: שלבים 1 עד 3 מומשו בקוד, טרם שוחרר.** שלב 1 (`nvidia-smi` של NVIDIA דרך הרחבת SNMP, מעקב זהות, גרפים, אותות האטה ו-ECC, התרעות Thold ו-Maint, דף התקינות), שלב 2 (מנתח ולקוח HTTP(S) לקריאה בלבד עבור NVIDIA DCGM Exporter ומנתח `amd-smi` עבור AMD), שלב 3 (מעקב זהות למופעי MIG, עמודות Schema v4, הרצת אספן מרוחק בהיקף poller, וויי `replicate_out` ו-`remote_agent`), כלי ה-CLI של מפעיל CasC (`cli/gpu.php`) ווויי האינטגרציה עם המערכת (`abilities_register`, `doctor_register_checks`, `casc_register_providers`) מומשו ומכוסים על ידי בדיקות יחידה, אבטחה ואינטגרציה על גבי התקנת Cacti זמנית. הרצות חיות עד כה משתמשות ב-`snmpd` סינתטי ובדגימות קלט (fixtures) במקום בחומרת GPU פיזית. פריטים שעדיין פתוחים לפני תיוג שחרור: פיילוטים על חומרה אמיתית ([docs/pilot-plan.md](../../pilot-plan.md), #54), סקירת אבטחה חיצונית ([docs/security-review.md](../../security-review.md)), דגימות פלט שנלכדו מכלים אמיתיים (#14), ומדידות מדרגיות על חומרה בגודל סביבת ייצור ([docs/performance.md](../../performance.md)). איסוף שגיאות XID נותר פתוח תחת החלטה #8.
 
 ## תפקידי גישה
 
@@ -40,25 +40,25 @@
 
 ## היקף מתוכנן
 
-| שלב | היקף | אבני דרך |
-|---|---|---|
-| 0, מחקר | פלט כלי הספקים, אותות XID והאטה, זיהוי GPU, הרשאות, החלטה על נתיב האיסוף | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1, nvidia | איסוף באמצעות `nvidia-smi`, מלאי לפי UUID, גרפים, אותות האטה, ECC ו-XID, Thold ו-Maint, דף תקינות | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2, מנועי איסוף | מנוע DCGM, מנוע `amd-smi` | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3, MIG ומרוחק | מופעי MIG, אספני נתונים מרוחקים של Cacti | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| שלב | היקף | סטטוס | אבני דרך |
+|---|---|---|---|
+| 0, מחקר | פלט כלי הספקים, אותות XID והאטה, זיהוי GPU, הרשאות, החלטה על נתיב האיסוף | הושלם | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1, nvidia | איסוף באמצעות `nvidia-smi`, מלאי לפי UUID, גרפים, אותות האטה ו-ECC, Thold ו-Maint, דף תקינות | מומש (נבדק מול דגימות) | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2), [M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3), [M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2, מנועי איסוף | מנתח/לקוח HTTP(S) לקריאה בלבד עבור DCGM Exporter (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`), מנתח `amd-smi` עבור AMD (`lib/AmdSmiParser.php`) | מומש (בדיקות יחידה) | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3, MIG, מרוחק ומערכת | מעקב זהות למופעי MIG, אספני נתונים מרוחקים (`INFO`, `poller_gpu.php --poller=N`, `replicate_out`, `remote_agent`), ממשק CLI של CasC (`cli/gpu.php`), וויי MCP/Doctor/CasC | מומש (בדיקות יחידה ואינטגרציה ב-CI) | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 מחוץ להיקף: כל פקודה המשנה GPU או צומת (תדרי שעון, מגבלות הספק, איפוסים, פריסת MIG), מנוע התרעות בבעלות התוסף, שירות רקע או פרוטוקול רשת מותאמים אישית, וחשבונאות מתזמן או עבודות. ראו את התוכנית עבור צבר משימות המחקר.
 
 ## מה אבן דרך 4 מוסיפה
 
-- **סיבות האטה כערכי התרעה.** מסיכת אירועי השעון מפוענחת למחוון 0 או 1 אחד לכל סיבה; מסיכה לא ידועה מחזירה מחוונים לא ידועים, לעולם לא אפסים, וסיביות ללא מחוון נשארות במסיכה הגולמית, המוצגת ב-GPU Health.
-- **ECC כערכי התרעה** ([docs/metrics.md](../../metrics.md)). שגיאות מתוקנות ולא מתוקנות חדשות מאז הדגימה הקודמת מחושבות על ידי התוסף מתוך שני סיכומים עוקבים ונשמרות כמדדי gauge: לא ידוע עבור דגימה ראשונה, קריאה שהוחמצה או טעינה מחדש של הדרייבר, כך שאיפוס לעולם אינו נקרא כאפס או כספירה שלילית. כמו כן נקראים ספירות דפים שהוצאו משימוש של סיבית אחת ושתי סיביות ומצב ה-ECC. שני גרפי ECC נוספים לכל GPU מאפשרים ל-Cacti לשמור אותם; יחד עם Power Percent, ישנם אחד עשר גרפים בסך הכול. XID אינו נאסף: אף מקור אינו מתאים לפקודות `nvidia-smi` הקבועות (#8).
-- **Thold ו-Maint** ([docs/alerting.md](../../alerting.md)). תבניות Thold מובנות עבור טמפרטורה, הספק מול המגבלה שלו, מחווני ההאטה, שגיאות ECC לא מתוקנות חדשות, הוצאת דפים משימוש הממתינה לביצוע וגיל הדגימה. כל ערך הוא מסוג gauge, משום ש-Thold 1.8.2 נכשל על מונה לא ידוע. בדיקה מקצה לקצה עם Thold 1.8.2 ו-Maint 1.3 ללא שינוי מראה כל סף מופעל ומשוחזר, גם לאורך איפוס ECC, ואת Maint משתיק אותו.
-- **GPU Health** (תחת GPU View). לכל צומת: עדכניות, אופן סיום האיסוף האחרון, מצב Maint, מנוע איסוף, גרסאות הכלי והדרייבר ומספרי GPU; לכל GPU: נוכחות, גיל הדגימה, מצב ECC והמסיכה הגולמית. הדף קורא רשומות שמורות בלבד.
-- **הרשאות.** חבילת בדיקות ההרשאות מכסה כל קובץ דף ופעולה, שלילת הרשאה בבקשה הבאה וסירובים שאינם חושפים דבר.
-- **עמידות לתקלות ובחינת שחזור.** הרצות מתוסרטות מקצה לקצה משבשות את הסוכן, פרטי ההזדהות, הכלי, הפלט שלו, החיבור למסד הנתונים וכתיבות ה-RRD, ומשחזרות את מסד הנתונים מגיבוי, כולל גיבוי ישן יותר מקובצי ה-RRD; GPU חדש לעולם אינו יורש קובץ RRD של אחר ([docs/backup.md](../../backup.md)).
-- **מדרגיות** ([docs/performance.md](../../performance.md)). בדיקת מדרגיות מודדת זמני איסוף, קלט שרת הסקריפטים, יצירת אובייקטי Cacti, מחזור poller ודף התקינות בכמות נתונה של יחידות GPU; מערכת ה-CI מריצה אותה עם 100 יחידות GPU. מדידות עבור 1,000 ו-8,000 יחידות GPU טרם תועדו, ולכן לא מצוינת כמות GPU נתמכת.
-- **תיעוד מפעיל** ([docs/operations.md](../../operations.md)): התקנה, שדרוג, הסרת התקנה, הרשאה מינימלית, ערכים לא זמינים ופתרון תקלות. השינויים מפורטים בקובץ [CHANGELOG.md](../../../CHANGELOG.md).
+- **אספן לקריאה בלבד עבור NVIDIA DCGM Exporter** (`lib/DcgmExporterParser.php`, `lib/DcgmExporterClient.php`). מנתח מדדי חשיפה טקסטואליים של Prometheus (`DCGM_FI_DEV_GPU_UTIL`, `DCGM_FI_DEV_FB_USED`, `DCGM_FI_DEV_FB_FREE`, `DCGM_FI_DEV_POWER_USAGE`, `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`, `DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`, ותוויות MIG `GPU_I_ID` ו-`GPU_I_PROFILE`). לקוח ה-HTTP(S) אוכף רשימת היתרים מפורשת של מארחים/CIDR לנקודות קצה, מאמת תעודות עמית TLS כברירת מחדל, מגביל זמני המתנה וגודל תגובה, משבית הפניות מחדש ודוחה סכמות שאינן HTTP(S).
+- **מנתח לקריאה בלבד עבור `amd-smi` של AMD** (`lib/AmdSmiParser.php`). מנרמל פלט JSON/SNMP-extend של `amd-smi` (ניצולת, VRAM, הספק, טמפרטורת junction/edge, ECC, מטא-נתוני מחיצות וצוברי האטה נפרדים דרך `Reading::$vendorExtensions`) למודל המדדים המשותף תחת `Vendor::Amd`.
+- **מעקב מופעי MIG ו-Schema v4** (`lib/GpuReport.php`, `lib/GpuSnapshot.php`, `lib/GpuRecord.php`, `lib/Schema.php`, `lib/ScriptServer.php`). עוקב אחר מזהי UUID של מופעי MIG (`MIG-<uuid>` ו-`MIG-GPU-<parent>/<gi>/<ci>`), `mig_mode`, `mig_instance_id`, `mig_profile`, `parent_uuid` ו-`partition_info` לצד מעבדי GPU הוריים, תוך הגנה על מפתחות זהות קבועים (`vendor`, `uuid`, `parent_uuid`) בעת עדכונים ואימותם לפני שאילתות מסד נתונים.
+- **אספני נתונים מרוחקים** (`INFO`, `poller_gpu.php`, `lib/Poller.php`, `lib/ReplicationRepository.php`, `setup.php`). מצהיר על `remote_collect:1, remote_poller:1` בקובץ `INFO`, תומך בהרצה בהיקף poller באמצעות `php plugins/gpu/poller_gpu.php --poller=N`, מדלג על הקצאת אובייקטי Cacti באספנים שאינם ראשיים, משכפל טבלאות בהיקף poller דרך `replicate_out` ועונה לפעולות הקריאה בלבד `gpu_health` ו-`gpu_inventory` דרך `remote_agent`.
+- **ממשק CLI למפעיל ול-CasC** (`cli/gpu.php`, `lib/CascProvider.php`). רץ על PHP 8.2+ (תקין תחבירית ב-PHP 8.0) ללא תלויות Composer חיצוניות: `php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`, `validate <file> [--format=yaml|xml]`, `plan <file> [--format=yaml|xml] [--output=text|json]`, `apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]`, ו-`health [--format=text|json]`. פקודת התכנון מחשבת גיבוב אישור דטרמיניסטי מסוג SHA-256, פקודת היישום נכשלת בצורה בטוחה (fail closed) באי-התאמת גיבוב, וניתוח ה-XML דוחה הצהרות `DOCTYPE` ו-`ENTITY`.
+- **וויי אינטגרציה עם המערכת** (`lib/EcosystemIntegration.php`, `setup.php`). רושם את `abilities_register` (`gpu-list-nodes`, `gpu-list-devices`, `gpu-get-health`; לקריאה בלבד, מוגבל לתחום `GPU View` ולהרשאות התקנים ב-Cacti), `doctor_register_checks` (`gpu_schema`, `gpu_poller_freshness`, `gpu_node_health`) ו-`casc_register_providers`.
+- **סיבות האטה ו-ECC כערכי התרעה** ([docs/metrics.md](../../metrics.md)). מפענח מסיכות אירועי שעון למחווני 0/1 ומחשב שגיאות ECC מתוקנות ולא מתוקנות חדשות לכל מרווח כמדדי gauge, כך ש-Thold 1.8.2 ו-Maint 1.3 מתריעים ומשתיקים ללא מונים שליליים או קפיצות מאיפוס ([docs/alerting.md](../../alerting.md)).
+- **GPU Health, הרשאות, כשל/שחזור ומדרגיות.** GPU Health (תחת GPU View) מציג עדכניות שמורה, תוצאת איסוף אחרונה, מצב Maint, מנוע איסוף, גרסאות ומסיכות האטה גולמיות מבלי לפנות לצמתים. בדיקות מתוסרטות מקצה לקצה מאמתות הרשאות, התאוששות מכשל בסוכן/מסד הנתונים/RRD ([docs/backup.md](../../backup.md)), והרצת מדרגיות של 100 יחידות GPU ב-CI ([docs/performance.md](../../performance.md), [docs/operations.md](../../operations.md), [CHANGELOG.md](../../../CHANGELOG.md)).
 
 ## מה אבן דרך 3 מוסיפה
 
@@ -70,7 +70,7 @@
 - **הרשאות התקנים ב-GPU Nodes.** בעל הרשאת GPU Admin רואה, משנה, מייצא ומעביר רק צמתים ויחידות GPU על גבי התקנים שהוא רשאי לראות ב-Cacti; העברת GPU דורשת גישה לשני הצמתים. צומת שהתקנו נמחק ניתן להשבתה או למחיקה.
 - **מודל המדדים המשותף** ([ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md), [docs/metrics.md](../../metrics.md)). זיכרון נמדד בבתים, מסיכת אירועי השעון מפוענחת למחווני `thr_*`, ו-`age` הוא גיל זמן הדגימה של ה-GPU עצמו, או `U` כאשר אינו ידוע.
 
-המשתמש המבצע את ההתקנה (שרת האינטרנט) חייב להיות מסוגל לכתוב לתיקייה `<cacti>/resource/script_server/`, שבה התוסף ממקם את קובץ ה-XML של שאילתת הנתונים; אחרת ההתקנה והשדרוג נעצרים עם הודעה ומנסים שוב בניסיון הבא. הסרת ההתקנה מסירה את התבניות ואת ה-XML רק כאשר האפשרות *Remove the plugin's Cacti objects on uninstall* מסומנת, ולעולם אינה מוחקת קובצי RRD, התקנים, גרפים או מקורות נתונים ([docs/operations.md](../../operations.md#uninstall)). צמתים על אספני נתונים מרוחקים אינם נאספים עד שלב 3.
+המשתמש המבצע את ההתקנה (שרת האינטרנט) חייב להיות מסוגל לכתוב לתיקייה `<cacti>/resource/script_server/`, שבה התוסף ממקם את קובץ ה-XML של שאילתת הנתונים; אחרת ההתקנה והשדרוג נעצרים עם הודעה ומנסים שוב בניסיון הבא. הסרת ההתקנה מסירה את התבניות ואת ה-XML רק כאשר האפשרות *Remove the plugin's Cacti objects on uninstall* מסומנת, ולעולם אינה מוחקת קובצי RRD, התקנים, גרפים או מקורות נתונים ([docs/operations.md](../../operations.md#uninstall)). צמתים על אספני נתונים מרוחקים רצים בהיקף של ה-`poller_id` שהוקצה להם.
 
 ## מה אבן דרך 2 מספקת
 
@@ -113,9 +113,10 @@
 
 ```mermaid
 flowchart LR
-    NODE["צומת GPU: הרחבת snmpd המריצה nvidia-smi"] -->|קריאות SNMP, מומלץ v3| C["אספן"]
-    C --> CACHE[("מטמון התוסף ממופתח לפי UUID של ה-GPU")]
+    NODE["צומת GPU: snmpd extend / DCGM Exporter / amd-smi"] -->|"SNMPv3 לקריאה בלבד או HTTPS מרשימת היתרים"| C["אספן בהיקף poller"]
+    C --> CACHE[("מטמון התוסף ממופתח לפי ספק + UUID של GPU/MIG")]
     CACHE --> SS["קלט שאילתת נתונים של שרת הסקריפטים"]
+    CACHE --> ECO["CasC CLI, יכולות MCP, בדיקות Doctor"]
     SS --> RRD[("קובצי RRD של Cacti, מקור נתונים אחד לכל GPU")]
     SS -->|poller_output| T["Thold ו-Maint"]
     RRD --> G["גרפים והרשאות של Cacti"]

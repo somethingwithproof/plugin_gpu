@@ -44,6 +44,10 @@ final class Freshness {
 	 * @param array<array-key, mixed> $row the GPU's record, observation, and
 	 *                                     its node's latest collection, as
 	 *                                     CacheRepository reads them
+	 * @param string $field
+	 * @param int $now
+	 * @param int $staleAfter
+	 * @return ?float
 	 */
 	public static function value(string $field, array $row, int $now, int $staleAfter): ?float {
 		$observed = Row::int($row, 'observed_at', 0, 0);
@@ -90,6 +94,8 @@ final class Freshness {
 	/**
 	 * A value as Cacti reads it: plain decimal, never exponent notation,
 	 * which RRDtool would refuse, and U for unknown.
+	 * @param ?float $value
+	 * @return string
 	 */
 	public static function format(?float $value): string {
 		if ($value === null || !is_finite($value)) {

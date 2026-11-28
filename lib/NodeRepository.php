@@ -27,9 +27,21 @@ namespace Somethingwithproof\Gpu;
 final class NodeRepository {
 	private const SELECT = 'SELECT n.*, h.id AS device_id, h.description FROM plugin_gpu_node AS n LEFT JOIN host AS h ON h.id = n.host_id';
 
+		/**
+	 * Construct a NodeRepository instance.
+	 *
+	 * @param \PDO|false $connection
+	 * @param Clock $clock
+	 */
 	public function __construct(private readonly \PDO|false $connection, private readonly Clock $clock) {
 	}
 
+		/**
+	 * Find.
+	 *
+	 * @param int $id
+	 * @return ?Node
+	 */
 	public function find(int $id): ?Node {
 		$row = db_fetch_row_prepared(self::SELECT . ' WHERE n.id = ?', [$id], true, $this->connection);
 
@@ -48,6 +60,7 @@ final class NodeRepository {
 	 * the node's own device when one is being edited.
 	 *
 	 * @return array<int, string> host id => description
+	 * @param int $nodeId
 	 */
 	public function devicesFor(int $nodeId): array {
 		$devices = [];
@@ -61,6 +74,8 @@ final class NodeRepository {
 
 	/**
 	 * The node's Cacti device with its SNMP settings, for the collector.
+	 * @param Node $node
+	 * @return ?NodeDevice
 	 */
 	public function device(Node $node): ?NodeDevice {
 		$row = db_fetch_row_prepared('SELECT id, description, hostname, poller_id, status, disabled, snmp_version, snmp_community, snmp_username, snmp_password, snmp_auth_protocol, snmp_priv_passphrase, snmp_priv_protocol, snmp_context, snmp_engine_id, snmp_port, snmp_timeout, max_oids FROM host WHERE id = ?', [$node->hostId], true, $this->connection);
@@ -68,6 +83,12 @@ final class NodeRepository {
 		return is_array($row) && $row !== [] ? NodeDevice::fromRow($row) : null;
 	}
 
+		/**
+	 * Find by host.
+	 *
+	 * @param int $hostId
+	 * @return ?Node
+	 */
 	public function findByHost(int $hostId): ?Node {
 		$row = db_fetch_row_prepared(self::SELECT . ' WHERE n.host_id = ?', [$hostId], true, $this->connection);
 
@@ -80,6 +101,7 @@ final class NodeRepository {
 	 * to the device's graphs and data sources.
 	 *
 	 * @param list<int> $hostIds
+	 * @return int
 	 */
 	public function disableForHosts(array $hostIds): int {
 		if ($hostIds === []) {
@@ -91,10 +113,23 @@ final class NodeRepository {
 		return $ok ? max(0, (int) db_affected_rows($this->connection)) : 0;
 	}
 
+		/**
+	 * Device exists.
+	 *
+	 * @param int $hostId
+	 * @return bool
+	 */
 	public function deviceExists(int $hostId): bool {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM host WHERE id = ?', [$hostId], '', true, $this->connection) === 1;
 	}
 
+		/**
+	 * Host taken.
+	 *
+	 * @param int $hostId
+	 * @param int $exceptId
+	 * @return bool
+	 */
 	public function hostTaken(int $hostId, int $exceptId): bool {
 		return (int) db_fetch_cell_prepared('SELECT COUNT(*) FROM plugin_gpu_node WHERE host_id = ? AND id != ?', [$hostId, $exceptId], '', true, $this->connection) > 0;
 	}
@@ -102,6 +137,10 @@ final class NodeRepository {
 	/**
 	 * Insert ($id 0) or update a node, returning its id, or 0 when nothing
 	 * was written.
+	 * @param int $id
+	 * @param int $hostId
+	 * @param AdminState $state
+	 * @return int
 	 */
 	public function save(int $id, int $hostId, AdminState $state): int {
 		$now = $this->clock->now();
@@ -125,6 +164,8 @@ final class NodeRepository {
 	 * Remove a node that owns no GPU records. A node with records keeps them
 	 * and can only be disabled, because GPU records are never deleted for
 	 * the operator by accident (REQ-ID-005).
+	 * @param int $id
+	 * @return bool
 	 */
 	public function delete(int $id): bool {
 		// One statement, so a GPU recorded between a check and the delete

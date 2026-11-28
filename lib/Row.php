@@ -34,6 +34,10 @@ final class Row {
 	 * does a value below $min.
 	 *
 	 * @param array<array-key, mixed> $row
+	 * @param string $key
+	 * @param int $default
+	 * @param int $min
+	 * @return int
 	 */
 	public static function int(array $row, string $key, int $default = 0, int $min = PHP_INT_MIN): int {
 		$value = $row[$key] ?? null;
@@ -55,6 +59,8 @@ final class Row {
 	 * different measurements.
 	 *
 	 * @param array<array-key, mixed> $row
+	 * @param string $key
+	 * @return ?float
 	 */
 	public static function float(array $row, string $key): ?float {
 		$value = $row[$key] ?? null;
@@ -75,6 +81,8 @@ final class Row {
 	 * arrays and objects yield ''.
 	 *
 	 * @param array<array-key, mixed> $row
+	 * @param string $key
+	 * @return string
 	 */
 	public static function string(array $row, string $key): string {
 		$value = $row[$key] ?? null;
@@ -87,6 +95,8 @@ final class Row {
 	 * such as SNMPv3 passphrases.
 	 *
 	 * @param array<array-key, mixed> $row
+	 * @param string $key
+	 * @return string
 	 */
 	public static function untrimmed(array $row, string $key): string {
 		$value = $row[$key] ?? null;
@@ -99,6 +109,7 @@ final class Row {
 	 * error reads as no rows, and non-array rows are dropped.
 	 *
 	 * @return list<array<array-key, mixed>>
+	 * @param mixed $rows
 	 */
 	public static function rows(mixed $rows): array {
 		return is_array($rows) ? array_values(array_filter($rows, 'is_array')) : [];
@@ -109,6 +120,8 @@ final class Row {
 	 * 'yes', 'true', '1', 1 and true are true; everything else is false.
 	 *
 	 * @param array<array-key, mixed> $row
+	 * @param string $key
+	 * @return bool
 	 */
 	public static function bool(array $row, string $key): bool {
 		$value = $row[$key] ?? null;

@@ -23,6 +23,9 @@ namespace Somethingwithproof\Gpu;
  * The latest sample of each GPU (Schema, plugin_gpu_observation).
  */
 final class ObservationRepository {
+	/**
+	 * @param \PDO|false $connection Cacti database handle or false for the default connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -56,40 +59,74 @@ final class ObservationRepository {
 	 * unknown when either total is unknown, and when the new total is lower,
 	 * which is a reset at driver load (REQ-ERR-003), so a reset is never
 	 * read as a negative count or as zero.
+	 *
+	 * @param int     $gpuId        GPU record id
+	 * @param int     $nodeId       owning GPU node id
+	 * @param Reading $reading      parsed GPU reading
+	 * @param string  $backend      collector backend name
+	 * @param string  $toolVersion  collector or driver version
+	 * @param int     $now          ingestion Unix timestamp
+	 * @param int     $previousRead start time of the previous successful node collection, or 0
+	 *
+	 * @return bool
 	 */
 	public function store(int $gpuId, int $nodeId, Reading $reading, string $backend, string $toolVersion, int $now, int $previousRead = 0): bool {
-		$columns = array_values(array_diff(Schema::observationMetrics(), array_keys(MetricModel::DELTAS)));
-		$values  = [];
+		/** @var array{columns: list<string>, insertPrefix: string, deltaTemplates: list<string>, updateSuffix: string}|null $compiled */
+		static $compiled = null;
 
-		foreach ($columns as $column) {
-			$values[] = $reading->values[$column] ?? null;
+		if ($compiled === null) {
+			$columns = array_values(array_diff(Schema::observationMetrics(), array_keys(MetricModel::DELTAS)));
+			$all     = array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']);
+			$newer   = 'VALUES(observed_at) > observed_at';
+
+			$deltaTemplates = [];
+
+			// MySQL applies the assignments in order, and a later one sees the
+			// columns earlier ones set. The deltas are assigned before the totals
+			// change, and observed_at last, so every other column still compares
+			// against the stored sample.
+			foreach (MetricModel::DELTAS as $delta => $total) {
+				$deltaTemplates[] = "$delta = IF(%s, IF($newer, IF(VALUES($total) >= $total, VALUES($total) - $total, NULL), $delta), NULL)";
+			}
+
+			$tail = [];
+
+			foreach (array_merge(['ingested_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']) as $column) {
+				$tail[] = "$column = IF($newer, VALUES($column), $column)";
+			}
+
+			$tail[] = 'reported_at = VALUES(reported_at)';
+			$tail[] = "observed_at = IF($newer, VALUES(observed_at), observed_at)";
+
+			$compiled = [
+				'columns'        => $columns,
+				'insertPrefix'   => 'INSERT INTO plugin_gpu_observation (' . implode(', ', $all) . ') VALUES (' . implode(', ', array_fill(0, count($all), '?')) . ') ON DUPLICATE KEY UPDATE node_id = VALUES(node_id), ',
+				'deltaTemplates' => $deltaTemplates,
+				'updateSuffix'   => ', ' . implode(', ', $tail),
+			];
 		}
 
-		$all    = array_merge(['gpu_id', 'node_id', 'observed_at', 'ingested_at', 'reported_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']);
-		$newer  = 'VALUES(observed_at) > observed_at';
-		$update = ['node_id = VALUES(node_id)'];
+		$params = [$gpuId, $nodeId, $reading->observedAt, $now, $now, $backend, $toolVersion];
+
+		foreach ($compiled['columns'] as $column) {
+			$params[] = $reading->values[$column] ?? null;
+		}
+
+		$params[] = $reading->mask;
+		$params[] = $reading->eccMode;
+
 		// A failed/interrupted collection, or a successful one which omitted
 		// this GPU, breaks the delta baseline. Keep the old observation time
 		// and totals for age and diagnostics, but never bridge that gap.
 		$continuous = $previousRead > 0 ? 'reported_at >= ' . $previousRead : '0';
+		$deltas     = [];
 
-		// MySQL applies the assignments in order, and a later one sees the
-		// columns earlier ones set. The deltas are assigned before the totals
-		// change, and observed_at last, so every other column still compares
-		// against the stored sample.
-		foreach (MetricModel::DELTAS as $delta => $total) {
-			$update[] = "$delta = IF($continuous, IF($newer, IF(VALUES($total) >= $total, VALUES($total) - $total, NULL), $delta), NULL)";
+		foreach ($compiled['deltaTemplates'] as $template) {
+			$deltas[] = sprintf($template, $continuous);
 		}
 
-		foreach (array_merge(['ingested_at', 'backend', 'tool_version'], $columns, ['thr_mask', 'ecc_mode']) as $column) {
-			$update[] = "$column = IF($newer, VALUES($column), $column)";
-		}
+		$sql = $compiled['insertPrefix'] . implode(', ', $deltas) . $compiled['updateSuffix'];
 
-		$update[] = 'reported_at = VALUES(reported_at)';
-		$update[] = "observed_at = IF($newer, VALUES(observed_at), observed_at)";
-
-		$sql = 'INSERT INTO plugin_gpu_observation (' . implode(', ', $all) . ') VALUES (' . implode(', ', array_fill(0, count($all), '?')) . ') ON DUPLICATE KEY UPDATE ' . implode(', ', $update);
-
-		return (bool) db_execute_prepared($sql, array_merge([$gpuId, $nodeId, $reading->observedAt, $now, $now, $backend, $toolVersion], $values, [$reading->mask, $reading->eccMode]), true, $this->connection);
+		return (bool) db_execute_prepared($sql, $params, true, $this->connection);
 	}
 }

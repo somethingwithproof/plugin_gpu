@@ -45,13 +45,33 @@ final class SnmpExtendReader implements ExtendReader {
 	// long plus a margin for the network, whatever the device's timeout.
 	public const EXTEND_TIMEOUT_MS = (SnmpdConfig::TIMEOUT + SnmpdConfig::KILL_AFTER + 3) * 1000;
 
+		/**
+	 * Construct a SnmpExtendReader instance.
+	 *
+	 * @param int $retries
+	 */
 	public function __construct(private readonly int $retries) {
 	}
 
+		/**
+	 * Index.
+	 *
+	 * @param string $token
+	 * @return string
+	 */
 	public static function index(string $token): string {
 		return strlen($token) . '.' . implode('.', array_map('ord', str_split($token)));
 	}
 
+		/**
+	 * Read.
+	 *
+	 * @param NodeDevice $device
+	 * @param string $token
+	 * @return ExtendOutput
+	 * @throws \Throwable
+	 * @throws CollectionError
+	 */
 	public function read(NodeDevice $device, string $token): ExtendOutput {
 		$index  = self::index($token);
 		$result = $this->value($device, self::RESULT . '.' . $index, max($device->snmpTimeout, self::EXTEND_TIMEOUT_MS));
@@ -115,6 +135,10 @@ final class SnmpExtendReader implements ExtendReader {
 	 * address that contains a colon. cacti_snmp_get() is still used when no
 	 * session can be made, such as on Cacti 1.2.31 without PHP's SNMP
 	 * extension, where it runs the Net-SNMP tools and is not affected.
+	 * @param NodeDevice $device
+	 * @param string $oid
+	 * @param ?int $timeout
+	 * @return string
 	 */
 	public function value(NodeDevice $device, string $oid, ?int $timeout = null): string {
 		$timeout ??= $device->snmpTimeout;
@@ -142,6 +166,8 @@ final class SnmpExtendReader implements ExtendReader {
 
 	/**
 	 * @return list<array<array-key, mixed>>
+	 * @param NodeDevice $device
+	 * @param string $oid
 	 */
 	private function walk(NodeDevice $device, string $oid): array {
 		$rows = cacti_snmp_walk($device->hostname, $device->snmpCommunity, $oid, $device->snmpVersion, $device->snmpUsername, $device->snmpPassword, $device->snmpAuthProtocol, $device->snmpPrivPassphrase, $device->snmpPrivProtocol, $device->snmpContext, $device->snmpPort, $device->snmpTimeout, $this->retries, $device->maxOids, 'GPU', $device->snmpEngineId);

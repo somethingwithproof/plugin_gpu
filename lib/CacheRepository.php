@@ -28,6 +28,11 @@ namespace Somethingwithproof\Gpu;
 final class CacheRepository {
 	private const COLUMNS = 'g.id, g.vendor, g.uuid, g.gpu_index, g.name, g.pci_bus_id, g.presence';
 
+		/**
+	 * Construct a CacheRepository instance.
+	 *
+	 * @param \PDO|false $connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
@@ -37,6 +42,7 @@ final class CacheRepository {
 	 * GPUs attached (REQ-INDEX-002), but not those an operator removed.
 	 *
 	 * @return list<array<array-key, mixed>>|null null when the read failed
+	 * @param int $hostId
 	 */
 	public function listed(int $hostId): ?array {
 		$rows = db_fetch_assoc_prepared(
@@ -58,6 +64,7 @@ final class CacheRepository {
 	 * collection, for a query of one value across the indexes.
 	 *
 	 * @return list<array<array-key, mixed>>|null
+	 * @param int $hostId
 	 */
 	public function samples(int $hostId): ?array {
 		$rows = db_fetch_assoc_prepared(self::sampleSelect() . ' WHERE n.host_id = ? AND r.gpu_id IS NULL', [$hostId], true, $this->connection);
@@ -69,6 +76,9 @@ final class CacheRepository {
 	 * One GPU's stored sample, by the data query index (vendor/UUID).
 	 *
 	 * @return array<array-key, mixed>|null
+	 * @param int $hostId
+	 * @param Vendor $vendor
+	 * @param string $uuid
 	 */
 	public function sample(int $hostId, Vendor $vendor, string $uuid): ?array {
 		$row = db_fetch_row_prepared(self::sampleSelect() . ' WHERE g.vendor = ? AND g.uuid = ? AND n.host_id = ? AND r.gpu_id IS NULL', [$vendor->value, $uuid, $hostId], true, $this->connection);
@@ -76,6 +86,11 @@ final class CacheRepository {
 		return is_array($row) && $row !== [] ? $row : null;
 	}
 
+		/**
+	 * Sample select.
+	 *
+	 * @return string
+	 */
 	private static function sampleSelect(): string {
 		return 'SELECT ' . self::COLUMNS . ', o.observed_at, o.reported_at, o.' . implode(', o.', Schema::observationMetrics()) . ',
 				c.state AS collection_state, c.finished_at AS collection_finished_at

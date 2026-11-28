@@ -32,6 +32,15 @@ namespace Somethingwithproof\Gpu;
 final class NodesPage {
 	public const FILE = 'gpu_nodes.php';
 
+		/**
+	 * Construct a NodesPage instance.
+	 *
+	 * @param NodeRepository $nodes
+	 * @param GpuRepository $gpus
+	 * @param NodeAccess $access
+	 * @param ?CollectionRepository $collections
+	 * @param ?Clock $clock
+	 */
 	public function __construct(
 		private readonly NodeRepository $nodes,
 		private readonly GpuRepository $gpus,
@@ -41,6 +50,9 @@ final class NodesPage {
 	) {
 	}
 
+		/**
+	 * Render list.
+	 */
 	public function renderList(): void {
 		$nodes    = $this->access->visibleNodes($this->nodes->all());
 		$statuses = $this->collections?->all() ?? [];
@@ -86,6 +98,8 @@ final class NodesPage {
 	/**
 	 * How the node's latest collection went, as one line of text. The
 	 * detail never contains tool output (CollectionError).
+	 * @param ?CollectionStatus $status
+	 * @return string
 	 */
 	public function collection(?CollectionStatus $status): string {
 		if ($status === null || $status->state === null) {
@@ -152,6 +166,10 @@ final class NodesPage {
 
 	/**
 	 * @param array<string, string> $errors field => message
+	 * @param ?Node $node
+	 * @param int $hostId
+	 * @param ?bool $enabled
+	 * @param bool $canCreateDevice
 	 */
 	public function renderEdit(?Node $node, int $hostId = 0, ?bool $enabled = null, array $errors = [], bool $canCreateDevice = false): void {
 		$devices = array_filter($this->nodes->devicesFor($node->id ?? 0), fn (int $id): bool => $this->access->deviceAllowed($id), ARRAY_FILTER_USE_KEY);
@@ -205,6 +223,7 @@ final class NodesPage {
 	/**
 	 * Absent GPUs of a node, each with the explicit action that removes it
 	 * from the data query (REQ-INDEX-005).
+	 * @param Node $node
 	 */
 	private function renderRetire(Node $node): void {
 		$absent = array_values(array_filter($this->gpus->all(), static fn (GpuRecord $gpu): bool => $gpu->nodeId === $node->id && $gpu->presence === Presence::Absent));
@@ -249,6 +268,14 @@ final class NodesPage {
 			. '</form>';
 	}
 
+		/**
+	 * Action form.
+	 *
+	 * @param int $id
+	 * @param string $action
+	 * @param string $label
+	 * @return string
+	 */
 	private function actionForm(int $id, string $action, string $label): string {
 		return '<form method="post" action="' . html_escape(self::FILE) . '" style="display:inline">'
 			. '<input type="hidden" name="action" value="' . html_escape($action) . '">'

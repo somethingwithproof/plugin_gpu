@@ -25,8 +25,16 @@ namespace Somethingwithproof\Gpu;
  */
 final readonly class Reading {
 	/**
-	 * @param array<string, ?float> $values metric name => value, for every
-	 *                                      model field the backend reads
+	 * Construct one GPU reading in model units.
+	 *
+	 * @param GpuReport             $report           validated GPU identity report
+	 * @param int                   $observedAt       Unix timestamp when the sample was taken
+	 * @param array<string, ?float> $values           metric name => value, for every
+	 *                                                model field the backend reads
+	 * @param ?int                  $mask             raw NVIDIA clock event bitmask, or null
+	 * @param string                $eccMode          EccMode value, or '' when not reported
+	 * @param array<string, ?float> $vendorExtensions vendor-specific fields such as
+	 *                                                AMD throttle accumulators and extended telemetry
 	 */
 	public function __construct(
 		public GpuReport $report,
@@ -35,6 +43,17 @@ final readonly class Reading {
 		public ?int $mask,
 		// EccMode value, or '' when the backend does not report it.
 		public string $eccMode = '',
+		public array $vendorExtensions = [],
 	) {
+	}
+
+	/**
+	 * Return a strongly typed view over extended enterprise telemetry fields
+	 * stored in $vendorExtensions.
+	 *
+	 * @return ExtendedGpuTelemetry
+	 */
+	public function extendedTelemetry(): ExtendedGpuTelemetry {
+		return ExtendedGpuTelemetry::fromExtensions($this->vendorExtensions);
 	}
 }

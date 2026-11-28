@@ -29,6 +29,19 @@ namespace Somethingwithproof\Gpu;
  * (REQ-INDEX-004).
  */
 final class Collector {
+		/**
+	 * Construct a Collector instance.
+	 *
+	 * @param ExtendReader $reader
+	 * @param NvidiaSmiParser $parser
+	 * @param Inventory $inventory
+	 * @param GpuRepository $gpus
+	 * @param ObservationRepository $observations
+	 * @param CollectionRepository $collections
+	 * @param ReindexRepository $reindex
+	 * @param LockRepository $locks
+	 * @param Clock $clock
+	 */
 	public function __construct(
 		private readonly ExtendReader $reader,
 		private readonly NvidiaSmiParser $parser,
@@ -42,6 +55,14 @@ final class Collector {
 	) {
 	}
 
+		/**
+	 * Collect.
+	 *
+	 * @param Node $node
+	 * @param NodeDevice $device
+	 * @param Settings $settings
+	 * @return ExecutionState
+	 */
 	public function collect(Node $node, NodeDevice $device, Settings $settings): ExecutionState {
 		// REQ-INV-005: nothing is recorded for a node that is not enabled.
 		if (!$node->enabled() || $device->id !== $node->hostId) {
@@ -77,6 +98,10 @@ final class Collector {
 	 * The metrics entry, or, when its driver refuses the current clock event
 	 * reasons field name, the entry with the earlier name (REQ-NVSMI-005).
 	 * Without that entry the refusal stands.
+	 * @param Node $node
+	 * @param NodeDevice $device
+	 * @return ExtendOutput
+	 * @throws \Throwable
 	 */
 	private function metrics(Node $node, NodeDevice $device): ExtendOutput {
 		$metrics = $this->reader->read($device, SnmpdConfig::METRICS);
@@ -102,6 +127,10 @@ final class Collector {
 
 	/**
 	 * @return array{ExecutionState, string} the state and its detail
+	 * @param Node $node
+	 * @param NodeDevice $device
+	 * @param Settings $settings
+	 * @param ?CollectionStatus $previous
 	 */
 	private function run(Node $node, NodeDevice $device, Settings $settings, ?CollectionStatus $previous): array {
 		try {
@@ -216,6 +245,9 @@ final class Collector {
 	 * when its listing is unchanged. The listing holds each GPU at the node
 	 * with its index, name, and bus ID, so a change to any of those, a new
 	 * GPU, a GPU moving in or out, or a retired GPU returning changes it.
+	 * @param Reconciliation $changes
+	 * @param int $returned
+	 * @return string
 	 */
 	public static function reindexReason(Reconciliation $changes, int $returned = 0): string {
 		if ($changes->created !== []) {
@@ -240,6 +272,10 @@ final class Collector {
 	/**
 	 * Log a node's collection state when it changes, not every cycle, so a
 	 * node that stays down does not fill the log.
+	 * @param Node $node
+	 * @param ?CollectionStatus $previous
+	 * @param ExecutionState $state
+	 * @param string $detail
 	 */
 	private function logChange(Node $node, ?CollectionStatus $previous, ExecutionState $state, string $detail): void {
 		$was = $previous?->state;

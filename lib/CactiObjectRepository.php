@@ -25,12 +25,18 @@ namespace Somethingwithproof\Gpu;
  * APIs (REQ-DEV-004).
  */
 final class CactiObjectRepository {
+		/**
+	 * Construct a CactiObjectRepository instance.
+	 *
+	 * @param \PDO|false $connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
 	/**
 	 * The site's default data source profile, as core's template import
 	 * picks it.
+	 * @return int
 	 */
 	public function defaultProfileId(): int {
 		return (int) db_fetch_cell_prepared('SELECT id FROM data_source_profiles ORDER BY `default` DESC, id LIMIT 1', [], '', true, $this->connection);
@@ -41,6 +47,8 @@ final class CactiObjectRepository {
 	 * the type and version codes), or 0.
 	 *
 	 * @param 'snmp_query'|'host_template'|'data_template'|'graph_templates' $table
+	 * @param string $hash
+	 * @return int
 	 */
 	public function idByHash(string $table, string $hash): int {
 		return (int) db_fetch_cell_prepared("SELECT id FROM `$table` WHERE hash = ?", [substr($hash, -32)], '', true, $this->connection);
@@ -49,6 +57,9 @@ final class CactiObjectRepository {
 	/**
 	 * The device's reindex method for a data query, or null when the data
 	 * query is not attached to the device.
+	 * @param int $hostId
+	 * @param int $dataQueryId
+	 * @return ?int
 	 */
 	public function reindexMethod(int $hostId, int $dataQueryId): ?int {
 		$row = db_fetch_row_prepared('SELECT reindex_method FROM host_snmp_query WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
@@ -61,6 +72,8 @@ final class CactiObjectRepository {
 	 * what its last reindex found.
 	 *
 	 * @return list<string>|null null when the read failed
+	 * @param int $hostId
+	 * @param int $dataQueryId
 	 */
 	public function cachedIndexes(int $hostId, int $dataQueryId): ?array {
 		$rows = db_fetch_assoc_prepared('SELECT DISTINCT snmp_index FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ? ORDER BY snmp_index', [$hostId, $dataQueryId], true, $this->connection);
@@ -76,6 +89,8 @@ final class CactiObjectRepository {
 	 * @param list<string> $fields
 	 *
 	 * @return array<string, array<string, string>>|null null when the read failed
+	 * @param int $hostId
+	 * @param int $dataQueryId
 	 */
 	public function cachedFields(int $hostId, int $dataQueryId, array $fields): ?array {
 		$rows = db_fetch_assoc_prepared('SELECT snmp_index, field_name, field_value FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ? AND field_name IN (' . implode(', ', array_fill(0, count($fields), '?')) . ')', array_merge([$hostId, $dataQueryId], $fields), true, $this->connection);
@@ -106,6 +121,8 @@ final class CactiObjectRepository {
 	/**
 	 * Whether Cacti would skip a reindex of the device now: it is down or
 	 * disabled. Null when the device row could not be read.
+	 * @param int $hostId
+	 * @return ?bool
 	 */
 	public function reindexBlocked(int $hostId): ?bool {
 		$row = db_fetch_row_prepared('SELECT status, disabled FROM host WHERE id = ?', [$hostId], true, $this->connection);
@@ -121,6 +138,9 @@ final class CactiObjectRepository {
 	 * Remove every cached index of the device's data query and mark its
 	 * data sources orphaned: what run_data_query() does for removed
 	 * indexes, for the case it does not handle, a listing with none.
+	 * @param int $hostId
+	 * @param int $dataQueryId
+	 * @return bool
 	 */
 	public function clearIndexes(int $hostId, int $dataQueryId): bool {
 		$cleared = db_execute_prepared('DELETE FROM host_snmp_cache WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
@@ -132,6 +152,7 @@ final class CactiObjectRepository {
 	 * The data query's graph types: snmp_query_graph id => graph template id.
 	 *
 	 * @return array<int, int>
+	 * @param int $dataQueryId
 	 */
 	public function queryGraphs(int $dataQueryId): array {
 		$out = [];
@@ -147,6 +168,8 @@ final class CactiObjectRepository {
 	 * The ids of the data sources the device already has for the data query.
 	 *
 	 * @return list<int>|null
+	 * @param int $hostId
+	 * @param int $dataQueryId
 	 */
 	public function dataSources(int $hostId, int $dataQueryId): ?array {
 		$rows = db_fetch_assoc_prepared('SELECT id FROM data_local WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
@@ -159,6 +182,8 @@ final class CactiObjectRepository {
 	 * "graph type id:index" keys.
 	 *
 	 * @return array<string, true>|null
+	 * @param int $hostId
+	 * @param int $dataQueryId
 	 */
 	public function graphed(int $hostId, int $dataQueryId): ?array {
 		$rows = db_fetch_assoc_prepared('SELECT snmp_query_graph_id, snmp_index FROM graph_local WHERE host_id = ? AND snmp_query_id = ?', [$hostId, $dataQueryId], true, $this->connection);
@@ -176,15 +201,33 @@ final class CactiObjectRepository {
 		return $out;
 	}
 
+		/**
+	 * Setting.
+	 *
+	 * @param string $name
+	 * @return string
+	 */
 	public function setting(string $name): string {
 		return (string) db_fetch_cell_prepared('SELECT value FROM settings WHERE name = ?', [$name], '', true, $this->connection);
 	}
 
+		/**
+	 * Save setting.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @return bool
+	 */
 	public function saveSetting(string $name, string $value): bool {
 		return (bool) db_execute_prepared('REPLACE INTO settings (name, value) VALUES (?, ?)', [$name, $value], true, $this->connection);
 	}
 
-	/** @return array<int, bool>|null data source id => already renamed */
+	/**
+	 * @return array<int, bool>|null data source id => already renamed
+	 *
+	 * @param int $hostId
+	 * @param int $query
+	 */
 	public function inheritedRrds(int $hostId, int $query): ?array {
 		$rows = db_fetch_assoc_prepared("SELECT dl.id, s.value FROM data_local AS dl INNER JOIN settings AS s ON s.name = CONCAT('gpu_inherited_rrd_', dl.id) AND s.value IN (CAST(dl.host_id AS CHAR), CONCAT(dl.host_id, ':ready')) WHERE dl.host_id = ? AND dl.snmp_query_id = ?", [$hostId, $query], true, $this->connection);
 
@@ -199,7 +242,12 @@ final class CactiObjectRepository {
 		return $pending;
 	}
 
-	/** Core's enable API returns void; verify the active flag and every cached RRD field. */
+	/**
+	 * Core's enable API returns void; verify the active flag and every cached RRD field.
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
 	public function dataSourceReady(int $id): bool {
 		$row = db_fetch_row_prepared("SELECT d.active,
 			(SELECT COUNT(*) FROM data_template_rrd WHERE local_data_id = d.local_data_id) AS fields,
@@ -211,10 +259,22 @@ final class CactiObjectRepository {
 			&& Row::int($row, 'fields') > 0 && Row::int($row, 'missing', -1) === 0;
 	}
 
+		/**
+	 * Forget inherited rrd.
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
 	public function forgetInheritedRrd(int $id): bool {
 		return db_execute_prepared('DELETE FROM settings WHERE name = ?', ['gpu_inherited_rrd_' . $id], true, $this->connection);
 	}
 
+		/**
+	 * Device removed.
+	 *
+	 * @param int $hostId
+	 * @return bool
+	 */
 	public function deviceRemoved(int $hostId): bool {
 		return db_fetch_row_prepared('SELECT id FROM host WHERE id = ?', [$hostId], true, $this->connection) === [];
 	}

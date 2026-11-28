@@ -28,6 +28,9 @@ interface ExtendReader {
 	/**
 	 * @throws CollectionError when the agent cannot be read or has no entry
 	 *                         by that name
+	 * @param NodeDevice $device
+	 * @param string $token
+	 * @return ExtendOutput
 	 */
 	public function read(NodeDevice $device, string $token): ExtendOutput;
 }

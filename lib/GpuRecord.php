@@ -25,6 +25,32 @@ namespace Somethingwithproof\Gpu;
  * through the transitions below, which IdentityReconciler chooses.
  */
 final readonly class GpuRecord {
+		/**
+	 * Construct a GpuRecord instance.
+	 *
+	 * @param int $id
+	 * @param Vendor $vendor
+	 * @param string $uuid
+	 * @param int $nodeId
+	 * @param ?int $index
+	 * @param string $pciBusId
+	 * @param string $name
+	 * @param string $driverVersion
+	 * @param string $tool
+	 * @param string $toolVersion
+	 * @param Presence $presence
+	 * @param int $missingCount
+	 * @param int $replacesGpuId
+	 * @param int $pendingNodeId
+	 * @param int $pendingSince
+	 * @param int $firstSeen
+	 * @param int $lastSeen
+	 * @param string $migMode
+	 * @param string $migInstanceId
+	 * @param string $migProfile
+	 * @param string $parentUuid
+	 * @param string $partitionInfo
+	 */
 	public function __construct(
 		// 0 until the record is first stored.
 		public int $id,
@@ -45,11 +71,17 @@ final readonly class GpuRecord {
 		public int $pendingSince,
 		public int $firstSeen,
 		public int $lastSeen,
+		public string $migMode = '',
+		public string $migInstanceId = '',
+		public string $migProfile = '',
+		public string $parentUuid = '',
+		public string $partitionInfo = '',
 	) {
 	}
 
 	/**
 	 * @param array<array-key, mixed> $row a plugin_gpu_gpu row
+	 * @return ?self
 	 */
 	public static function fromRow(array $row): ?self {
 		$vendor = Vendor::tryFrom(Row::string($row, 'vendor'));
@@ -78,6 +110,11 @@ final readonly class GpuRecord {
 			pendingSince: Row::int($row, 'pending_since', 0, 0),
 			firstSeen: Row::int($row, 'first_seen', 0, 0),
 			lastSeen: Row::int($row, 'last_seen', 0, 0),
+			migMode: Row::string($row, 'mig_mode'),
+			migInstanceId: Row::string($row, 'mig_instance_id'),
+			migProfile: Row::string($row, 'mig_profile'),
+			parentUuid: Row::string($row, 'parent_uuid'),
+			partitionInfo: Row::string($row, 'partition_info'),
 		);
 	}
 
@@ -104,53 +141,189 @@ final readonly class GpuRecord {
 			'pending_since'   => $this->pendingSince,
 			'first_seen'      => $this->firstSeen,
 			'last_seen'       => $this->lastSeen,
+			'mig_mode'        => $this->migMode,
+			'mig_instance_id' => $this->migInstanceId,
+			'mig_profile'     => $this->migProfile,
+			'parent_uuid'     => $this->parentUuid,
+			'partition_info'  => $this->partitionInfo,
 		];
 	}
 
+		/**
+	 * Key.
+	 *
+	 * @return string
+	 */
 	public function key(): string {
 		return $this->vendor->value . '/' . $this->uuid;
+	}
+
+		/**
+	 * Is mig.
+	 *
+	 * @return bool
+	 */
+	public function isMig(): bool {
+		return $this->parentUuid !== '';
 	}
 
 	/**
 	 * A UUID no record holds: a new GPU with its own history. $replacesGpuId
 	 * names the record it may have replaced, but nothing is inherited from it.
+	 * @param GpuReport $report
+	 * @param GpuSnapshot $snapshot
+	 * @param int $nodeId
+	 * @param int $replacesGpuId
+	 * @param int $now
+	 * @return self
 	 */
 	public static function discovered(GpuReport $report, GpuSnapshot $snapshot, int $nodeId, int $replacesGpuId, int $now): self {
-		return new self(0, $report->vendor, $report->uuid, $nodeId, $report->index, $report->pciBusId, $report->name, $report->driverVersion, $snapshot->tool, $snapshot->toolVersion, Presence::Present, 0, $replacesGpuId, 0, 0, $now, $now);
+		return new self(
+			0,
+			$report->vendor,
+			$report->uuid,
+			$nodeId,
+			$report->index,
+			$report->pciBusId,
+			$report->name,
+			$report->driverVersion,
+			$snapshot->tool,
+			$snapshot->toolVersion,
+			Presence::Present,
+			0,
+			$replacesGpuId,
+			0,
+			0,
+			$now,
+			$now,
+			$report->migMode,
+			$report->migInstanceId,
+			$report->migProfile,
+			$report->parentUuid,
+			$report->partitionInfo,
+		);
 	}
 
 	/**
 	 * Reported at its own node: attributes take the reported values, and a
 	 * pending move elsewhere is dropped because the GPU is back home.
+	 * @param GpuReport $report
+	 * @param GpuSnapshot $snapshot
+	 * @param int $now
+	 * @return self
 	 */
 	public function seen(GpuReport $report, GpuSnapshot $snapshot, int $now): self {
-		return new self($this->id, $this->vendor, $this->uuid, $this->nodeId, $report->index, $report->pciBusId, $report->name, $report->driverVersion, $snapshot->tool, $snapshot->toolVersion, Presence::Present, 0, $this->replacesGpuId, 0, 0, $this->firstSeen, $now);
+		return new self(
+			$this->id,
+			$this->vendor,
+			$this->uuid,
+			$this->nodeId,
+			$report->index,
+			$report->pciBusId,
+			$report->name,
+			$report->driverVersion,
+			$snapshot->tool,
+			$snapshot->toolVersion,
+			Presence::Present,
+			0,
+			$this->replacesGpuId,
+			0,
+			0,
+			$this->firstSeen,
+			$now,
+			$report->migMode !== '' ? $report->migMode : $this->migMode,
+			$report->migInstanceId !== '' ? $report->migInstanceId : $this->migInstanceId,
+			$report->migProfile !== '' ? $report->migProfile : $this->migProfile,
+			$report->parentUuid !== '' ? $report->parentUuid : $this->parentUuid,
+			$report->partitionInfo !== '' ? $report->partitionInfo : $this->partitionInfo,
+		);
 	}
 
 	/**
 	 * Reported at a different node. The record stays with its node until an
 	 * operator confirms the move (REQ-ID-004); only the pending node changes.
+	 * @param int $nodeId
+	 * @param int $now
+	 * @return self
 	 */
 	public function seenElsewhere(int $nodeId, int $now): self {
 		$since = $this->pendingNodeId === $nodeId ? $this->pendingSince : $now;
 
-		return new self($this->id, $this->vendor, $this->uuid, $this->nodeId, $this->index, $this->pciBusId, $this->name, $this->driverVersion, $this->tool, $this->toolVersion, $this->presence, $this->missingCount, $this->replacesGpuId, $nodeId, $since, $this->firstSeen, $this->lastSeen);
+		return new self(
+			$this->id,
+			$this->vendor,
+			$this->uuid,
+			$this->nodeId,
+			$this->index,
+			$this->pciBusId,
+			$this->name,
+			$this->driverVersion,
+			$this->tool,
+			$this->toolVersion,
+			$this->presence,
+			$this->missingCount,
+			$this->replacesGpuId,
+			$nodeId,
+			$since,
+			$this->firstSeen,
+			$this->lastSeen,
+			$this->migMode,
+			$this->migInstanceId,
+			$this->migProfile,
+			$this->parentUuid,
+			$this->partitionInfo,
+		);
 	}
 
 	/**
 	 * Not reported by a successful collection at its node. Absent after
 	 * $absentAfter misses in a row; never deleted (REQ-ID-005).
+	 * @param int $absentAfter
+	 * @return self
 	 */
 	public function missed(int $absentAfter): self {
 		$missing = $this->missingCount + 1;
 
-		return new self($this->id, $this->vendor, $this->uuid, $this->nodeId, $this->index, $this->pciBusId, $this->name, $this->driverVersion, $this->tool, $this->toolVersion, $missing >= $absentAfter ? Presence::Absent : $this->presence, $missing, $this->replacesGpuId, $this->pendingNodeId, $this->pendingSince, $this->firstSeen, $this->lastSeen);
+		return new self(
+			$this->id,
+			$this->vendor,
+			$this->uuid,
+			$this->nodeId,
+			$this->index,
+			$this->pciBusId,
+			$this->name,
+			$this->driverVersion,
+			$this->tool,
+			$this->toolVersion,
+			$missing >= $absentAfter ? Presence::Absent : $this->presence,
+			$missing,
+			$this->replacesGpuId,
+			$this->pendingNodeId,
+			$this->pendingSince,
+			$this->firstSeen,
+			$this->lastSeen,
+			$this->migMode,
+			$this->migInstanceId,
+			$this->migProfile,
+			$this->parentUuid,
+			$this->partitionInfo,
+		);
 	}
 
+		/**
+	 * Possible replacement.
+	 *
+	 * @return bool
+	 */
 	public function possibleReplacement(): bool {
 		return $this->replacesGpuId > 0;
 	}
 
+		/**
+	 * Move pending.
+	 *
+	 * @return bool
+	 */
 	public function movePending(): bool {
 		return $this->pendingNodeId > 0;
 	}

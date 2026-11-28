@@ -28,6 +28,9 @@ final class InventoryExport {
 	/**
 	 * @param list<Node>      $nodes
 	 * @param list<GpuRecord> $gpus
+	 * @param string $pluginVersion
+	 * @param int $now
+	 * @return string
 	 */
 	public static function json(array $nodes, array $gpus, string $pluginVersion, int $now): string {
 		$document = [

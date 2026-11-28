@@ -1,15 +1,15 @@
-<!-- Source: README.md; SHA256: 126deef1783d64f878bf565f1433c10f31aef828eb9bc313aeff2b0335e54c7c -->
+<!-- Source: README.md; SHA256: 97ba37df4a883426d3984ed7d14547ad7367e973411a8abd930409ce259f545b -->
 
 <!-- translations:start -->
-[English](../../../README.md) | [简体中文](README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [বাংলা](../bn-BD/README.md) | [Bosanski](../bs-BA/README.md) | [Deutsch](../de-DE/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](../he-IL/README.md) | [Hrvatski](../hr-HR/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](../ja-JP/README.md) | [한국어](../ko-KR/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](../so-SO/README.md) | [Српски](../sr-RS/README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](../zh-TW/README.md) | [isiZulu](../zu-ZA/README.md)
+[English](../../../README.md) | [简体中文](README.md) | [हिन्दी](../hi-IN/README.md) | [Español (España)](../es-ES/README.md) | [Español (Latinoamérica)](../es-419/README.md) | [العربية (السعودية)](../ar-SA/README.md) | [Afrikaans](../af-ZA/README.md) | [አማርኛ](../am-ET/README.md) | [العربية (مصر)](../ar-EG/README.md) | [العربية (المغرب)](../ar-MA/README.md) | [Български](../bg-BG/README.md) | [বাংলা](../bn-BD/README.md) | [Bosanski](../bs-BA/README.md) | [Deutsch](../de-DE/README.md) | [Ελληνικά](../el-GR/README.md) | [فارسی](../fa-IR/README.md) | [Filipino](../fil-PH/README.md) | [Français](../fr-FR/README.md) | [Français (Maroc)](../fr-MA/README.md) | [Français (Sénégal)](../fr-SN/README.md) | [Hausa](../ha-NG/README.md) | [עברית](../he-IL/README.md) | [Hrvatski](../hr-HR/README.md) | [Bahasa Indonesia](../id-ID/README.md) | [Igbo](../ig-NG/README.md) | [Italiano](../it-IT/README.md) | [日本語](../ja-JP/README.md) | [ქართული](../ka-GE/README.md) | [한국어](../ko-KR/README.md) | [Latviešu](../lv-LV/README.md) | [Malagasy](../mg-MG/README.md) | [मराठी](../mr-IN/README.md) | [Bahasa Melayu](../ms-MY/README.md) | [Nederlands](../nl-NL/README.md) | [Polski](../pl-PL/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Português (Portugal)](../pt-PT/README.md) | [Русский](../ru-RU/README.md) | [Kinyarwanda](../rw-RW/README.md) | [Soomaali](../so-SO/README.md) | [Српски](../sr-RS/README.md) | [Svenska](../sv-SE/README.md) | [Kiswahili](../sw-KE/README.md) | [தமிழ்](../ta-IN/README.md) | [తెలుగు](../te-IN/README.md) | [ไทย](../th-TH/README.md) | [Türkçe](../tr-TR/README.md) | [Українська](../uk-UA/README.md) | [اردو](../ur-PK/README.md) | [Tiếng Việt](../vi-VN/README.md) | [isiXhosa](../xh-ZA/README.md) | [Yorùbá](../yo-NG/README.md) | [繁體中文](../zh-TW/README.md) | [isiZulu](../zu-ZA/README.md)
 <!-- translations:end -->
 
 <a id="plugin_gpu"></a>
 # plugin_gpu
 
-一个 Cacti 1.2 插件，将 NVIDIA 工具提供的每 GPU 利用率、内存、温度、功率、ECC 错误和降频原因引入 Cacti。AMD 支持和 XID 错误采集仍在计划中，尚未实现。每个 GPU 成为其节点设备上数据查询的一个索引，因此 GPU 图表与节点的其他图表共用 Cacti 权限，Thold 和 Maint 可以对其告警并抑制告警。
+一个 Cacti 1.2 插件，将 NVIDIA 和 AMD 工具提供的每 GPU 利用率、内存、温度、功率、ECC 错误和降频原因引入 Cacti。每块 GPU（或 MIG 实例）成为其节点设备上数据查询的一个索引，因此 GPU 图表与节点的其他图表共用 Cacti 权限，Thold 和 Maint 可以对其告警并抑制告警。
 
-> **状态：开发中，尚未发布。** 里程碑 4 完成阶段 1（通过 SNMP extend 采集 NVIDIA）的代码：采集、身份、图表、降频和 ECC 信号、Thold 与 Maint 告警、健康页面及操作员文档。仅使用真实 `snmpd` 和输出合成数据的模拟 `nvidia-smi` 运行过，从未在 GPU 硬件上运行。发布前仍需完成：真实硬件试点（[docs/pilot-plan.md](../../pilot-plan.md)，#54）、外部安全审查（[docs/security-review.md](../../security-review.md)）、从真实工具捕获的测试样本（#14），以及生产规模硬件上的规模测量（[docs/performance.md](docs/performance.md)）。XID 错误等待决策 #8。请勿用于生产环境。
+> **状态：阶段 1 至 3 已在代码中实现，尚未发布。** 阶段 1（通过 SNMP extend 采集 NVIDIA `nvidia-smi`、身份跟踪、图表、降频和 ECC 信号、Thold 与 Maint 告警、健康页面）、阶段 2（只读 NVIDIA DCGM Exporter HTTP(S) 解析器/客户端和 AMD `amd-smi` 解析器）、阶段 3（MIG 实例身份跟踪、Schema v4 列、按轮询器作用域执行的远程采集器、`replicate_out` 和 `remote_agent` 钩子）、CasC 操作员命令行工具（`cli/gpu.php`）以及生态集成钩子（`abilities_register`、`doctor_register_checks`、`casc_register_providers`）均已实现，并由单元测试、安全测试及一次性 Cacti 集成测试覆盖。迄今的实时运行使用的是合成 `snmpd` 与测试样本载荷，而非物理 GPU 硬件。标记发布前仍待完成：真实硬件试点（[docs/pilot-plan.md](../../pilot-plan.md)，#54）、外部安全审查（[docs/security-review.md](../../security-review.md)）、从真实工具捕获的测试样本（#14），以及生产规模硬件上的规模测量（[docs/performance.md](docs/performance.md)）。XID 错误采集仍在决策 #8 下待定。
 
 <a id="access-roles"></a>
 ## 访问角色
@@ -34,26 +34,26 @@ GPU 节点通常已在 Cacti 中监控 CPU、内存和接口。但 GPU 健康是
 <a id="planned-scope"></a>
 ## 计划范围
 
-| 阶段 | 范围 | 里程碑 |
-|---|---|---|
-| 0，研究 | 厂商工具输出、XID 和降频信号、GPU 身份、权限、采集路径决策 | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
-| 1，nvidia | `nvidia-smi` 采集、按 UUID 建立清单、图表、降频、ECC 和 XID 信号、Thold 与 Maint、健康页面 | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2)、[M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3)、[M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
-| 2，后端 | DCGM 后端、`amd-smi` 后端 | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
-| 3，MIG 和远程 | MIG 实例、Cacti 远程数据采集器 | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
+| 阶段 | 范围 | 状态 | 里程碑 |
+|---|---|---|---|
+| 0，研究 | 厂商工具输出、XID 和降频信号、GPU 身份、权限、采集路径决策 | 已完成 | [M1](https://github.com/somethingwithproof/plugin_gpu/milestone/1) |
+| 1，nvidia | `nvidia-smi` 采集、按 UUID 建立清单、图表、降频和 ECC 信号、Thold 与 Maint、健康页面 | 已实现（样本测试） | [M2](https://github.com/somethingwithproof/plugin_gpu/milestone/2)、[M3](https://github.com/somethingwithproof/plugin_gpu/milestone/3)、[M4](https://github.com/somethingwithproof/plugin_gpu/milestone/4) |
+| 2，后端 | 只读 DCGM Exporter HTTP(S) 解析器/客户端（`lib/DcgmExporterParser.php`、`lib/DcgmExporterClient.php`）、AMD `amd-smi` 解析器（`lib/AmdSmiParser.php`） | 已实现（单元测试） | [M5](https://github.com/somethingwithproof/plugin_gpu/milestone/5) |
+| 3，MIG、远程与生态 | MIG 实例身份跟踪、远程数据采集器（`INFO`、`poller_gpu.php --poller=N`、`replicate_out`、`remote_agent`）、CasC CLI（`cli/gpu.php`）、MCP/Doctor/CasC 钩子 | 已实现（单元与 CI 集成测试） | [M6](https://github.com/somethingwithproof/plugin_gpu/milestone/6) |
 
 范围外：任何修改 GPU 或节点的命令（时钟、功率上限、重置、MIG 布局）、插件自有告警引擎、自定义守护进程或网络协议，以及调度器或作业记账。研究待办事项见计划。
 
 <a id="what-milestone-4-adds"></a>
 ## 里程碑 4 新增内容
 
-- **降频原因作为告警值。** 时钟事件掩码解码为每个原因一个 0 或 1 指示项；未知掩码产生未知指示项，绝不是零。没有指示项的位保留在原始掩码中，由 GPU 健康显示。
-- **ECC 作为告警值**（[docs/metrics.md](docs/metrics.md)）。插件用两个连续总数计算自上一个样本以来新增的已纠正和未纠正错误，并存为 gauge：首个样本、漏读或重新加载驱动后为未知，因此重置不会读成零或负数。也读取单比特与双比特退役页面计数及 ECC 模式。每 GPU 增加两个 ECC 图表，使 Cacti 存储这些字段；加上功率百分比图表，共十一个。不采集 XID：没有来源适合固定 `nvidia-smi` 命令（#8）。
-- **Thold 和 Maint**（[docs/alerting.md](docs/alerting.md)）。随附温度、相对功率上限、降频指示项、新增未纠正 ECC 错误、待退役页面和样本年龄的 Thold 模板。所有值都是 gauge，因为 Thold 1.8.2 处理未知 counter 会失败。使用未经修改的 Thold 1.8.2 和 Maint 1.3 的端到端测试证明，每个阈值在 ECC 重置前后触发和恢复，并能由 Maint 抑制。
-- **GPU 健康**（GPU View）。每节点：新鲜度、最近采集结果、Maint 状态、后端/工具/驱动版本和 GPU 数量；每 GPU：在场状态、样本年龄、ECC 状态和原始掩码。只读取已存储记录。
-- **权限。** 权限测试覆盖每个页面文件和操作、下一请求生效的撤销，以及不泄露任何信息的拒绝。
-- **故障和恢复验证。** 脚本化端到端运行会破坏代理、凭据、工具、输出、数据库连接和 RRD 写入，并从转储恢复数据库，包括比 RRD 文件更旧的转储；新 GPU 绝不继承另一块 GPU 的 RRD 文件（[docs/backup.md](docs/backup.md)）。
-- **规模**（[docs/performance.md](docs/performance.md)）。规模测试在指定 GPU 数下计时采集、脚本服务器输入、Cacti 对象创建、轮询器周期和健康页面；CI 使用 100 GPU。尚未记录 1,000 和 8,000 GPU 的测量，因此不声明支持的 GPU 总数。
-- **操作员文档**（[docs/operations.md](docs/operations.md)）：安装、升级、卸载、最小权限、不可用值及故障排除。变更列于 [CHANGELOG.md](../../../CHANGELOG.md)。
+- **NVIDIA DCGM Exporter 只读采集器**（`lib/DcgmExporterParser.php`、`lib/DcgmExporterClient.php`）。解析 Prometheus 文本展示格式指标（`DCGM_FI_DEV_GPU_UTIL`、`DCGM_FI_DEV_FB_USED`、`DCGM_FI_DEV_FB_FREE`、`DCGM_FI_DEV_POWER_USAGE`、`DCGM_FI_DEV_GPU_TEMP`、`DCGM_FI_DEV_ECC_DBE_VOL_TOTAL`、`DCGM_FI_DEV_CLOCK_THROTTLE_REASONS`，以及 MIG 标签 `GPU_I_ID` 和 `GPU_I_PROFILE`）。HTTP(S) 客户端强制执行显式端点主机/CIDR 白名单，默认验证 TLS 对等证书，限制超时和响应大小，禁用重定向，并拒绝非 HTTP(S) 协议方案。
+- **AMD `amd-smi` 只读解析器**（`lib/AmdSmiParser.php`）。将 `amd-smi` JSON/SNMP-extend 输出（利用率、VRAM、功率、结温/边缘温度、ECC、分区元数据，以及通过 `Reading::$vendorExtensions` 传入的独立降频累加器）标准化为 `Vendor::Amd` 下的通用指标模型。
+- **MIG 实例跟踪与 Schema v4**（`lib/GpuReport.php`、`lib/GpuSnapshot.php`、`lib/GpuRecord.php`、`lib/Schema.php`、`lib/ScriptServer.php`）。将 MIG 实例 UUID（`MIG-<uuid>` 和 `MIG-GPU-<parent>/<gi>/<ci>`）、`mig_mode`、`mig_instance_id`、`mig_profile`、`parent_uuid` 和 `partition_info` 与父 GPU 一同跟踪，同时在更新时保护不可变身份键（`vendor`、`uuid`、`parent_uuid`），并在数据库查询前进行校验。
+- **远程数据采集器**（`INFO`、`poller_gpu.php`、`lib/Poller.php`、`lib/ReplicationRepository.php`、`setup.php`）。在 `INFO` 中声明 `remote_collect:1, remote_poller:1`，支持通过 `php plugins/gpu/poller_gpu.php --poller=N` 按轮询器作用域执行，在非主轮询器上跳过 Cacti 对象置备，通过 `replicate_out` 复制按轮询器作用域划分的表，并通过 `remote_agent` 响应只读的 `gpu_health` 和 `gpu_inventory` 操作。
+- **操作员与 CasC CLI**（`cli/gpu.php`、`lib/CascProvider.php`）。无需外部 Composer 依赖即可在 PHP 8.2+ 上运行（可在 PHP 8.0 上解析）：`php plugins/gpu/cli/gpu.php export [--format=yaml|xml]`、`validate <file> [--format=yaml|xml]`、`plan <file> [--format=yaml|xml] [--output=text|json]`、`apply <file> --confirm=<PLAN_HASH> [--format=yaml|xml]` 以及 `health [--format=text|json]`。计划命令计算确定性 SHA-256 确认哈希，应用命令在哈希不匹配时故障关闭，且 XML 解析拒绝 `DOCTYPE` 和 `ENTITY` 声明。
+- **生态集成钩子**（`lib/EcosystemIntegration.php`、`setup.php`）。注册 `abilities_register`（`gpu-list-nodes`、`gpu-list-devices`、`gpu-get-health`；只读，受 `GPU View` 权限域和 Cacti 设备权限限制）、`doctor_register_checks`（`gpu_schema`、`gpu_poller_freshness`、`gpu_node_health`）以及 `casc_register_providers`。
+- **降频原因和 ECC 作为告警值**（[docs/metrics.md](docs/metrics.md)）。将时钟事件掩码解码为 0/1 指示项，并将每个采样间隔新增的已纠正/未纠正 ECC 错误计算为 gauge，使 Thold 1.8.2 和 Maint 1.3 能够告警和抑制告警，而不会产生负计数器或重置尖峰（[docs/alerting.md](docs/alerting.md)）。
+- **GPU 健康、权限、故障/恢复与规模。** GPU 健康（GPU View）无需联系节点即可显示已存储的新鲜度、上次采集结果、Maint 状态、后端、版本和原始降频掩码。脚本化端到端测试验证了权限、代理/数据库/RRD 故障恢复（[docs/backup.md](docs/backup.md)），以及 CI 中的 100 GPU 规模运行（[docs/performance.md](docs/performance.md)、[docs/operations.md](docs/operations.md)、[CHANGELOG.md](../../../CHANGELOG.md)）。
 
 <a id="what-milestone-3-adds"></a>
 ## 里程碑 3 新增内容
@@ -66,7 +66,7 @@ GPU 节点通常已在 Cacti 中监控 CPU、内存和接口。但 GPU 健康是
 - **GPU 节点的设备权限。** GPU Admin 只能查看、修改、导出和移动其在 Cacti 中有权查看设备上的节点及 GPU；GPU 移动需要两个节点的权限。设备已删除的节点可以禁用或删除。
 - **通用指标模型**（[ADR 0009](../../decisions/0009-common-metric-core-with-vendor-extensions.md)、[docs/metrics.md](docs/metrics.md)）。内存以字节表示，时钟事件掩码解码为 `thr_*` 指示项，`age` 是 GPU 自身样本时间的年龄，未知时为 `U`。
 
-执行安装的 Web 服务器用户必须能够写入 `<cacti>/resource/script_server/`，插件在此放置数据查询 XML；否则安装和升级会显示消息并停止，下一次尝试时重试。仅当勾选 *卸载时移除插件的 Cacti 对象* 时，卸载才移除模板和 XML；绝不删除 RRD 文件、设备、图表或数据源（[docs/operations.md](docs/operations.md#uninstall)）。远程数据采集器上的节点要到阶段 3 才采集。
+执行安装的 Web 服务器用户必须能够写入 `<cacti>/resource/script_server/`，插件在此放置数据查询 XML；否则安装和升级会显示消息并停止，下一次尝试时重试。仅当勾选 *卸载时移除插件的 Cacti 对象* 时，卸载才移除模板和 XML；绝不删除 RRD 文件、设备、图表或数据源（[docs/operations.md](docs/operations.md#uninstall)）。远程数据采集器上的节点按其分配的 `poller_id` 作用域运行。
 
 <a id="what-milestone-2-ships"></a>
 ## 里程碑 2 提供的内容
@@ -114,9 +114,10 @@ GPU 节点通常已在 Cacti 中监控 CPU、内存和接口。但 GPU 健康是
 
 ```mermaid
 flowchart LR
-    NODE[GPU node: snmpd extend running nvidia-smi] -->|SNMP reads, v3 recommended| C[Collector]
-    C --> CACHE[(Plugin cache keyed by GPU UUID)]
+    NODE[GPU node: snmpd extend / DCGM Exporter / amd-smi] -->|Read-only SNMPv3 or allowlisted HTTPS| C[Poller-scoped collector]
+    C --> CACHE[(Plugin cache keyed by vendor + GPU/MIG UUID)]
     CACHE --> SS[Script server data query input]
+    CACHE --> ECO[CasC CLI, MCP abilities, Doctor checks]
     SS --> RRD[(Cacti RRD files, one data source per GPU)]
     SS -->|poller_output| T[Thold and Maint]
     RRD --> G[Cacti graphs and permissions]

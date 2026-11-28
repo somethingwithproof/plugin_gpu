@@ -28,9 +28,8 @@ it('reads its metadata from INFO', function () {
 
 	expect($info['name'])->toBe('gpu')
 		->and($info['compat'])->toBe('1.2.31')
-		// Nothing is collected before milestone 3, and remote collectors are phase 3.
-		->and($info['capabilities'])->not->toContain('remote_collect')
-		->and($info['capabilities'])->not->toContain('remote_poller');
+		->and($info['capabilities'])->toContain('remote_collect:1')
+		->and($info['capabilities'])->toContain('remote_poller:1');
 });
 
 it('boots and loads plugin classes on a supported runtime', function () {

@@ -25,6 +25,13 @@ namespace Somethingwithproof\Gpu;
  * details; it is safe to log at the default level.
  */
 final class CollectionError extends \RuntimeException {
+		/**
+	 * Construct a CollectionError instance.
+	 *
+	 * @param ExecutionState $state
+	 * @param string $message
+	 * @param int $rejectedLines
+	 */
 	public function __construct(public readonly ExecutionState $state, string $message, public readonly int $rejectedLines = 0) {
 		parent::__construct($message);
 	}

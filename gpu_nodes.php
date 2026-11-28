@@ -62,6 +62,10 @@ function gpu_nodes_refuse(): void {
 
 /**
  * The GPU record and its node or nodes, when the user may act on them.
+ * @param \Somethingwithproof\Gpu\NodeAccess $access
+ * @param int $id
+ * @param bool $move
+ * @return \Somethingwithproof\Gpu\GpuRecord
  */
 function gpu_nodes_gpu(\Somethingwithproof\Gpu\NodeAccess $access, int $id, bool $move = true): \Somethingwithproof\Gpu\GpuRecord {
 	$record = gpu_gpus()->find($id);
@@ -87,6 +91,7 @@ function gpu_nodes_gpu(\Somethingwithproof\Gpu\NodeAccess $access, int $id, bool
 
 /**
  * Attach the GPU data query to a saved, enabled node's device.
+ * @param \Somethingwithproof\Gpu\Node $node
  */
 function gpu_nodes_attach(\Somethingwithproof\Gpu\Node $node): void {
 	if ($node->enabled() && $node->deviceExists && !gpu_provisioner()->attach($node)) {

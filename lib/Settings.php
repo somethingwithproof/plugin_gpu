@@ -41,6 +41,14 @@ final readonly class Settings {
 	public const MIN_STALE_AFTER     = 60;
 	public const MAX_STALE_AFTER     = 86400;
 
+		/**
+	 * Construct a Settings instance.
+	 *
+	 * @param int $absentAfter
+	 * @param bool $keepTablesOnUninstall
+	 * @param int $staleAfter
+	 * @param bool $removeObjectsOnUninstall
+	 */
 	public function __construct(
 		public int $absentAfter,
 		public bool $keepTablesOnUninstall,
@@ -55,6 +63,7 @@ final readonly class Settings {
 	 * administrator has cleared the box (REQ-LIFE-004).
 	 *
 	 * @param array<string, mixed> $row setting name => stored value, absent when never saved
+	 * @return self
 	 */
 	public static function fromRow(array $row): self {
 		return new self(

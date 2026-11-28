@@ -36,6 +36,11 @@ enum FreshnessState: string {
 	 * when the script server input starts printing U (Freshness). A sample
 	 * stamped further ahead of Cacti's clock than skew explains is ahead:
 	 * its values print U, so it must not read as current.
+	 * @param int $observedAt
+	 * @param int $now
+	 * @param int $interval
+	 * @param int $staleAfter
+	 * @return self
 	 */
 	public static function of(int $observedAt, int $now, int $interval, int $staleAfter): self {
 		if ($observedAt <= 0) {
@@ -52,6 +57,11 @@ enum FreshnessState: string {
 		};
 	}
 
+		/**
+	 * Label.
+	 *
+	 * @return string
+	 */
 	public function label(): string {
 		return match ($this) {
 			self::Current => __('Current', 'gpu'),

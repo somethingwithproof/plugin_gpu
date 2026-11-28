@@ -23,13 +23,28 @@ namespace Somethingwithproof\Gpu;
  * A clock that stays where it is put, for tests and for replaying a run.
  */
 final class FixedClock implements Clock {
+		/**
+	 * Construct a FixedClock instance.
+	 *
+	 * @param int $time
+	 */
 	public function __construct(private int $time) {
 	}
 
+		/**
+	 * Now.
+	 *
+	 * @return int
+	 */
 	public function now(): int {
 		return $this->time;
 	}
 
+		/**
+	 * Advance.
+	 *
+	 * @param int $seconds
+	 */
 	public function advance(int $seconds): void {
 		$this->time += $seconds;
 	}

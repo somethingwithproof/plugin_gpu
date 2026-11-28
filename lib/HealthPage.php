@@ -39,6 +39,12 @@ final class HealthPage {
 	 * @param \Closure(int): bool  $deviceAllowed Cacti's device permission check for the viewer
 	 * @param \Closure(int): ?bool $inMaintenance whether Maint holds a device in maintenance, null without Maint
 	 * @param int                  $interval      the expected collection interval in seconds (Cacti's poller interval)
+	 * @param NodeRepository $nodes
+	 * @param GpuRepository $gpus
+	 * @param CollectionRepository $collections
+	 * @param ObservationRepository $observations
+	 * @param Clock $clock
+	 * @param int $staleAfter
 	 */
 	public function __construct(
 		private readonly NodeRepository $nodes,
@@ -53,6 +59,9 @@ final class HealthPage {
 	) {
 	}
 
+		/**
+	 * Render.
+	 */
 	public function render(): void {
 		$nodes = [];
 
@@ -71,7 +80,8 @@ final class HealthPage {
 			}
 		}
 
-		$samples = $nodes === [] ? [] : $this->observations->summaries();
+		$samples     = $nodes === [] ? [] : $this->observations->summaries();
+		$collections = $nodes === [] ? [] : $this->collections->all();
 
 		$headers = [__('Node', 'gpu'), __('Admin State', 'gpu'), __('Freshness', 'gpu'), __('Last Collection', 'gpu'), __('Maintenance', 'gpu'), __('Backend', 'gpu'), __('Tool', 'gpu'), __('Driver', 'gpu'), __('GPUs', 'gpu')];
 
@@ -79,7 +89,7 @@ final class HealthPage {
 		print $this->header($headers);
 
 		foreach ($nodes as $node) {
-			print $this->line($this->nodeRow($node, $this->collections->find($node->id), $byNode[$node->id] ?? [], $samples));
+			print $this->line($this->nodeRow($node, $collections[$node->id] ?? null, $byNode[$node->id] ?? [], $samples));
 		}
 
 		if ($nodes === []) {
@@ -115,6 +125,8 @@ final class HealthPage {
 	 * @param list<GpuRecord>                    $gpus    the node's GPU records, retired ones left out
 	 * @param array<int, array<string, mixed>>   $samples ObservationRepository::summaries()
 	 * @return list<string>
+	 * @param Node $node
+	 * @param ?CollectionStatus $status
 	 */
 	public function nodeRow(Node $node, ?CollectionStatus $status, array $gpus, array $samples): array {
 		$present  = 0;
@@ -153,6 +165,8 @@ final class HealthPage {
 	 *
 	 * @param array<string, mixed>|null $sample its row of ObservationRepository::summaries()
 	 * @return list<string>
+	 * @param GpuRecord $gpu
+	 * @param Node $node
 	 */
 	public function gpuRow(GpuRecord $gpu, Node $node, ?array $sample): array {
 		$state = [$gpu->presence === Presence::Present ? __('Present', 'gpu') : __('Absent', 'gpu')];
@@ -184,6 +198,8 @@ final class HealthPage {
 	 * How the node's latest collection ended (REQ-HEALTH-002): one of
 	 * completed, tool error, permission denied, timed out, or unknown, then
 	 * the state and its bounded detail.
+	 * @param ?CollectionStatus $status
+	 * @return string
 	 */
 	public function collection(?CollectionStatus $status): string {
 		if ($status === null || $status->state === null) {
@@ -220,6 +236,8 @@ final class HealthPage {
 	/**
 	 * Detail text made safe to print: control characters become spaces and
 	 * the text is cut at DETAIL_LIMIT characters.
+	 * @param string $text
+	 * @return string
 	 */
 	public static function detail(string $text): string {
 		$text = trim((string) preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $text));
@@ -227,12 +245,24 @@ final class HealthPage {
 		return mb_strlen($text) > self::DETAIL_LIMIT ? mb_substr($text, 0, self::DETAIL_LIMIT - 3) . '...' : $text;
 	}
 
+		/**
+	 * Freshness.
+	 *
+	 * @param int $observedAt
+	 * @return string
+	 */
 	private function freshness(int $observedAt): string {
 		$state = FreshnessState::of($observedAt, $this->clock->now(), $this->interval, $this->staleAfter);
 
 		return $state === FreshnessState::Never || $state === FreshnessState::Ahead ? $state->label() : $state->label() . ' (' . self::ago(max(0, $this->clock->now() - $observedAt)) . ')';
 	}
 
+		/**
+	 * Ago.
+	 *
+	 * @param int $seconds
+	 * @return string
+	 */
 	private static function ago(int $seconds): string {
 		return match (true) {
 			$seconds < 120    => __('%d seconds ago', $seconds, 'gpu'),
@@ -242,12 +272,19 @@ final class HealthPage {
 		};
 	}
 
+		/**
+	 * Index.
+	 *
+	 * @param GpuRecord $gpu
+	 * @return string
+	 */
 	private static function index(GpuRecord $gpu): string {
 		return $gpu->index === null ? '-' : (string) $gpu->index;
 	}
 
 	/**
 	 * @param list<string> $values
+	 * @return string
 	 */
 	private static function distinct(array $values): string {
 		$values = array_values(array_unique(array_filter($values, static fn (string $value): bool => $value !== '')));
@@ -257,6 +294,7 @@ final class HealthPage {
 
 	/**
 	 * @param list<string> $cells
+	 * @return string
 	 */
 	private function header(array $cells): string {
 		return '<tr class="tableHeader"><th>' . implode('</th><th>', array_map('html_escape', $cells)) . '</th></tr>';
@@ -264,6 +302,7 @@ final class HealthPage {
 
 	/**
 	 * @param list<string> $cells
+	 * @return string
 	 */
 	private function line(array $cells): string {
 		return '<tr class="tableRow"><td>' . implode('</td><td>', array_map('html_escape', $cells)) . '</td></tr>';

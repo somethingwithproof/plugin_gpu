@@ -24,9 +24,20 @@ namespace Somethingwithproof\Gpu;
  * run, so the table never grows with time.
  */
 final class CollectionRepository {
+		/**
+	 * Construct a CollectionRepository instance.
+	 *
+	 * @param \PDO|false $connection
+	 */
 	public function __construct(private readonly \PDO|false $connection) {
 	}
 
+		/**
+	 * Find.
+	 *
+	 * @param int $nodeId
+	 * @return ?CollectionStatus
+	 */
 	public function find(int $nodeId): ?CollectionStatus {
 		$row = db_fetch_row_prepared('SELECT * FROM plugin_gpu_collection WHERE node_id = ?', [$nodeId], true, $this->connection);
 
@@ -48,10 +59,29 @@ final class CollectionRepository {
 		return $out;
 	}
 
+		/**
+	 * Start.
+	 *
+	 * @param int $nodeId
+	 * @param int $now
+	 */
 	public function start(int $nodeId, int $now): void {
 		db_execute_prepared('INSERT INTO plugin_gpu_collection (node_id, started_at) VALUES (?, ?) ON DUPLICATE KEY UPDATE started_at = VALUES(started_at)', [$nodeId, $now], true, $this->connection);
 	}
 
+		/**
+	 * Finish.
+	 *
+	 * @param int $nodeId
+	 * @param ExecutionState $state
+	 * @param string $detail
+	 * @param int $now
+	 * @param int $observedAt
+	 * @param int $gpus
+	 * @param int $newGpus
+	 * @param int $rejectedLines
+	 * @return bool
+	 */
 	public function finish(int $nodeId, ExecutionState $state, string $detail, int $now, int $observedAt = 0, int $gpus = 0, int $newGpus = 0, int $rejectedLines = 0): bool {
 		$ok = $state->succeeded() ? $now : 0;
 
@@ -70,6 +100,7 @@ final class CollectionRepository {
 	/**
 	 * Count a run that found the node already being collected. The result
 	 * of the run in progress stays.
+	 * @param int $nodeId
 	 */
 	public function skipped(int $nodeId): void {
 		db_execute_prepared('INSERT INTO plugin_gpu_collection (node_id, skipped) VALUES (?, 1) ON DUPLICATE KEY UPDATE skipped = skipped + 1', [$nodeId], true, $this->connection);

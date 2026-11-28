@@ -19,7 +19,15 @@
 
 namespace Somethingwithproof\Gpu;
 
+/**
+ * Wall-clock Clock implementation backed by time().
+ */
 final class SystemClock implements Clock {
+		/**
+	 * Now.
+	 *
+	 * @return int
+	 */
 	public function now(): int {
 		return time();
 	}
